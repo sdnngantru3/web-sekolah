@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>SD Negeri 3 Ngantru Perk Sei Lala - Website Resmi</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4f8;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        /* Container Utama */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ===== HEADER & NAVIGASI ===== */
+        .top-header {
+            background: linear-gradient(135deg, #0b3b2f 0%, #1a5d4a 100%);
+            color: white;
+            padding: 12px 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* LOGO SEKOLAH - LEBIH BESAR & BERGERAK */
+        .school-logo {
+            width: 80px;
+            height: 80px;
+            background-image: url('logo sekolah.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 20px;
+            animation: logoBounce 2s ease-in-out infinite, logoGlow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoBounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(3deg); }
+        }
+
+        @keyframes logoGlow {
+            0% { box-shadow: 0 0 0px rgba(255,255,255,0.3); }
+            100% { box-shadow: 0 0 20px rgba(255,215,0,0.6); }
+        }
+
+        .logo-text h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            animation: textPulse 1.2s ease-in-out infinite, textGlow 1.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes textPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 0px rgba(255,215,0,0); }
+            100% { text-shadow: 0 0 12px rgba(255,215,0,0.8); }
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .search-area {
+            display: flex;
+            gap: 10px;
+            background: rgba(255,255,255,0.15);
+            padding: 6px 15px;
+            border-radius: 50px;
+            backdrop-filter: blur(4px);
+        }
+
+        .search-area input {
+            background: transparent;
+            border: none;
+            padding: 8px 0;
+            color: white;
+            outline: none;
+            font-size: 0.9rem;
+            width: 180px;
+        }
+
+        .search-area input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .search-area button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            animation: iconBlink 1s ease-in-out infinite;
+        }
+
+        /* Navigasi Utama - Ikon berkedip tapi tampilan sama persis */
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            list-style: none;
+            padding: 12px 0;
+        }
+
+        .nav-menu li a {
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1e293b;
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+
+        .nav-menu li a:hover {
+            background: #e6f7f0;
+            color: #0b5e42;
+        }
+        
+        /* Animasi kedip untuk ikon di menu */
+        .nav-menu li a i, 
+        .nav-menu li a::before {
+            animation: iconBlinkNav 1s ease-in-out infinite;
+            display: inline-block;
+        }
+        
+        @keyframes iconBlinkNav {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        /* Hero Section */
+        .hero {
+            border-radius: 32px;
+            margin: 30px 0;
+            padding: 60px 32px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background-image: url('background.jpg');
+            background-size: 100%;
+            background-position: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1;
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero h2 span {
+            background: #fbbf24;
+            padding: 0 8px;
+            border-radius: 20px;
+            color: #1e293b;
+            font-size: 1.8rem;
+            animation: spanPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes spanPulse {
+            0%, 100% { transform: scale(1); background: #fbbf24; }
+            50% { transform: scale(1.02); background: #ffd966; }
+        }
+
+        .hero p {
+            color: #f0fdf9;
+            font-weight: 500;
+            margin-bottom: 24px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .badge-item {
+            background: rgba(255,255,255,0.9);
+            border-radius: 60px;
+            padding: 8px 24px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            color: #1e293b;
+            animation: badgeShake 2s ease-in-out infinite;
+        }
+        
+        @keyframes badgeShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            75% { transform: translateX(3px); }
+        }
+
+        /* Statistik Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin: 40px 0;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 28px;
+            padding: 28px 20px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            border: 1px solid #e2e8f0;
+            animation: cardFade 3s ease-in-out infinite;
+        }
+        
+        @keyframes cardFade {
+            0%, 100% { opacity: 1; transform: translateY(0); }
+            50% { opacity: 0.95; transform: translateY(-3px); }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #0f6b52;
+            line-height: 1;
+            animation: numberPop 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes numberPop {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); color: #0f8b6a; }
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #475569;
+            margin-top: 8px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 40px 0 24px 0;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60%;
+            height: 4px;
+            background: #0f6b52;
+            border-radius: 4px;
+        }
+
+        /* Grid Berita */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 28px;
+            margin-bottom: 40px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+            transition: 0.2s;
+            animation: newsFade 3s ease-in-out infinite;
+        }
+        
+        @keyframes newsFade {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        .news-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 180px;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-color: #7f9f90;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .card-content p {
+            color: #4a5568;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .btn-read {
+            background: none;
+            border: none;
+            color: #0f6b52;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            animation: btnBlink 1s ease-in-out infinite;
+        }
+        
+        @keyframes btnBlink {
+            0%, 100% { opacity: 1; letter-spacing: normal; }
+            50% { opacity: 0.7; letter-spacing: 1px; }
+        }
+
+        /* Digital Banner */
+        .digital-banner {
+            border-radius: 28px;
+            padding: 24px 32px;
+            margin: 20px 0 32px;
+            text-align: center;
+            font-weight: bold;
+            color: #1e4620;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .digital-banner > * {
+            position: relative;
+            z-index: 2;
+            animation: iconBlink 0.8s ease-in-out infinite;
+        }
+        
+        @keyframes iconBlink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        .digital-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(233, 242, 239, 0.88);
+            border-radius: 28px;
+            z-index: 1;
+        }
+
+        /* Footer */
+        .footer {
+            background: #0b2c23;
+            color: #ccdcd5;
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .footer-col h4 {
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .footer-col p, .footer-col ul {
+            font-size: 0.85rem;
+            opacity: 0.85;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-col a {
+            color: #bbdfd0;
+            text-decoration: none;
+            animation: linkFade 2s ease-in-out infinite;
+        }
+        
+        @keyframes linkFade {
+            0%, 100% { opacity: 0.85; }
+            50% { opacity: 1; }
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid #2a5546;
+            font-size: 0.75rem;
+        }
+
+        /* ===== MODAL/POPUP STYLE ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 48px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .modal-content h3 {
+            font-size: 1.8rem;
+            color: #0f6b52;
+            margin-bottom: 16px;
+        }
+
+        .modal-content p {
+            font-size: 1.2rem;
+            color: #1e293b;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .close-modal {
+            background: #0f6b52;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            animation: btnGlow 1s ease-in-out infinite;
+        }
+        
+        @keyframes btnGlow {
+            0%, 100% { box-shadow: 0 0 0px rgba(15,107,82,0.5); }
+            50% { box-shadow: 0 0 15px rgba(15,107,82,0.8); }
+        }
+
+        .close-modal:hover {
+            background: #0a4d3a;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== ICON ANAK SD BERGERAK ===== */
+        .kid-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+            cursor: pointer;
+            animation: kidWalk 2s ease-in-out infinite, kidBounce 1s ease-in-out infinite alternate;
+            background: linear-gradient(135deg, #ffd89b, #c7e9fb);
+            border-radius: 50%;
+            padding: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .kid-float:hover {
+            transform: scale(1.1);
+        }
+        
+        @keyframes kidWalk {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+        
+        @keyframes kidBounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+        
+        .kid-float i {
+            font-size: 45px;
+            color: #4a2c0f;
+            animation: kidWave 1.5s ease-in-out infinite;
+            display: block;
+        }
+        
+        @keyframes kidWave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-15deg); }
+            75% { transform: rotate(15deg); }
+        }
+        
+        .kid-tooltip {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: #0f6b52;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            animation: tooltipPulse 1s ease-in-out infinite;
+            font-weight: bold;
+        }
+        
+        @keyframes tooltipPulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+            .hero h2 {
+                font-size: 1.5rem;
+            }
+            .nav-menu li a {
+                padding: 6px 14px;
+                font-size: 0.8rem;
+            }
+            .hero {
+                padding: 40px 20px;
+            }
+            .logo-area {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .school-logo {
+                width: 60px;
+                height: 60px;
+            }
+            .logo-text h1 {
+                font-size: 1.4rem;
+            }
+            .kid-float i {
+                font-size: 35px;
+            }
+            .kid-float {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- MODAL/POPUP VISI & MISI -->
+<div id="visiMisiModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-star" style="color: #fbbf24; animation: iconBlink 0.8s ease-in-out infinite;"></i> Visi & Misi</h3>
+        <p><strong>✨ Unggul dan Berkompetensi ✨</strong></p>
+        <button class="close-modal" onclick="closeModal()">Tutup</button>
+    </div>
+</div>
+
+<!-- Header Atas Hijau -->
+<div class="top-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo-area">
+                <div class="school-logo" style="background-image: url('logo sekolah.png');"></div>
+                <div class="logo-text">
+                    <h1>SD NEGERI 3 NGANTRU</h1>
+                    <p>Kecamatan Ngantang, Kabupaten Malang</p>
+                </div>
+            </div>
+            <div class="search-area">
+                <input type="text" placeholder="Masukan Kata Kunci..." id="searchInput">
+                <button id="searchBtn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigasi Menu - TAMPILAN SAMA PERSIS SEPERTI SEBELUMNYA -->
+<div class="nav-bar">
+    <div class="container">
+        <ul class="nav-menu">
+            <li><a href="#" id="visiMisiBtn">🏠 Home</a></li>
+            <li><a href="profil sekolah.html">📋 Profil Sekolah</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1spFs60mxvKVv6lgttrkt-fZQNPF7UKNm?usp=drive_link" class="https://drive.google.com/drive/folders/1spFs60mxvKVv6lgttrkt-fZQNPF7UKNm?usp=drive_link" data-page="direktori">📁 Administrasi</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1dJWr-fakznnjS2b_hDcTvScQEmmjIaGP?usp=drive_link" class="https://drive.google.com/drive/folders/1dJWr-fakznnjS2b_hDcTvScQEmmjIaGP?usp=drive_link" data-page="publikasi">📰 Pembelajaran</a></li>
+            <li><a href="lingkungan.html" class="nav-link" data-page="ekskl">⭐ Lingkungan</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1q4y9LnUdVf2BuDlRawAKI7NRwYuarjmF?usp=drive_link" class="https://drive.google.com/drive/folders/1q4y9LnUdVf2BuDlRawAKI7NRwYuarjmF?usp=drive_link" data-page="ppdb">🎓 Pengembangan Diri</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1fdfDI12lytoPK6rNv4neYNWUXLx3Y5nn?usp=drive_link" class="https://drive.google.com/drive/folders/1fdfDI12lytoPK6rNv4neYNWUXLx3Y5nn?usp=drive_link" data-page="unduhan">📚 Kurikulum</a></li>
+            <li><a href="https://raporsd.page.gd" target="_blank">🔐 Login Rapor Online</a></li>
+            <li><a href="#" class="nav-link" data-page="kontak">📞 Kontak</a></li>
+        </ul>
+    </div>
+</div>
+
+<main class="container">
+    <div class="hero" style="background-image: url('background.jpg');">
+        <h2>Selamat Datang di Website <span>SD Negeri 3 Ngantru</span></h2>
+        <p>Jln Sawahan, Bayanan, Ngantru, Kec. Ngantang Kab. Malang</p>
+        <div class="hero-badge">
+            <span class="badge-item"><i class="fas fa-map-marker-alt" style="animation: iconBlink 0.8s ease-in-out infinite;"></i> Kec. Ngantang</span>
+            <span class="badge-item"><i class="fas fa-building" style="animation: iconBlink 0.8s ease-in-out infinite;"></i> Kab. Malang</span>
+        </div>
+    </div>
+
+    <!-- Statistik -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">8</div>
+            <div class="stat-label"><i class="fas fa-chalkboard-user"></i> Jumlah Guru</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">107</div>
+            <div class="stat-label"><i class="fas fa-user-graduate"></i> Jumlah Siswa</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">6</div>
+            <div class="stat-label"><i class="fas fa-users"></i> Paguyuban Sekolah</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">11</div>
+            <div class="stat-label"><i class="fas fa-briefcase"></i> Total Pegawai</div>
+        </div>
+    </div>
+
+    <div class="digital-banner" style="background-image: url('background.jpg'); background-size: cover; background-position: center bottom 70%;">
+        <i class="fas fa-laptop-code" style="font-size: 1.5rem;"></i> 
+        <span style="font-size: 1.2rem;">🚀 Go Digital Sekolahku — Transformasi Digital SD Negeri 3 Ngantru</span>
+    </div>
+
+    <h2 class="section-title">Berita & Informasi</h2>
+    <div class="content-grid" id="newsGrid">
+        <div class="news-card">
+            <div class="card-img" style="background-image: url('background 1.jpg');"></div>
+            <div class="card-content">
+                <h3>Pembukaan PPDB 2026/2027</h3>
+                <p>Pendaftaran peserta didik baru telah dibuka. Ayo daftarkan putra-putri anda sekarang juga! Kuota terbatas.</p>
+                <a href="#" class="btn-read" data-link="detail-berita">Selengkapnya →</a>
+            </div>
+        </div>
+        <div class="news-card">
+            <div class="card-img" style="background-image: url('background 2.jpg');"></div>
+            <div class="card-content">
+                <h3>Lomba Cerdas Cermat Tingkat Kecamatan</h3>
+                <p>Tim SD Negeri 3 Ngantru meraih juara 2 dalam lomba cerdas cermat. Prestasi membanggakan!</p>
+                <a href="#" class="btn-read" data-link="detail-berita2">Selengkapnya →</a>
+            </div>
+        </div>
+        <div class="news-card">
+            <div class="card-img" style="background-image: url('background 3.jpg');"></div>
+            <div class="card-content">
+                <h3>Pelatihan Guru Implementasi Kurikulum Merdeka</h3>
+                <p>Seluruh guru mengikuti workshop penguatan metode pembelajaran interaktif.</p>
+                <a href="#" class="btn-read" data-link="detail-berita3">Selengkapnya →</a>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin: 40px 0;">
+        <h2 class="section-title">Akses Cepat</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px;">
+            <a href="#" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;" data-link="raporsd">📊 Rapor Digital</a>
+            <a href="#" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;" data-link="kalender">📅 Kalender Akademik</a>
+            <a href="https://buku.kemendikdasmen.go.id/katalog/buku-kurikulum-merdeka" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;" data-link="perpustakaan">📚 Perpustakaan Online</a>
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>SD Negeri 3 Ngantru</h4>
+                <p>Jln Sawahan, Bayanan, Ngantru<br>Kec. Ngantang, Kab. Malang</p>
+                <p>Email: sdn3ngantru.ngantang@gmail.com | Telp: 085179998236</p>
+            </div>
+            <div class="footer-col">
+                <h4>Tautan Penting</h4>
+                <ul>
+                    <li><a href="#">PPDB Online</a></li>
+                    <li><a href="#">E-Learning</a></li>
+                    <li><a href="https://raporsd.page.gd" target="_blank">Login Raport Digital</a></li>
+                    <li><a href="kontak-kami.html">Pengaduan Masyarakat</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Sosial Media</h4>
+                <ul>
+                    <li><a href="https://www.facebook.com/profile.php?id=100080344573562"><i class="fab fa-facebook"></i> Facebook</a></li>
+                    <li><a href="https://www.instagram.com/sd_negeri_3_ngantru_ngantang?igsh=MWFjcnJxcWZweGtvMg=="><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="https://www.youtube.com/@sdnegeri3ngantrukecamatann821"><i class="fab fa-youtube"></i> YouTube</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 SD Negeri 3 NGANTRU Kec. Ngantang Kab. Malang. All Rights Reserved. | Go Digital Sekolahku
+        </div>
+    </div>
+</footer>
+
+<!-- ICON ANAK SD BERGERAK -->
+<div class="kid-float" id="kidIcon">
+    <i class="fas fa-child"></i>
+    <span class="kid-tooltip">Halo! Aku siswa SD ✨</span>
+</div>
+
+<script>
+    // ============================================================
+    // KONFIGURASI LINK (UBAH SESUAI KEBUTUHAN)
+    // ============================================================
+    const routing = {
+        home: "index.html",
+        profil: "profil-sekolah.html",
+        direktori: "direktori-guru.html",
+        publikasi: "publikasi-berita.html",
+        ekskl: "ekskul.html",
+        ppdb: "ppdb-online.html",
+        unduhan: "unduhan-file.html",
+        kontak: "kontak-kami.html",
+        "detail-berita": "berita-ppdb.html",
+        "detail-berita2": "berita-lomba.html",
+        "detail-berita3": "berita-pelatihan.html",
+        "raporsd": "https://raporsd.page.gd",
+        "kalender": "kalender-akademik.html",
+        "perpustakaan": "perpustakaan-digital.html"
+    };
+
+    function navigateTo(pageKey) {
+        let targetUrl = routing[pageKey];
+        if (targetUrl) {
+            if (targetUrl.startsWith('http') || targetUrl.includes('.page.gd')) {
+                window.open(targetUrl, '_blank');
+            } else {
+                window.location.href = targetUrl;
+            }
+        } else {
+            alert("Halaman sedang dalam persiapan. Segera hadir!");
+        }
+    }
+
+    // ===== FUNGSI MODAL VISI & MISI =====
+    function showModal() {
+        const modal = document.getElementById('visiMisiModal');
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('visiMisiModal');
+        modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('visiMisiModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    const visiMisiBtn = document.getElementById('visiMisiBtn');
+    if(visiMisiBtn) {
+        visiMisiBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showModal();
+        });
+    }
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.getAttribute('data-page');
+            if (page && routing[page]) {
+                navigateTo(page);
+            } else {
+                alert(`Menu "${this.innerText}" akan diarahkan segera.`);
+            }
+        });
+    });
+
+    const allReadBtns = document.querySelectorAll('.btn-read');
+    allReadBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const linkKey = this.getAttribute('data-link');
+            if (linkKey && routing[linkKey]) {
+                navigateTo(linkKey);
+            } else {
+                alert("Konten belum tersedia, silakan cek kembali.");
+            }
+        });
+    });
+
+    const searchBtn = document.getElementById('searchBtn');
+    const searchInput = document.getElementById('searchInput');
+    if(searchBtn) {
+        searchBtn.addEventListener('click', function() {
+            let keyword = searchInput.value.trim();
+            if(keyword !== "") {
+                alert(`Pencarian untuk: "${keyword}" (fitur integrasi menyusul)`);
+            } else {
+                alert("Masukkan kata kunci terlebih dahulu.");
+            }
+        });
+    }
+    if(searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') searchBtn.click();
+        });
+    }
+    
+    // Animasi klik pada icon anak SD
+    const kidIcon = document.getElementById('kidIcon');
+    if(kidIcon) {
+        kidIcon.addEventListener('click', function() {
+            alert("Halo! Selamat belajar di SD Negeri 3 Ngantru ✨📚");
+        });
+    }
+
+    console.log("Website SD Negeri 3 Ngantru siap - Logo & ikon bergerak, alamat sudah diperbarui!");
+</script>
+</body>
+</html>

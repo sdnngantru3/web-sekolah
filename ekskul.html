@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>SD Negeri 3 Ngantru - Lingkungan (Guru & Pegawai)</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4f8;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .top-header {
+            background: linear-gradient(135deg, #0b3b2f 0%, #1a5d4a 100%);
+            color: white;
+            padding: 12px 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .school-logo {
+            width: 80px;
+            height: 80px;
+            background-image: url('logo sekolah.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 20px;
+            animation: logoBounce 2s ease-in-out infinite, logoGlow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoBounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(3deg); }
+        }
+
+        @keyframes logoGlow {
+            0% { box-shadow: 0 0 0px rgba(255,255,255,0.3); }
+            100% { box-shadow: 0 0 20px rgba(255,215,0,0.6); }
+        }
+
+        .logo-text h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            animation: textPulse 1.2s ease-in-out infinite, textGlow 1.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes textPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 0px rgba(255,215,0,0); }
+            100% { text-shadow: 0 0 12px rgba(255,215,0,0.8); }
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Navigasi */
+        .nav-bar {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            list-style: none;
+            padding: 12px 0;
+        }
+
+        .nav-menu li a {
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1e293b;
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+
+        .nav-menu li a:hover {
+            background: #e6f7f0;
+            color: #0b5e42;
+        }
+
+        /* Hero Section */
+        .hero {
+            border-radius: 32px;
+            margin: 30px 0;
+            padding: 60px 32px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background-image: url('background.jpg');
+            background-size: 100%;
+            background-position: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1;
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero h2 span {
+            background: #fbbf24;
+            padding: 0 8px;
+            border-radius: 20px;
+            color: #1e293b;
+            font-size: 1.8rem;
+            animation: spanPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes spanPulse {
+            0%, 100% { transform: scale(1); background: #fbbf24; }
+            50% { transform: scale(1.02); background: #ffd966; }
+        }
+
+        .hero p {
+            color: #f0fdf9;
+            font-weight: 500;
+            margin-bottom: 24px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 40px 0 24px 0;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60%;
+            height: 4px;
+            background: #0f6b52;
+            border-radius: 4px;
+        }
+
+        /* Grid Guru - 11 Orang */
+        .teacher-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+            margin-bottom: 40px;
+        }
+
+        .teacher-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+            transition: 0.2s;
+            animation: cardFade 3s ease-in-out infinite;
+            text-align: center;
+        }
+
+        @keyframes cardFade {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .teacher-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+
+        .teacher-photo {
+            width: 100%;
+            height: 220px;
+            background-size: cover;
+            background-position: center;
+            background-color: #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .teacher-card:hover .teacher-photo {
+            transform: scale(1.02);
+        }
+
+        .teacher-info {
+            padding: 20px;
+        }
+
+        .teacher-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #0f6b52;
+        }
+
+        .teacher-info p {
+            color: #4a5568;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .teacher-badge {
+            display: inline-block;
+            background: #e6f7f0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #0f6b52;
+            animation: badgePulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* Tombol Kembali */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #0f6b52;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 20px 0 40px;
+            transition: all 0.3s;
+            animation: btnGlow 1.5s ease-in-out infinite;
+        }
+
+        .back-button:hover {
+            background: #0a4d3a;
+            transform: translateX(-5px);
+        }
+
+        @keyframes btnGlow {
+            0%, 100% { box-shadow: 0 0 0px rgba(15,107,82,0.5); }
+            50% { box-shadow: 0 0 15px rgba(15,107,82,0.8); }
+        }
+
+        /* Footer */
+        .footer {
+            background: #0b2c23;
+            color: #ccdcd5;
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .footer-col h4 {
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .footer-col p, .footer-col ul {
+            font-size: 0.85rem;
+            opacity: 0.85;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-col a {
+            color: #bbdfd0;
+            text-decoration: none;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid #2a5546;
+            font-size: 0.75rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+            .hero h2 {
+                font-size: 1.5rem;
+            }
+            .nav-menu li a {
+                padding: 6px 14px;
+                font-size: 0.8rem;
+            }
+            .hero {
+                padding: 40px 20px;
+            }
+            .logo-area {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .school-logo {
+                width: 60px;
+                height: 60px;
+            }
+            .logo-text h1 {
+                font-size: 1.4rem;
+            }
+            .teacher-photo {
+                height: 180px;
+            }
+        }
+
+        /* Icon Anak SD */
+        .kid-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+            cursor: pointer;
+            animation: kidWalk 2s ease-in-out infinite, kidBounce 1s ease-in-out infinite alternate;
+            background: linear-gradient(135deg, #ffd89b, #c7e9fb);
+            border-radius: 50%;
+            padding: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        @keyframes kidWalk {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        @keyframes kidBounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
+        .kid-float i {
+            font-size: 45px;
+            color: #4a2c0f;
+            animation: kidWave 1.5s ease-in-out infinite;
+            display: block;
+        }
+
+        @keyframes kidWave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-15deg); }
+            75% { transform: rotate(15deg); }
+        }
+
+        .kid-tooltip {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: #0f6b52;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="top-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo-area">
+                <div class="school-logo" style="background-image: url('logo sekolah.png');"></div>
+                <div class="logo-text">
+                    <h1>SD NEGERI 3 NGANTRU</h1>
+                    <p>Kecamatan Ngantang, Kabupaten Malang</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigasi Menu -->
+<div class="nav-bar">
+    <div class="container">
+        <ul class="nav-menu">
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="profil sekolah.html">📋 Profil Sekolah</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1spFs60mxvKVv6lgttrkt-fZQNPF7UKNm?usp=drive_link">📁 Administrasi</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1dJWr-fakznnjS2b_hDcTvScQEmmjIaGP?usp=drive_link">📰 Pembelajaran</a></li>
+            <li><a href="ekskul.html" style="background:#e6f7f0; color:#0b5e42;">⭐ Lingkungan</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1q4y9LnUdVf2BuDlRawAKI7NRwYuarjmF?usp=drive_link">🎓 Pengembangan Diri</a></li>
+            <li><a href="#">📚 Kurikulum</a></li>
+            <li><a href="https://raporsd.page.gd" target="_blank">🔐 Login Rapor Online</a></li>
+            <li><a href="kontak-kami.html">📞 Kontak</a></li>
+        </ul>
+    </div>
+</div>
+
+<main class="container">
+    <!-- Hero Section -->
+    <div class="hero" style="background-image: url('background.jpg');">
+        <h2>⭐ <span>Lingkungan SD Negeri 3 Ngantru</span> ⭐</h2>
+        <p>Mengenal Para Pendidik dan Tenaga Kependidikan yang Berdedikasi</p>
+        <p style="font-size: 1rem; margin-top: 10px;">✨ 11 Orang Guru & Pegawai Professional ✨</p>
+    </div>
+
+    <!-- Tombol Kembali ke Dashboard -->
+    <div style="text-align: left;">
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+        </a>
+    </div>
+
+    <!-- Section Guru -->
+    <h2 class="section-title"><i class="fas fa-chalkboard-user"></i> Tenaga Pendidik & Kependidikan</h2>
+    <div class="teacher-grid">
+        <!-- Guru 1 -->
+        <div class="teacher-card">
+            <div class="teacher-photo" style="background-image: url('foto1.jpg');"></div>
+            <div class="teacher-info">
+                <h3>Guru 1</h3>
+                <p><i class="fas fa-graduation-cap"></i> Guru Kelas</p>
+                <span class="teacher-badge"><i class="fas fa-star"></i> S.Pd</span>
+            </div>
+        </div>
+        <!-- Guru 2 -->
+        <div class="teacher-card">
+            <div class="teacher-photo" style="background-image: url('foto2.jpg');"></div>
+            <div class="teacher-info">
+                <h3>Guru 2</h3>
+                <p><i class="fas fa-graduation-cap"></i> Guru Kelas</p>
+                <span class="teacher-badge"><i class="fas fa-star"></i> S.Pd</span>
+            </div>
+        </div>
+        <!-- Guru 3 -->
+        <div class="teacher-card">
+            <div class="teacher-photo" style="background-image: url('foto3.jpg');"></div>
+            <div class="teacher-info">
+                <h3>Guru 3</h3>
+                <p><i class="fas fa-chalkboard"></i> Guru Mata Pelajaran</p>
+                <span class="teacher-badge"><i class="fas fa-star"></i> S.Pd</span>
+            </div>
+        </div>
+        <!-- Guru 4 -->
+        <div class="teacher-card">
+            <div class="teacher-photo" style="background-image: url('foto4.jpg');"></div>
+            <div class="teacher-info">
+                <h3>Guru 4</h3>
+                <p><i class="fas fa-chalkboard"></i> Guru Mata Pelajaran</p>
+                <span class="teacher-badge"><i class="fas fa-star"></i> S.Pd</span>
+            </div>
+        </div>
+        <!-- Guru 5 -->
+        <div class="teacher-card">
+            <div class="teacher-photo" style="background-image: url('foto5.jpg');"></div>
+            <div class="teacher-info">
+                <h3>Guru 5</h3>
+                <p><i class="fas fa-chalkboard"></i> Guru Mata Pelajaran</p>
+                <span class="teacher-badge"><i class="fas fa-star"></i> S.Pd</span>
+            </div>
+        </div>
+        <!-- Guru 6 -->
+        <div class="teacher-card">
+            <div class="teacher-photo" style="background-image: url('foto6.jpg');"></div>
+            <div class="teacher-info">
+                <h3>Guru 6</h3>
+                <p><i class="fas fa-chalkboard"></i> Guru Mata Pelajaran</p>
+                <span class="teacher-badge"><i class="fas fa-star"></i> S.Pd</span>
+            </div>
+        </div>
+        <!-- Guru 7 -->
+        <div class="teacher-card">
+            <div class="teacher-photo" style="background-image: url('foto7.jpg');"></div>
+            <div class="teacher-info">
+                <h3>Guru 7</h3>
+                <p><i class="fas fa-chalkboard"></i> Guru Mata Pelajaran</p>
+                <span class="teacher-badge"><i class="fas fa-star"></i> S.Pd</span>
+            </div>
+        </div>
+        <!-- Guru 8 -->
+        <div class="teacher-card">
+            <div class="teacher-photo" style="background-image: url('foto8.jpg');"></div>
+            <div class="teacher-info">
+                <h3>Guru 8</h3>
+                <p><i class="fas fa-chalkboard"></i> Guru Mata Pelajaran</p>
+                <span class="teacher-badge"><i class="fas fa-star"></i> S.Pd</span>
+            </div>
+        </div>
+        <!-- Pegawai 9 (Tata Usaha) -->
+        <div class="teacher-card">
+            <div class="teacher-photo" style="background-image: url('foto9.jpg');"></div>
+            <div class="teacher-info">
+                <h3>Pegawai 9</h3>
+                <p><i class="fas fa-folder-open"></i> Tata Usaha</p>
+                <span class="teacher-badge"><i class="fas fa-clipboard-list"></i> Staff TU</span>
+            </div>
+        </div>
+        <!-- Pegawai 10 (Perpustakaan) -->
+        <div class="teacher-card">
+            <div class="teacher-photo" style="background-image: url('foto10.jpg');"></div>
+            <div class="teacher-info">
+                <h3>Pegawai 10</h3>
+                <p><i class="fas fa-book"></i> Perpustakaan</p>
+                <span class="teacher-badge"><i class="fas fa-book-open"></i> Pustakawan</span>
+            </div>
+        </div>
+        <!-- Pegawai 11 (Penjaga Sekolah) -->
+        <div class="teacher-card">
+            <div class="teacher-photo" style="background-image: url('foto11.jpg');"></div>
+            <div class="teacher-info">
+                <h3>Pegawai 11</h3>
+                <p><i class="fas fa-shield-alt"></i> Keamanan & Kebersihan</p>
+                <span class="teacher-badge"><i class="fas fa-hand-sparkles"></i> Satpam & Penjaga</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informasi Tambahan -->
+    <div class="digital-banner" style="border-radius: 28px; padding: 24px 32px; margin: 20px 0 32px; text-align: center; background: linear-gradient(135deg, #0f6b52, #1a8a6a); color: white;">
+        <i class="fas fa-users" style="font-size: 2rem; animation: iconBlink 0.8s ease-in-out infinite;"></i>
+        <h3 style="margin-top: 10px;">Total 11 Tenaga Pendidik & Kependidikan</h3>
+        <p>Bersama menciptakan lingkungan belajar yang nyaman dan berkualitas</p>
+    </div>
+
+    <!-- Tombol Kembali lagi di bawah -->
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="https://drive.google.com/drive/folders/12VQvfHlg_nhabq_Q338JTy3beX6-PJ6o?usp=drive_link" class="back-button">
+            <i class=""></i> Lingkungan Sekolah
+        </a>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>SD Negeri 3 Ngantru</h4>
+                <p>Jln Sawahan, Bayanan, Ngantru<br>Kec. Ngantang, Kab. Malang</p>
+                <p>Email: sdn3ngantru.ngantang@gmail.com | Telp:085179998236 </p>
+            </div>
+            <div class="footer-col">
+                <h4>Tautan Penting</h4>
+                <ul>
+                    <li><a href="#">PPDB Online</a></li>
+                    <li><a href="#">E-Learning</a></li>
+                    <li><a href="https://raporsd.page.gd" target="_blank">Login Raport Digital</a></li>
+                    <li><a href="kontak-kami.html">Pengaduan Masyarakat</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Sosial Media</h4>
+                <ul>
+                    <li><a href="https://www.facebook.com/profile.php?id=100080344573562"><i class="fab fa-facebook"></i> Facebook</a></li>
+                    <li><a href="https://www.instagram.com/sd_negeri_3_ngantru_ngantang?igsh=MWFjcnJxcWZweGtvMg=="><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="https://www.youtube.com/@sdnegeri3ngantrukecamatann821"><i class="fab fa-youtube"></i> YouTube</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 SD Negeri 3 NGANTRU Kec. Ngantang Kab. Malang. All Rights Reserved. | Go Digital Sekolahku
+        </div>
+    </div>
+</footer>
+
+<!-- ICON ANAK SD BERGERAK -->
+<div class="kid-float" id="kidIcon">
+    <i class="fas fa-child"></i>
+    <span class="kid-tooltip">Kenali guruku! ✨</span>
+</div>
+
+<style>
+    @keyframes iconBlink {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.05); }
+    }
+</style>
+
+<script>
+    // Animasi klik pada icon anak SD
+    const kidIcon = document.getElementById('kidIcon');
+    if(kidIcon) {
+        kidIcon.addEventListener('click', function() {
+            alert("Halo! Ini adalah guru dan pegawai SD Negeri 3 Ngantru. Total 11 orang yang berdedikasi! ✨📚");
+        });
+    }
+
+    console.log("Halaman Lingkungan - 11 Guru & Pegawai siap dengan foto1.jpg sampai foto11.jpg");
+</script>
+</body>
+</html>
