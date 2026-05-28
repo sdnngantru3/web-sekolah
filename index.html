@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>SD Negeri 3 Ngantru Perk Sei Lala - Website Resmi</title>
+    <title>SD Negeri 3 Ngantru - Kec. Ngantang - Kab. Malang</title>
     <!-- Google Fonts & Font Awesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -49,7 +49,6 @@
             gap: 15px;
         }
 
-        /* LOGO SEKOLAH - LEBIH BESAR & BERGERAK */
         .school-logo {
             width: 80px;
             height: 80px;
@@ -93,39 +92,105 @@
             opacity: 0.9;
         }
 
+        /* Search Area */
         .search-area {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             background: rgba(255,255,255,0.15);
             padding: 6px 15px;
             border-radius: 50px;
             backdrop-filter: blur(4px);
+            flex-wrap: wrap;
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
         }
 
         .search-area input {
             background: transparent;
             border: none;
-            padding: 8px 0;
+            padding: 10px 12px;
             color: white;
             outline: none;
             font-size: 0.9rem;
-            width: 180px;
+            width: 220px;
         }
 
         .search-area input::placeholder {
             color: rgba(255,255,255,0.7);
+            transition: all 0.3s;
         }
 
         .search-area button {
-            background: none;
+            background: rgba(255,255,255,0.2);
             border: none;
             color: white;
             cursor: pointer;
             font-size: 1rem;
+            padding: 8px 14px;
+            border-radius: 40px;
+            transition: all 0.2s;
             animation: iconBlink 1s ease-in-out infinite;
         }
 
-        /* Navigasi Utama - Ikon berkedip tapi tampilan sama persis */
+        .search-area button:hover {
+            background: rgba(255,255,255,0.35);
+            transform: scale(1.02);
+        }
+
+        /* Dropdown suggestions */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            z-index: 200;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .search-suggestions.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            color: #1e293b;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: #e6f7f0;
+            color: #0f6b52;
+        }
+
+        .suggestion-item i {
+            margin-right: 10px;
+            width: 20px;
+            color: #0f6b52;
+        }
+
+        /* Highlight pencarian */
+        .search-highlight {
+            background-color: #fbbf24;
+            color: #1e293b;
+            padding: 0 2px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Navigasi Utama */
         .nav-menu {
             display: flex;
             flex-wrap: wrap;
@@ -151,9 +216,7 @@
             color: #0b5e42;
         }
         
-        /* Animasi kedip untuk ikon di menu */
-        .nav-menu li a i, 
-        .nav-menu li a::before {
+        .nav-menu li a i {
             animation: iconBlinkNav 1s ease-in-out infinite;
             display: inline-block;
         }
@@ -172,7 +235,7 @@
             position: relative;
             overflow: hidden;
             background-image: url('background.jpg');
-            background-size: 100%;
+            background-size: cover;
             background-position: center;
             box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
@@ -542,6 +605,21 @@
             }
         }
 
+        /* Notification Toast */
+        .search-toast {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: #0f6b52;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            z-index: 1000;
+            animation: fadeInUp 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
         /* ===== ICON ANAK SD BERGERAK ===== */
         .kid-float {
             position: fixed;
@@ -604,6 +682,32 @@
             50% { opacity: 1; transform: scale(1.05); }
         }
 
+        /* Popular Keywords - Diubah menjadi LINK */
+        .popular-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+            justify-content: flex-end;
+        }
+        
+        .keyword-chip {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: white;
+            display: inline-block;
+        }
+        
+        .keyword-chip:hover {
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.05);
+        }
+
         /* responsive */
         @media (max-width: 768px) {
             .container {
@@ -636,6 +740,17 @@
             .kid-float {
                 padding: 8px;
             }
+            .search-area {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .search-area input {
+                width: 100%;
+            }
+            .popular-keywords {
+                justify-content: flex-start;
+                margin-top: 8px;
+            }
         }
     </style>
 </head>
@@ -645,7 +760,7 @@
 <div id="visiMisiModal" class="modal">
     <div class="modal-content">
         <h3><i class="fas fa-star" style="color: #fbbf24; animation: iconBlink 0.8s ease-in-out infinite;"></i> Visi & Misi</h3>
-        <p><strong>✨ Unggul dan Berkompetensi ✨</strong></p>
+        <p><strong>✨ Unggul dalam Prestasi, Berkarakter Mulia, dan Berwawasan Lingkungan ✨</strong></p>
         <button class="close-modal" onclick="closeModal()">Tutup</button>
     </div>
 </div>
@@ -662,26 +777,47 @@
                 </div>
             </div>
             <div class="search-area">
-                <input type="text" placeholder="Masukan Kata Kunci..." id="searchInput">
-                <button id="searchBtn"><i class="fas fa-search"></i></button>
+                <div class="search-wrapper" style="position: relative;">
+                    <input type="text" id="searchInput" placeholder="🔍 Cari: jadwal pelajaran" autocomplete="off">
+                    <div id="searchSuggestions" class="search-suggestions"></div>
+                </div>
+                <button id="searchBtn"><i class="fas fa-search"></i> Cari</button>
+                <button id="googleSearchBtn" style="background: rgba(255,255,255,0.25);"><i class="fab fa-google"></i> Google</button>
             </div>
+        </div>
+        <div class="popular-keywords" id="popularKeywords">
+            <a href="jadwal-pelajaran.html" class="keyword-chip">📅 jadwal pelajaran</a>
+            <a href="ppdb-2026.html" class="keyword-chip">📋 PPDB 2026</a>
+            <a href="https://raporsd.page.gd" target="_blank" class="keyword-chip">📊 rapor online</a>
+            <a href="ekskul.html" class="keyword-chip">⭐ ekstrakurikuler</a>
+            <a href="kalender-akademik.html" class="keyword-chip">📆 kalender akademik</a>
+            <a href="prestasi.html" class="keyword-chip">🏆 prestasi sekolah</a>
+            <a href="profil-sekolah.html" class="keyword-chip">🏫 profil sekolah</a>
+            <a href="administrasi.html" class="keyword-chip">📁 administrasi</a>
+            <a href="kontak-kami.html" class="keyword-chip">📞 kontak</a>
+            <a href="lingkungan.html" class="keyword-chip">🌿 lingkungan</a>
+            <a href="seragam-sekolah.html" class="keyword-chip">👕 seragam sekolah</a>
+            <a href="perpustakaan.html" class="keyword-chip">📚 perpustakaan</a>
+            <a href="materi-kelas6.html" class="keyword-chip">📖 materi kelas 6</a>
+            <a href="ulangan.html" class="keyword-chip">📝 ulangan harian</a>
+            <a href="tryout.html" class="keyword-chip">🎯 try out</a>
         </div>
     </div>
 </div>
 
-<!-- Navigasi Menu - TAMPILAN SAMA PERSIS SEPERTI SEBELUMNYA -->
+<!-- Navigasi Menu -->
 <div class="nav-bar">
     <div class="container">
         <ul class="nav-menu">
             <li><a href="#" id="visiMisiBtn">🏠 Home</a></li>
-            <li><a href="profil sekolah.html">📋 Profil Sekolah</a></li>
-            <li><a href="https://drive.google.com/drive/folders/1spFs60mxvKVv6lgttrkt-fZQNPF7UKNm?usp=drive_link" class="https://drive.google.com/drive/folders/1spFs60mxvKVv6lgttrkt-fZQNPF7UKNm?usp=drive_link" data-page="direktori">📁 Administrasi</a></li>
-            <li><a href="https://drive.google.com/drive/folders/1dJWr-fakznnjS2b_hDcTvScQEmmjIaGP?usp=drive_link" class="https://drive.google.com/drive/folders/1dJWr-fakznnjS2b_hDcTvScQEmmjIaGP?usp=drive_link" data-page="publikasi">📰 Pembelajaran</a></li>
-            <li><a href="lingkungan.html" class="nav-link" data-page="ekskl">⭐ Lingkungan</a></li>
-            <li><a href="https://drive.google.com/drive/folders/1q4y9LnUdVf2BuDlRawAKI7NRwYuarjmF?usp=drive_link" class="https://drive.google.com/drive/folders/1q4y9LnUdVf2BuDlRawAKI7NRwYuarjmF?usp=drive_link" data-page="ppdb">🎓 Pengembangan Diri</a></li>
-            <li><a href="https://drive.google.com/drive/folders/1fdfDI12lytoPK6rNv4neYNWUXLx3Y5nn?usp=drive_link" class="https://drive.google.com/drive/folders/1fdfDI12lytoPK6rNv4neYNWUXLx3Y5nn?usp=drive_link" data-page="unduhan">📚 Kurikulum</a></li>
+            <li><a href="profil-sekolah.html">📋 Profil Sekolah</a></li>
+            <li><a href="administrasi.html">📁 Administrasi</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1dJWr-fakznnjS2b_hDcTvScQEmmjIaGP?usp=drive_link" target="_blank">📰 Pembelajaran</a></li>
+            <li><a href="lingkungan.html">⭐ Lingkungan</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1q4y9LnUdVf2BuDlRawAKI7NRwYuarjmF?usp=drive_link" target="_blank">🎓 Pengembangan Diri</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1fdfDI12lytoPK6rNv4neYNWUXLx3Y5nn?usp=drive_link" target="_blank">📚 Kurikulum</a></li>
             <li><a href="https://raporsd.page.gd" target="_blank">🔐 Login Rapor Online</a></li>
-            <li><a href="#" class="nav-link" data-page="kontak">📞 Kontak</a></li>
+            <li><a href="kontak-kami.html">📞 Kontak</a></li>
         </ul>
     </div>
 </div>
@@ -691,8 +827,8 @@
         <h2>Selamat Datang di Website <span>SD Negeri 3 Ngantru</span></h2>
         <p>Jln Sawahan, Bayanan, Ngantru, Kec. Ngantang Kab. Malang</p>
         <div class="hero-badge">
-            <span class="badge-item"><i class="fas fa-map-marker-alt" style="animation: iconBlink 0.8s ease-in-out infinite;"></i> Kec. Ngantang</span>
-            <span class="badge-item"><i class="fas fa-building" style="animation: iconBlink 0.8s ease-in-out infinite;"></i> Kab. Malang</span>
+            <span class="badge-item"><i class="fas fa-map-marker-alt"></i> Kec. Ngantang</span>
+            <span class="badge-item"><i class="fas fa-building"></i> Kab. Malang</span>
         </div>
     </div>
 
@@ -728,7 +864,7 @@
             <div class="card-content">
                 <h3>Pembukaan PPDB 2026/2027</h3>
                 <p>Pendaftaran peserta didik baru telah dibuka. Ayo daftarkan putra-putri anda sekarang juga! Kuota terbatas.</p>
-                <a href="#" class="btn-read" data-link="detail-berita">Selengkapnya →</a>
+                <a href="ppdb-2026.html" class="btn-read">Selengkapnya →</a>
             </div>
         </div>
         <div class="news-card">
@@ -736,7 +872,7 @@
             <div class="card-content">
                 <h3>Lomba Cerdas Cermat Tingkat Kecamatan</h3>
                 <p>Tim SD Negeri 3 Ngantru meraih juara 2 dalam lomba cerdas cermat. Prestasi membanggakan!</p>
-                <a href="#" class="btn-read" data-link="detail-berita2">Selengkapnya →</a>
+                <a href="prestasi.html" class="btn-read">Selengkapnya →</a>
             </div>
         </div>
         <div class="news-card">
@@ -744,7 +880,7 @@
             <div class="card-content">
                 <h3>Pelatihan Guru Implementasi Kurikulum Merdeka</h3>
                 <p>Seluruh guru mengikuti workshop penguatan metode pembelajaran interaktif.</p>
-                <a href="#" class="btn-read" data-link="detail-berita3">Selengkapnya →</a>
+                <a href="materi-kelas6.html" class="btn-read">Selengkapnya →</a>
             </div>
         </div>
     </div>
@@ -752,9 +888,10 @@
     <div style="margin: 40px 0;">
         <h2 class="section-title">Akses Cepat</h2>
         <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px;">
-            <a href="#" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;" data-link="raporsd">📊 Rapor Digital</a>
-            <a href="#" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;" data-link="kalender">📅 Kalender Akademik</a>
-            <a href="https://buku.kemendikdasmen.go.id/katalog/buku-kurikulum-merdeka" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;" data-link="perpustakaan">📚 Perpustakaan Online</a>
+            <a href="https://raporsd.page.gd" target="_blank" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;">📊 Rapor Digital</a>
+            <a href="kalender-akademik.html" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;">📅 Kalender Akademik</a>
+            <a href="perpustakaan.html" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;">📚 Perpustakaan Digital</a>
+            <a href="jadwal-pelajaran.html" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;">📅 Jadwal Pelajaran</a>
         </div>
     </div>
 </main>
@@ -770,8 +907,8 @@
             <div class="footer-col">
                 <h4>Tautan Penting</h4>
                 <ul>
-                    <li><a href="#">PPDB Online</a></li>
-                    <li><a href="#">E-Learning</a></li>
+                    <li><a href="ppdb-2026.html">PPDB Online</a></li>
+                    <li><a href="perpustakaan.html">E-Learning</a></li>
                     <li><a href="https://raporsd.page.gd" target="_blank">Login Raport Digital</a></li>
                     <li><a href="kontak-kami.html">Pengaduan Masyarakat</a></li>
                 </ul>
@@ -779,9 +916,9 @@
             <div class="footer-col">
                 <h4>Sosial Media</h4>
                 <ul>
-                    <li><a href="https://www.facebook.com/profile.php?id=100080344573562"><i class="fab fa-facebook"></i> Facebook</a></li>
-                    <li><a href="https://www.instagram.com/sd_negeri_3_ngantru_ngantang?igsh=MWFjcnJxcWZweGtvMg=="><i class="fab fa-instagram"></i> Instagram</a></li>
-                    <li><a href="https://www.youtube.com/@sdnegeri3ngantrukecamatann821"><i class="fab fa-youtube"></i> YouTube</a></li>
+                    <li><a href="https://www.facebook.com/profile.php?id=100080344573562" target="_blank"><i class="fab fa-facebook"></i> Facebook</a></li>
+                    <li><a href="https://www.instagram.com/sd_negeri_3_ngantru_ngantang?igsh=MWFjcnJxcWZweGtvMg==" target="_blank"><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="https://www.youtube.com/@sdnegeri3ngantrukecamatann821" target="_blank"><i class="fab fa-youtube"></i> YouTube</a></li>
                 </ul>
             </div>
         </div>
@@ -794,122 +931,117 @@
 <!-- ICON ANAK SD BERGERAK -->
 <div class="kid-float" id="kidIcon">
     <i class="fas fa-child"></i>
-    <span class="kid-tooltip">Halo! Aku siswa SD ✨</span>
+    <span class="kid-tooltip">Cari informasi sekolah! 🔍</span>
 </div>
 
 <script>
     // ============================================================
-    // KONFIGURASI LINK (UBAH SESUAI KEBUTUHAN)
+    // DATA HALAMAN STATIS UNTUK PENCARIAN (Fitur #3)
     // ============================================================
-    const routing = {
-        home: "index.html",
-        profil: "profil-sekolah.html",
-        direktori: "direktori-guru.html",
-        publikasi: "publikasi-berita.html",
-        ekskl: "ekskul.html",
-        ppdb: "ppdb-online.html",
-        unduhan: "unduhan-file.html",
-        kontak: "kontak-kami.html",
-        "detail-berita": "berita-ppdb.html",
-        "detail-berita2": "berita-lomba.html",
-        "detail-berita3": "berita-pelatihan.html",
-        "raporsd": "https://raporsd.page.gd",
-        "kalender": "kalender-akademik.html",
-        "perpustakaan": "perpustakaan-digital.html"
-    };
+    const halamanDatabase = [
+        { kata: ["jadwal pelajaran", "jadwal", "pelajaran", "mapel"], url: "jadwal-pelajaran.html" },
+        { kata: ["ppdb", "pendaftaran", "siswa baru", "ppdb 2026"], url: "ppdb-2026.html" },
+        { kata: ["rapor online", "rapor", "raport", "nilai"], url: "https://raporsd.page.gd" },
+        { kata: ["ekstrakurikuler", "ekskul", "ekstra"], url: "ekskul.html" },
+        { kata: ["kalender akademik", "kalender", "akademik", "libur"], url: "kalender-akademik.html" },
+        { kata: ["prestasi sekolah", "prestasi", "juara", "lomba"], url: "prestasi.html" },
+        { kata: ["profil sekolah", "profil", "sejarah", "visi misi"], url: "profil-sekolah.html" },
+        { kata: ["administrasi", "dokumen", "surat", "arsip"], url: "administrasi.html" },
+        { kata: ["kontak", "hubungi", "telepon", "email"], url: "kontak-kami.html" },
+        { kata: ["lingkungan", "fasilitas", "sarana"], url: "lingkungan.html" },
+        { kata: ["seragam sekolah", "seragam", "baju"], url: "seragam-sekolah.html" },
+        { kata: ["perpustakaan", "buku", "literasi"], url: "perpustakaan.html" },
+        { kata: ["materi kelas 6", "materi", "kelas 6"], url: "materi-kelas6.html" },
+        { kata: ["ulangan harian", "ulangan", "ujian"], url: "ulangan.html" },
+        { kata: ["try out", "tryout", "to", "latihan soal"], url: "tryout.html" }
+    ];
 
-    function navigateTo(pageKey) {
-        let targetUrl = routing[pageKey];
-        if (targetUrl) {
-            if (targetUrl.startsWith('http') || targetUrl.includes('.page.gd')) {
-                window.open(targetUrl, '_blank');
-            } else {
-                window.location.href = targetUrl;
-            }
-        } else {
-            alert("Halaman sedang dalam persiapan. Segera hadir!");
-        }
-    }
-
-    // ===== FUNGSI MODAL VISI & MISI =====
-    function showModal() {
-        const modal = document.getElementById('visiMisiModal');
-        modal.style.display = 'flex';
-    }
-
-    function closeModal() {
-        const modal = document.getElementById('visiMisiModal');
-        modal.style.display = 'none';
-    }
-
-    window.onclick = function(event) {
-        const modal = document.getElementById('visiMisiModal');
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    }
-
-    const visiMisiBtn = document.getElementById('visiMisiBtn');
-    if(visiMisiBtn) {
-        visiMisiBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            showModal();
-        });
-    }
-
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const page = this.getAttribute('data-page');
-            if (page && routing[page]) {
-                navigateTo(page);
-            } else {
-                alert(`Menu "${this.innerText}" akan diarahkan segera.`);
-            }
-        });
-    });
-
-    const allReadBtns = document.querySelectorAll('.btn-read');
-    allReadBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const linkKey = this.getAttribute('data-link');
-            if (linkKey && routing[linkKey]) {
-                navigateTo(linkKey);
-            } else {
-                alert("Konten belum tersedia, silakan cek kembali.");
-            }
-        });
-    });
-
-    const searchBtn = document.getElementById('searchBtn');
     const searchInput = document.getElementById('searchInput');
-    if(searchBtn) {
-        searchBtn.addEventListener('click', function() {
-            let keyword = searchInput.value.trim();
-            if(keyword !== "") {
-                alert(`Pencarian untuk: "${keyword}" (fitur integrasi menyusul)`);
-            } else {
-                alert("Masukkan kata kunci terlebih dahulu.");
-            }
-        });
-    }
-    if(searchInput) {
-        searchInput.addEventListener('keypress', function(e) {
-            if(e.key === 'Enter') searchBtn.click();
-        });
-    }
-    
-    // Animasi klik pada icon anak SD
-    const kidIcon = document.getElementById('kidIcon');
-    if(kidIcon) {
-        kidIcon.addEventListener('click', function() {
-            alert("Halo! Selamat belajar di SD Negeri 3 Ngantru ✨📚");
-        });
+    const searchBtn = document.getElementById('searchBtn');
+    const googleBtn = document.getElementById('googleSearchBtn');
+    const suggestionsDiv = document.getElementById('searchSuggestions');
+
+    function showSuggestions(value) {
+        if (!value.trim()) {
+            suggestionsDiv.classList.remove('show');
+            return;
+        }
+        const lower = value.toLowerCase();
+        const filtered = halamanDatabase.filter(h => 
+            h.kata.some(k => k.toLowerCase().includes(lower))
+        ).slice(0, 6);
+        
+        if (filtered.length > 0) {
+            suggestionsDiv.innerHTML = filtered.map(h => 
+                `<div class="suggestion-item" data-url="${h.url}">🔍 ${h.kata[0]}</div>`
+            ).join('');
+            suggestionsDiv.classList.add('show');
+            document.querySelectorAll('.suggestion-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const url = item.dataset.url;
+                    if (url.startsWith('http')) window.open(url, '_blank');
+                    else window.location.href = url;
+                });
+            });
+        } else {
+            suggestionsDiv.classList.remove('show');
+        }
     }
 
-    console.log("Website SD Negeri 3 Ngantru siap - Logo & ikon bergerak, alamat sudah diperbarui!");
+    function performSearch() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        if (!keyword) {
+            alert("🔍 Masukkan kata kunci terlebih dahulu");
+            return;
+        }
+        
+        for (const h of halamanDatabase) {
+            if (h.kata.some(k => keyword.includes(k) || k.includes(keyword))) {
+                if (h.url.startsWith('http')) window.open(h.url, '_blank');
+                else window.location.href = h.url;
+                return;
+            }
+        }
+        
+        const useGoogle = confirm(`🔍 "${keyword}" tidak ditemukan.\n\n• OK: Cari dengan Google\n• Batal: Cari di halaman ini`);
+        if (useGoogle) {
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(keyword + " SD Negeri 3 Ngantru")}`, '_blank');
+        } else {
+            alert("Coba kata kunci lain: jadwal pelajaran, PPDB, rapor online, ekstrakurikuler");
+        }
+    }
+
+    searchInput.addEventListener('input', (e) => showSuggestions(e.target.value));
+    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+    searchBtn.addEventListener('click', performSearch);
+    googleBtn.addEventListener('click', () => {
+        const kw = searchInput.value.trim();
+        if (kw) window.open(`https://www.google.com/search?q=${encodeURIComponent(kw + " SD Negeri 3 Ngantru")}`, '_blank');
+        else alert("Masukkan kata kunci");
+    });
+    document.addEventListener('click', (e) => { if (!e.target.closest('.search-wrapper')) suggestionsDiv.classList.remove('show'); });
+    
+    // Modal Visi Misi
+    function showModal() { document.getElementById('visiMisiModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('visiMisiModal').style.display = 'none'; }
+    window.closeModal = closeModal;
+    document.getElementById('visiMisiBtn')?.addEventListener('click', (e) => { e.preventDefault(); showModal(); });
+    window.onclick = (e) => { if (e.target === document.getElementById('visiMisiModal')) closeModal(); };
+    
+    // Icon anak SD
+    document.getElementById('kidIcon')?.addEventListener('click', () => alert("🔍 Ketik kata kunci! Contoh: jadwal pelajaran, PPDB, rapor online"));
+    
+    // Placeholder bergantian
+    const placeholders = ["🔍 Cari: jadwal pelajaran", "🔍 Cari: PPDB 2026", "🔍 Cari: rapor online", "🔍 Cari: ekstrakurikuler", "🔍 Cari: kalender akademik"];
+    let phIndex = 0;
+    setInterval(() => {
+        if(searchInput && document.activeElement !== searchInput) {
+            searchInput.placeholder = placeholders[phIndex % placeholders.length];
+            phIndex++;
+        }
+    }, 4000);
+    
+    console.log("✅ Website SD Negeri 3 Ngantru siap dengan semua link aktif!");
 </script>
 </body>
 </html>

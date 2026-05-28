@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Pelajaran - SD Negeri 3 Ngantru</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: #1e293b; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+        .top-header { background: linear-gradient(135deg, #0b3b2f 0%, #1a5d4a 100%); color: white; padding: 12px 0; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .school-logo { width: 80px; height: 80px; background-image: url('logo sekolah.png'); background-size: contain; background-repeat: no-repeat; border-radius: 20px; }
+        .logo-text h1 { font-size: 2rem; font-weight: 800; }
+        .logo-text p { font-size: 0.9rem; opacity: 0.9; }
+        .nav-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; list-style: none; padding: 12px 0; background: white; border-radius: 60px; margin: 12px 0; }
+        .nav-menu li a { display: inline-block; padding: 10px 20px; text-decoration: none; font-weight: 600; font-size: 0.9rem; color: #1e293b; border-radius: 40px; }
+        .nav-menu li a:hover { background: #e6f7f0; color: #0b5e42; }
+        .hero { background: linear-gradient(135deg, #0f6b52, #0a4d3a); border-radius: 32px; padding: 40px 32px; text-align: center; margin: 20px 0; color: white; }
+        .hero h2 { font-size: 2rem; }
+        .hero span { background: #fbbf24; padding: 0 8px; border-radius: 20px; color: #1e293b; }
+        .card { background: white; border-radius: 28px; padding: 32px; margin-bottom: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        .card h3 { color: #0f6b52; font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+        .class-selector { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+        .class-btn { background: #e2e8f0; border: none; padding: 10px 24px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .class-btn.active { background: #0f6b52; color: white; }
+        .class-btn:hover { background: #cbd5e1; }
+        .schedule-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .schedule-table th, .schedule-table td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+        .schedule-table th { background: #0f6b52; color: white; text-align: center; }
+        .schedule-table td { background: white; }
+        .schedule-table tr:hover td { background: #f1f5f9; }
+        .back-button { display: inline-flex; align-items: center; gap: 10px; background: #0f6b52; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin: 20px 0; }
+        .back-button:hover { background: #0a4d3a; }
+        .footer { background: #0b2c23; color: #ccdcd5; padding: 40px 0 20px; margin-top: 60px; }
+        .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; }
+        .copyright { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid #2a5546; font-size: 0.75rem; }
+        .info-box { background: #eef2ff; padding: 16px 20px; border-radius: 16px; margin-top: 20px; border-left: 4px solid #0f6b52; }
+        @media (max-width: 768px) { .schedule-table th, .schedule-table td { padding: 8px; font-size: 0.75rem; } .logo-text h1 { font-size: 1.2rem; } }
+    </style>
+</head>
+<body>
+<div class="top-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo-area">
+                <div class="school-logo" style="background-image: url('logo sekolah.png');"></div>
+                <div class="logo-text"><h1>SD NEGERI 3 NGANTRU</h1><p>Kecamatan Ngantang, Kabupaten Malang</p></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <ul class="nav-menu">
+        <li><a href="index.html">🏠 Home</a></li>
+        <li><a href="profil-sekolah.html">📋 Profil Sekolah</a></li>
+        <li><a href="administrasi.html">📁 Administrasi</a></li>
+        <li><a href="https://drive.google.com/drive/folders/1dJWr-fakznnjS2b_hDcTvScQEmmjIaGP?usp=drive_link" target="_blank">📰 Pembelajaran</a></li>
+        <li><a href="lingkungan.html">⭐ Lingkungan</a></li>
+        <li><a href="https://drive.google.com/drive/folders/1q4y9LnUdVf2BuDlRawAKI7NRwYuarjmF?usp=drive_link" target="_blank">🎓 Pengembangan Diri</a></li>
+        <li><a href="https://drive.google.com/drive/folders/1fdfDI12lytoPK6rNv4neYNWUXLx3Y5nn?usp=drive_link" target="_blank">📚 Kurikulum</a></li>
+        <li><a href="https://raporsd.page.gd" target="_blank">🔐 Login Rapor Online</a></li>
+        <li><a href="kontak-kami.html">📞 Kontak</a></li>
+    </ul>
+</div>
+<main class="container">
+    <div class="hero"><h2>📅 <span>Jadwal Pelajaran</span></h2><p>Jadwal pelajaran SD Negeri 3 Ngantru Tahun Ajaran 2025/2026</p></div>
+    <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard</a>
+    
+    <div class="card">
+        <h3><i class="fas fa-calendar-alt"></i> Pilih Kelas</h3>
+        <div class="class-selector">
+            <button class="class-btn active" data-class="1">Kelas 1</button>
+            <button class="class-btn" data-class="2">Kelas 2</button>
+            <button class="class-btn" data-class="3">Kelas 3</button>
+            <button class="class-btn" data-class="4">Kelas 4</button>
+            <button class="class-btn" data-class="5">Kelas 5</button>
+            <button class="class-btn" data-class="6">Kelas 6</button>
+        </div>
+        
+        <div id="scheduleContainer">
+            <!-- Jadwal akan ditampilkan oleh JavaScript -->
+        </div>
+        
+        <div class="info-box">
+            <i class="fas fa-info-circle" style="color: #0f6b52;"></i> <strong>Keterangan:</strong> Jadwal dapat berubah sewaktu-waktu sesuai dengan kebijakan sekolah. Siswa diharapkan selalu mengecek informasi terbaru dari wali kelas.
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;"><a href="index.html" class="back-button"><i class="fas fa-home"></i> Kembali ke Halaman Utama</a></div>
+</main>
+<footer class="footer">
+    <div class="container"><div class="footer-content"><div class="footer-col"><h4>SD Negeri 3 Ngantru</h4><p>Jln Sawahan, Bayanan, Ngantru<br>Kec. Ngantang, Kab. Malang</p></div></div><div class="copyright">&copy; 2026 SD Negeri 3 NGANTRU | Go Digital Sekolahku</div></div>
+</footer>
+
+<script>
+    const schedules = {
+        1: {
+            hari: ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"],
+            mapel: [
+                ["Upacara", "Matematika", "Bahasa Indonesia", "SBdP", "PJOK", "Matematika"],
+                ["Matematika", "Bahasa Indonesia", "Pend. Agama", "PPKn", "Bahasa Indonesia", "PJOK"],
+                ["Bahasa Indonesia", "Matematika", "PPKn", "Pend. Agama", "SBdP", "Matematika"],
+                ["Pend. Agama", "SBdP", "Matematika", "Bahasa Indonesia", "PPKn", "Bahasa Indonesia"],
+                ["Jumat Bersih", "Matematika", "Bahasa Indonesia", "PJOK", "SBdP", "Matematika"],
+                ["Matematika", "PJOK", "Bahasa Indonesia", "Pend. Agama", "PPKn", "SBdP"]
+            ]
+        },
+        2: {
+            hari: ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"],
+            mapel: [
+                ["Upacara", "Matematika", "Bahasa Indonesia", "Pend. Agama", "PJOK", "PPKn"],
+                ["Matematika", "Bahasa Indonesia", "SBdP", "PPKn", "Pend. Agama", "Bahasa Indonesia"],
+                ["Bahasa Indonesia", "Matematika", "PJOK", "SBdP", "PPKn", "Matematika"],
+                ["Pend. Agama", "Bahasa Indonesia", "Matematika", "PJOK", "SBdP", "Bahasa Indonesia"],
+                ["Jumat Bersih", "Matematika", "Bahasa Indonesia", "PPKn", "Pend. Agama", "PJOK"],
+                ["Matematika", "SBdP", "Bahasa Indonesia", "PPKn", "PJOK", "Pend. Agama"]
+            ]
+        },
+        3: {
+            hari: ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"],
+            mapel: [
+                ["Upacara", "Matematika", "IPA", "Bahasa Indonesia", "PJOK", "PPKn"],
+                ["Matematika", "Bahasa Indonesia", "IPS", "Pend. Agama", "SBdP", "IPA"],
+                ["Bahasa Indonesia", "IPA", "Matematika", "PPKn", "PJOK", "IPS"],
+                ["IPS", "Pend. Agama", "Bahasa Indonesia", "Matematika", "SBdP", "IPA"],
+                ["Jumat Bersih", "Matematika", "Bahasa Indonesia", "IPA", "PPKn", "PJOK"],
+                ["Matematika", "IPS", "Bahasa Indonesia", "Pend. Agama", "SBdP", "IPA"]
+            ]
+        },
+        4: {
+            hari: ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"],
+            mapel: [
+                ["Upacara", "Matematika", "IPA", "Bahasa Indonesia", "PJOK", "PPKn"],
+                ["Matematika", "Bahasa Indonesia", "IPS", "Pend. Agama", "SBdP", "IPA"],
+                ["Bahasa Indonesia", "IPA", "Matematika", "PPKn", "PJOK", "IPS"],
+                ["IPS", "Pend. Agama", "Bahasa Indonesia", "Matematika", "SBdP", "IPA"],
+                ["Jumat Bersih", "Matematika", "Bahasa Indonesia", "IPA", "PPKn", "PJOK"],
+                ["Matematika", "IPS", "Bahasa Inggris", "Pend. Agama", "SBdP", "IPA"]
+            ]
+        },
+        5: {
+            hari: ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"],
+            mapel: [
+                ["Upacara", "Matematika", "IPA", "Bahasa Indonesia", "PJOK", "PPKn"],
+                ["Matematika", "Bahasa Indonesia", "IPS", "Pend. Agama", "Bahasa Inggris", "IPA"],
+                ["Bahasa Indonesia", "IPA", "Matematika", "PPKn", "PJOK", "Bahasa Inggris"],
+                ["IPS", "Pend. Agama", "Bahasa Indonesia", "Matematika", "SBdP", "IPA"],
+                ["Jumat Bersih", "Matematika", "Bahasa Indonesia", "IPA", "PPKn", "PJOK"],
+                ["Matematika", "IPS", "Bahasa Inggris", "Pend. Agama", "SBdP", "PJOK"]
+            ]
+        },
+        6: {
+            hari: ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"],
+            mapel: [
+                ["Upacara", "Matematika", "IPA", "Bahasa Indonesia", "PJOK", "PPKn"],
+                ["Matematika", "Bahasa Indonesia", "IPS", "Pend. Agama", "Bahasa Inggris", "IPA"],
+                ["Bahasa Indonesia", "IPA", "Matematika", "PPKn", "PJOK", "Bahasa Inggris"],
+                ["IPS", "Pend. Agama", "Bahasa Indonesia", "Matematika", "SBdP", "IPA"],
+                ["Jumat Bersih", "Matematika", "Bahasa Indonesia", "IPA", "PPKn", "Try Out"],
+                ["Matematika", "IPS", "Bahasa Inggris", "Pend. Agama", "SBdP", "PJOK"]
+            ]
+        }
+    };
+    
+    function displaySchedule(grade) {
+        const schedule = schedules[grade];
+        if (!schedule) return;
+        
+        let html = `<table class="schedule-table"><thead><tr><th>Jam Ke-</th>`;
+        schedule.hari.forEach(h => { html += `<th>${h}</th>`; });
+        html += `</tr></thead><tbody>`;
+        
+        for (let jam = 0; jam < 6; jam++) {
+            html += `<tr><td style="text-align:center; font-weight:600;">${jam + 1}</td>`;
+            for (let hari = 0; hari < 6; hari++) {
+                html += `<td>${schedule.mapel[hari][jam]}</td>`;
+            }
+            html += `</tr>`;
+        }
+        html += `</tbody></table>`;
+        document.getElementById('scheduleContainer').innerHTML = html;
+    }
+    
+    // Event listener untuk tombol kelas
+    document.querySelectorAll('.class-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            displaySchedule(parseInt(this.dataset.class));
+        });
+    });
+    
+    // Tampilkan jadwal kelas 1 default
+    displaySchedule(1);
+</script>
+</body>
+</html>

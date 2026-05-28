@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materi Kelas 6 - SD Negeri 3 Ngantru</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: #1e293b; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+        .top-header { background: linear-gradient(135deg, #0b3b2f 0%, #1a5d4a 100%); color: white; padding: 12px 0; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .school-logo { width: 80px; height: 80px; background-image: url('logo sekolah.png'); background-size: contain; background-repeat: no-repeat; border-radius: 20px; }
+        .logo-text h1 { font-size: 2rem; font-weight: 800; }
+        .logo-text p { font-size: 0.9rem; opacity: 0.9; }
+        .nav-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; list-style: none; padding: 12px 0; background: white; border-radius: 60px; margin: 12px 0; }
+        .nav-menu li a { display: inline-block; padding: 10px 20px; text-decoration: none; font-weight: 600; font-size: 0.9rem; color: #1e293b; border-radius: 40px; }
+        .nav-menu li a:hover { background: #e6f7f0; color: #0b5e42; }
+        .hero { background: linear-gradient(135deg, #0f6b52, #0a4d3a); border-radius: 32px; padding: 40px 32px; text-align: center; margin: 20px 0; color: white; }
+        .hero h2 { font-size: 2rem; }
+        .hero span { background: #fbbf24; padding: 0 8px; border-radius: 20px; color: #1e293b; }
+        .card { background: white; border-radius: 28px; padding: 32px; margin-bottom: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        .card h3 { color: #0f6b52; font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+        .subject-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+        .subject-card { background: #f8fafc; border-radius: 20px; padding: 20px; transition: all 0.3s; border: 1px solid #e2e8f0; }
+        .subject-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .subject-icon { font-size: 2rem; color: #0f6b52; margin-bottom: 12px; }
+        .subject-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+        .topic-list { list-style: none; margin-top: 12px; }
+        .topic-list li { padding: 6px 0; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
+        .topic-list li i { color: #0f6b52; font-size: 0.7rem; }
+        .back-button { display: inline-flex; align-items: center; gap: 10px; background: #0f6b52; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin: 20px 0; }
+        .back-button:hover { background: #0a4d3a; }
+        .footer { background: #0b2c23; color: #ccdcd5; padding: 40px 0 20px; margin-top: 60px; }
+        .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; }
+        .copyright { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid #2a5546; font-size: 0.75rem; }
+        @media (max-width: 768px) { .logo-text h1 { font-size: 1.2rem; } .school-logo { width: 50px; height: 50px; } }
+    </style>
+</head>
+<body>
+<div class="top-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo-area">
+                <div class="school-logo" style="background-image: url('logo sekolah.png');"></div>
+                <div class="logo-text"><h1>SD NEGERI 3 NGANTRU</h1><p>Kecamatan Ngantang, Kabupaten Malang</p></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <ul class="nav-menu">
+        <li><a href="index.html">🏠 Home</a></li>
+        <li><a href="profil-sekolah.html">📋 Profil Sekolah</a></li>
+        <li><a href="administrasi.html">📁 Administrasi</a></li>
+        <li><a href="https://drive.google.com/drive/folders/1dJWr-fakznnjS2b_hDcTvScQEmmjIaGP?usp=drive_link" target="_blank">📰 Pembelajaran</a></li>
+        <li><a href="lingkungan.html">⭐ Lingkungan</a></li>
+        <li><a href="https://drive.google.com/drive/folders/1q4y9LnUdVf2BuDlRawAKI7NRwYuarjmF?usp=drive_link" target="_blank">🎓 Pengembangan Diri</a></li>
+        <li><a href="https://drive.google.com/drive/folders/1fdfDI12lytoPK6rNv4neYNWUXLx3Y5nn?usp=drive_link" target="_blank">📚 Kurikulum</a></li>
+        <li><a href="https://raporsd.page.gd" target="_blank">🔐 Login Rapor Online</a></li>
+        <li><a href="kontak-kami.html">📞 Kontak</a></li>
+    </ul>
+</div>
+<main class="container">
+    <div class="hero"><h2>📖 <span>Materi Kelas 6</span></h2><p>Rangkuman Materi Pelajaran SD Kelas 6</p></div>
+    <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard</a>
+    
+    <div class="card">
+        <h3><i class="fas fa-graduation-cap"></i> Semester 1</h3>
+        <div class="subject-grid">
+            <div class="subject-card"><div class="subject-icon"><i class="fas fa-calculator"></i></div><div class="subject-title">Matematika</div><ul class="topic-list"><li><i class="fas fa-circle"></i> Operasi Hitung Bilangan Bulat</li><li><i class="fas fa-circle"></i> FPB dan KPK</li><li><i class="fas fa-circle"></i> Pecahan dan Desimal</li><li><i class="fas fa-circle"></i> Lingkaran (Luas & Keliling)</li></ul></div>
+            <div class="subject-card"><div class="subject-icon"><i class="fas fa-flask"></i></div><div class="subject-title">IPA</div><ul class="topic-list"><li><i class="fas fa-circle"></i> Ciri Khusus Makhluk Hidup</li><li><i class="fas fa-circle"></i> Perkembangbiakan Tumbuhan & Hewan</li><li><i class="fas fa-circle"></i> Keseimbangan Ekosistem</li><li><i class="fas fa-circle"></i> Konduktor & Isolator Panas</li></ul></div>
+            <div class="subject-card"><div class="subject-icon"><i class="fas fa-language"></i></div><div class="subject-title">Bahasa Indonesia</div><ul class="topic-list"><li><i class="fas fa-circle"></i> Teks Fiksi & Nonfiksi</li><li><i class="fas fa-circle"></i> Kalimat Efektif</li><li><i class="fas fa-circle"></i> Menulis Surat Resmi</li><li><i class="fas fa-circle"></i> Membaca Intensif</li></ul></div>
+            <div class="subject-card"><div class="subject-icon"><i class="fas fa-globe"></i></div><div class="subject-title">IPS</div><ul class="topic-list"><li><i class="fas fa-circle"></i> ASEAN & Kerja Sama Internasional</li><li><i class="fas fa-circle"></i> Peran Indonesia di ASEAN</li><li><i class="fas fa-circle"></i> Globalisasi</li><li><i class="fas fa-circle"></i> Dampak Globalisasi</li></ul></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-graduation-cap"></i> Semester 2</h3>
+        <div class="subject-grid">
+            <div class="subject-card"><div class="subject-icon"><i class="fas fa-calculator"></i></div><div class="subject-title">Matematika</div><ul class="topic-list"><li><i class="fas fa-circle"></i> Bangun Ruang (Volume)</li><li><i class="fas fa-circle"></i> Statistika Dasar</li><li><i class="fas fa-circle"></i> Perbandingan & Skala</li><li><i class="fas fa-circle"></i> Koordinat Kartesius</li></ul></div>
+            <div class="subject-card"><div class="subject-icon"><i class="fas fa-flask"></i></div><div class="subject-title">IPA</div><ul class="topic-list"><li><i class="fas fa-circle"></i> Sistem Tata Surya</li><li><i class="fas fa-circle"></i> Rotasi & Revolusi Bumi</li><li><i class="fas fa-circle"></i> Gerhana Matahari & Bulan</li><li><i class="fas fa-circle"></i> Teknologi Ramah Lingkungan</li></ul></div>
+            <div class="subject-card"><div class="subject-icon"><i class="fas fa-language"></i></div><div class="subject-title">Bahasa Indonesia</div><ul class="topic-list"><li><i class="fas fa-circle"></i> Teks Pidato</li><li><i class="fas fa-circle"></i> Teks Eksplanasi</li><li><i class="fas fa-circle"></i> Pantun & Puisi</li><li><i class="fas fa-circle"></i> Menulis Karya Ilmiah Sederhana</li></ul></div>
+            <div class="subject-card"><div class="subject-icon"><i class="fas fa-balance-scale"></i></div><div class="subject-title">PPKn</div><ul class="topic-list"><li><i class="fas fa-circle"></i> Hak & Kewajiban Warga Negara</li><li><i class="fas fa-circle"></i> Keberagaman Masyarakat</li><li><i class="fas fa-circle"></i> UUD 1945 & Pancasila</li><li><i class="fas fa-circle"></i> Bela Negara</li></ul></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-download"></i> Unduh Materi</h3>
+        <p>Silakan unduh materi pembelajaran lengkap untuk kelas 6:</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px;">
+            <a href="#" class="back-button" style="margin:0; background:#e2e8f0; color:#0f6b52;"><i class="fas fa-download"></i> Rangkuman Semester 1</a>
+            <a href="#" class="back-button" style="margin:0; background:#e2e8f0; color:#0f6b52;"><i class="fas fa-download"></i> Rangkuman Semester 2</a>
+            <a href="#" class="back-button" style="margin:0; background:#e2e8f0; color:#0f6b52;"><i class="fas fa-download"></i> Soal Latihan</a>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;"><a href="index.html" class="back-button"><i class="fas fa-home"></i> Kembali ke Halaman Utama</a></div>
+</main>
+<footer class="footer">
+    <div class="container"><div class="footer-content"><div class="footer-col"><h4>SD Negeri 3 Ngantru</h4><p>Jln Sawahan, Bayanan, Ngantru<br>Kec. Ngantang, Kab. Malang</p></div></div><div class="copyright">&copy; 2026 SD Negeri 3 NGANTRU | Go Digital Sekolahku</div></div>
+</footer>
+</body>
+</html>

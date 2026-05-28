@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ekstrakurikuler - SD Negeri 3 Ngantru</title>
+    <title>Kalender Akademik - SD Negeri 3 Ngantru</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -24,19 +24,19 @@
         .hero span { background: #fbbf24; padding: 0 8px; border-radius: 20px; color: #1e293b; }
         .card { background: white; border-radius: 28px; padding: 32px; margin-bottom: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
         .card h3 { color: #0f6b52; font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
-        .ekskul-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-        .ekskul-item { background: linear-gradient(145deg, #ffffff, #f8fafc); border-radius: 24px; padding: 28px 20px; text-align: center; transition: all 0.3s; border: 1px solid #e2e8f0; }
-        .ekskul-item:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
-        .ekskul-icon { font-size: 3rem; color: #0f6b52; margin-bottom: 16px; }
-        .ekskul-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
-        .ekskul-schedule { color: #fbbf24; font-weight: 600; margin-bottom: 12px; }
-        .ekskul-desc { color: #64748b; font-size: 0.85rem; }
+        .semester { margin-bottom: 32px; }
+        .semester h4 { font-size: 1.3rem; color: #1e293b; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #0f6b52; display: inline-block; }
+        .event-list { list-style: none; }
+        .event-list li { padding: 12px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .event-date { background: #0f6b52; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; min-width: 100px; text-align: center; }
+        .event-name { flex: 1; color: #334155; }
+        .event-icon { width: 30px; color: #0f6b52; }
         .back-button { display: inline-flex; align-items: center; gap: 10px; background: #0f6b52; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin: 20px 0; }
         .back-button:hover { background: #0a4d3a; }
         .footer { background: #0b2c23; color: #ccdcd5; padding: 40px 0 20px; margin-top: 60px; }
         .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; }
         .copyright { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid #2a5546; font-size: 0.75rem; }
-        @media (max-width: 768px) { .logo-text h1 { font-size: 1.2rem; } .school-logo { width: 50px; height: 50px; } }
+        @media (max-width: 768px) { .logo-text h1 { font-size: 1.2rem; } .school-logo { width: 50px; height: 50px; } .event-date { font-size: 0.7rem; min-width: 80px; } }
     </style>
 </head>
 <body>
@@ -64,26 +64,33 @@
     </ul>
 </div>
 <main class="container">
-    <div class="hero"><h2>⭐ <span>Ekstrakurikuler</span></h2><p>Kembangkan Bakat dan Minat Siswa</p></div>
+    <div class="hero"><h2>📆 <span>Kalender Akademik</span></h2><p>Tahun Ajaran 2025/2026</p></div>
     <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard</a>
     
     <div class="card">
-        <h3><i class="fas fa-futbol"></i> Kegiatan Ekstrakurikuler</h3>
-        <div class="ekskul-grid">
-            <div class="ekskul-item"><div class="ekskul-icon"><i class="fas fa-futbol"></i></div><div class="ekskul-title">Sepak Bola</div><div class="ekskul-schedule">📅 Sabtu, 07.00 - 09.00</div><div class="ekskul-desc">Latihan sepak bola mini untuk mengembangkan fisik, kerjasama tim, dan sportivitas.</div></div>
-            <div class="ekskul-item"><div class="ekskul-icon"><i class="fas fa-mosque"></i></div><div class="ekskul-title">Pengajian & BTQ</div><div class="ekskul-schedule">📅 Senin & Kamis, 12.30 - 13.30</div><div class="ekskul-desc">Belajar baca tulis Al-Qur'an dan pendalaman agama Islam.</div></div>
-            <div class="ekskul-item"><div class="ekskul-icon"><i class="fas fa-palette"></i></div><div class="ekskul-title">Seni Tari</div><div class="ekskul-schedule">📅 Rabu, 13.00 - 14.30</div><div class="ekskul-desc">Melestarikan budaya melalui tarian tradisional Jawa.</div></div>
-            <div class="ekskul-item"><div class="ekskul-icon"><i class="fas fa-microphone-alt"></i></div><div class="ekskul-title">Pramuka</div><div class="ekskul-schedule">📅 Jumat, 13.00 - 15.00</div><div class="ekskul-desc">Pembentukan karakter, kedisiplinan, dan cinta alam.</div></div>
-            <div class="ekskul-item"><div class="ekskul-icon"><i class="fas fa-music"></i></div><div class="ekskul-title">Paduan Suara</div><div class="ekskul-schedule">📅 Selasa, 13.00 - 14.30</div><div class="ekskul-desc">Latihan vokal dan paduan suara untuk berbagai acara.</div></div>
-            <div class="ekskul-item"><div class="ekskul-icon"><i class="fas fa-laptop-code"></i></div><div class="ekskul-title">Komputer & Desain</div><div class="ekskul-schedule">📅 Kamis, 13.00 - 14.30</div><div class="ekskul-desc">Belajar dasar-dasar komputer dan desain grafis sederhana.</div></div>
+        <h3><i class="fas fa-calendar-week"></i> Kegiatan Sekolah</h3>
+        
+        <div class="semester">
+            <h4>📖 Semester Ganjil</h4>
+            <ul class="event-list">
+                <li><span class="event-icon"><i class="fas fa-flag-checkered"></i></span><span class="event-date">1-15 Juli 2026</span><span class="event-name">Masa Pengenalan Lingkungan Sekolah (MPLS)</span></li>
+                <li><span class="event-icon"><i class="fas fa-chalkboard"></i></span><span class="event-date">16 Juli 2026</span><span class="event-name">Awal Tahun Pelajaran</span></li>
+                <li><span class="event-icon"><i class="fas fa-star"></i></span><span class="event-date">17 Agustus 2026</span><span class="event-name">Upacara HUT Kemerdekaan RI</span></li>
+                <li><span class="event-icon"><i class="fas fa-pen"></i></span><span class="event-date">23-27 September 2026</span><span class="event-name">Penilaian Tengah Semester (PTS)</span></li>
+                <li><span class="event-icon"><i class="fas fa-moon"></i></span><span class="event-date">24-29 Desember 2026</span><span class="event-name">Libur Semester Ganjil</span></li>
+            </ul>
         </div>
-    </div>
-
-    <div class="card">
-        <h3><i class="fas fa-clipboard-list"></i> Cara Bergabung</h3>
-        <p>Siswa yang berminat mengikuti kegiatan ekstrakurikuler dapat mendaftar melalui wali kelas masing-masing. Pendaftaran dibuka setiap awal semester. Setiap siswa diperbolehkan memilih maksimal 2 kegiatan ekstrakurikuler.</p>
-        <div class="info-box" style="background: #eef2ff; padding: 16px; border-radius: 16px; margin-top: 16px; border-left: 4px solid #0f6b52;">
-            <i class="fas fa-info-circle" style="color: #0f6b52;"></i> <strong>Informasi:</strong> Jadwal dapat berubah menyesuaikan dengan kondisi. Hubungi pembina ekstrakurikuler untuk informasi lebih lanjut.
+        
+        <div class="semester">
+            <h4>📚 Semester Genap</h4>
+            <ul class="event-list">
+                <li><span class="event-icon"><i class="fas fa-chalkboard"></i></span><span class="event-date">5 Januari 2027</span><span class="event-name">Awal Semester Genap</span></li>
+                <li><span class="event-icon"><i class="fas fa-pen"></i></span><span class="event-date">6-11 Maret 2027</span><span class="event-name">Penilaian Tengah Semester (PTS)</span></li>
+                <li><span class="event-icon"><i class="fas fa-moon"></i></span><span class="event-date">21-26 Maret 2027</span><span class="event-name">Libur Awal Ramadhan</span></li>
+                <li><span class="event-icon"><i class="fas fa-check-circle"></i></span><span class="event-date">1-6 Mei 2027</span><span class="event-name">Penilaian Akhir Tahun (PAT)</span></li>
+                <li><span class="event-icon"><i class="fas fa-graduation-cap"></i></span><span class="event-date">1-10 Juni 2027</span><span class="event-name">Kegiatan Kelulusan & Perpisahan</span></li>
+                <li><span class="event-icon"><i class="fas fa-sun"></i></span><span class="event-date">27 Juni - 11 Juli 2027</span><span class="event-name">Libur Kenaikan Kelas</span></li>
+            </ul>
         </div>
     </div>
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ekstrakurikuler - SD Negeri 3 Ngantru</title>
+    <title>Perpustakaan Digital - SD Negeri 3 Ngantru</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -24,13 +24,14 @@
         .hero span { background: #fbbf24; padding: 0 8px; border-radius: 20px; color: #1e293b; }
         .card { background: white; border-radius: 28px; padding: 32px; margin-bottom: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
         .card h3 { color: #0f6b52; font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
-        .ekskul-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-        .ekskul-item { background: linear-gradient(145deg, #ffffff, #f8fafc); border-radius: 24px; padding: 28px 20px; text-align: center; transition: all 0.3s; border: 1px solid #e2e8f0; }
-        .ekskul-item:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
-        .ekskul-icon { font-size: 3rem; color: #0f6b52; margin-bottom: 16px; }
-        .ekskul-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
-        .ekskul-schedule { color: #fbbf24; font-weight: 600; margin-bottom: 12px; }
-        .ekskul-desc { color: #64748b; font-size: 0.85rem; }
+        .book-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
+        .book-item { background: #f8fafc; border-radius: 20px; padding: 24px; text-align: center; transition: all 0.3s; }
+        .book-item:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .book-icon { font-size: 3rem; color: #0f6b52; margin-bottom: 12px; }
+        .book-title { font-weight: 700; margin-bottom: 4px; }
+        .book-category { font-size: 0.7rem; color: #fbbf24; font-weight: 600; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin: 20px 0; text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: 800; color: #0f6b52; }
         .back-button { display: inline-flex; align-items: center; gap: 10px; background: #0f6b52; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin: 20px 0; }
         .back-button:hover { background: #0a4d3a; }
         .footer { background: #0b2c23; color: #ccdcd5; padding: 40px 0 20px; margin-top: 60px; }
@@ -64,27 +65,41 @@
     </ul>
 </div>
 <main class="container">
-    <div class="hero"><h2>⭐ <span>Ekstrakurikuler</span></h2><p>Kembangkan Bakat dan Minat Siswa</p></div>
+    <div class="hero"><h2>📚 <span>Perpustakaan Digital</span></h2><p>Baca Buku Kapan Saja, Di Mana Saja</p></div>
     <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard</a>
     
     <div class="card">
-        <h3><i class="fas fa-futbol"></i> Kegiatan Ekstrakurikuler</h3>
-        <div class="ekskul-grid">
-            <div class="ekskul-item"><div class="ekskul-icon"><i class="fas fa-futbol"></i></div><div class="ekskul-title">Sepak Bola</div><div class="ekskul-schedule">📅 Sabtu, 07.00 - 09.00</div><div class="ekskul-desc">Latihan sepak bola mini untuk mengembangkan fisik, kerjasama tim, dan sportivitas.</div></div>
-            <div class="ekskul-item"><div class="ekskul-icon"><i class="fas fa-mosque"></i></div><div class="ekskul-title">Pengajian & BTQ</div><div class="ekskul-schedule">📅 Senin & Kamis, 12.30 - 13.30</div><div class="ekskul-desc">Belajar baca tulis Al-Qur'an dan pendalaman agama Islam.</div></div>
-            <div class="ekskul-item"><div class="ekskul-icon"><i class="fas fa-palette"></i></div><div class="ekskul-title">Seni Tari</div><div class="ekskul-schedule">📅 Rabu, 13.00 - 14.30</div><div class="ekskul-desc">Melestarikan budaya melalui tarian tradisional Jawa.</div></div>
-            <div class="ekskul-item"><div class="ekskul-icon"><i class="fas fa-microphone-alt"></i></div><div class="ekskul-title">Pramuka</div><div class="ekskul-schedule">📅 Jumat, 13.00 - 15.00</div><div class="ekskul-desc">Pembentukan karakter, kedisiplinan, dan cinta alam.</div></div>
-            <div class="ekskul-item"><div class="ekskul-icon"><i class="fas fa-music"></i></div><div class="ekskul-title">Paduan Suara</div><div class="ekskul-schedule">📅 Selasa, 13.00 - 14.30</div><div class="ekskul-desc">Latihan vokal dan paduan suara untuk berbagai acara.</div></div>
-            <div class="ekskul-item"><div class="ekskul-icon"><i class="fas fa-laptop-code"></i></div><div class="ekskul-title">Komputer & Desain</div><div class="ekskul-schedule">📅 Kamis, 13.00 - 14.30</div><div class="ekskul-desc">Belajar dasar-dasar komputer dan desain grafis sederhana.</div></div>
+        <h3><i class="fas fa-chart-line"></i> Statistik Perpustakaan</h3>
+        <div class="stats">
+            <div><div class="stat-number">500+</div><div>Koleksi Buku</div></div>
+            <div><div class="stat-number">150+</div><div>Buku Digital</div></div>
+            <div><div class="stat-number">100+</div><div>Siswa Aktif</div></div>
+            <div><div class="stat-number">50+</div><div>Judul Baru</div></div>
         </div>
     </div>
 
     <div class="card">
-        <h3><i class="fas fa-clipboard-list"></i> Cara Bergabung</h3>
-        <p>Siswa yang berminat mengikuti kegiatan ekstrakurikuler dapat mendaftar melalui wali kelas masing-masing. Pendaftaran dibuka setiap awal semester. Setiap siswa diperbolehkan memilih maksimal 2 kegiatan ekstrakurikuler.</p>
-        <div class="info-box" style="background: #eef2ff; padding: 16px; border-radius: 16px; margin-top: 16px; border-left: 4px solid #0f6b52;">
-            <i class="fas fa-info-circle" style="color: #0f6b52;"></i> <strong>Informasi:</strong> Jadwal dapat berubah menyesuaikan dengan kondisi. Hubungi pembina ekstrakurikuler untuk informasi lebih lanjut.
+        <h3><i class="fas fa-book"></i> Koleksi Unggulan</h3>
+        <div class="book-grid">
+            <div class="book-item"><div class="book-icon"><i class="fas fa-book-open"></i></div><div class="book-title">Cerita Rakyat Nusantara</div><div class="book-category">📖 Fiksi Anak</div></div>
+            <div class="book-item"><div class="book-icon"><i class="fas fa-flask"></i></div><div class="book-title">IPA untuk SD Kelas 6</div><div class="book-category">📘 Buku Pelajaran</div></div>
+            <div class="book-item"><div class="book-icon"><i class="fas fa-compass"></i></div><div class="book-title">Ensiklopedia Anak</div><div class="book-category">📙 Referensi</div></div>
+            <div class="book-item"><div class="book-icon"><i class="fas fa-mosque"></i></div><div class="book-title">Kisah Nabi & Rasul</div><div class="book-category">📖 Agama</div></div>
         </div>
+        <div style="text-align: center; margin-top: 24px;">
+            <a href="https://buku.kemendikdasmen.go.id/katalog/buku-kurikulum-merdeka" target="_blank" class="back-button" style="margin:0; background:#0f6b52;"><i class="fas fa-external-link-alt"></i> Akses Perpustakaan Digital Kemendikbud</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-clock"></i> Jadwal & Tata Tertib</h3>
+        <p><strong>Jam Buka Perpustakaan:</strong></p>
+        <ul style="margin-left: 30px; margin-top: 8px; color: #334155;">
+            <li>Senin - Kamis: 08.00 - 13.00 WIB</li>
+            <li>Jumat: 08.00 - 11.00 WIB</li>
+            <li>Sabtu: Tutup</li>
+        </ul>
+        <p style="margin-top: 16px;"><strong>Tata Tertib:</strong> Dilarang membawa makanan/minuman, menjaga kebersihan, mengembalikan buku tepat waktu, dan merawat koleksi perpustakaan.</p>
     </div>
 
     <div style="text-align: center; margin: 30px 0;"><a href="index.html" class="back-button"><i class="fas fa-home"></i> Kembali ke Halaman Utama</a></div>
