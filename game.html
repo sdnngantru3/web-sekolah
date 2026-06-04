@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🎮 Game Edukasi - SD Negeri 3 Ngantru</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 100%);
+            color: #1e293b;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+        }
+
+        /* ===== HEADER & NAVIGASI ===== */
+        .top-header {
+            background: linear-gradient(135deg, #0b3b2f 0%, #1a5d4a 100%);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .school-logo {
+            width: 60px;
+            height: 60px;
+            background-color: #ffffff;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #0f6b52;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            animation: logoBounce 3s ease-in-out infinite;
+        }
+
+        @keyframes logoBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .btn-kembali {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-kembali:hover {
+            background: #fbbf24;
+            color: #0b3b2f;
+            border-color: #fbbf24;
+            transform: translateX(-4px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            border-radius: 28px;
+            margin: 30px 0;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #155e49 0%, #064e3b 100%);
+            box-shadow: 0 10px 25px rgba(11, 44, 35, 0.15);
+            color: white;
+        }
+
+        .hero::before {
+            content: '🎮';
+            position: absolute;
+            top: -30px;
+            right: 10px;
+            font-size: 120px;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '🎯';
+            position: absolute;
+            bottom: -20px;
+            left: 10px;
+            font-size: 100px;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .hero h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .hero h2 span {
+            color: #fcd34d;
+        }
+
+        .hero p {
+            color: #d1fae5;
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+        }
+
+        /* ===== MAIN GAME BOARD SECTION ===== */
+        .main-content {
+            flex: 1;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #bbf7d0;
+            padding-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #0f4c3a;
+            position: relative;
+        }
+
+        .section-subtitle {
+            font-size: 0.9rem;
+            color: #047857;
+            background: #d1fae5;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* GAME GRID - 10 Kotak Game Board */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 22px;
+            margin-bottom: 50px;
+        }
+
+        /* Kotak Game Board Card */
+        .game-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(11, 44, 35, 0.08);
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            border-color: #10b981;
+            box-shadow: 0 20px 30px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Lencana Status */
+        .status-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 50px;
+            letter-spacing: 0.5px;
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Visual Lingkaran Icon */
+        .icon-container {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #ecfdf5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto 18px auto;
+            transition: all 0.3s ease;
+        }
+
+        .game-card:hover .icon-container {
+            background: #10b981;
+            transform: rotate(10deg) scale(1.05);
+        }
+
+        .icon-container i {
+            font-size: 32px;
+            color: #059669;
+            transition: all 0.3s ease;
+        }
+
+        .game-card:hover .icon-container i {
+            color: white;
+        }
+
+        .game-number {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .game-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .game-desc {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 16px;
+            flex-grow: 1;
+            line-height: 1.4;
+        }
+
+        /* Tombol Play */
+        .btn-play {
+            background: #10b981;
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            margin-top: 8px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .game-card:hover .btn-play {
+            background: #059669;
+            transform: scale(1.02);
+        }
+
+        /* ===== INFO BAR ===== */
+        .info-bar {
+            background: #fef3c7;
+            border-radius: 60px;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 20px 0 30px;
+            border: 1px solid #fcd34d;
+        }
+
+        .info-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #92400e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-text i {
+            font-size: 1.1rem;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: #0b2c23;
+            color: #9cd3be;
+            padding: 30px 0;
+            text-align: center;
+            margin-top: auto;
+            border-top: 4px solid #10b981;
+        }
+
+        .footer p {
+            font-size: 0.85rem;
+        }
+
+        /* RESPONSIVE LAYOUT */
+        @media (max-width: 1000px) {
+            .game-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 18px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .game-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            .logo-text h1 { font-size: 1.1rem; }
+            .hero h2 { font-size: 1.5rem; }
+            .hero p { font-size: 0.85rem; }
+            .section-title { font-size: 1.3rem; }
+            .game-card { padding: 16px 12px; }
+            .icon-container { width: 55px; height: 55px; }
+            .icon-container i { font-size: 26px; }
+            .game-title { font-size: 0.95rem; }
+            .btn-play { font-size: 0.7rem; padding: 8px 12px; }
+        }
+
+        @media (max-width: 450px) {
+            .game-grid {
+                gap: 12px;
+            }
+            .container {
+                padding: 0 16px;
+            }
+        }
+
+        /* Efek loading/transisi */
+        .game-card:active {
+            transform: scale(0.97);
+            transition: 0.05s;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigasi / Header Atas -->
+    <header class="top-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-area">
+                    <div class="school-logo">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>SD NEGERI 3 NGANTRU</h1>
+                        <p>Kecamatan Ngantang, Kabupaten Malang</p>
+                    </div>
+                </div>
+                <a href="index.html" class="btn-kembali">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container main-content">
+        <!-- Hero Banner Game Board -->
+        <section class="hero">
+            <h2>🎮 Ruang Game Edukasi <span>Go Digital</span></h2>
+            <p>Ayo bermain sambil belajar! Pilih game favoritmu dan raih skor setinggi-tingginya.</p>
+        </section>
+
+        <!-- Info Bar -->
+        <div class="info-bar">
+            <div class="info-text"><i class="fas fa-check-circle"></i> 10 Game Seru & Edukatif</div>
+            <div class="info-text"><i class="fas fa-mobile-alt"></i> Bisa dimainkan di HP & Komputer</div>
+            <div class="info-text"><i class="fas fa-trophy"></i> Klik kotak untuk bermain</div>
+        </div>
+
+        <!-- Section List Game Board (10 Game dengan href sudah sesuai) -->
+        <section>
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-dice-d6"></i> Papan Permainan</h2>
+                <span class="section-subtitle">10 Tantangan Seru</span>
+            </div>
+
+            <!-- GRID GAME BOARD (10 Kotak dengan href ke game1.html - game10.html) -->
+            <div class="game-grid">
+
+                <!-- GAME 1 : HITUNG CEPAT (game1-hitung.html) -->
+                <a href="game1.html" class="game-card">
+                    <span class="status-badge"><i class="fas fa-play"></i> Tersedia</span>
+                    <div class="icon-container">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <div class="game-number">#Game 01</div>
+                    <h3 class="game-title">⚡ HITUNG CEPAT</h3>
+                    <p class="game-desc">Uji kecepatan hitung matematika, cocok asah otak!</p>
+                    <div class="btn-play"><i class="fas fa-gamepad"></i> Main Sekarang</div>
+                </a>
+
+                <!-- GAME 2 : AKSARA JAWA (game2.html) -->
+                <a href="game2.html" class="game-card">
+                    <span class="status-badge"><i class="fas fa-play"></i> Tersedia</span>
+                    <div class="icon-container">
+                        <i class="fas fa-feather-alt"></i>
+                    </div>
+                    <div class="game-number">#Game 02</div>
+                    <h3 class="game-title">📖 AKSARA JAWA</h3>
+                    <p class="game-desc">Belajar Aksara Jawa lewat game seru & interaktif.</p>
+                    <div class="btn-play"><i class="fas fa-gamepad"></i> Main Sekarang</div>
+                </a>
+
+                <!-- GAME 3 : TEBAK PULAU (game3.html) -->
+                <a href="game3.html" class="game-card">
+                    <span class="status-badge"><i class="fas fa-play"></i> Tersedia</span>
+                    <div class="icon-container">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="game-number">#Game 03</div>
+                    <h3 class="game-title">🗺️ TEBAK PULAU</h3>
+                    <p class="game-desc">Jelajahi peta Indonesia dan tebak nama pulau.</p>
+                    <div class="btn-play"><i class="fas fa-gamepad"></i> Main Sekarang</div>
+                </a>
+
+                <!-- GAME 4 : SUSUN KATA (game4.html) -->
+                <a href="game4.html" class="game-card">
+                    <span class="status-badge"><i class="fas fa-play"></i> Tersedia</span>
+                    <div class="icon-container">
+                        <i class="fas fa-spell-check"></i>
+                    </div>
+                    <div class="game-number">#Game 04</div>
+                    <h3 class="game-title">🔤 SUSUN KATA</h3>
+                    <p class="game-desc">Rangkai huruf acak jadi kata baku Bahasa Indonesia.</p>
+                    <div class="btn-play"><i class="fas fa-gamepad"></i> Main Sekarang</div>
+                </a>
+
+                <!-- GAME 5 : KUIS SAINS IPA (game5.html) -->
+                <a href="game5.html" class="game-card">
+                    <span class="status-badge"><i class="fas fa-play"></i> Tersedia</span>
+                    <div class="icon-container">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <div class="game-number">#Game 05</div>
+                    <h3 class="game-title">🔬 KUIS SAINS</h3>
+                    <p class="game-desc">Uji pengetahuan IPA: hewan, tumbuhan, dan alam.</p>
+                    <div class="btn-play"><i class="fas fa-gamepad"></i> Main Sekarang</div>
+                </a>
+
+                <!-- GAME 6 : MEMORI MATCH (game6.html) -->
+                <a href="game6.html" class="game-card">
+                    <span class="status-badge"><i class="fas fa-play"></i> Tersedia</span>
+                    <div class="icon-container">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="game-number">#Game 06</div>
+                    <h3 class="game-title">🧠 MEMORI MATCH</h3>
+                    <p class="game-desc">Cocokkan gambar serupa, latih daya ingatmu.</p>
+                    <div class="btn-play"><i class="fas fa-gamepad"></i> Main Sekarang</div>
+                </a>
+
+                <!-- GAME 7 : SEJARAH KITA (game7.html) -->
+                <a href="game7.html" class="game-card">
+                    <span class="status-badge"><i class="fas fa-play"></i> Tersedia</span>
+                    <div class="icon-container">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <div class="game-number">#Game 07</div>
+                    <h3 class="game-title">🏛️ SEJARAH KITA</h3>
+                    <p class="game-desc">Kenali pahlawan & peristiwa bersejarah Indonesia.</p>
+                    <div class="btn-play"><i class="fas fa-gamepad"></i> Main Sekarang</div>
+                </a>
+
+                <!-- GAME 8 : TEBAK BENDERA (game8.html) -->
+                <a href="game8.html" class="game-card">
+                    <span class="status-badge"><i class="fas fa-play"></i> Tersedia</span>
+                    <div class="icon-container">
+                        <i class="fas fa-flag-checkered"></i>
+                    </div>
+                    <div class="game-number">#Game 08</div>
+                    <h3 class="game-title">🏁 TEBAK BENDERA</h3>
+                    <p class="game-desc">Tebak bendera negara dari seluruh dunia.</p>
+                    <div class="btn-play"><i class="fas fa-gamepad"></i> Main Sekarang</div>
+                </a>
+
+                <!-- GAME 9 : PUZZLE SEKOLAH (game9.html) -->
+                <a href="game9.html" class="game-card">
+                    <span class="status-badge"><i class="fas fa-play"></i> Tersedia</span>
+                    <div class="icon-container">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <div class="game-number">#Game 09</div>
+                    <h3 class="game-title">🧩 PUZZLE SEKOLAH</h3>
+                    <p class="game-desc">Susun gambar gedung sekolah tercinta jadi utuh.</p>
+                    <div class="btn-play"><i class="fas fa-gamepad"></i> Main Sekarang</div>
+                </a>
+
+                <!-- GAME 10 : PANCASILA (game10.html) -->
+                <a href="game10.html" class="game-card">
+                    <span class="status-badge"><i class="fas fa-play"></i> Tersedia</span>
+                    <div class="icon-container">
+                        <i class="fas fa-star-of-life"></i>
+                    </div>
+                    <div class="game-number">#Game 10</div>
+                    <h3 class="game-title">⭐ PANCASILA</h3>
+                    <p class="game-desc">Pasangkan simbol dan sila Pancasila dengan tepat.</p>
+                    <div class="btn-play"><i class="fas fa-gamepad"></i> Main Sekarang</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Tambahan Motivasi -->
+        <div style="text-align: center; margin: 20px 0 40px;">
+            <p style="background: #e6f7f0; display: inline-block; padding: 8px 24px; border-radius: 60px; font-size: 0.85rem;">
+                <i class="fas fa-smile-wink"></i> Selamat bermain! Semakin sering bermain, semakin pintar!
+            </p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p><i class="fas fa-gamepad"></i> SD Negeri 3 Ngantru - Belajar Seru dengan Game Edukasi <i class="fas fa-graduation-cap"></i></p>
+            <p style="margin-top: 8px; font-size: 0.7rem;">&copy; 2026 SDN 3 Ngantru, Kec. Ngantang, Kab. Malang | Go Digital Sekolahku</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tambahan efek ringan untuk memastikan semua link berfungsi
+        // Semua game-card sudah berupa tag <a> dengan href yang benar (game1.html - game10.html)
+        // Tidak perlu modal karena semua game sudah tersedia.
+        console.log("🎮 Menu Game Board - 10 game siap dimainkan!");
+        
+        // Optional: efek kilat saat klik untuk user experience lebih baik
+        const allCards = document.querySelectorAll('.game-card');
+        allCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Hanya efek visual, tidak menggangu navigasi
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 120);
+            });
+        });
+    </script>
+</body>
+</html>
