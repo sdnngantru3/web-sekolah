@@ -3,101 +3,458 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalender Akademik - SD Negeri 3 Ngantru</title>
+    <title>Kalender Akademik Interaktif - SD Negeri 3 Ngantru</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: #1e293b; overflow-x: hidden; }
         .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-        .top-header { background: linear-gradient(135deg, #0b3b2f 0%, #1a5d4a 100%); color: white; padding: 12px 0; }
-        .header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .logo-area { display: flex; align-items: center; gap: 15px; }
-        .school-logo { width: 80px; height: 80px; background-image: url('logo sekolah.png'); background-size: contain; background-repeat: no-repeat; border-radius: 20px; }
-        .logo-text h1 { font-size: 2rem; font-weight: 800; }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .fade-up { animation: fadeInUp 0.6s ease forwards; }
+        .slide-in { animation: slideIn 0.5s ease forwards; }
+        
+        .top-header { background: linear-gradient(135deg, #0b3b2f 0%, #1a5d4a 100%); color: white; padding: 12px 0; position: relative; overflow: hidden; }
+        .top-header::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); animation: pulse 8s ease infinite; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; position: relative; z-index: 1; }
+        .logo-area { display: flex; align-items: center; gap: 15px; cursor: pointer; transition: transform 0.3s; }
+        .logo-area:hover { transform: scale(1.02); }
+        .school-logo { width: 80px; height: 80px; background-image: url('logo sekolah.png'); background-size: contain; background-repeat: no-repeat; border-radius: 20px; transition: all 0.3s; }
+        .school-logo:hover { transform: rotate(5deg); }
+        .logo-text h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #fff, #d4f5e8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .logo-text p { font-size: 0.9rem; opacity: 0.9; }
-        .nav-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; list-style: none; padding: 12px 0; background: white; border-radius: 60px; margin: 12px 0; }
-        .nav-menu li a { display: inline-block; padding: 10px 20px; text-decoration: none; font-weight: 600; font-size: 0.9rem; color: #1e293b; border-radius: 40px; }
-        .nav-menu li a:hover { background: #e6f7f0; color: #0b5e42; }
-        .hero { background: linear-gradient(135deg, #0f6b52, #0a4d3a); border-radius: 32px; padding: 40px 32px; text-align: center; margin: 20px 0; color: white; }
-        .hero h2 { font-size: 2rem; }
-        .hero span { background: #fbbf24; padding: 0 8px; border-radius: 20px; color: #1e293b; }
-        .card { background: white; border-radius: 28px; padding: 32px; margin-bottom: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        
+        /* Modern Navigation */
+        .nav-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; list-style: none; padding: 12px 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 60px; margin: 12px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: sticky; top: 10px; z-index: 100; }
+        .nav-menu li a { display: inline-block; padding: 10px 20px; text-decoration: none; font-weight: 600; font-size: 0.9rem; color: #1e293b; border-radius: 40px; transition: all 0.3s; }
+        .nav-menu li a:hover { background: #0f6b52; color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(15,107,82,0.3); }
+        
+        .hero { background: linear-gradient(135deg, #0f6b52, #0a4d3a); border-radius: 32px; padding: 40px 32px; text-align: center; margin: 20px 0; color: white; position: relative; overflow: hidden; cursor: pointer; transition: transform 0.3s; }
+        .hero:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .hero::after { content: '📅'; position: absolute; bottom: 10px; right: 20px; font-size: 80px; opacity: 0.1; pointer-events: none; }
+        .hero h2 { font-size: 2rem; animation: fadeInUp 0.8s; }
+        .hero span { background: #fbbf24; padding: 0 8px; border-radius: 20px; color: #1e293b; display: inline-block; transition: all 0.3s; }
+        .hero span:hover { transform: scale(1.05); }
+        
+        /* Tab Navigation */
+        .tab-nav { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+        .tab-btn { background: white; border: none; padding: 12px 28px; border-radius: 50px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s; color: #64748b; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 10px; }
+        .tab-btn i { font-size: 1.1rem; }
+        .tab-btn:hover { transform: translateY(-2px); background: #e6f7f0; color: #0f6b52; }
+        .tab-btn.active { background: #0f6b52; color: white; box-shadow: 0 8px 20px rgba(15,107,82,0.3); }
+        
+        /* Filter Section */
+        .filter-section { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; justify-content: space-between; align-items: center; }
+        .search-box { display: flex; align-items: center; background: white; border-radius: 50px; padding: 8px 20px; flex: 1; max-width: 300px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .search-box i { color: #94a3b8; margin-right: 10px; }
+        .search-box input { border: none; outline: none; padding: 10px 0; font-size: 0.9rem; width: 100%; background: transparent; }
+        .filter-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .filter-chip { background: white; border: none; padding: 8px 20px; border-radius: 50px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.3s; color: #64748b; }
+        .filter-chip.active { background: #0f6b52; color: white; }
+        .filter-chip:hover { transform: translateY(-2px); background: #cbd5e1; }
+        
+        .card { background: white; border-radius: 28px; padding: 32px; margin-bottom: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); transition: all 0.3s; }
+        .card:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.1); transform: translateY(-2px); }
         .card h3 { color: #0f6b52; font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
-        .semester { margin-bottom: 32px; }
-        .semester h4 { font-size: 1.3rem; color: #1e293b; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #0f6b52; display: inline-block; }
+        
+        .semester { margin-bottom: 32px; opacity: 0; animation: fadeInUp 0.5s forwards; }
+        .semester:nth-child(1) { animation-delay: 0.1s; }
+        .semester:nth-child(2) { animation-delay: 0.2s; }
+        .semester h4 { font-size: 1.3rem; color: #1e293b; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 3px solid #0f6b52; display: inline-block; cursor: pointer; transition: all 0.3s; }
+        .semester h4:hover { transform: translateX(5px); color: #0f6b52; }
+        
         .event-list { list-style: none; }
-        .event-list li { padding: 12px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-        .event-date { background: #0f6b52; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; min-width: 100px; text-align: center; }
-        .event-name { flex: 1; color: #334155; }
-        .event-icon { width: 30px; color: #0f6b52; }
-        .back-button { display: inline-flex; align-items: center; gap: 10px; background: #0f6b52; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin: 20px 0; }
-        .back-button:hover { background: #0a4d3a; }
+        .event-list li { padding: 12px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; transition: all 0.3s; cursor: pointer; }
+        .event-list li:hover { background: #f8fafc; transform: translateX(8px); padding-left: 16px; border-radius: 16px; }
+        .event-date { background: #0f6b52; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; min-width: 100px; text-align: center; transition: all 0.3s; }
+        .event-list li:hover .event-date { background: #fbbf24; color: #1e293b; transform: scale(1.05); }
+        .event-name { flex: 1; color: #334155; font-weight: 500; }
+        .event-icon { width: 30px; color: #0f6b52; transition: transform 0.3s; }
+        .event-list li:hover .event-icon { transform: rotate(10deg) scale(1.1); }
+        
+        /* Countdown Timer */
+        .countdown-section { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 28px; padding: 24px; margin: 30px 0; text-align: center; color: white; }
+        .countdown-title { font-size: 1.2rem; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .countdown-timer { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .countdown-item { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 15px 20px; border-radius: 20px; min-width: 80px; }
+        .countdown-number { font-size: 2rem; font-weight: 800; }
+        .countdown-label { font-size: 0.7rem; opacity: 0.8; }
+        
+        /* Download Button */
+        .download-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 12px 28px; border-radius: 50px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px; margin: 10px; }
+        .download-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(16,185,129,0.3); }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; animation: fadeInUp 0.3s; }
+        .modal-content { background: white; border-radius: 32px; padding: 32px; max-width: 500px; width: 90%; text-align: center; }
+        .modal-content h3 { color: #0f6b52; margin-bottom: 16px; }
+        .modal-content button { background: #0f6b52; color: white; border: none; padding: 10px 24px; border-radius: 50px; margin-top: 20px; cursor: pointer; }
+        
+        .back-button { display: inline-flex; align-items: center; gap: 10px; background: #0f6b52; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin: 20px 0; transition: all 0.3s; }
+        .back-button:hover { background: #0a4d3a; transform: translateX(-5px); }
+        
+        .reference-box { background: linear-gradient(135deg, #fef9e6, #fff5e0); border-left: 6px solid #fbbf24; border-radius: 20px; padding: 20px 28px; margin: 20px 0 30px; display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 20px; transition: all 0.3s; cursor: pointer; }
+        .reference-box:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
         .footer { background: #0b2c23; color: #ccdcd5; padding: 40px 0 20px; margin-top: 60px; }
-        .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; }
-        .copyright { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid #2a5546; font-size: 0.75rem; }
-        @media (max-width: 768px) { .logo-text h1 { font-size: 1.2rem; } .school-logo { width: 50px; height: 50px; } .event-date { font-size: 0.7rem; min-width: 80px; } }
+        
+        @media (max-width: 768px) { 
+            .logo-text h1 { font-size: 1.2rem; } 
+            .school-logo { width: 50px; height: 50px; } 
+            .event-date { font-size: 0.7rem; min-width: 80px; }
+            .countdown-item { padding: 10px 15px; min-width: 60px; }
+            .countdown-number { font-size: 1.3rem; }
+        }
+        
+        /* Scroll to top */
+        .scroll-top { position: fixed; bottom: 30px; right: 30px; background: #0f6b52; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 99; }
+        .scroll-top.show { opacity: 1; visibility: visible; }
+        .scroll-top:hover { transform: translateY(-5px); background: #0a4d3a; }
     </style>
 </head>
 <body>
+
 <div class="top-header">
     <div class="container">
         <div class="header-content">
-            <div class="logo-area">
+            <div class="logo-area" onclick="location.reload()">
                 <div class="school-logo" style="background-image: url('logo sekolah.png');"></div>
                 <div class="logo-text"><h1>SD NEGERI 3 NGANTRU</h1><p>Kecamatan Ngantang, Kabupaten Malang</p></div>
             </div>
         </div>
     </div>
 </div>
+
 <div class="container">
     <ul class="nav-menu">
-        <li><a href="index.html">🏠 Home</a></li>
-        <li><a href="profil-sekolah.html">📋 Profil Sekolah</a></li>
-        <li><a href="administrasi.html">📁 Administrasi</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1dJWr-fakznnjS2b_hDcTvScQEmmjIaGP?usp=drive_link" target="_blank">📰 Pembelajaran</a></li>
-        <li><a href="lingkungan.html">⭐ Lingkungan</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1q4y9LnUdVf2BuDlRawAKI7NRwYuarjmF?usp=drive_link" target="_blank">🎓 Pengembangan Diri</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1fdfDI12lytoPK6rNv4neYNWUXLx3Y5nn?usp=drive_link" target="_blank">📚 Kurikulum</a></li>
-        <li><a href="https://raporsd.page.gd" target="_blank">🔐 Login Rapor Online</a></li>
-        <li><a href="kontak-kami.html">📞 Kontak</a></li>
+        <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="profil-sekolah.html"><i class="fas fa-school"></i> Profil</a></li>
+        <li><a href="administrasi.html"><i class="fas fa-folder"></i> Administrasi</a></li>
+        <li><a href="#" target="_blank"><i class="fas fa-book"></i> Pembelajaran</a></li>
+        <li><a href="lingkungan.html"><i class="fas fa-tree"></i> Lingkungan</a></li>
+        <li><a href="#"><i class="fas fa-chalkboard-user"></i> Pengembangan</a></li>
+        <li><a href="#"><i class="fas fa-graduation-cap"></i> Kurikulum</a></li>
+        <li><a href="#" target="_blank"><i class="fas fa-laptop"></i> Rapor Online</a></li>
+        <li><a href="kontak-kami.html"><i class="fas fa-phone"></i> Kontak</a></li>
     </ul>
 </div>
+
 <main class="container">
-    <div class="hero"><h2>📆 <span>Kalender Akademik</span></h2><p>Tahun Ajaran 2025/2026</p></div>
+    <div class="hero" onclick="showNotification('✨ Selamat datang di Kalender Akademik Interaktif!')">
+        <h2>📆 <span>Kalender Akademik Interaktif</span></h2>
+        <p>Tahun Ajaran 2025/2026 | Berbasis Kalender Pendidikan Jawa Timur</p>
+    </div>
+    
     <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard</a>
     
-    <div class="card">
-        <h3><i class="fas fa-calendar-week"></i> Kegiatan Sekolah</h3>
-        
-        <div class="semester">
-            <h4>📖 Semester Ganjil</h4>
-            <ul class="event-list">
-                <li><span class="event-icon"><i class="fas fa-flag-checkered"></i></span><span class="event-date">1-15 Juli 2026</span><span class="event-name">Masa Pengenalan Lingkungan Sekolah (MPLS)</span></li>
-                <li><span class="event-icon"><i class="fas fa-chalkboard"></i></span><span class="event-date">16 Juli 2026</span><span class="event-name">Awal Tahun Pelajaran</span></li>
-                <li><span class="event-icon"><i class="fas fa-star"></i></span><span class="event-date">17 Agustus 2026</span><span class="event-name">Upacara HUT Kemerdekaan RI</span></li>
-                <li><span class="event-icon"><i class="fas fa-pen"></i></span><span class="event-date">23-27 September 2026</span><span class="event-name">Penilaian Tengah Semester (PTS)</span></li>
-                <li><span class="event-icon"><i class="fas fa-moon"></i></span><span class="event-date">24-29 Desember 2026</span><span class="event-name">Libur Semester Ganjil</span></li>
-            </ul>
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('all')"><i class="fas fa-calendar-alt"></i> Semua Kegiatan</button>
+        <button class="tab-btn" onclick="switchTab('ganjil')"><i class="fas fa-sun"></i> Semester Ganjil</button>
+        <button class="tab-btn" onclick="switchTab('genap')"><i class="fas fa-moon"></i> Semester Genap</button>
+        <button class="tab-btn" onclick="switchTab('libur')"><i class="fas fa-umbrella-beach"></i> Hari Libur</button>
+    </div>
+    
+    <!-- Filter & Search -->
+    <div class="filter-section">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Cari kegiatan..." onkeyup="filterEvents()">
         </div>
-        
-        <div class="semester">
-            <h4>📚 Semester Genap</h4>
-            <ul class="event-list">
-                <li><span class="event-icon"><i class="fas fa-chalkboard"></i></span><span class="event-date">5 Januari 2027</span><span class="event-name">Awal Semester Genap</span></li>
-                <li><span class="event-icon"><i class="fas fa-pen"></i></span><span class="event-date">6-11 Maret 2027</span><span class="event-name">Penilaian Tengah Semester (PTS)</span></li>
-                <li><span class="event-icon"><i class="fas fa-moon"></i></span><span class="event-date">21-26 Maret 2027</span><span class="event-name">Libur Awal Ramadhan</span></li>
-                <li><span class="event-icon"><i class="fas fa-check-circle"></i></span><span class="event-date">1-6 Mei 2027</span><span class="event-name">Penilaian Akhir Tahun (PAT)</span></li>
-                <li><span class="event-icon"><i class="fas fa-graduation-cap"></i></span><span class="event-date">1-10 Juni 2027</span><span class="event-name">Kegiatan Kelulusan & Perpisahan</span></li>
-                <li><span class="event-icon"><i class="fas fa-sun"></i></span><span class="event-date">27 Juni - 11 Juli 2027</span><span class="event-name">Libur Kenaikan Kelas</span></li>
-            </ul>
+        <div class="filter-buttons">
+            <button class="filter-chip active" onclick="filterByMonth('all')">Semua Bulan</button>
+            <button class="filter-chip" onclick="filterByMonth('juli')">Juli</button>
+            <button class="filter-chip" onclick="filterByMonth('agustus')">Agustus</button>
+            <button class="filter-chip" onclick="filterByMonth('september')">September</button>
+            <button class="filter-chip" onclick="filterByMonth('desember')">Desember</button>
+            <button class="filter-chip" onclick="filterByMonth('januari')">Januari</button>
+            <button class="filter-chip" onclick="filterByMonth('maret')">Maret</button>
+            <button class="filter-chip" onclick="filterByMonth('mei')">Mei</button>
+            <button class="filter-chip" onclick="filterByMonth('juni')">Juni</button>
         </div>
     </div>
+    
+    <!-- Countdown to next event -->
+    <div class="countdown-section">
+        <div class="countdown-title">
+            <i class="fas fa-hourglass-half"></i>
+            <span>Menuju Kegiatan Berikutnya</span>
+        </div>
+        <div class="countdown-timer" id="countdown">
+            <div class="countdown-item"><div class="countdown-number" id="days">00</div><div class="countdown-label">Hari</div></div>
+            <div class="countdown-item"><div class="countdown-number" id="hours">00</div><div class="countdown-label">Jam</div></div>
+            <div class="countdown-item"><div class="countdown-number" id="minutes">00</div><div class="countdown-label">Menit</div></div>
+            <div class="countdown-item"><div class="countdown-number" id="seconds">00</div><div class="countdown-label">Detik</div></div>
+        </div>
+        <div id="nextEventName" style="margin-top: 12px; font-size: 0.9rem; opacity: 0.9;"></div>
+    </div>
+    
+    <div class="card" id="eventsCard">
+        <h3><i class="fas fa-calendar-week"></i> Kegiatan Sekolah</h3>
+        <div id="eventsContainer"></div>
+    </div>
 
-    <div style="text-align: center; margin: 30px 0;"><a href="index.html" class="back-button"><i class="fas fa-home"></i> Kembali ke Halaman Utama</a></div>
+    <div class="reference-box" onclick="window.open('https://www.kalenderpendidikan.com/jawatimur-2026/', '_blank')">
+        <div><i class="fas fa-external-link-alt" style="font-size: 2rem; color: #f59e0b;"></i></div>
+        <div style="flex:1"><strong>📅 Referensi resmi provinsi:</strong> Lihat kalender pendidikan Jawa Timur Tahun 2026 untuk informasi lengkap</div>
+        <div><i class="fas fa-arrow-right"></i></div>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <button class="download-btn" onclick="downloadCalendar()"><i class="fas fa-download"></i> Unduh Kalender (PDF)</button>
+        <button class="download-btn" onclick="shareCalendar()"><i class="fas fa-share-alt"></i> Bagikan Kalender</button>
+    </div>
+    
+    <a href="index.html" class="back-button"><i class="fas fa-home"></i> Kembali ke Halaman Utama</a>
 </main>
+
 <footer class="footer">
-    <div class="container"><div class="footer-content"><div class="footer-col"><h4>SD Negeri 3 Ngantru</h4><p>Jln Sawahan, Bayanan, Ngantru<br>Kec. Ngantang, Kab. Malang</p></div></div><div class="copyright">&copy; 2026 SD Negeri 3 NGANTRU | Go Digital Sekolahku</div></div>
+    <div class="container">
+        <div class="copyright">&copy; 2026 SD Negeri 3 NGANTRU | Kalender Akademik Interaktif | Referensi: Kalender Pendidikan Jawa Timur 2026</div>
+    </div>
 </footer>
+
+<div class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fas fa-arrow-up"></i>
+</div>
+
+<div id="eventModal" class="modal">
+    <div class="modal-content">
+        <i class="fas fa-calendar-check" style="font-size: 3rem; color: #0f6b52;"></i>
+        <h3 id="modalTitle"></h3>
+        <p id="modalDesc"></p>
+        <button onclick="closeModal()">Tutup</button>
+    </div>
+</div>
+
+<script>
+    // Data Events
+    const events = [
+        { name: "Masa Pengenalan Lingkungan Sekolah (MPLS)", dateStart: "2026-07-01", dateEnd: "2026-07-15", semester: "ganjil", month: "juli", icon: "fa-flag-checkered", desc: "Kegiatan pengenalan lingkungan sekolah untuk siswa baru." },
+        { name: "Awal Tahun Pelajaran", dateStart: "2026-07-16", dateEnd: "2026-07-16", semester: "ganjil", month: "juli", icon: "fa-chalkboard", desc: "Memulai tahun ajaran baru 2025/2026." },
+        { name: "Upacara HUT Kemerdekaan RI", dateStart: "2026-08-17", dateEnd: "2026-08-17", semester: "ganjil", month: "agustus", icon: "fa-star", desc: "Peringatan HUT ke-81 Kemerdekaan RI." },
+        { name: "Penilaian Tengah Semester (PTS)", dateStart: "2026-09-23", dateEnd: "2026-09-27", semester: "ganjil", month: "september", icon: "fa-pen", desc: "Evaluasi tengah semester ganjil." },
+        { name: "Libur Semester Ganjil", dateStart: "2026-12-24", dateEnd: "2026-12-29", semester: "ganjil", month: "desember", icon: "fa-moon", desc: "Libur akhir semester ganjil.", isHoliday: true },
+        { name: "Awal Semester Genap", dateStart: "2027-01-05", dateEnd: "2027-01-05", semester: "genap", month: "januari", icon: "fa-chalkboard", desc: "Memulai semester genap." },
+        { name: "Penilaian Tengah Semester (PTS)", dateStart: "2027-03-06", dateEnd: "2027-03-11", semester: "genap", month: "maret", icon: "fa-pen", desc: "Evaluasi tengah semester genap." },
+        { name: "Libur Awal Ramadhan", dateStart: "2027-03-21", dateEnd: "2027-03-26", semester: "genap", month: "maret", icon: "fa-moon", desc: "Libur menyambut bulan Ramadhan.", isHoliday: true },
+        { name: "Penilaian Akhir Tahun (PAT)", dateStart: "2027-05-01", dateEnd: "2027-05-06", semester: "genap", month: "mei", icon: "fa-check-circle", desc: "Penilaian akhir tahun pelajaran." },
+        { name: "Kegiatan Kelulusan & Perpisahan", dateStart: "2027-06-01", dateEnd: "2027-06-10", semester: "genap", month: "juni", icon: "fa-graduation-cap", desc: "Acara kelulusan dan perpisahan siswa kelas 6." },
+        { name: "Libur Kenaikan Kelas", dateStart: "2027-06-27", dateEnd: "2027-07-11", semester: "genap", month: "juni", icon: "fa-sun", desc: "Libur akhir tahun ajaran.", isHoliday: true }
+    ];
+    
+    let currentTab = 'all';
+    let currentMonth = 'all';
+    
+    function renderEvents() {
+        let filtered = events;
+        
+        // Filter by tab
+        if (currentTab !== 'all') {
+            if (currentTab === 'libur') {
+                filtered = filtered.filter(e => e.isHoliday === true);
+            } else {
+                filtered = filtered.filter(e => e.semester === currentTab);
+            }
+        }
+        
+        // Filter by month
+        if (currentMonth !== 'all') {
+            filtered = filtered.filter(e => e.month === currentMonth);
+        }
+        
+        // Search filter
+        const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+        if (searchTerm) {
+            filtered = filtered.filter(e => e.name.toLowerCase().includes(searchTerm));
+        }
+        
+        // Group by semester for display
+        const ganjilEvents = filtered.filter(e => e.semester === 'ganjil');
+        const genapEvents = filtered.filter(e => e.semester === 'genap');
+        
+        let html = '';
+        
+        if (currentTab === 'all' || currentTab === 'ganjil') {
+            if (ganjilEvents.length > 0) {
+                html += `<div class="semester"><h4>📖 Semester Ganjil</h4><ul class="event-list">`;
+                ganjilEvents.forEach(event => {
+                    html += `<li onclick="showEventDetail('${event.name}', '${event.desc}')">
+                        <span class="event-icon"><i class="fas ${event.icon}"></i></span>
+                        <span class="event-date">${formatDateRange(event.dateStart, event.dateEnd)}</span>
+                        <span class="event-name">${event.name}</span>
+                    </li>`;
+                });
+                html += `</ul></div>`;
+            }
+        }
+        
+        if (currentTab === 'all' || currentTab === 'genap') {
+            if (genapEvents.length > 0) {
+                html += `<div class="semester"><h4>📚 Semester Genap</h4><ul class="event-list">`;
+                genapEvents.forEach(event => {
+                    html += `<li onclick="showEventDetail('${event.name}', '${event.desc}')">
+                        <span class="event-icon"><i class="fas ${event.icon}"></i></span>
+                        <span class="event-date">${formatDateRange(event.dateStart, event.dateEnd)}</span>
+                        <span class="event-name">${event.name}</span>
+                    </li>`;
+                });
+                html += `</ul></div>`;
+            }
+        }
+        
+        if (filtered.length === 0) {
+            html = '<div style="text-align:center; padding:40px;"><i class="fas fa-search" style="font-size:3rem; opacity:0.3;"></i><p>Tidak ada kegiatan yang ditemukan</p></div>';
+        }
+        
+        document.getElementById('eventsContainer').innerHTML = html;
+        updateCountdown();
+    }
+    
+    function formatDateRange(start, end) {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        if (start === end) {
+            return startDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+        return `${startDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - ${endDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+    }
+    
+    function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.closest('.tab-btn').classList.add('active');
+        renderEvents();
+    }
+    
+    function filterByMonth(month) {
+        currentMonth = month;
+        document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+        event.target.classList.add('active');
+        renderEvents();
+    }
+    
+    function filterEvents() {
+        renderEvents();
+    }
+    
+    function updateCountdown() {
+        const now = new Date();
+        let nextEvent = null;
+        let minDiff = Infinity;
+        
+        events.forEach(event => {
+            const eventDate = new Date(event.dateStart);
+            const diff = eventDate - now;
+            if (diff > 0 && diff < minDiff) {
+                minDiff = diff;
+                nextEvent = event;
+            }
+        });
+        
+        if (nextEvent) {
+            const diff = new Date(nextEvent.dateStart) - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (86400000)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (3600000)) / (1000 * 60));
+            const seconds = Math.floor((diff % (60000)) / 1000);
+            
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            document.getElementById('nextEventName').textContent = `🎯 ${nextEvent.name}`;
+        } else {
+            document.getElementById('nextEventName').textContent = '✨ Tidak ada kegiatan terjadwal';
+        }
+    }
+    
+    function showEventDetail(name, desc) {
+        document.getElementById('modalTitle').textContent = name;
+        document.getElementById('modalDesc').textContent = desc;
+        document.getElementById('eventModal').style.display = 'flex';
+    }
+    
+    function closeModal() {
+        document.getElementById('eventModal').style.display = 'none';
+    }
+    
+    function showNotification(msg) {
+        const modal = document.createElement('div');
+        modal.style.position = 'fixed';
+        modal.style.top = '20px';
+        modal.style.right = '20px';
+        modal.style.background = '#0f6b52';
+        modal.style.color = 'white';
+        modal.style.padding = '12px 24px';
+        modal.style.borderRadius = '50px';
+        modal.style.zIndex = '1001';
+        modal.style.animation = 'fadeInUp 0.3s';
+        modal.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+        document.body.appendChild(modal);
+        setTimeout(() => modal.remove(), 3000);
+    }
+    
+    function downloadCalendar() {
+        showNotification('📄 Mengunduh kalender... Silakan cek folder download Anda');
+        // Simulasi download - bisa diimplementasikan dengan jsPDF jika diperlukan
+        const element = document.createElement('a');
+        const content = document.getElementById('eventsContainer').innerHTML;
+        const blob = new Blob([document.title + '\n\n' + content.replace(/<[^>]*>/g, '')], {type: 'text/plain'});
+        element.href = URL.createObjectURL(blob);
+        element.download = 'kalender_akademik_2026.txt';
+        element.click();
+    }
+    
+    function shareCalendar() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Kalender Akademik SD Negeri 3 Ngantru',
+                text: 'Lihat jadwal kegiatan sekolah tahun ajaran 2025/2026',
+                url: window.location.href
+            });
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            showNotification('🔗 Link kalender disalin ke clipboard!');
+        }
+    }
+    
+    // Scroll to top button
+    window.addEventListener('scroll', () => {
+        const scrollBtn = document.querySelector('.scroll-top');
+        if (window.scrollY > 300) {
+            scrollBtn.classList.add('show');
+        } else {
+            scrollBtn.classList.remove('show');
+        }
+    });
+    
+    // Update countdown every second
+    setInterval(updateCountdown, 1000);
+    
+    // Initial render
+    renderEvents();
+    
+    // Close modal on outside click
+    window.onclick = function(event) {
+        const modal = document.getElementById('eventModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
 </body>
 </html>
