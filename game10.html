@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Pancasila Sakti - SDN 3 Ngantru</title>
+    <!-- Tailwind CSS, Google Fonts, & Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+        /* Style list yang bisa diurutkan */
+        .sortable-item {
+            transition: all 0.2s ease;
+            cursor: grab;
+        }
+        .sortable-item:active {
+            cursor: grabbing;
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-red-50 to-emerald-50/60 min-h-screen flex flex-col justify-between text-slate-800">
+
+    <!-- Header Identitas Sekolah -->
+    <header class="bg-gradient-to-r from-red-800 to-emerald-800 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-red-800 font-bold text-xl shadow shadow-black/20">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xs md:text-sm leading-none uppercase tracking-wide">Pancasila Sakti</h1>
+                    <p class="text-[10px] text-red-200 mt-0.5">SDN 3 Ngantru</p>
+                </div>
+            </div>
+            <a href="game.html" class="bg-red-700/50 hover:bg-amber-500 hover:text-emerald-950 border border-red-500/30 px-4 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fas fa-arrow-left"></i> Menu Game
+            </a>
+        </div>
+    </header>
+
+    <!-- Confetti Canvas untuk Selebrasi -->
+    <canvas id="confettiCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
+
+    <!-- Workspace Utama Game -->
+    <main class="max-w-xl w-full mx-auto p-4 flex-1 flex flex-col justify-center">
+
+        <!-- SCREEN 1: MENU UTAMA -->
+        <div id="screenMenu" class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-600 text-center space-y-6">
+            <div class="space-y-2">
+                <span class="bg-red-100 text-red-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Game Board #10</span>
+                <h2 class="text-3xl font-extrabold text-emerald-950 leading-tight">Pancasila Sakti 🇮🇩</h2>
+                <p class="text-slate-500 text-sm">Mari belajar mengamalkan pilar bangsa! Cocokkan lambang Garuda dan susun sila Pancasila secara runtut dan tepat.</p>
+            </div>
+
+            <!-- Dashboard Rekor Belajar -->
+            <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 grid grid-cols-2 gap-2 text-left">
+                <div>
+                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider leading-none">Skor Susun Sila</p>
+                    <p class="text-lg font-black text-emerald-800 mt-1" id="highScoreSort">0 Poin</p>
+                </div>
+                <div class="border-l border-emerald-100 pl-4">
+                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider leading-none">Skor Pasang Lambang</p>
+                    <p class="text-lg font-black text-emerald-800 mt-1" id="highScoreMatch">0 Poin</p>
+                </div>
+            </div>
+
+            <!-- Pemilihan Kategori Permainan -->
+            <div class="space-y-3 text-left">
+                <label class="text-xs font-extrabold text-slate-400 uppercase tracking-widest block pl-1">Pilih Mode Belajar Pancasila:</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <button onclick="startSortGame()" class="border-2 border-emerald-600 bg-emerald-50 text-emerald-950 font-bold p-4 rounded-2xl flex items-center gap-3 transition text-sm text-left hover:bg-emerald-100/40">
+                        <span class="text-3xl">📜</span>
+                        <div>
+                            <p class="font-extrabold">1. Susun Sila</p>
+                            <p class="text-[10px] text-slate-500 font-medium leading-normal">Urutkan bunyi Sila ke-1 sampai ke-5 secara runtut.</p>
+                        </div>
+                    </button>
+                    <button onclick="startMatchGame()" class="border-2 border-slate-200 bg-white text-slate-700 font-bold p-4 rounded-2xl flex items-center gap-3 transition text-sm text-left hover:bg-red-50/40 hover:border-red-400">
+                        <span class="text-3xl">🛡️</span>
+                        <div>
+                            <p class="font-extrabold text-slate-800">2. Pasang Lambang</p>
+                            <p class="text-[10px] text-slate-500 font-medium leading-normal">Jodohkan lambang perisai dengan teks sila Pancasila.</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: GAMEPLAY SUSUN SILA -->
+        <div id="screenSort" class="hidden bg-white rounded-3xl p-5 shadow-xl border-4 border-emerald-600 space-y-4">
+            <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-bold text-slate-400">STATUS:</span>
+                    <strong class="text-xs font-extrabold text-emerald-800">MENGURUTKAN SILA</strong>
+                </div>
+                <div class="text-right">
+                    <button onclick="backToMenu()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-lg font-bold transition">Keluar</button>
+                </div>
+            </div>
+
+            <div class="bg-amber-50 rounded-2xl p-3 border border-amber-100 text-center">
+                <p class="text-xs font-bold text-amber-900 leading-relaxed">Geser atau gunakan tombol panah <i class="fas fa-arrows-alt-v"></i> untuk mengurutkan Sila dari nomor 1 sampai 5!</p>
+            </div>
+
+            <!-- List Sila yang Bisa Diurutkan -->
+            <div class="space-y-2.5" id="sortListContainer">
+                <!-- Diisi Dinamis via JS -->
+            </div>
+
+            <!-- Tombol Periksa Jawaban -->
+            <button onclick="checkSortOrder()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm py-3.5 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+                Periksa Urutan Sila <i class="fas fa-check-double"></i>
+            </button>
+        </div>
+
+        <!-- SCREEN 3: GAMEPLAY PASANG LAMBANG -->
+        <div id="screenMatch" class="hidden bg-white rounded-3xl p-5 shadow-xl border-4 border-emerald-600 space-y-4">
+            <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-bold text-slate-400">SKOR:</span>
+                    <strong class="text-base font-black text-emerald-800" id="matchScore">0</strong>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] font-bold text-slate-400">SOAL:</span>
+                    <strong class="text-xs font-black text-slate-700"><span id="matchIndex">1</span>/5</strong>
+                </div>
+            </div>
+
+            <!-- Sesi Pertanyaan Pasang Lambang -->
+            <div class="bg-gradient-to-br from-red-50 to-amber-50/50 rounded-2xl p-4 border border-red-100 text-center flex flex-col items-center justify-center space-y-3">
+                <p class="text-[10px] font-extrabold text-red-700 uppercase tracking-widest leading-none">Manakah Lambang dari Sila Berikut?</p>
+                <h3 class="text-base font-black text-slate-800 leading-snug px-2" id="matchTargetSilaText">Ketuhanan Yang Maha Esa</h3>
+            </div>
+
+            <!-- Grid Pilihan Lambang SVG -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 justify-center" id="matchSymbolsGrid">
+                <!-- Lambang-lambang disisipkan dinamis via JS -->
+            </div>
+
+            <!-- Feedback Pesan Pop-up kecil -->
+            <div id="matchFeedback" class="h-6 text-center text-xs font-extrabold uppercase opacity-0 transition-all duration-300">BENAR!</div>
+        </div>
+
+        <!-- SCREEN 4: GAME OVER -->
+        <div id="screenGameOver" class="hidden bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-500 text-center space-y-6 animate-fadeIn">
+            <div class="space-y-1">
+                <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-500 text-2xl mx-auto mb-2 animate-bounce">
+                    <i class="fas fa-shield-alt text-3xl"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-emerald-950 leading-none">Siswa Pancasila!</h2>
+                <p class="text-slate-500 text-xs">Rapor pemahaman nilai luhur bangsa Anda:</p>
+            </div>
+
+            <!-- Penilaian Bintang -->
+            <div class="flex justify-center gap-3 text-3xl my-2" id="starContainer">
+                <!-- Bintang dinamis -->
+            </div>
+
+            <!-- Rekap Nilai -->
+            <div class="bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100 text-left space-y-2">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Mode Game:</span>
+                    <strong class="text-emerald-800" id="endGameModeText">Susun Sila</strong>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Skor Akhir:</span>
+                    <strong class="text-2xl font-black text-emerald-800" id="endScoreValue">0</strong>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Tingkat Akurasi:</span>
+                    <strong class="text-emerald-800" id="endAccuracyValue">100%</strong>
+                </div>
+            </div>
+
+            <div id="newHighScoreBadge" class="hidden bg-amber-500 text-emerald-950 font-black text-xs px-4 py-2.5 rounded-2xl">
+                🎉 PRESTASI LUAR BIASA! REKOR SKOR BARU DICAPAI!
+            </div>
+
+            <!-- Navigasi -->
+            <button onclick="backToMenu()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm py-3.5 rounded-2xl shadow-lg transition">
+                <i class="fas fa-home"></i> Kembali Ke Menu Utama
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer Identitas Sekolah -->
+    <footer class="text-center py-4 text-xs text-emerald-800 bg-emerald-100/50 border-t border-emerald-200">
+        <p>&copy; 2026 SDN 3 Ngantru. Program Edukasi Karakter & Kebangsaan Digital.</p>
+    </footer>
+
+    <!-- JS Logic -->
+    <script>
+        // ============================================================
+        // SYNTHESIZER AUDIO DIGITAL (NADA SARON SLENDRO)
+        // ============================================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSaronTone(frequency, duration = 0.8) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const now = audioCtx.currentTime;
+                
+                // Resonansi pelat perunggu saron
+                const overtones = [1.0, 2.76, 5.4, 8.1];
+                const gains = [0.6, 0.25, 0.1, 0.05];
+
+                const masterGain = audioCtx.createGain();
+                masterGain.gain.setValueAtTime(0.12, now);
+                masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                masterGain.connect(audioCtx.destination);
+
+                overtones.forEach((multiplier, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const oscGain = audioCtx.createGain();
+
+                    osc.type = index === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(frequency * multiplier, now);
+                    oscGain.gain.setValueAtTime(gains[index], now);
+
+                    osc.connect(oscGain);
+                    oscGain.connect(masterGain);
+
+                    osc.start(now);
+                    osc.stop(now + duration);
+                });
+            } catch (err) {
+                console.log("Audio Gamelan error:", err);
+            }
+        }
+
+        function playSound(type) {
+            if (type === 'correct') {
+                playSaronTone(392, 0.5); // Sol
+                setTimeout(() => playSaronTone(524, 0.6), 120); // Do Tinggi
+            } else if (type === 'wrong') {
+                playSaronTone(220, 0.6); // Low La
+            } else if (type === 'click') {
+                playSaronTone(330, 0.2); // Mi
+            } else if (type === 'victory') {
+                const notes = [262, 330, 392, 524];
+                notes.forEach((freq, idx) => {
+                    setTimeout(() => playSaronTone(freq, 1.0), idx * 150);
+                });
+            }
+        }
+
+        // ============================================================
+        // DATABASE DATA SILA & LAMBANG (VEKTOR SVG)
+        // ============================================================
+        const pancasilaData = [
+            {
+                number: 1,
+                text: "Ketuhanan Yang Maha Esa",
+                symbolName: "Bintang",
+                svg: `<svg viewBox="0 0 100 100" class="w-14 h-14 md:w-16 md:h-16"><rect width="100" height="100" fill="#1e1e1e" rx="15"/><polygon points="50,15 61,38 86,41 68,59 72,84 50,72 28,84 32,59 14,41 39,38" fill="#fcd34d"/></svg>`
+            },
+            {
+                number: 2,
+                text: "Kemanusiaan yang Adil dan Beradab",
+                symbolName: "Rantai",
+                svg: `<svg viewBox="0 0 100 100" class="w-14 h-14 md:w-16 md:h-16"><rect width="100" height="100" fill="#dc2626" rx="15"/><circle cx="40" cy="50" r="16" fill="none" stroke="#fcd34d" stroke-width="6"/><circle cx="60" cy="50" r="16" fill="none" stroke="#fcd34d" stroke-width="6"/><rect x="42" y="44" width="16" height="12" fill="#fcd34d"/></svg>`
+            },
+            {
+                number: 3,
+                text: "Persatuan Indonesia",
+                symbolName: "Pohon Beringin",
+                svg: `<svg viewBox="0 0 100 100" class="w-14 h-14 md:w-16 md:h-16"><rect width="100" height="100" fill="#f8fafc" rx="15" stroke="#e2e8f0" stroke-width="2"/><path d="M47,60 L53,60 L53,80 L47,80 Z" fill="#78350f"/><circle cx="50" cy="45" r="22" fill="#15803d"/><circle cx="37" cy="50" r="15" fill="#166534"/><circle cx="63" cy="50" r="15" fill="#166534"/><circle cx="50" cy="32" r="15" fill="#15803d"/></svg>`
+            },
+            {
+                number: 4,
+                text: "Kerakyatan yang Dipimpin oleh Hikmat Kebijaksanaan dalam Permusyawaratan/Perwakilan",
+                textShort: "Kerakyatan yang Dipimpin oleh Hikmat Kebijaksanaan...",
+                symbolName: "Kepala Banteng",
+                svg: `<svg viewBox="0 0 100 100" class="w-14 h-14 md:w-16 md:h-16"><rect width="100" height="100" fill="#dc2626" rx="15"/><path d="M50,30 Q30,25 35,50 Q40,75 50,80 Q60,75 65,50 Q70,25 50,30 Z" fill="#1e293b"/><path d="M35,45 Q20,30 30,25 Q40,30 35,45 Z" fill="#f8fafc"/><path d="M65,45 Q80,30 70,25 Q60,30 65,45 Z" fill="#f8fafc"/></svg>`
+            },
+            {
+                number: 5,
+                text: "Keadilan Sosial bagi Seluruh Rakyat Indonesia",
+                symbolName: "Padi dan Kapas",
+                svg: `<svg viewBox="0 0 100 100" class="w-14 h-14 md:w-16 md:h-16"><rect width="100" height="100" fill="#f8fafc" rx="15" stroke="#e2e8f0" stroke-width="2"/><path d="M35,80 Q30,50 40,25" fill="none" stroke="#eab308" stroke-width="4"/><circle cx="33" cy="70" r="4" fill="#eab308"/><circle cx="31" cy="58" r="4" fill="#eab308"/><circle cx="33" cy="46" r="4" fill="#eab308"/><circle cx="36" cy="34" r="4" fill="#eab308"/><path d="M65,80 Q70,50 60,25" fill="none" stroke="#16a34a" stroke-width="4"/><circle cx="68" cy="65" r="6" fill="#f8fafc" stroke="#16a34a" stroke-width="2.5"/><circle cx="66" cy="51" r="6" fill="#f8fafc" stroke="#16a34a" stroke-width="2.5"/><circle cx="62" cy="37" r="6" fill="#f8fafc" stroke="#16a34a" stroke-width="2.5"/></svg>`
+            }
+        ];
+
+        let gameMode = 'sort'; // 'sort' or 'match'
+        let currentMatchScore = 0;
+        let currentMatchIndex = 1;
+        let matchQuestions = [];
+        let matchCorrectNumber = 0;
+        let matchCorrectAnswers = 0;
+
+        const LOCAL_STORAGE_KEY_SORT = 'high_score_pancasila_sort';
+        const LOCAL_STORAGE_KEY_MATCH = 'high_score_pancasila_match';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadHighScores();
+        });
+
+        function loadHighScores() {
+            const savedSort = localStorage.getItem(LOCAL_STORAGE_KEY_SORT) || 0;
+            const savedMatch = localStorage.getItem(LOCAL_STORAGE_KEY_MATCH) || 0;
+            document.getElementById('highScoreSort').textContent = `${savedSort} Poin`;
+            document.getElementById('highScoreMatch').textContent = `${savedMatch} Poin`;
+        }
+
+        // ============================================================
+        // GAME MODE 1: SUSUN SILA
+        // ============================================================
+        let sortItems = [];
+
+        function startSortGame() {
+            playSound('click');
+            gameMode = 'sort';
+            
+            // Buat urutan acak sila
+            sortItems = [...pancasilaData].sort(() => Math.random() - 0.5);
+            
+            renderSortList();
+            
+            document.getElementById('screenMenu').classList.add('hidden');
+            document.getElementById('screenSort').classList.remove('hidden');
+        }
+
+        function renderSortList() {
+            const container = document.getElementById('sortListContainer');
+            container.innerHTML = '';
+
+            sortItems.forEach((item, index) => {
+                const li = document.createElement('div');
+                li.className = "sortable-item bg-slate-50 border-2 border-slate-200 hover:border-emerald-500 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-sm";
+                li.dataset.index = index;
+                li.innerHTML = `
+                    <div class="flex items-center gap-3 flex-1">
+                        <span class="w-8 h-8 rounded-full bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs" id="rank-num-${index}">?</span>
+                        <p class="text-xs md:text-sm font-semibold text-slate-700 leading-snug">${item.text}</p>
+                    </div>
+                    <div class="flex flex-col gap-1.5 justify-center">
+                        <button onclick="moveItem(${index}, -1)" class="w-8 h-8 bg-emerald-50 hover:bg-emerald-100 rounded-full text-emerald-800 flex items-center justify-center text-xs btn-bounce">
+                            <i class="fas fa-chevron-up"></i>
+                        </button>
+                        <button onclick="moveItem(${index}, 1)" class="w-8 h-8 bg-emerald-50 hover:bg-emerald-100 rounded-full text-emerald-800 flex items-center justify-center text-xs btn-bounce">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(li);
+            });
+        }
+
+        function moveItem(index, direction) {
+            playSound('click');
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= sortItems.length) return;
+
+            // Tukar posisi di array
+            const temp = sortItems[index];
+            sortItems[index] = sortItems[targetIndex];
+            sortItems[targetIndex] = temp;
+
+            renderSortList();
+        }
+
+        function checkSortOrder() {
+            let correctCount = 0;
+            const items = document.querySelectorAll('.sortable-item');
+
+            sortItems.forEach((item, index) => {
+                const rankBadge = document.getElementById(`rank-num-${index}`);
+                const element = items[index];
+
+                if (item.number === index + 1) {
+                    correctCount++;
+                    rankBadge.textContent = item.number;
+                    rankBadge.className = "w-8 h-8 rounded-full bg-emerald-500 text-white font-black flex items-center justify-center text-xs animate-pulse";
+                    element.className = "sortable-item bg-emerald-50 border-2 border-emerald-500 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-sm";
+                } else {
+                    rankBadge.textContent = "X";
+                    rankBadge.className = "w-8 h-8 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center text-xs";
+                    element.className = "sortable-item bg-rose-50 border-2 border-rose-200 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-sm";
+                }
+            });
+
+            if (correctCount === 5) {
+                playSound('correct');
+                setTimeout(() => {
+                    endGame(100, 100); // 100% Benar
+                }, 1200);
+            } else {
+                playSound('wrong');
+                // Beri waktu 2 detik agar siswa menyadari kesalahan, lalu atur kembali tombol
+                setTimeout(() => {
+                    renderSortList();
+                }, 2000);
+            }
+        }
+
+        // ============================================================
+        // GAME MODE 2: PASANG LAMBANG
+        // ============================================================
+        function startMatchGame() {
+            playSound('click');
+            gameMode = 'match';
+            currentMatchScore = 0;
+            currentMatchIndex = 1;
+            matchCorrectAnswers = 0;
+
+            document.getElementById('matchScore').textContent = "0";
+            document.getElementById('matchIndex').textContent = "1";
+
+            // Acak urutan pertanyaan sila
+            matchQuestions = [...pancasilaData].sort(() => Math.random() - 0.5);
+
+            setupMatchQuestion();
+
+            document.getElementById('screenMenu').classList.add('hidden');
+            document.getElementById('screenMatch').classList.remove('hidden');
+        }
+
+        function setupMatchQuestion() {
+            const currentQ = matchQuestions[currentMatchIndex - 1];
+            matchCorrectNumber = currentQ.number;
+
+            document.getElementById('matchIndex').textContent = currentMatchIndex;
+            document.getElementById('matchTargetSilaText').textContent = currentQ.text;
+
+            // Render Pilihan Lambang (Acak kelima lambang Pancasila)
+            const symbolsPool = [...pancasilaData].sort(() => Math.random() - 0.5);
+            const grid = document.getElementById('matchSymbolsGrid');
+            grid.innerHTML = '';
+
+            symbolsPool.forEach((item) => {
+                const btn = document.createElement('button');
+                btn.className = "match-symbol-btn bg-slate-50 hover:bg-emerald-50 border-2 border-slate-200 hover:border-emerald-500 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition btn-bounce shadow-sm";
+                btn.innerHTML = `
+                    ${item.svg}
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">${item.symbolName}</span>
+                `;
+                btn.onclick = () => submitMatchAnswer(item.number, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function submitMatchAnswer(selectedNumber, clickedBtn) {
+            const buttons = document.querySelectorAll('.match-symbol-btn');
+            buttons.forEach(btn => btn.disabled = true); // Kunci agar tidak klik ganda
+
+            const feedbackEl = document.getElementById('matchFeedback');
+
+            if (selectedNumber === matchCorrectNumber) {
+                playSound('correct');
+                currentMatchScore += 20;
+                matchCorrectAnswers++;
+                document.getElementById('matchScore').textContent = currentMatchScore;
+
+                clickedBtn.className = "match-symbol-btn bg-emerald-500 border-2 border-emerald-600 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 text-white shadow-md";
+                showFeedback("BENAR! +20 POIN 🇮🇩", "correct");
+            } else {
+                playSound('wrong');
+                clickedBtn.className = "match-symbol-btn bg-rose-500 border-2 border-rose-600 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 text-white shadow-md";
+                
+                // Cari dan tandai jawaban yang benar
+                buttons.forEach(btn => {
+                    if (btn.innerHTML.includes(pancasilaData[matchCorrectNumber - 1].svg)) {
+                        btn.className = "match-symbol-btn bg-emerald-500 border-2 border-emerald-600 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 text-white shadow-md";
+                    }
+                });
+
+                showFeedback("KURANG TEPAT! ❌", "wrong");
+            }
+
+            setTimeout(() => {
+                feedbackEl.className = "h-6 text-center text-xs font-extrabold uppercase tracking-wider opacity-0 transition-all duration-300";
+
+                if (currentMatchIndex < 5) {
+                    currentMatchIndex++;
+                    setupMatchQuestion();
+                } else {
+                    endGame(currentMatchScore, Math.round((matchCorrectAnswers / 5) * 100));
+                }
+            }, 1800);
+        }
+
+        function showFeedback(text, type) {
+            const feedbackEl = document.getElementById('matchFeedback');
+            feedbackEl.textContent = text;
+            if (type === 'correct') {
+                feedbackEl.className = "h-6 text-center text-xs font-extrabold uppercase tracking-wider text-emerald-600 opacity-100 scale-105 transition-all duration-300 animate-bounce";
+            } else {
+                feedbackEl.className = "h-6 text-center text-xs font-extrabold uppercase tracking-wider text-rose-500 opacity-100 transition-all duration-300";
+            }
+        }
+
+        // ============================================================
+        // AKHIR PERMAINAN & EVALUASI NILAI
+        // ============================================================
+        function endGame(finalScore, accuracy) {
+            playSound('victory');
+
+            document.getElementById('screenSort').classList.add('hidden');
+            document.getElementById('screenMatch').classList.add('hidden');
+            document.getElementById('screenGameOver').classList.remove('hidden');
+
+            document.getElementById('endGameModeText').textContent = gameMode === 'sort' ? 'Susun Sila' : 'Pasang Lambang';
+            document.getElementById('endScoreValue').textContent = `${finalScore} Poin`;
+            document.getElementById('endAccuracyValue').textContent = `${accuracy}%`;
+
+            renderStars(accuracy);
+
+            // Kelola High Score
+            const storageKey = gameMode === 'sort' ? LOCAL_STORAGE_KEY_SORT : LOCAL_STORAGE_KEY_MATCH;
+            const oldRecord = parseInt(localStorage.getItem(storageKey)) || 0;
+
+            if (finalScore > oldRecord) {
+                localStorage.setItem(storageKey, finalScore);
+                document.getElementById('newHighScoreBadge').classList.remove('hidden');
+                triggerConfetti();
+            } else {
+                document.getElementById('newHighScoreBadge').classList.add('hidden');
+            }
+        }
+
+        function renderStars(accuracy) {
+            const container = document.getElementById('starContainer');
+            container.innerHTML = '';
+
+            let starsCount = 1;
+            if (accuracy >= 80) {
+                starsCount = 3;
+            } else if (accuracy >= 40) {
+                starsCount = 2;
+            }
+
+            for (let i = 0; i < 3; i++) {
+                const star = document.createElement('i');
+                if (i < starsCount) {
+                    star.className = "fas fa-star text-amber-400 animate-bounce";
+                } else {
+                    star.className = "far fa-star text-slate-300";
+                }
+                container.appendChild(star);
+            }
+        }
+
+        function backToMenu() {
+            playSound('click');
+            document.getElementById('screenGameOver').classList.add('hidden');
+            document.getElementById('screenSort').classList.add('hidden');
+            document.getElementById('screenMatch').classList.add('hidden');
+            document.getElementById('screenMenu').classList.remove('hidden');
+            loadHighScores();
+        }
+
+        // ============================================================
+        // CANVAS CONFETTI CELEBRATION
+        // ============================================================
+        function triggerConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#10b981', '#fbbf24', '#3b82f6', '#ec4899', '#8b5cf6'];
+
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 5 + 3,
+                    d: Math.random() * canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.05 + 0.01,
+                    tiltAngle: 0
+                });
+            }
+
+            let animationFrameId;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let remaining = false;
+
+                particles.forEach((p) => {
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                    p.x += Math.sin(p.tiltAngle);
+                    p.tilt = Math.sin(p.tiltAngle - p.r / 2) * 12;
+
+                    if (p.y <= canvas.height) {
+                        remaining = true;
+                    }
+
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    ctx.stroke();
+                });
+
+                if (remaining) {
+                    animationFrameId = requestAnimationFrame(draw);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            draw();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+    </script>
+</body>
+</html>

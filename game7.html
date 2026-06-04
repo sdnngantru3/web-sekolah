@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Sejarah Kita - SDN 3 Ngantru</title>
+    <!-- Tailwind CSS, Google Fonts, & Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+        
+        .artifact-part {
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center bottom;
+        }
+        .glow-active {
+            filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-emerald-50 to-amber-50/60 min-h-screen flex flex-col justify-between text-slate-800">
+
+    <!-- Header Identitas Sekolah -->
+    <header class="bg-gradient-to-r from-emerald-800 to-teal-700 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-800 font-bold text-xl shadow shadow-black/20">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xs md:text-sm leading-none uppercase tracking-wide">Sejarah Kita</h1>
+                    <p class="text-[10px] text-emerald-200 mt-0.5">SDN 3 Ngantru</p>
+                </div>
+            </div>
+            <a href="game.html" class="bg-emerald-700/50 hover:bg-amber-500 hover:text-emerald-950 border border-emerald-500/30 px-4 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fas fa-arrow-left"></i> Menu Game
+            </a>
+        </div>
+    </header>
+
+    <!-- Confetti Canvas untuk Selebrasi Rekor -->
+    <canvas id="confettiCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
+
+    <!-- Workspace Utama Game -->
+    <main class="max-w-xl w-full mx-auto p-4 flex-1 flex flex-col justify-center">
+
+        <!-- SCREEN 1: MENU UTAMA -->
+        <div id="screenMenu" class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-600 text-center space-y-6">
+            <div class="space-y-2">
+                <span class="bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Game Board #7</span>
+                <h2 class="text-3xl font-extrabold text-emerald-950 leading-tight">Misi Penjelajah Waktu:<br>Sejarah Kita 🕰️</h2>
+                <p class="text-slate-500 text-sm">Selamatkan ingatan sejarah Nusantara! Jawab kuis sejarah dengan benar untuk menyusun kembali Candi Borobudur yang pudar dari garis waktu digital.</p>
+            </div>
+
+            <!-- Dashboard Rekor Belajar -->
+            <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 flex items-center justify-between text-left">
+                <div>
+                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider leading-none">Skor Tertinggi Sejarah</p>
+                    <p class="text-xl font-black text-emerald-800 mt-1" id="highScoreText">0 Poin</p>
+                </div>
+                <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-500">
+                    <i class="fas fa-medal text-lg"></i>
+                </div>
+            </div>
+
+            <!-- Pemilihan Kategori Pembelajaran -->
+            <div class="space-y-4 pt-2">
+                <div class="text-left">
+                    <label class="text-xs font-extrabold text-slate-400 uppercase tracking-widest block mb-2 pl-1">Pilih Garis Waktu Misi:</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <!-- Kategori 1 -->
+                        <button onclick="selectCategory('heroes')" id="cat-heroes" class="category-btn border-2 border-emerald-600 bg-emerald-50 text-emerald-900 font-bold p-3 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-xs">
+                            <i class="fas fa-user-shield text-lg text-emerald-600"></i>
+                            <span>Pahlawan Kita</span>
+                        </button>
+                        <!-- Kategori 2 -->
+                        <button onclick="selectCategory('kingdoms')" id="cat-kingdoms" class="category-btn border-2 border-slate-200 bg-white text-slate-700 font-bold p-3 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-xs">
+                            <i class="fas fa-crown text-lg text-amber-500"></i>
+                            <span>Kerajaan Kuno</span>
+                        </button>
+                        <!-- Kategori 3 -->
+                        <button onclick="selectCategory('heritage')" id="cat-heritage" class="category-btn border-2 border-slate-200 bg-white text-slate-700 font-bold p-3 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-xs">
+                            <i class="fas fa-gong text-lg text-rose-500"></i>
+                            <span>Warisan Budaya</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tombol Mulai -->
+                <button onclick="startGame()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-base py-3.5 rounded-2xl shadow-lg shadow-emerald-600/20 active:scale-95 transition flex items-center justify-center gap-2">
+                    Mulai Jelajah Waktu <i class="fas fa-hourglass-start"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: GAMEPLAY UTAMA -->
+        <div id="screenPlay" class="hidden bg-white rounded-3xl p-5 shadow-xl border-4 border-emerald-600 space-y-4">
+            <!-- Header Status -->
+            <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-bold text-slate-400">SKOR:</span>
+                    <strong class="text-base font-black text-emerald-800" id="currentScore">0</strong>
+                </div>
+                <div class="flex items-center gap-1" id="heartContainer">
+                    <!-- Nyawa/Jantung dinamis -->
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] font-bold text-slate-400">SOAL:</span>
+                    <strong class="text-xs font-black text-slate-700"><span id="currentQuestionIndex">1</span>/5</strong>
+                </div>
+            </div>
+
+            <!-- Visual Monumen Candi Recontruction Area (SVG) -->
+            <div class="bg-gradient-to-b from-amber-50 to-amber-200/50 rounded-2xl p-3 h-40 relative overflow-hidden border border-amber-100 shadow-inner flex flex-col justify-end items-center">
+                <div class="absolute top-2 left-4 text-emerald-800/40 text-xs font-bold uppercase tracking-wider">Garba Griya Restorasi</div>
+                
+                <!-- Animasi Gunung/Awan Hiasan -->
+                <div class="absolute top-4 right-6 text-amber-500/20 text-3xl"><i class="fas fa-sun"></i></div>
+                <div class="absolute top-8 left-10 text-slate-400/20 text-xl"><i class="fas fa-cloud"></i></div>
+
+                <!-- Gambar Monumen Candi SVG Interaktif -->
+                <svg viewBox="0 0 200 120" class="w-48 h-32 z-10">
+                    <!-- Tingkat 1: Fondasi (Base) -->
+                    <rect id="candi-base" class="artifact-part fill-slate-300 opacity-25" x="20" y="100" width="160" height="15" rx="2" />
+                    <!-- Tingkat 2: Badan Selasar Tengah -->
+                    <rect id="candi-body" class="artifact-part fill-slate-400 opacity-25" x="40" y="80" width="120" height="20" rx="2" />
+                    <!-- Tingkat 3: Teras Bundar -->
+                    <polygon id="candi-terrace" class="artifact-part fill-slate-500 opacity-25" points="60,80 70,55 130,55 140,80" />
+                    <!-- Tingkat 4: Stupa-Stupa Samping -->
+                    <g id="candi-stupas" class="artifact-part opacity-25">
+                        <circle cx="75" cy="50" r="6" class="fill-slate-600" />
+                        <line x1="75" y1="44" x2="75" y2="38" stroke="#475569" stroke-width="2" />
+                        <circle cx="125" cy="50" r="6" class="fill-slate-600" />
+                        <line x1="125" y1="44" x2="125" y2="38" stroke="#475569" stroke-width="2" />
+                    </g>
+                    <!-- Tingkat 5: Stupa Agung Puncak (Peak) -->
+                    <g id="candi-peak" class="artifact-part opacity-25">
+                        <path d="M 90,55 C 90,30 110,30 110,55 Z" class="fill-slate-700" />
+                        <line x1="100" y1="32" x2="100" y2="15" stroke="#334155" stroke-width="3" />
+                    </g>
+                </svg>
+
+                <div class="absolute bottom-0 left-0 w-full h-1.5 bg-emerald-800 z-0"></div>
+            </div>
+
+            <!-- Panel Pertanyaan -->
+            <div class="bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100 text-center relative">
+                <span class="absolute -top-3 left-4 bg-emerald-600 text-white text-[9px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider" id="questionCategoryBadge">Pahlawan Nasional</span>
+                <p class="text-slate-700 text-xs md:text-sm font-bold leading-relaxed pt-1" id="questionText">Pertanyaan sejarah Nusantara dimuat di sini...</p>
+            </div>
+
+            <!-- Pilihan Jawaban -->
+            <div class="grid grid-cols-1 gap-2.5" id="choicesGrid">
+                <!-- Pilihan diisi dinamis via JS -->
+            </div>
+
+            <!-- Pesan Balikan (Feedback) -->
+            <div id="feedbackMessage" class="h-6 text-center text-xs font-extrabold uppercase tracking-wider opacity-0 transition-all duration-300">BENAR!</div>
+        </div>
+
+        <!-- SCREEN 3: GAME OVER / EVALUASI AKHIR -->
+        <div id="screenGameOver" class="hidden bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-500 text-center space-y-6">
+            <div class="space-y-1">
+                <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-500 text-2xl mx-auto mb-2 animate-bounce">
+                    <i class="fas fa-hourglass text-3xl"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-emerald-950 leading-none" id="endTitleText">Misi Berhasil!</h2>
+                <p class="text-slate-500 text-xs">Evaluasi keahlian penjelajah waktu sejarah Anda:</p>
+            </div>
+
+            <!-- Penilaian Bintang -->
+            <div class="flex justify-center gap-3 text-3xl my-2" id="starContainer">
+                <!-- Bintang dinamis -->
+            </div>
+
+            <!-- Rekap Nilai -->
+            <div class="bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100 text-left space-y-2">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Kategori Misi:</span>
+                    <strong class="text-emerald-800 text-xs uppercase" id="endCategoryName">Pahlawan Kita</strong>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Skor Akhir:</span>
+                    <strong class="text-2xl font-black text-emerald-800" id="endScoreValue">0</strong>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Bagian Monumen Direstorasi:</span>
+                    <strong class="text-emerald-800" id="endArtifactRestored">0 Bagian 🕋</strong>
+                </div>
+            </div>
+
+            <div id="newHighScoreBadge" class="hidden bg-amber-500 text-emerald-950 font-black text-xs px-4 py-2 rounded-2xl animate-pulse">
+                🎉 PRESTASI BARU: REKOR SKOR TERBARU DICAPAI!
+            </div>
+
+            <!-- Navigasi -->
+            <button onclick="backToMenu()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm py-3.5 rounded-2xl shadow-lg shadow-emerald-600/20 active:scale-95 transition">
+                <i class="fas fa-home"></i> Kembali Ke Menu Utama
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer Identitas Sekolah -->
+    <footer class="text-center py-4 text-xs text-emerald-800 bg-emerald-100/50 border-t border-emerald-200">
+        <p>&copy; 2026 SDN 3 Ngantru. Program Pembelajaran Sejarah & Karakter Bangsa.</p>
+    </footer>
+
+    <script>
+        const historyDatabase = {
+            heroes: [
+                { q: "Siapa pahlawan wanita dari Jepara yang memperjuangkan emansipasi wanita melalui buku \"Habis Gelap Terbitlah Terang\"?", a: ["R.A. Kartini", "Cut Nyak Dhien", "Dewi Sartika", "Martha Christina Tiahahu"], c: 0 },
+                { q: "Siapakah bapak proklamator sekaligus Presiden pertama Republik Indonesia?", a: ["Ir. Soekarno", "Drs. Moh. Hatta", "Soeharto", "Ki Hajar Dewantara"], c: 0 },
+                { q: "Pahlawan yang memimpin pertempuran Surabaya pada tanggal 10 November 1945 dan terkenal dengan pekikan takbirnya adalah...", a: ["Bung Tomo", "Jenderal Sudirman", "Pangeran Diponegoro", "Kapitan Pattimura"], c: 0 },
+                { q: "Jenderal besar Indonesia yang memimpin perang gerilya dalam keadaan sakit ditandu adalah...", a: ["Jenderal Sudirman", "Jenderal Ahmad Yani", "Gatot Subroto", "Slamet Riyadi"], c: 0 },
+                { q: "Pahlawan nasional yang dikenal sebagai Bapak Pendidikan Nasional Republik Indonesia adalah...", a: ["Ki Hajar Dewantara", "Raden Saleh", "Dr. Sutomo", "H.O.S. Cokroaminoto"], c: 0 }
+            ],
+            kingdoms: [
+                { q: "Kerajaan Hindu-Buddha terbesar di Jawa Timur yang terkenal dengan patihnya Gajah Mada dan Sumpah Palapa adalah...", a: ["Majapahit", "Sriwijaya", "Singasari", "Kutai"], c: 0 },
+                { q: "Patih Majapahit yang mengucapkan sumpah untuk menyatukan Nusantara dikenal dengan nama...", a: ["Patih Gajah Mada", "Hayam Wuruk", "Raden Wijaya", "Ken Arok"], c: 0 },
+                { q: "Kerajaan bercorak Buddha di Sumatra yang dikenal sebagai pusat pembelajaran agama Buddha di Asia Tenggara adalah...", a: ["Sriwijaya", "Tarumanegara", "Kutai", "Pajajaran"], c: 0 },
+                { q: "Candi Buddha terbesar di dunia yang dibangun pada masa dinasti Syailendra di Jawa Tengah adalah...", a: ["Candi Borobudur", "Candi Prambanan", "Candi Mendut", "Candi Penataran"], c: 0 },
+                { q: "Raja terkenal dari Kerajaan Singasari yang mengirim ekspedisi Pamalayu adalah...", a: ["Kertanegara", "Ken Arok", "Anusapati", "Tohjaya"], c: 0 }
+            ],
+            heritage: [
+                { q: "Warisan budaya takbenda Indonesia berupa seni menggambar motif pada kain menggunakan malam (lilin) dan canting disebut...", a: ["Batik", "Tenun", "Songket", "Ukiran"], c: 0 },
+                { q: "Alat musik tradisional Jawa Barat yang terbuat dari bambu dan dimainkan dengan cara digoyang bernama...", a: ["Angklung", "Gamelan", "Sasando", "Kolintang"], c: 0 },
+                { q: "Pertunjukan seni bayangan boneka kulit dari Jawa yang membawakan kisah Mahabharata atau Ramayana disebut...", a: ["Wayang Kulit", "Ketoprak", "Ludruk", "Tari Kecak"], c: 0 },
+                { q: "Senjata tradisional khas suku Jawa yang berkelok-kelok dan diakui UNESCO sebagai warisan budaya dunia adalah...", a: ["Keris", "Kujang", "Rencong", "Mandau"], c: 0 },
+                { q: "Alat musik petik tradisional yang berasal dari Pulau Rote, Nusa Tenggara Timur adalah...", a: ["Sasando", "Kecapi", "Angklung", "Gendang"], c: 0 }
+            ]
+        };
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSaronTone(frequency, duration = 0.8) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const now = audioCtx.currentTime;
+                
+                // Representasi overtones pelat saron perunggu
+                const overtones = [1.0, 2.76, 5.4, 8.1];
+                const gains = [0.6, 0.25, 0.1, 0.05];
+
+                const masterGain = audioCtx.createGain();
+                masterGain.gain.setValueAtTime(0.12, now);
+                masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                masterGain.connect(audioCtx.destination);
+
+                overtones.forEach((multiplier, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const oscGain = audioCtx.createGain();
+
+                    osc.type = index === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(frequency * multiplier, now);
+                    oscGain.gain.setValueAtTime(gains[index], now);
+
+                    osc.connect(oscGain);
+                    oscGain.connect(masterGain);
+
+                    osc.start(now);
+                    osc.stop(now + duration);
+                });
+            } catch (err) {
+                console.log("Audio Gamelan error:", err);
+            }
+        }
+
+        function playSound(type) {
+            if (type === 'correct') {
+                playSaronTone(392, 0.5); // Sol
+                setTimeout(() => playSaronTone(524, 0.6), 120); // Do Tinggi
+            } else if (type === 'wrong') {
+                playSaronTone(220, 0.6); // Low La
+            } else if (type === 'click') {
+                playSaronTone(330, 0.2); // Mi
+            } else if (type === 'victory') {
+                const notes = [262, 330, 392, 524];
+                notes.forEach((freq, idx) => {
+                    setTimeout(() => playSaronTone(freq, 1.0), idx * 150);
+                });
+            }
+        }
+
+        // ============================================================
+        // STATE MANAJEMEN GAME
+        // ============================================================
+        let selectedCategoryCode = 'heroes';
+        let currentScore = 0;
+        let livesRemaining = 3;
+        let questionStep = 1;
+        let currentQuestions = [];
+        let correctAnswerIndex = 0;
+        let correctAnswersCount = 0;
+
+        const LOCAL_STORAGE_KEY = 'high_score_sejarah_kita_v7';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadHighScore();
+        });
+
+        function loadHighScore() {
+            const saved = localStorage.getItem(LOCAL_STORAGE_KEY) || 0;
+            document.getElementById('highScoreText').textContent = `${saved} Poin`;
+        }
+
+        function selectCategory(cat) {
+            playSound('click');
+            selectedCategoryCode = cat;
+
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.className = "category-btn border-2 border-slate-200 bg-white text-slate-700 font-bold p-3 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-xs";
+            });
+
+            const activeBtn = document.getElementById(`cat-${cat}`);
+            if (cat === 'heroes') {
+                activeBtn.className = "category-btn border-2 border-emerald-600 bg-emerald-50 text-emerald-900 font-bold p-3 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-xs";
+            } else if (cat === 'kingdoms') {
+                activeBtn.className = "category-btn border-2 border-amber-500 bg-amber-50 text-amber-900 font-bold p-3 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-xs";
+            } else {
+                activeBtn.className = "category-btn border-2 border-rose-500 bg-rose-50 text-rose-900 font-bold p-3 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-xs";
+            }
+        }
+
+        function startGame() {
+            playSound('click');
+            currentScore = 0;
+            livesRemaining = 3;
+            questionStep = 1;
+            correctAnswersCount = 0;
+
+            document.getElementById('currentScore').textContent = "0";
+            document.getElementById('currentQuestionIndex').textContent = "1";
+
+            // Mengambil 5 pertanyaan dari kategori yang dipilih
+            const basePool = historyDatabase[selectedCategoryCode];
+            currentQuestions = [...basePool].sort(() => Math.random() - 0.5).slice(0, 5);
+
+            setupQuestion();
+            updateArtifactDisplay();
+
+            document.getElementById('screenMenu').classList.add('hidden');
+            document.getElementById('screenPlay').classList.remove('hidden');
+        }
+
+        function setupQuestion() {
+            const qData = currentQuestions[questionStep - 1];
+            correctAnswerIndex = qData.c;
+
+            // Judul Kategori
+            const catNames = { heroes: "Pahlawan Kita 🛡️", kingdoms: "Kerajaan Kuno 👑", heritage: "Warisan Budaya 🏮" };
+            document.getElementById('questionCategoryBadge').textContent = catNames[selectedCategoryCode];
+            document.getElementById('questionText').textContent = qData.q;
+            document.getElementById('currentQuestionIndex').textContent = questionStep;
+
+            // Generate Pilihan Jawaban
+            const grid = document.getElementById('choicesGrid');
+            grid.innerHTML = '';
+
+            qData.a.forEach((choice, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "choice-btn w-full bg-slate-50 hover:bg-emerald-50 border-2 border-slate-200 hover:border-emerald-500 font-semibold p-3.5 rounded-2xl text-left text-xs md:text-sm transition btn-bounce flex items-center gap-3";
+                btn.innerHTML = `<span class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">${String.fromCharCode(65 + idx)}</span> <span class="flex-1">${choice}</span>`;
+                btn.onclick = () => submitAnswer(idx, btn);
+                grid.appendChild(btn);
+            });
+
+            updateHeartsUI();
+        }
+
+        function submitAnswer(idx, clickedBtn) {
+            const buttons = document.querySelectorAll('.choice-btn');
+            buttons.forEach(btn => btn.disabled = true); // Kunci tombol
+
+            const feedbackEl = document.getElementById('feedbackMessage');
+
+            if (idx === correctAnswerIndex) {
+                playSound('correct');
+                currentScore += 20;
+                correctAnswersCount++;
+                document.getElementById('currentScore').textContent = currentScore;
+
+                clickedBtn.className = "choice-btn w-full bg-emerald-500 border-2 border-emerald-600 font-semibold p-3.5 rounded-2xl text-left text-xs md:text-sm text-white flex items-center gap-3 shadow-md";
+                showFeedback("Benar! Satu Bagian Terpulihkan 🕰️", "correct");
+            } else {
+                playSound('wrong');
+                livesRemaining--;
+
+                clickedBtn.className = "choice-btn w-full bg-rose-500 border-2 border-rose-600 font-semibold p-3.5 rounded-2xl text-left text-xs md:text-sm text-white flex items-center gap-3 shadow-md";
+                buttons[correctAnswerIndex].className = "choice-btn w-full bg-emerald-500 border-2 border-emerald-600 font-semibold p-3.5 rounded-2xl text-left text-xs md:text-sm text-white flex items-center gap-3 shadow-md";
+                
+                showFeedback("Kurang Tepat! Garis Waktu Terganggu ❌", "wrong");
+                updateHeartsUI();
+            }
+
+            updateArtifactDisplay();
+
+            setTimeout(() => {
+                feedbackEl.className = "h-6 text-center text-xs font-extrabold uppercase tracking-wider opacity-0 transition-all duration-300";
+
+                if (livesRemaining > 0 && questionStep < 5) {
+                    questionStep++;
+                    setupQuestion();
+                } else {
+                    endGame();
+                }
+            }, 1800);
+        }
+
+        function showFeedback(text, type) {
+            const feedbackEl = document.getElementById('feedbackMessage');
+            feedbackEl.textContent = text;
+            if (type === 'correct') {
+                feedbackEl.className = "h-6 text-center text-xs font-extrabold uppercase tracking-wider text-emerald-600 opacity-100 scale-105 transition-all duration-300 animate-bounce";
+            } else {
+                feedbackEl.className = "h-6 text-center text-xs font-extrabold uppercase tracking-wider text-rose-500 opacity-100 transition-all duration-300";
+            }
+        }
+
+        // Mengatur Nyawa/Hearts
+        function updateHeartsUI() {
+            const container = document.getElementById('heartContainer');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const heart = document.createElement('i');
+                if (i < livesRemaining) {
+                    heart.className = "fas fa-heart text-rose-500 text-xs animate-pulse";
+                } else {
+                    heart.className = "far fa-heart text-slate-300 text-xs";
+                }
+                container.appendChild(heart);
+            }
+        }
+
+        function updateArtifactDisplay() {
+            const parts = ["candi-base", "candi-body", "candi-terrace", "candi-stupas", "candi-peak"];
+            
+            // Atur opacity dan efek bersinar pada SVG candi
+            parts.forEach((id, index) => {
+                const element = document.getElementById(id);
+                if (index < correctAnswersCount) {
+                    element.classList.remove('opacity-25');
+                    element.classList.add('opacity-100', 'glow-active');
+                    if (id === 'candi-stupas' || id === 'candi-peak') {
+                        // Atur khusus untuk nested paths/elements
+                        element.style.opacity = "1";
+                    }
+                } else {
+                    element.classList.add('opacity-25');
+                    element.classList.remove('glow-active');
+                    if (id === 'candi-stupas' || id === 'candi-peak') {
+                        element.style.opacity = "0.25";
+                    }
+                }
+            });
+        }
+
+        function endGame() {
+            document.getElementById('screenPlay').classList.add('hidden');
+            document.getElementById('screenGameOver').classList.remove('hidden');
+
+            playSound('victory');
+
+            const catTitles = { heroes: "Pahlawan Kita", kingdoms: "Kerajaan Kuno", heritage: "Warisan Budaya" };
+            document.getElementById('endCategoryName').textContent = catTitles[selectedCategoryCode];
+            document.getElementById('endScoreValue').textContent = `${currentScore} Poin`;
+            document.getElementById('endArtifactRestored').textContent = `${correctAnswersCount} Bagian Candi 🕋`;
+
+            // Tentukan Gelar Bintang
+            renderStars();
+
+            // Atur Rekor Baru
+            const oldRecord = parseInt(localStorage.getItem(LOCAL_STORAGE_KEY)) || 0;
+            if (currentScore > oldRecord) {
+                localStorage.setItem(LOCAL_STORAGE_KEY, currentScore);
+                document.getElementById('newHighScoreBadge').classList.remove('hidden');
+                triggerConfetti();
+            } else {
+                document.getElementById('newHighScoreBadge').classList.add('hidden');
+            }
+        }
+
+        function renderStars() {
+            const container = document.getElementById('starContainer');
+            container.innerHTML = '';
+
+            let starsCount = 1;
+            if (currentScore >= 80) {
+                starsCount = 3;
+                document.getElementById('endTitleText').textContent = "Ahli Sejarah Nusantara! 👑";
+            } else if (currentScore >= 40) {
+                starsCount = 2;
+                document.getElementById('endTitleText').textContent = "Pecinta Sejarah Nusantara! 🌟";
+            } else {
+                document.getElementById('endTitleText').textContent = "Ayo Belajar Lagi! 💪";
+            }
+
+            for (let i = 0; i < 3; i++) {
+                const star = document.createElement('i');
+                if (i < starsCount) {
+                    star.className = "fas fa-star text-amber-400 animate-bounce";
+                } else {
+                    star.className = "far fa-star text-slate-300";
+                }
+                container.appendChild(star);
+            }
+        }
+
+        function backToMenu() {
+            playSound('click');
+            document.getElementById('screenGameOver').classList.add('hidden');
+            document.getElementById('screenMenu').classList.remove('hidden');
+            loadHighScore();
+        }
+
+        // ============================================================
+        // CANVAS CONFETTI CELEBRATION
+        // ============================================================
+        function triggerConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#10b981', '#fbbf24', '#3b82f6', '#ec4899', '#8b5cf6'];
+
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 5 + 3,
+                    d: Math.random() * canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.05 + 0.01,
+                    tiltAngle: 0
+                });
+            }
+
+            let animationFrameId;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let remaining = false;
+
+                particles.forEach((p) => {
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                    p.x += Math.sin(p.tiltAngle);
+                    p.tilt = Math.sin(p.tiltAngle - p.r / 2) * 12;
+
+                    if (p.y <= canvas.height) {
+                        remaining = true;
+                    }
+
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    ctx.stroke();
+                });
+
+                if (remaining) {
+                    animationFrameId = requestAnimationFrame(draw);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            draw();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+    </script>
+</body>
+</html>

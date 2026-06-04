@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Asah Otak (Memori) - SDN 3 Ngantru</title>
+    <!-- Tailwind CSS, Google Fonts, & Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+        
+        /* 3D Flip Card Styles */
+        .perspective-container {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-emerald-50 to-teal-100/60 min-h-screen flex flex-col justify-between text-slate-800">
+
+    <!-- Header Identitas Sekolah -->
+    <header class="bg-gradient-to-r from-emerald-800 to-teal-700 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-800 font-bold text-xl shadow shadow-black/20">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xs md:text-sm leading-none uppercase tracking-wide">Asah Otak Ceria</h1>
+                    <p class="text-[10px] text-emerald-200 mt-0.5">SDN 3 Ngantru</p>
+                </div>
+            </div>
+            <a href="game.html" class="bg-emerald-700/50 hover:bg-amber-500 hover:text-emerald-950 border border-emerald-500/30 px-4 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fas fa-arrow-left"></i> Menu Game
+            </a>
+        </div>
+    </header>
+
+    <!-- Confetti Canvas untuk Selebrasi -->
+    <canvas id="confettiCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
+
+    <!-- Workspace Utama Game -->
+    <main class="max-w-md w-full mx-auto p-4 flex-1 flex flex-col justify-center">
+
+        <!-- SCREEN 1: MENU UTAMA GAME -->
+        <div id="screenMenu" class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-600 text-center space-y-6">
+            <div class="space-y-2">
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Game Board #6</span>
+                <h2 class="text-3xl font-extrabold text-emerald-950 leading-tight">Uji Memori:<br>Asah Otak Sehat 🧠</h2>
+                <p class="text-slate-500 text-sm">Tingkatkan konsentrasi dan daya ingatmu dengan mencocokkan pasangan kartu bergambar sama secepat mungkin!</p>
+            </div>
+
+            <!-- Dashboard Rekor Nilai Terbaik -->
+            <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 grid grid-cols-2 gap-4 text-left">
+                <div>
+                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider leading-none">Langkah Terbaik</p>
+                    <p class="text-xl font-black text-emerald-800 mt-1" id="bestMovesText">--</p>
+                </div>
+                <div class="border-l border-emerald-100 pl-4">
+                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider leading-none">Waktu Tercepat</p>
+                    <p class="text-xl font-black text-emerald-800 mt-1" id="bestTimeText">--</p>
+                </div>
+            </div>
+
+            <!-- Pemilihan Kategori Gambar -->
+            <div class="space-y-4 pt-2">
+                <div class="text-left">
+                    <label class="text-xs font-extrabold text-slate-400 uppercase tracking-widest block mb-2 pl-1">Pilih Tema Gambar:</label>
+                    <div class="grid grid-cols-3 gap-2" id="themeContainer">
+                        <button onclick="selectCategory('school')" id="cat-school" class="theme-btn border-2 border-emerald-600 bg-emerald-50 text-emerald-900 font-bold p-3 rounded-2xl flex flex-col items-center justify-center gap-1.5 transition text-[11px]">
+                            <span class="text-2xl">🎒</span>
+                            <span>Sekolah</span>
+                        </button>
+                        <button onclick="selectCategory('animals')" id="cat-animals" class="theme-btn border-2 border-slate-200 bg-white text-slate-700 font-bold p-3 rounded-2xl flex flex-col items-center justify-center gap-1.5 transition text-[11px]">
+                            <span class="text-2xl">🐅</span>
+                            <span>Satwa</span>
+                        </button>
+                        <button onclick="selectCategory('fruits')" id="cat-fruits" class="theme-btn border-2 border-slate-200 bg-white text-slate-700 font-bold p-3 rounded-2xl flex flex-col items-center justify-center gap-1.5 transition text-[11px]">
+                            <span class="text-2xl">🍎</span>
+                            <span>Buah</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tombol Mulai Game -->
+                <button onclick="startGame()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-base py-3.5 rounded-2xl shadow-lg shadow-emerald-600/20 active:scale-95 transition flex items-center justify-center gap-2">
+                    Mulai Asah Otak <i class="fas fa-play"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: GAMEPLAY UTAMA -->
+        <div id="screenPlay" class="hidden bg-white rounded-3xl p-5 shadow-xl border-4 border-emerald-600 space-y-4">
+            <!-- Statistik Info Live -->
+            <div class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-bold text-slate-400">LANGKAH:</span>
+                    <strong class="text-base font-black text-emerald-800" id="currentMoves">0</strong>
+                </div>
+                <div class="flex items-center gap-1" id="starLiveIndicator">
+                    <i class="fas fa-star text-amber-400 text-xs animate-pulse"></i>
+                    <i class="fas fa-star text-amber-400 text-xs animate-pulse"></i>
+                    <i class="fas fa-star text-amber-400 text-xs animate-pulse"></i>
+                </div>
+                <div class="flex items-center gap-1.5 text-right">
+                    <span class="text-[10px] font-bold text-slate-400">DURASI:</span>
+                    <strong class="text-base font-black text-slate-700" id="currentTimer">0s</strong>
+                </div>
+            </div>
+
+            <!-- Kotak Papan Kartu (4x4 Grid) -->
+            <div class="grid grid-cols-4 gap-2 h-[340px] perspective-container" id="cardBoard">
+                <!-- Disematkan secara dinamis menggunakan JS -->
+            </div>
+
+            <!-- Tombol Darurat / Reset -->
+            <button onclick="resetMatchGame()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
+                <i class="fas fa-sync-alt"></i> Acak Ulang Kartu
+            </button>
+        </div>
+
+        <!-- SCREEN 3: GAME OVER / EVALUASI AKHIR -->
+        <div id="screenGameOver" class="hidden bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-500 text-center space-y-6">
+            <div class="space-y-1">
+                <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-500 text-2xl mx-auto mb-2">
+                    <i class="fas fa-medal text-3xl animate-bounce"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-emerald-950 leading-none" id="endTitleText">Memori Tajam!</h2>
+                <p class="text-slate-500 text-xs">Rapor konsentrasi daya ingat siswa kelas digital:</p>
+            </div>
+
+            <!-- Penilaian Bintang Berdasarkan Hasil Skor -->
+            <div class="flex justify-center gap-3 text-3xl my-2" id="starContainer">
+                <i class="fas fa-star text-amber-400"></i>
+                <i class="fas fa-star text-amber-400"></i>
+                <i class="fas fa-star text-amber-400"></i>
+            </div>
+
+            <!-- Rekap Nilai Akhir -->
+            <div class="bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100 text-left space-y-2">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Tema Bermain:</span>
+                    <strong class="text-emerald-800 text-xs uppercase" id="endThemeName">Peralatan Sekolah</strong>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Total Langkah:</span>
+                    <strong class="text-xl font-black text-emerald-800" id="endMovesValue">0</strong>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Waktu Penyelesaian:</span>
+                    <strong class="text-emerald-800" id="endTimerValue">0 detik ⏱️</strong>
+                </div>
+            </div>
+
+            <div id="newHighScoreBadge" class="hidden bg-amber-500 text-emerald-950 font-black text-xs px-4 py-2.5 rounded-2xl animate-pulse">
+                🎉 PRESTASI BARU: REKOR KONSENTRASI TERATAS DICAPAI!
+            </div>
+
+            <!-- Tombol Navigasi Akhir -->
+            <button onclick="backToMenu()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm py-3.5 rounded-2xl shadow-lg shadow-emerald-600/20 active:scale-95 transition">
+                <i class="fas fa-home"></i> Kembali Ke Menu Utama
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer Identitas Sekolah -->
+    <footer class="text-center py-4 text-xs text-emerald-800 bg-emerald-100/50 border-t border-emerald-200">
+        <p>&copy; 2026 SDN 3 Ngantru. Program Peningkatan Kognitif Cerdas.</p>
+    </footer>
+
+    <script>
+        // ============================================================
+        // DATABASE EMOJI KARTU BELAJAR (8 Pasangan Emojis = 16 Kartu)
+        // ============================================================
+        const emojiDatabase = {
+            school: ['🎒', '✏️', '📚', '📐', '🎨', '🧪', '⏰', '🏆'],
+            animals: ['🐅', '🐘', '🦧', '🦏', '🦅', '🐊', '🦎', '🐢'],
+            fruits: ['🍎', '🍌', '🍉', '🍇', '🍓', '🍍', '🥭', '🥥']
+        };
+
+        // ============================================================
+        // SYNTHESIZER AUDIO DIGITAL (NADA SARON SLENDRO)
+        // ============================================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSaronTone(frequency, duration = 0.8) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const now = audioCtx.currentTime;
+                
+                const overtones = [1.0, 2.76, 5.4, 8.1];
+                const gains = [0.55, 0.25, 0.1, 0.05];
+
+                const masterGain = audioCtx.createGain();
+                masterGain.gain.setValueAtTime(0.12, now);
+                masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                masterGain.connect(audioCtx.destination);
+
+                overtones.forEach((multiplier, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const oscGain = audioCtx.createGain();
+
+                    osc.type = index === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(frequency * multiplier, now);
+                    oscGain.gain.setValueAtTime(gains[index], now);
+
+                    osc.connect(oscGain);
+                    oscGain.connect(masterGain);
+
+                    osc.start(now);
+                    osc.stop(now + duration);
+                });
+            } catch (err) {
+                console.log("Audio Gamelan error:", err);
+            }
+        }
+
+        function playSound(type) {
+            if (type === 'correct') {
+                playSaronTone(392, 0.5); // Sol
+                setTimeout(() => playSaronTone(524, 0.6), 120); // Do Tinggi
+            } else if (type === 'wrong') {
+                playSaronTone(220, 0.6); // Low La
+            } else if (type === 'click') {
+                playSaronTone(330, 0.2); // Mi
+            } else if (type === 'victory') {
+                const notes = [262, 330, 392, 524];
+                notes.forEach((freq, idx) => {
+                    setTimeout(() => playSaronTone(freq, 1.0), idx * 150);
+                });
+            }
+        }
+
+        // ============================================================
+        // STATE MANAJEMEN GAME
+        // ============================================================
+        let selectedCategoryCode = 'school';
+        let movesCount = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let matchCards = [];
+        let flippedCards = [];
+        let matchedCount = 0;
+        let isProcessing = false;
+
+        const LOCAL_STORAGE_KEY_MOVES = 'best_moves_memori_v6';
+        const LOCAL_STORAGE_KEY_TIME = 'best_time_memori_v6';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadBestScore();
+        });
+
+        function loadBestScore() {
+            const bestMoves = localStorage.getItem(LOCAL_STORAGE_KEY_MOVES);
+            const bestTime = localStorage.getItem(LOCAL_STORAGE_KEY_TIME);
+            
+            document.getElementById('bestMovesText').textContent = bestMoves ? `${bestMoves} Langkah` : '--';
+            document.getElementById('bestTimeText').textContent = bestTime ? `${bestTime}s` : '--';
+        }
+
+        function selectCategory(cat) {
+            playSound('click');
+            selectedCategoryCode = cat;
+
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.className = "theme-btn border-2 border-slate-200 bg-white text-slate-700 font-bold p-3 rounded-2xl flex flex-col items-center justify-center gap-1.5 transition text-[11px]";
+            });
+
+            const activeBtn = document.getElementById(`cat-${cat}`);
+            activeBtn.className = "theme-btn border-2 border-emerald-600 bg-emerald-50 text-emerald-900 font-bold p-3 rounded-2xl flex flex-col items-center justify-center gap-1.5 transition text-[11px]";
+        }
+
+        function startGame() {
+            playSound('click');
+            movesCount = 0;
+            timerSeconds = 0;
+            matchedCount = 0;
+            flippedCards = [];
+            isProcessing = false;
+
+            document.getElementById('currentMoves').textContent = "0";
+            document.getElementById('currentTimer').textContent = "0s";
+            updateStarsUI();
+
+            document.getElementById('screenMenu').classList.add('hidden');
+            document.getElementById('screenPlay').classList.remove('hidden');
+
+            // Persiapkan set kartu
+            const baseSet = emojiDatabase[selectedCategoryCode];
+            matchCards = [...baseSet, ...baseSet].sort(() => Math.random() - 0.5);
+
+            buildBoard();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                document.getElementById('currentTimer').textContent = `${timerSeconds}s`;
+                updateStarsUI(); // Evaluasi bintang berkurang perlahan seiring bertambah langkah & waktu
+            }, 1000);
+        }
+
+        // ============================================================
+        // RENDERING PAPAN KARTU
+        // ============================================================
+        function buildBoard() {
+            const board = document.getElementById('cardBoard');
+            board.innerHTML = '';
+
+            matchCards.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.className = "perspective-container cursor-pointer relative h-full w-full";
+                card.innerHTML = `
+                    <div class="flip-card-inner relative w-full h-full rounded-2xl border border-slate-100 shadow shadow-black/10 duration-500">
+                        <!-- Front Face (Warna Belakang Kartu) -->
+                        <div class="card-front absolute w-full h-full bg-gradient-to-br from-emerald-700 to-emerald-900 rounded-2xl flex items-center justify-center text-white border-2 border-emerald-600 shadow-md">
+                            <i class="fas fa-question text-xl text-emerald-300"></i>
+                        </div>
+                        <!-- Back Face (Isi Gambar Emoji) -->
+                        <div class="card-back absolute w-full h-full bg-white rounded-2xl flex items-center justify-center text-3xl border-2 border-emerald-600 shadow-inner">
+                            ${emoji}
+                        </div>
+                    </div>
+                `;
+
+                card.onclick = () => flipCard(card, index, emoji);
+                board.appendChild(card);
+            });
+        }
+
+        // ============================================================
+        // LOGIKA KARTU FLIP & KECOCOKAN
+        // ============================================================
+        function flipCard(cardEl, index, emoji) {
+            if (isProcessing || cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) {
+                return;
+            }
+
+            playSound('click');
+            cardEl.classList.add('flipped');
+            flippedCards.push({ element: cardEl, index: index, emoji: emoji });
+
+            if (flippedCards.length === 2) {
+                movesCount++;
+                document.getElementById('currentMoves').textContent = movesCount;
+                isProcessing = true;
+
+                const card1 = flippedCards[0];
+                const card2 = flippedCards[1];
+
+                if (card1.emoji === card2.emoji) {
+                    // KARTU COCOK!
+                    playSound('correct');
+                    card1.element.classList.add('matched');
+                    card2.element.classList.add('matched');
+                    
+                    // Berikan aksen hijau pudar pada border kartu yang cocok
+                    card1.element.querySelector('.card-back').classList.add('bg-emerald-50');
+                    card2.element.querySelector('.card-back').classList.add('bg-emerald-50');
+
+                    matchedCount += 2;
+                    flippedCards = [];
+                    isProcessing = false;
+
+                    // Cek jika seluruh 16 kartu telah cocok
+                    if (matchedCount === matchCards.length) {
+                        setTimeout(endGame, 600);
+                    }
+                } else {
+                    // KARTU TIDAK COCOK! Balik kembali setelah 1 detik
+                    playSound('wrong');
+                    setTimeout(() => {
+                        card1.element.classList.remove('flipped');
+                        card2.element.classList.remove('flipped');
+                        flippedCards = [];
+                        isProcessing = false;
+                    }, 1000);
+                }
+            }
+        }
+
+        function resetMatchGame() {
+            playSound('click');
+            clearInterval(timerInterval);
+            startGame();
+        }
+
+        // Evaluasi Bintang Dinamis
+        function updateStarsUI(targetContainerId = 'starLiveIndicator') {
+            const container = document.getElementById(targetContainerId);
+            container.innerHTML = '';
+
+            let stars = 3;
+            if (movesCount > 18 || timerSeconds > 60) {
+                stars = 1;
+            } else if (movesCount > 12 || timerSeconds > 35) {
+                stars = 2;
+            }
+
+            for (let i = 0; i < 3; i++) {
+                const star = document.createElement('i');
+                if (i < stars) {
+                    star.className = "fas fa-star text-amber-400 text-xs animate-pulse";
+                } else {
+                    star.className = "far fa-star text-slate-300 text-xs";
+                }
+                container.appendChild(star);
+            }
+            return stars;
+        }
+
+        // ============================================================
+        // AKHIR PERMAINAN & REKOR BARU
+        // ============================================================
+        function endGame() {
+            clearInterval(timerInterval);
+            playSound('victory');
+
+            document.getElementById('screenPlay').classList.add('hidden');
+            document.getElementById('screenGameOver').classList.remove('hidden');
+
+            const categoryNames = { school: "Peralatan Sekolah", animals: "Fauna Nusantara", fruits: "Buah Sehat" };
+            document.getElementById('endThemeName').textContent = categoryNames[selectedCategoryCode];
+            document.getElementById('endMovesValue').textContent = `${movesCount} Langkah`;
+            document.getElementById('endTimerValue').textContent = `${timerSeconds} detik`;
+
+            // Tentukan Gelar Bintang Akhir
+            const finalStars = updateStarsUI('starContainer');
+            if (finalStars === 3) {
+                document.getElementById('endTitleText').textContent = "Ingatan Istimewa! 👑";
+            } else if (finalStars === 2) {
+                document.getElementById('endTitleText').textContent = "Memori Kuat! 🌟";
+            } else {
+                document.getElementById('endTitleText').textContent = "Ayo Coba Lagi! 💪";
+            }
+
+            // Atur Rekor Skor Baru
+            const oldMoves = parseInt(localStorage.getItem(LOCAL_STORAGE_KEY_MOVES)) || Infinity;
+            const oldTime = parseInt(localStorage.getItem(LOCAL_STORAGE_KEY_TIME)) || Infinity;
+
+            let isNewHighScore = false;
+            // Memecahkan rekor jika langkah lebih sedikit ATAU waktu lebih cepat dengan langkah setara
+            if (movesCount < oldMoves || (movesCount === oldMoves && timerSeconds < oldTime)) {
+                localStorage.setItem(LOCAL_STORAGE_KEY_MOVES, movesCount);
+                localStorage.setItem(LOCAL_STORAGE_KEY_TIME, timerSeconds);
+                isNewHighScore = true;
+            }
+
+            if (isNewHighScore) {
+                document.getElementById('newHighScoreBadge').classList.remove('hidden');
+                triggerConfetti();
+            } else {
+                document.getElementById('newHighScoreBadge').classList.add('hidden');
+            }
+        }
+
+        function backToMenu() {
+            playSound('click');
+            document.getElementById('screenGameOver').classList.add('hidden');
+            document.getElementById('screenMenu').classList.remove('hidden');
+            loadBestScore();
+        }
+
+        // ============================================================
+        // CANVAS CONFETTI CELEBRATION
+        // ============================================================
+        function triggerConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#10b981', '#fbbf24', '#3b82f6', '#ec4899', '#8b5cf6'];
+
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 5 + 3,
+                    d: Math.random() * canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.05 + 0.01,
+                    tiltAngle: 0
+                });
+            }
+
+            let animationFrameId;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let remaining = false;
+
+                particles.forEach((p) => {
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                    p.x += Math.sin(p.tiltAngle);
+                    p.tilt = Math.sin(p.tiltAngle - p.r / 2) * 12;
+
+                    if (p.y <= canvas.height) {
+                        remaining = true;
+                    }
+
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    ctx.stroke();
+                });
+
+                if (remaining) {
+                    animationFrameId = requestAnimationFrame(draw);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            draw();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+    </script>
+</body>
+</html>

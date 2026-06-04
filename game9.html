@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Puzzle Sekolah - SDN 3 Ngantru</title>
+    <!-- Tailwind CSS, Google Fonts, & Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-emerald-50 to-teal-100/60 min-h-screen flex flex-col justify-between text-slate-800">
+
+    <!-- Header Identitas Sekolah -->
+    <header class="bg-gradient-to-r from-emerald-800 to-teal-700 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-800 font-bold text-xl shadow shadow-black/20">
+                    <i class="fas fa-puzzle-piece"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xs md:text-sm leading-none uppercase tracking-wide">Puzzle Gedung Sekolah</h1>
+                    <p class="text-[10px] text-emerald-200 mt-0.5">SDN 3 Ngantru</p>
+                </div>
+            </div>
+            <a href="game.html" class="bg-emerald-700/50 hover:bg-amber-500 hover:text-emerald-950 border border-emerald-500/30 px-4 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fas fa-arrow-left"></i> Menu Game
+            </a>
+        </div>
+    </header>
+
+    <!-- Confetti Canvas untuk Selebrasi Rekor -->
+    <canvas id="confettiCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
+
+    <!-- Workspace Utama Game -->
+    <main class="max-w-md w-full mx-auto p-4 flex-1 flex flex-col justify-center">
+
+        <!-- SCREEN 1: MENU UTAMA -->
+        <div id="screenMenu" class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-600 text-center space-y-6">
+            <div class="space-y-2">
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Game Board #9</span>
+                <h2 class="text-3xl font-extrabold text-emerald-950 leading-tight">Puzzle Sekolah:<br>Gedung SDN 3 Ngantru 🏫</h2>
+                <p class="text-slate-500 text-sm">Susun kembali pecahan gambar sekolah kita tercinta secara cepat dan tepat untuk mengasah kecerdasan spasialmu!</p>
+            </div>
+
+            <!-- Dashboard Rekor Belajar -->
+            <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 flex items-center justify-between text-left">
+                <div>
+                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider leading-none">Langkah Tersingkat</p>
+                    <p class="text-xl font-black text-emerald-800 mt-1" id="bestMovesText">-- Langkah</p>
+                </div>
+                <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-500">
+                    <i class="fas fa-trophy text-lg"></i>
+                </div>
+            </div>
+
+            <!-- Pemilihan Tingkat Kesulitan -->
+            <div class="space-y-2 text-left">
+                <label class="text-xs font-extrabold text-slate-400 uppercase tracking-widest block pl-1">Pilih Ukuran Puzzle:</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="selectDifficulty(3)" id="btnEasy" class="border-2 border-emerald-600 bg-emerald-50 text-emerald-900 font-bold p-3.5 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-sm">
+                        <span class="text-lg">🎒</span>
+                        <span>3 x 3 (Mudah)</span>
+                    </button>
+                    <button onclick="selectDifficulty(4)" id="btnHard" class="border-2 border-slate-200 bg-white text-slate-700 font-bold p-3.5 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-sm">
+                        <span class="text-lg">🎓</span>
+                        <span>4 x 4 (Sulit)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tombol Mulai -->
+            <button onclick="startGame()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-base py-3.5 rounded-2xl shadow-lg shadow-emerald-600/20 active:scale-95 transition flex items-center justify-center gap-2">
+                Mulai Menyusun <i class="fas fa-puzzle-piece"></i>
+            </button>
+        </div>
+
+        <!-- SCREEN 2: GAMEPLAY UTAMA -->
+        <div id="screenPlay" class="hidden bg-white rounded-3xl p-5 shadow-xl border-4 border-emerald-600 space-y-4">
+            <!-- Header Status -->
+            <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-bold text-slate-400">LANGKAH:</span>
+                    <strong class="text-base font-black text-emerald-800" id="currentMoves">0</strong>
+                </div>
+                
+                <div class="text-right">
+                    <span class="text-[10px] font-bold text-slate-400">WAKTU:</span>
+                    <strong class="text-base font-black text-slate-700" id="currentTimer">0s</strong>
+                </div>
+            </div>
+
+            <!-- Canvas Interaktif Utama -->
+            <div class="bg-slate-100 rounded-2xl p-2 border border-slate-200 shadow-inner flex items-center justify-center relative overflow-hidden">
+                <canvas id="puzzleCanvas" class="w-full max-w-[340px] aspect-square rounded-xl shadow-md border border-slate-300 cursor-pointer"></canvas>
+            </div>
+
+            <!-- Kontrol Pembantu (Toggles) -->
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="toggleHint()" id="btnHint" class="bg-amber-500 hover:bg-amber-400 text-emerald-950 font-extrabold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
+                    <i class="fas fa-eye"></i> Lihat Contoh
+                </button>
+                <button onclick="toggleNumbers()" id="btnNumbers" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 border border-slate-200">
+                    <i class="fas fa-list-ol"></i> Bantuan Angka
+                </button>
+            </div>
+
+            <!-- Petunjuk Mini Gambar Asli (Collapsible) -->
+            <div id="hintContainer" class="hidden bg-sky-50 rounded-2xl p-3 border border-sky-100 text-center space-y-2">
+                <p class="text-[10px] font-extrabold text-sky-800 uppercase tracking-wider">Gambar Gedung Sekolah Asli:</p>
+                <canvas id="referenceCanvas" class="w-32 h-32 mx-auto rounded-lg shadow border border-slate-200"></canvas>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: GAME OVER -->
+        <div id="screenGameOver" class="hidden bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-500 text-center space-y-6">
+            <div class="space-y-1">
+                <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-500 text-2xl mx-auto mb-2 animate-bounce">
+                    <i class="fas fa-school text-3xl"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-emerald-950 leading-none">Sekolah Terbangun!</h2>
+                <p class="text-slate-500 text-xs">Arsitek Cilik Cerdas Kebanggaan Ngantru:</p>
+            </div>
+
+            <!-- Penilaian Bintang -->
+            <div class="flex justify-center gap-3 text-3xl my-2" id="starContainer">
+                <!-- Bintang dinamis -->
+            </div>
+
+            <!-- Rekap Nilai -->
+            <div class="bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100 text-left space-y-2">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Ukuran Puzzle:</span>
+                    <strong class="text-emerald-800" id="endDifficultyText">3 x 3</strong>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Total Langkah:</span>
+                    <strong class="text-xl font-black text-emerald-800" id="endMovesValue">0</strong>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Lama Menyusun:</span>
+                    <strong class="text-emerald-800" id="endTimerValue">0 detik ⏱️</strong>
+                </div>
+            </div>
+
+            <div id="newHighScoreBadge" class="hidden bg-amber-500 text-emerald-950 font-black text-xs px-4 py-2.5 rounded-2xl animate-pulse">
+                🎉 REKOR BARU! KAMU MENYUSUN DENGAN LANGKAH TERCEPAT!
+            </div>
+
+            <!-- Navigasi -->
+            <button onclick="backToMenu()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm py-3.5 rounded-2xl shadow-lg shadow-emerald-600/20 active:scale-95 transition">
+                <i class="fas fa-home"></i> Kembali Ke Menu Utama
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer Identitas Sekolah -->
+    <footer class="text-center py-4 text-xs text-emerald-800 bg-emerald-100/50 border-t border-emerald-200">
+        <p>&copy; 2026 SDN 3 Ngantru. Program Edukasi Spasial & Kreativitas Digital.</p>
+    </footer>
+
+    <script>
+        // ============================================================
+        // SYNTHESIZER AUDIO DIGITAL (NADA SARON SLENDRO)
+        // ============================================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSaronTone(frequency, duration = 0.8) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const now = audioCtx.currentTime;
+                
+                // Resonansi pelat perunggu saron
+                const overtones = [1.0, 2.76, 5.4, 8.1];
+                const gains = [0.6, 0.25, 0.1, 0.05];
+
+                const masterGain = audioCtx.createGain();
+                masterGain.gain.setValueAtTime(0.12, now);
+                masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                masterGain.connect(audioCtx.destination);
+
+                overtones.forEach((multiplier, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const oscGain = audioCtx.createGain();
+
+                    osc.type = index === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(frequency * multiplier, now);
+                    oscGain.gain.setValueAtTime(gains[index], now);
+
+                    osc.connect(oscGain);
+                    oscGain.connect(masterGain);
+
+                    osc.start(now);
+                    osc.stop(now + duration);
+                });
+            } catch (err) {
+                console.log("Audio Gamelan error:", err);
+            }
+        }
+
+        function playSound(type) {
+            if (type === 'correct') {
+                playSaronTone(392, 0.5); // Sol
+                setTimeout(() => playSaronTone(524, 0.6), 120); // Do Tinggi
+            } else if (type === 'wrong') {
+                playSaronTone(220, 0.6); // Low La
+            } else if (type === 'click') {
+                playSaronTone(330, 0.2); // Mi
+            } else if (type === 'victory') {
+                const notes = [262, 330, 392, 524];
+                notes.forEach((freq, idx) => {
+                    setTimeout(() => playSaronTone(freq, 1.0), idx * 150);
+                });
+            }
+        }
+
+        // ============================================================
+        // LOGIKA MENGGAMBAR GEDUNG SEKOLAH DINAMIS (OFF-SCREEN CANVAS)
+        // ============================================================
+        const schoolCanvas = document.createElement('canvas');
+        schoolCanvas.width = 400;
+        schoolCanvas.height = 400;
+        const sCtx = schoolCanvas.getContext('2d');
+
+        function drawSchoolImage() {
+            // Background Langit & Matahari
+            const skyGrad = sCtx.createLinearGradient(0, 0, 0, 400);
+            skyGrad.addColorStop(0, '#bae6fd'); // Light Blue Sky
+            skyGrad.addColorStop(1, '#e0f2fe');
+            sCtx.fillStyle = skyGrad;
+            sCtx.fillRect(0, 0, 400, 400);
+
+            // Matahari
+            sCtx.beginPath();
+            sCtx.arc(320, 80, 30, 0, Math.PI * 2);
+            sCtx.fillStyle = '#f59e0b';
+            sCtx.fill();
+
+            // Awan-awan
+            sCtx.fillStyle = '#ffffff';
+            sCtx.beginPath();
+            sCtx.arc(100, 70, 20, 0, Math.PI * 2);
+            sCtx.arc(125, 60, 25, 0, Math.PI * 2);
+            sCtx.arc(150, 70, 20, 0, Math.PI * 2);
+            sCtx.fill();
+
+            // Bukit-Bukit Hijau Ngantang
+            sCtx.fillStyle = '#10b981';
+            sCtx.beginPath();
+            sCtx.arc(100, 350, 150, 0, Math.PI * 2);
+            sCtx.arc(320, 380, 180, 0, Math.PI * 2);
+            sCtx.fill();
+
+            // Lapangan Sekolah
+            sCtx.fillStyle = '#059669';
+            sCtx.fillRect(0, 290, 400, 110);
+
+            // Tembok Gedung Sekolah
+            sCtx.fillStyle = '#fef08a'; // Kuning Muda Khas SDN 3 Ngantru
+            sCtx.fillRect(60, 160, 280, 130);
+            sCtx.strokeStyle = '#eab308';
+            sCtx.lineWidth = 4;
+            sCtx.strokeRect(60, 160, 280, 130);
+
+            // Pintu Utama
+            sCtx.fillStyle = '#b45309'; // Kayu Coklat
+            sCtx.fillRect(170, 210, 60, 80);
+            sCtx.fillStyle = '#d97706';
+            sCtx.fillRect(175, 215, 22, 70);
+            sCtx.fillRect(203, 215, 22, 70);
+
+            // Jendela-Jendela Sekolah
+            sCtx.fillStyle = '#38bdf8'; // Biru Kaca
+            sCtx.fillRect(90, 190, 50, 50);
+            sCtx.fillRect(260, 190, 50, 50);
+
+            sCtx.strokeStyle = '#eab308';
+            sCtx.lineWidth = 3;
+            sCtx.strokeRect(90, 190, 50, 50);
+            sCtx.strokeRect(260, 190, 50, 50);
+
+            // Pembatas Kaca
+            sCtx.beginPath();
+            sCtx.moveTo(115, 190); sCtx.lineTo(115, 240);
+            sCtx.moveTo(90, 215); sCtx.lineTo(140, 215);
+            sCtx.moveTo(285, 190); sCtx.lineTo(285, 240);
+            sCtx.moveTo(260, 215); sCtx.lineTo(310, 215);
+            sCtx.stroke();
+
+            // Atap Segitiga Megah
+            sCtx.fillStyle = '#ef4444'; // Merah Genting
+            sCtx.beginPath();
+            sCtx.moveTo(40, 160);
+            sCtx.lineTo(200, 80);
+            sCtx.lineTo(360, 160);
+            sCtx.closePath();
+            sCtx.fill();
+            sCtx.strokeStyle = '#b91c1c';
+            sCtx.lineWidth = 4;
+            sCtx.stroke();
+
+            // Plang/Teks SDN 3 NGANTRU
+            sCtx.fillStyle = '#1e293b';
+            sCtx.fillRect(120, 130, 160, 30);
+            sCtx.strokeStyle = '#ffffff';
+            sCtx.lineWidth = 2;
+            sCtx.strokeRect(120, 130, 160, 30);
+
+            sCtx.fillStyle = '#ffffff';
+            sCtx.font = 'bold 12px Inter';
+            sCtx.textAlign = 'center';
+            sCtx.fillText('SDN 3 NGANTRU', 200, 150);
+
+            // Tiang Bendera
+            sCtx.strokeStyle = '#94a3b8';
+            sCtx.lineWidth = 5;
+            sCtx.beginPath();
+            sCtx.moveTo(330, 160);
+            sCtx.lineTo(330, 290);
+            sCtx.stroke();
+
+            // Bendera Merah Putih
+            sCtx.fillStyle = '#ef4444'; // Merah
+            sCtx.fillRect(330, 160, 35, 13);
+            sCtx.fillStyle = '#ffffff'; // Putih
+            sCtx.fillRect(330, 173, 35, 13);
+            sCtx.strokeStyle = '#cbd5e1';
+            sCtx.lineWidth = 1;
+            sCtx.strokeRect(330, 160, 35, 26);
+
+            // Taman Depan Sekolah
+            sCtx.fillStyle = '#fbbf24';
+            sCtx.beginPath();
+            sCtx.arc(90, 290, 12, 0, Math.PI * 2);
+            sCtx.arc(105, 290, 15, 0, Math.PI * 2);
+            sCtx.arc(310, 290, 15, 0, Math.PI * 2);
+            sCtx.fill();
+        }
+
+        // ============================================================
+        // STATE MANAJEMEN PUZZLE
+        // ============================================================
+        let gridSize = 3; // default 3x3 (Mudah)
+        let movesCount = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let pieces = []; // Menyimpan struktur koordinat potongan puzzle
+        let selectedIndex = null; // Menyimpan kepingan yang sedang diklik (glowing)
+        let isShowNumbers = false;
+
+        const mainCanvas = document.getElementById('puzzleCanvas');
+        const mCtx = mainCanvas.getContext('2d');
+        mainCanvas.width = 400;
+        mainCanvas.height = 400;
+
+        const LOCAL_STORAGE_KEY = 'high_score_puzzle_v9';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            drawSchoolImage();
+            loadHighScore();
+            
+            // Siapkan canvas referensi mini
+            const refCanvas = document.getElementById('referenceCanvas');
+            const rCtx = refCanvas.getContext('2d');
+            refCanvas.width = 130;
+            refCanvas.height = 130;
+            rCtx.drawImage(schoolCanvas, 0, 0, 130, 130);
+        });
+
+        function loadHighScore() {
+            const saved = localStorage.getItem(LOCAL_STORAGE_KEY) || '--';
+            document.getElementById('bestMovesText').textContent = saved !== '--' ? `${saved} Langkah` : '-- Langkah';
+        }
+
+        function selectDifficulty(size) {
+            playSound('click');
+            gridSize = size;
+
+            document.getElementById('btnEasy').className = size === 3 
+                ? "border-2 border-emerald-600 bg-emerald-50 text-emerald-900 font-bold p-3.5 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-sm"
+                : "border-2 border-slate-200 bg-white text-slate-700 font-bold p-3.5 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-sm";
+            
+            document.getElementById('btnHard').className = size === 4 
+                ? "border-2 border-emerald-600 bg-emerald-50 text-emerald-900 font-bold p-3.5 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-sm"
+                : "border-2 border-slate-200 bg-white text-slate-700 font-bold p-3.5 rounded-2xl flex flex-col items-center justify-center gap-1 transition text-sm";
+        }
+
+        // ============================================================
+        // MEMULAI GAME & PENGACAKAN
+        // ============================================================
+        function startGame() {
+            playSound('click');
+            movesCount = 0;
+            timerSeconds = 0;
+            selectedIndex = null;
+
+            document.getElementById('currentMoves').textContent = "0";
+            document.getElementById('currentTimer').textContent = "0s";
+
+            // Sembunyikan referensi jika terbuka
+            document.getElementById('hintContainer').classList.add('hidden');
+
+            // Susun kepingan puzzle berurutan
+            pieces = [];
+            const count = gridSize * gridSize;
+            for (let i = 0; i < count; i++) {
+                pieces.push({
+                    currentIndex: i, // Posisi saat ini di grid
+                    correctIndex: i  // Posisi yang benar / aslinya
+                });
+            }
+
+            // Acak potongan puzzle secara pintar agar selalu bisa diselesaikan
+            do {
+                pieces.sort(() => Math.random() - 0.5);
+            } while (checkWinCondition()); // Jamin tidak langsung menang di awal
+
+            drawBoard();
+            startTimer();
+
+            document.getElementById('screenMenu').classList.add('hidden');
+            document.getElementById('screenPlay').classList.remove('hidden');
+
+            // Sambungkan kontrol klik canvas
+            mainCanvas.onclick = handleCanvasClick;
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                document.getElementById('currentTimer').textContent = `${timerSeconds}s`;
+            }, 1000);
+        }
+
+        // ============================================================
+        // LOGIKA GAMBAR PAPAN INTERAKTIF
+        // ============================================================
+        function drawBoard() {
+            mCtx.clearRect(0, 0, 400, 400);
+            const pSize = 400 / gridSize;
+
+            pieces.forEach((piece, index) => {
+                // Koordinat grid saat ini di layar
+                const curRow = Math.floor(index / gridSize);
+                const curCol = index % gridSize;
+
+                // Koordinat asli gambar sekolah
+                const origRow = Math.floor(piece.correctIndex / gridSize);
+                const origCol = piece.correctIndex % gridSize;
+
+                // Ambil irisan dari off-screen canvas sekolah
+                mCtx.drawImage(
+                    schoolCanvas,
+                    origCol * pSize, origRow * pSize, pSize, pSize, // Potongan sumber
+                    curCol * pSize, curRow * pSize, pSize, pSize     // Gambar di target
+                );
+
+                // Garis pembatas tipis antar kepingan
+                mCtx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                mCtx.lineWidth = 2;
+                mCtx.strokeRect(curCol * pSize, curRow * pSize, pSize, pSize);
+
+                // Jika fitur bantuan angka aktif
+                if (isShowNumbers) {
+                    mCtx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                    mCtx.fillRect(curCol * pSize + 4, curRow * pSize + 4, 22, 22);
+                    mCtx.fillStyle = '#ffffff';
+                    mCtx.font = 'bold 12px Inter';
+                    mCtx.textAlign = 'center';
+                    mCtx.fillText(piece.correctIndex + 1, curCol * pSize + 15, curRow * pSize + 19);
+                }
+
+                // Efek Menyala jika kepingan terpilih untuk ditukar (Glowing Border)
+                if (selectedIndex === index) {
+                    mCtx.strokeStyle = '#f59e0b';
+                    mCtx.lineWidth = 6;
+                    mCtx.strokeRect(curCol * pSize + 3, curRow * pSize + 3, pSize - 6, pSize - 6);
+                }
+            });
+        }
+
+        // ============================================================
+        // LOGIKA KLIK & PENUKARAN KEPINGAN (TILE SWAP)
+        // ============================================================
+        function handleCanvasClick(event) {
+            const rect = mainCanvas.getBoundingClientRect();
+            const scaleX = 400 / rect.width;
+            const scaleY = 400 / rect.height;
+
+            const x = (event.clientX - rect.left) * scaleX;
+            const y = (event.clientY - rect.top) * scaleY;
+
+            const pSize = 400 / gridSize;
+            const col = Math.floor(x / pSize);
+            const row = Math.floor(y / pSize);
+            const clickedIndex = row * gridSize + col;
+
+            if (selectedIndex === null) {
+                // Pilih kepingan pertama
+                selectedIndex = clickedIndex;
+                playSound('click');
+            } else {
+                // Jika klik kembali kepingan yang sama, batalkan pilihan
+                if (selectedIndex === clickedIndex) {
+                    selectedIndex = null;
+                    playSound('click');
+                } else {
+                    // Tukar kepingan terpilih pertama dengan kepingan kedua
+                    swapPieces(selectedIndex, clickedIndex);
+                    selectedIndex = null;
+                }
+            }
+
+            drawBoard();
+        }
+
+        function swapPieces(idx1, idx2) {
+            const temp = pieces[idx1];
+            pieces[idx1] = pieces[idx2];
+            pieces[idx2] = temp;
+
+            movesCount++;
+            document.getElementById('currentMoves').textContent = movesCount;
+            playSound('click');
+
+            // Periksa apakah puzzle sudah teratur sempurna
+            if (checkWinCondition()) {
+                setTimeout(endGame, 400);
+            }
+        }
+
+        function checkWinCondition() {
+            for (let i = 0; i < pieces.length; i++) {
+                if (pieces[i].correctIndex !== i) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // ============================================================
+        // KONTROL TOGGLES & BANTUAN
+        // ============================================================
+        function toggleHint() {
+            playSound('click');
+            const hintBox = document.getElementById('hintContainer');
+            const btnHint = document.getElementById('btnHint');
+            
+            if (hintBox.classList.contains('hidden')) {
+                hintBox.classList.remove('hidden');
+                btnHint.innerHTML = `<i class="fas fa-eye-slash"></i> Sembunyikan`;
+            } else {
+                hintBox.classList.add('hidden');
+                btnHint.innerHTML = `<i class="fas fa-eye"></i> Lihat Contoh`;
+            }
+        }
+
+        function toggleNumbers() {
+            playSound('click');
+            isShowNumbers = !isShowNumbers;
+            const btn = document.getElementById('btnNumbers');
+            
+            if (isShowNumbers) {
+                btn.className = "bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm";
+            } else {
+                btn.className = "bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 border border-slate-200";
+            }
+            drawBoard();
+        }
+
+        // ============================================================
+        // AKHIR PERMAINAN & SELEBRASI REKOR
+        // ============================================================
+        function endGame() {
+            clearInterval(timerInterval);
+            playSound('victory');
+
+            document.getElementById('screenPlay').classList.add('hidden');
+            document.getElementById('screenGameOver').classList.remove('hidden');
+
+            document.getElementById('endDifficultyText').textContent = `${gridSize} x ${gridSize}`;
+            document.getElementById('endMovesValue').textContent = `${movesCount} Langkah`;
+            document.getElementById('endTimerValue').textContent = `${timerSeconds} detik`;
+
+            renderStars();
+
+            // Atur Rekor Baru
+            const oldBest = parseInt(localStorage.getItem(LOCAL_STORAGE_KEY)) || Infinity;
+            if (movesCount < oldBest) {
+                localStorage.setItem(LOCAL_STORAGE_KEY, movesCount);
+                document.getElementById('newHighScoreBadge').classList.remove('hidden');
+                triggerConfetti();
+            } else {
+                document.getElementById('newHighScoreBadge').classList.add('hidden');
+            }
+        }
+
+        function renderStars() {
+            const container = document.getElementById('starContainer');
+            container.innerHTML = '';
+
+            // Penilaian bintang berdasarkan langkah & waktu
+            let starsCount = 1;
+            const maxMovesPerfect = gridSize === 3 ? 15 : 25;
+            const maxMovesGood = gridSize === 3 ? 30 : 50;
+
+            if (movesCount <= maxMovesPerfect) {
+                starsCount = 3;
+            } else if (movesCount <= maxMovesGood) {
+                starsCount = 2;
+            }
+
+            for (let i = 0; i < 3; i++) {
+                const star = document.createElement('i');
+                if (i < starsCount) {
+                    star.className = "fas fa-star text-amber-400 animate-bounce";
+                } else {
+                    star.className = "far fa-star text-slate-300";
+                }
+                container.appendChild(star);
+            }
+        }
+
+        function backToMenu() {
+            playSound('click');
+            document.getElementById('screenGameOver').classList.add('hidden');
+            document.getElementById('screenMenu').classList.remove('hidden');
+            loadHighScore();
+        }
+
+        // ============================================================
+        // CANVAS CONFETTI CELEBRATION
+        // ============================================================
+        function triggerConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#10b981', '#fbbf24', '#3b82f6', '#ec4899', '#8b5cf6'];
+
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 5 + 3,
+                    d: Math.random() * canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.05 + 0.01,
+                    tiltAngle: 0
+                });
+            }
+
+            let animationFrameId;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let remaining = false;
+
+                particles.forEach((p) => {
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                    p.x += Math.sin(p.tiltAngle);
+                    p.tilt = Math.sin(p.tiltAngle - p.r / 2) * 12;
+
+                    if (p.y <= canvas.height) {
+                        remaining = true;
+                    }
+
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    ctx.stroke();
+                });
+
+                if (remaining) {
+                    animationFrameId = requestAnimationFrame(draw);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            draw();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+    </script>
+</body>
+</html>

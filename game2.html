@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Sinau Aksara Jawa - SDN 3 Ngantru</title>
+    <!-- Tailwind CSS, Google Fonts, & Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Javanese:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style khusus untuk memperbesar & memperjelas Aksara Jawa */
+        .aksara-font {
+            font-family: 'Noto Sans Javanese', 'Javanese Text', 'Inter', sans-serif;
+            font-weight: 700;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+        /* Transisi flip kartu memori */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+        }
+        .flip-card-front {
+            background: linear-gradient(135deg, #155e49 0%, #0b3b2f 100%);
+            color: white;
+        }
+        .flip-card-back {
+            background-color: #ffffff;
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="bg-amber-50/40 min-h-screen flex flex-col justify-between text-slate-800">
+
+    <header class="bg-gradient-to-r from-emerald-800 to-teal-700 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-800 font-bold text-xl shadow shadow-black/20">
+                    <i class="fas fa-feather-alt"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xs md:text-sm leading-none uppercase tracking-wide">Sinau Aksara Jawa</h1>
+                    <p class="text-[10px] text-emerald-200 mt-0.5">SDN 3 Ngantru</p>
+                </div>
+            </div>
+            <a href="game.html" class="bg-emerald-700/50 hover:bg-amber-500 hover:text-emerald-950 border border-emerald-500/30 px-4 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fas fa-arrow-left"></i> Menu Game
+            </a>
+        </div>
+    </header>
+
+    <!-- Confetti Canvas untuk selebrasi nilai 100 -->
+    <canvas id="confettiCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
+
+    <!-- Workspace Utama -->
+    <main class="max-w-xl w-full mx-auto p-4 flex-1 flex flex-col justify-center">
+
+        <!-- SCREEN 1: MENU UTAMA -->
+        <div id="screenMenu" class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-600 text-center space-y-6">
+            <div class="space-y-2">
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Game Board #2</span>
+                <h2 class="text-3xl font-extrabold text-emerald-900 leading-tight">Sinau Carakan:<br>Aksara Jawa ꦲꦤꦕꦫꦏ</h2>
+                <p class="text-slate-500 text-sm">Lestarikan budaya nusantara dengan belajar membaca, menghafal, dan menyusun Aksara Jawa Legena yang asyik!</p>
+            </div>
+
+            <!-- Dashboard Skor Tertinggi -->
+            <div class="bg-emerald-50 rounded-2xl p-4 grid grid-cols-2 gap-2 border border-emerald-100 text-left">
+                <div>
+                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider leading-none">Skor Tebak</p>
+                    <p class="text-lg font-black text-emerald-800 mt-0.5" id="highScoreTebak">0 Poin</p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider leading-none">Tercepat Pasang</p>
+                    <p class="text-lg font-black text-emerald-800 mt-0.5" id="bestTimeMemory">-- det</p>
+                </div>
+            </div>
+
+            <!-- Pilihan Kategori Belajar & Bermain -->
+            <div class="space-y-3 pt-2">
+                <p class="text-xs font-extrabold text-slate-400 uppercase tracking-widest text-left pl-1">Silakan Pilih Kegiatan:</p>
+                
+                <div class="grid grid-cols-1 gap-3">
+                    <!-- Menu Belajar -->
+                    <button onclick="switchScreen('Belajar')" class="w-full bg-emerald-50 hover:bg-emerald-100/80 border-2 border-emerald-500/30 rounded-2xl p-4 text-left flex items-center gap-4 transition btn-bounce">
+                        <div class="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center text-white text-xl">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-emerald-900">1. Kamus & Belajar Aksara</h4>
+                            <p class="text-xs text-slate-500">Kenali 20 aksara dasar lengkap dengan suara gamelan dan artinya.</p>
+                        </div>
+                    </button>
+
+                    <!-- Menu Tebak Cepat -->
+                    <button onclick="startTebak()" class="w-full bg-white hover:bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 text-left flex items-center gap-4 transition btn-bounce">
+                        <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center text-emerald-950 text-xl">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">2. Tebak Cepat (Quiz)</h4>
+                            <p class="text-xs text-slate-500">Kecepatan waktu menjawab pilihan ganda dari aksara yang acak.</p>
+                        </div>
+                    </button>
+
+                    <!-- Menu Pasang Kartu -->
+                    <button onclick="startMemoryGame()" class="w-full bg-white hover:bg-teal-50 border-2 border-teal-400 rounded-2xl p-4 text-left flex items-center gap-4 transition btn-bounce">
+                        <div class="w-12 h-12 bg-teal-600 rounded-xl flex items-center justify-center text-white text-xl">
+                            <i class="fas fa-clone"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">3. Pasang Kartu (Memory Match)</h4>
+                            <p class="text-xs text-slate-500">Uji daya ingatmu mencocokkan aksara jawa dan suara latinnya.</p>
+                        </div>
+                    </button>
+
+                    <!-- Menu Susun Kata -->
+                    <button onclick="startSusunKata()" class="w-full bg-white hover:bg-indigo-50 border-2 border-indigo-400 rounded-2xl p-4 text-left flex items-center gap-4 transition btn-bounce">
+                        <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xl">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">4. Susun Kata (Eja Jawa)</h4>
+                            <p class="text-xs text-slate-500">Susun deretan aksara carakan untuk mengeja kata bermakna.</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: KAMUS BELAJAR -->
+        <div id="screenBelajar" class="hidden bg-white rounded-3xl p-6 shadow-xl border-4 border-emerald-600 space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-black text-emerald-900"><i class="fas fa-graduation-cap"></i> Kamus Carakan</h3>
+                <button onclick="switchScreen('Menu')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold transition">
+                    <i class="fas fa-home"></i> Menu
+                </button>
+            </div>
+            
+            <p class="text-xs text-slate-400 leading-relaxed">Ketuk kartu aksara jawa di bawah untuk membunyikan suara <strong>Gamelan Slendro</strong> serta menampilkan arti filosofi kehidupan luhurnya.</p>
+            
+            <!-- Grid 20 Aksara Jawa -->
+            <div class="grid grid-cols-4 sm:grid-cols-5 gap-2" id="kamusGrid">
+                <!-- Diisi via JavaScript -->
+            </div>
+
+            <!-- Detail Box saat kartu diklik -->
+            <div id="detailBox" class="bg-amber-50/60 rounded-2xl p-4 border border-amber-200 text-center space-y-2 hidden animate-fadeIn">
+                <p class="text-5xl aksara-font text-emerald-800" id="detailChar">ꦲ</p>
+                <h4 class="font-extrabold text-lg text-emerald-900 uppercase tracking-widest" id="detailLatin">ha</h4>
+                <div class="h-px bg-amber-200 my-2"></div>
+                <p class="text-xs font-bold text-amber-800">Filosofi Luhur Jawa:</p>
+                <p class="text-xs italic text-slate-600" id="detailDesc">Ada Utusan</p>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: TEBAK CEPAT (QUIZ) -->
+        <div id="screenTebak" class="hidden bg-white rounded-3xl p-6 shadow-xl border-4 border-emerald-600 space-y-6">
+            <!-- Header Stats -->
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400 leading-none">SKOR</p>
+                        <p class="text-base font-black text-slate-700" id="tebakScore">0</p>
+                    </div>
+                </div>
+                <div id="tebakComboBadge" class="hidden bg-amber-500 text-emerald-950 text-[10px] font-black px-2.5 py-1 rounded-full animate-bounce">
+                    ⚡ COMBO x<span id="tebakComboCount">1</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold text-slate-400 leading-none">WAKTU</p>
+                        <p class="text-base font-black text-rose-500" id="tebakTimer">20s</p>
+                    </div>
+                    <div class="w-8 h-8 bg-rose-100 rounded-full flex items-center justify-center text-rose-500">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar Waktu -->
+            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div id="tebakTimeBar" class="bg-emerald-500 h-full w-full transition-all duration-100 ease-linear"></div>
+            </div>
+
+            <!-- Kotak Soal Aksara -->
+            <div class="bg-gradient-to-br from-emerald-800 to-teal-950 rounded-2xl p-6 text-center text-white relative shadow-inner flex flex-col items-center justify-center min-h-[140px]">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-300 mb-2">Transliterasikan Aksara Berikut:</p>
+                <p class="text-6xl aksara-font tracking-wide animate-pulse" id="tebakQuestionChar">ꦲ</p>
+            </div>
+
+            <!-- Tombol Pilihan Jawaban -->
+            <div class="grid grid-cols-2 gap-3" id="tebakChoicesGrid">
+                <!-- JavaScript otomatis menyisipkan 4 pilihan -->
+            </div>
+
+            <div id="tebakFeedback" class="h-5 text-center text-xs font-extrabold uppercase opacity-0 transition-opacity">Benar!</div>
+        </div>
+
+        <!-- SCREEN 4: PASANG KARTU (MEMORY MATCH) -->
+        <div id="screenMemory" class="hidden bg-white rounded-3xl p-5 shadow-xl border-4 border-emerald-600 space-y-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="font-extrabold text-emerald-900 leading-none text-base">Pasang Kartu</h3>
+                    <p class="text-[10px] text-slate-400 mt-1">Senggol & jodohkan aksara sejenis</p>
+                </div>
+                <div class="text-right flex gap-3">
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400">LANGKAH</p>
+                        <p class="text-sm font-black text-slate-700" id="memoryMoves">0</p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400">DURASI</p>
+                        <p class="text-sm font-black text-slate-700" id="memoryTimer">0s</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Board Memori Grid (4x4) -->
+            <div class="grid grid-cols-4 gap-2.5 h-[320px] items-stretch" id="memoryGrid">
+                <!-- Disematkan via JS -->
+            </div>
+        </div>
+
+        <!-- SCREEN 5: SUSUN KATA (EJA JAWA) -->
+        <div id="screenSusun" class="hidden bg-white rounded-3xl p-6 shadow-xl border-4 border-emerald-600 space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="font-extrabold text-emerald-900"><i class="fas fa-puzzle-piece"></i> Susun Aksara</h3>
+                <div class="text-right">
+                    <p class="text-[9px] font-bold text-slate-400">LEVEL</p>
+                    <p class="text-sm font-black text-emerald-800"><span id="susunLevel">1</span> dari 5</p>
+                </div>
+            </div>
+
+            <!-- Perintah dan Kata yang Harus Dieja -->
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center space-y-1">
+                <p class="text-[10px] uppercase font-bold text-amber-800 tracking-widest">Eja Kata Ini:</p>
+                <p class="text-3xl font-black text-emerald-950 uppercase tracking-widest" id="susunTargetWord">MACA</p>
+                <p class="text-xs text-slate-500 italic" id="susunMeaning">Artinya: Membaca</p>
+            </div>
+
+            <!-- Board Penempatan Hasil Susunan Karakter -->
+            <div class="flex justify-center gap-3 py-3 border-2 border-dashed border-slate-200 rounded-2xl min-h-[80px] bg-slate-50 items-center" id="susunPlacedArea">
+                <!-- Karakter yang sudah dipilih diletakkan di sini -->
+            </div>
+
+            <!-- Papan Karakter Pilihan (Tombol yang bisa diklik) -->
+            <div class="space-y-2">
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider text-center">Ketuk balok di bawah secara berurutan:</p>
+                <div class="flex justify-center gap-3 flex-wrap" id="susunSourceArea">
+                    <!-- Balok carakan acak akan masuk di sini -->
+                </div>
+            </div>
+
+            <!-- Tombol Aksi Hapus / Reset -->
+            <div class="flex gap-2">
+                <button onclick="resetCurrentSusun()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">
+                    <i class="fas fa-trash-alt"></i> Hapus Semua
+                </button>
+                <button onclick="checkSusunAnswer()" class="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold py-2.5 rounded-xl text-xs transition shadow shadow-emerald-500/20">
+                    Selesai & Periksa <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 6: GAME OVER SCREEN -->
+        <div id="screenGameOver" class="hidden bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-500 text-center space-y-6 animate-fadeIn">
+            <div class="space-y-1">
+                <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-500 text-2xl mx-auto mb-2">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-emerald-950 leading-none">Luar Biasa!</h2>
+                <p class="text-slate-500 text-xs">Evaluasi nilai belajar kebudayaan Jawamu:</p>
+            </div>
+
+            <!-- Board Bintang Selebrasi -->
+            <div class="flex justify-center gap-3 text-3xl my-2" id="starContainer">
+                <i class="fas fa-star text-amber-400"></i>
+                <i class="fas fa-star text-amber-400"></i>
+                <i class="fas fa-star text-amber-400"></i>
+            </div>
+
+            <!-- Kartu Hasil Rincian Prestasi -->
+            <div class="bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100 text-left space-y-2">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Kategori Game:</span>
+                    <strong class="text-emerald-800" id="endGameName">Tebak Cepat</strong>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium" id="endScoreLabel">Skor Akhir:</span>
+                    <strong class="text-2xl font-black text-emerald-800" id="endScoreValue">0</strong>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium" id="endMetaLabel">Akurasi Kelulusan:</span>
+                    <strong class="text-emerald-800" id="endMetaValue">100%</strong>
+                </div>
+            </div>
+
+            <div id="newHighScoreLabel" class="hidden bg-amber-500 text-emerald-950 font-black text-xs px-4 py-2 rounded-2xl">
+                🎉 HEBAT! REKOR BELAJAR TERBARU DICAPAI!
+            </div>
+
+            <!-- Tombol Tindakan -->
+            <div class="space-y-2">
+                <button onclick="backToMenu()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm py-3 rounded-2xl shadow-lg shadow-emerald-600/20 active:scale-95 transition">
+                    <i class="fas fa-home"></i> Kembali Ke Menu Game
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-xs text-emerald-800 bg-emerald-100/50 border-t border-emerald-200">
+        <p>&copy; 2026 SDN 3 Ngantru. Program Edukasi Budaya Digital.</p>
+    </footer>
+
+    <script>
+        // ============================================================
+        // DATA AKSARA JAWA LEGENA (20 Huruf Dasar)
+        // ============================================================
+        const aksaraList = [
+            { char: 'ꦲ', latin: 'ha', meaning: 'Utusan / Eksistensi', desc: 'Ada Utusan' },
+            { char: 'ꦤ', latin: 'na', meaning: 'Kepercayaan', desc: 'Saling bertengkar' },
+            { char: 'ꦕ', latin: 'ca', meaning: 'Utusan', desc: 'Sama-sama sakti' },
+            { char: 'ꦫ', latin: 'ra', meaning: 'Cahaya Roh', desc: 'Sama-sama mati' },
+            { char: 'ꦏ', latin: 'ka', meaning: 'Kekuatan', desc: 'Menghidupi' },
+            { char: 'ꦢ', latin: 'da', meaning: 'Fisik Lahiriah', desc: 'Menerima takdir' },
+            { char: 'ꦠ', latin: 'ta', meaning: 'Tujuan Hidup', desc: 'Punya tujuan' },
+            { char: 'ꦱ', latin: 'sa', meaning: 'Satu / Tunggal', desc: 'Saling mendukung' },
+            { char: 'ꦮ', latin: 'wa', meaning: 'Kewajiban', desc: 'Membawa kabar' },
+            { char: 'ꦭ', latin: 'la', meaning: 'Kemuliaan Luhur', desc: 'Kemuliaan' },
+            { char: 'ꦥ', latin: 'pa', meaning: 'Pikiran Suci', desc: 'Sama-sama gagah' },
+            { char: 'ꦝ', latin: 'dha', meaning: 'Keteguhan Pikiran', desc: 'Menerima wahyu' },
+            { char: 'ꦗ', latin: 'ja', meaning: 'Kelahiran Spiritual', desc: 'Saling berjodoh' },
+            { char: 'ꦪ', latin: 'ya', meaning: 'Keikhlasan', desc: 'Menghormati' },
+            { char: 'ꦚ', latin: 'nya', meaning: 'Pasrah Total', desc: 'Menyatukan rasa' },
+            { char: 'ꦩ', latin: 'ma', meaning: 'Keyakinan', desc: 'Menerima takdir' },
+            { char: 'ꦒ', latin: 'ga', meaning: 'Tuntunan Ilahi', desc: 'Kekuatan spiritual' },
+            { char: 'ꦧ', latin: 'ba', meaning: 'Kebajikan Luhur', desc: 'Kesucian lahir batin' },
+            { char: 'ꦛ', latin: 'tha', meaning: 'Keseimbangan Jiwa', desc: 'Keteguhan hati' },
+            { char: 'ꦔ', latin: 'nga', meaning: 'Melepaskan Ego', desc: 'Kembali ke Sang Pencipta' }
+        ];
+
+        // Data kata untuk game Susun Kata (Hanya menggunakan huruf legena tanpa sandhangan)
+        const wordList = [
+            { word: "maca", components: ['ꦩ', 'ꦕ'], meaning: "Membaca" },
+            { word: "bata", components: ['ꦧ', 'ꦠ'], meaning: "Batu Bata" },
+            { word: "rata", components: ['ꦫ', 'ꦠ'], meaning: "Rata / Datar" },
+            { word: "kaca", components: ['ꦏ', 'ꦕ'], meaning: "Cermin / Kaca" },
+            { word: "sawa", components: ['ꦱ', 'ꦮ'], meaning: "Ular Sawah" },
+            { word: "lara", components: ['ꦭ', 'ꦫ'], meaning: "Sakit" },
+            { word: "kana", components: ['ꦏ', 'ꦤ'], meaning: "Sana" },
+            { word: "dana", components: ['ꦢ', 'ꦤ'], meaning: "Uang / Derma" }
+        ];
+
+        // ============================================================
+        // SYNTHESIZER AUDIO GAMELAN (SARON) MENGGUNAKAN WEB AUDIO API
+        // ============================================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Frekuensi saron gamelan slendro untuk sound effect
+        const slendroNotes = [262, 294, 327, 392, 440, 524];
+
+        function playGamelanSaron(frequency, duration = 1.2) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const now = audioCtx.currentTime;
+                
+                // Gamelan saron memiliki getaran logam yang kaya dengan harmonik non-integer (overtone)
+                const overtones = [1.0, 2.76, 5.4, 8.1]; 
+                const gains = [0.7, 0.25, 0.1, 0.05];
+
+                const masterGain = audioCtx.createGain();
+                masterGain.gain.setValueAtTime(0.12, now);
+                // Decay yang panjang khas lempengan besi dipukul
+                masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                masterGain.connect(audioCtx.destination);
+
+                overtones.forEach((multiplier, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const oscGain = audioCtx.createGain();
+                    
+                    // Bentuk gelombang saron menyerupai perpaduan sinus dan segitiga
+                    osc.type = index === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(frequency * multiplier, now);
+
+                    oscGain.gain.setValueAtTime(gains[index], now);
+                    
+                    osc.connect(oscGain);
+                    oscGain.connect(masterGain);
+                    
+                    osc.start(now);
+                    osc.stop(now + duration);
+                });
+            } catch (error) {
+                console.log("Audio Gamelan Error: ", error);
+            }
+        }
+
+        // Memainkan Gamelan Slendro Beruntun (Arpeggio)
+        function playFanfareSlendro() {
+            const now = audioCtx.currentTime;
+            slendroNotes.forEach((freq, i) => {
+                setTimeout(() => {
+                    playGamelanSaron(freq, 1.5);
+                }, i * 150);
+            });
+        }
+
+        function playSoundEffect(type) {
+            if (type === 'correct') {
+                // Dua nada slendro tinggi melambangkan kebenaran
+                playGamelanSaron(440, 0.8);
+                setTimeout(() => playGamelanSaron(524, 1.0), 120);
+            } else if (type === 'wrong') {
+                // Satu nada slendro rendah datar
+                playGamelanSaron(180, 0.6);
+            } else if (type === 'click') {
+                // Sentuhan ringan saron
+                playGamelanSaron(327, 0.4);
+            }
+        }
+
+        // ============================================================
+        // GAME STATE & NAVIGATION LOGIC
+        // ============================================================
+        let currentScreen = 'Menu';
+        const HIGH_SCORE_TEBAK_KEY = 'high_score_tebak_aksara';
+        const BEST_TIME_MEMORY_KEY = 'best_time_memory_aksara';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadHighScores();
+            buildKamus();
+        });
+
+        function loadHighScores() {
+            const scoreTebak = localStorage.getItem(HIGH_SCORE_TEBAK_KEY) || 0;
+            const timeMemory = localStorage.getItem(BEST_TIME_MEMORY_KEY);
+            document.getElementById('highScoreTebak').textContent = `${scoreTebak} Poin`;
+            document.getElementById('bestTimeMemory').textContent = timeMemory ? `${timeMemory} det` : '-- det';
+        }
+
+        function switchScreen(screenName) {
+            playSoundEffect('click');
+            
+            // Sembunyikan semua layar
+            document.getElementById('screenMenu').classList.add('hidden');
+            document.getElementById('screenBelajar').classList.add('hidden');
+            document.getElementById('screenTebak').classList.add('hidden');
+            document.getElementById('screenMemory').classList.add('hidden');
+            document.getElementById('screenSusun').classList.add('hidden');
+            document.getElementById('screenGameOver').classList.add('hidden');
+
+            // Hentikan interval penunjuk waktu yang sedang aktif
+            clearInterval(tebakInterval);
+            clearInterval(memoryInterval);
+
+            // Tampilkan layar target
+            document.getElementById(`screen${screenName}`).classList.remove('hidden');
+            currentScreen = screenName;
+        }
+
+        function backToMenu() {
+            loadHighScores();
+            switchScreen('Menu');
+        }
+
+        // ============================================================
+        // SCREEN: KAMUS BELAJAR LOGIC
+        // ============================================================
+        function buildKamus() {
+            const kamusGrid = document.getElementById('kamusGrid');
+            kamusGrid.innerHTML = '';
+
+            aksaraList.forEach((aksara, index) => {
+                const button = document.createElement('button');
+                button.className = "bg-amber-50/50 hover:bg-emerald-600 hover:text-white border border-amber-200 hover:border-emerald-700 rounded-2xl p-3 flex flex-col items-center justify-center transition active:scale-95 shadow-sm";
+                button.innerHTML = `
+                    <span class="text-3xl aksara-font mb-1">${aksara.char}</span>
+                    <span class="text-xs font-bold opacity-80 uppercase tracking-widest">${aksara.latin}</span>
+                `;
+                button.onclick = () => {
+                    // Membunyikan saron unik berdasarkan rentang index huruf agar berasa melodi berbeda
+                    const noteFreq = slendroNotes[index % slendroNotes.length];
+                    playGamelanSaron(noteFreq);
+                    
+                    showDetailAksara(aksara);
+                };
+                kamusGrid.appendChild(button);
+            });
+        }
+
+        function showDetailAksara(aksara) {
+            const detailBox = document.getElementById('detailBox');
+            detailBox.classList.remove('hidden');
+            
+            document.getElementById('detailChar').textContent = aksara.char;
+            document.getElementById('detailLatin').textContent = aksara.latin;
+            document.getElementById('detailDesc').innerHTML = `"${aksara.meaning}" <br><span class="opacity-60">(${aksara.desc})</span>`;
+        }
+
+
+        // ============================================================
+        // SCREEN: TEBAK CEPAT (QUIZ) LOGIC
+        // ============================================================
+        let tebakScore = 0;
+        let tebakCombo = 0;
+        let tebakTimeLeft = 20;
+        let tebakInterval = null;
+        let tebakCorrectAnswer = "";
+        let tebakAnsweredTotal = 0;
+        let tebakAnsweredCorrect = 0;
+
+        function startTebak() {
+            tebakScore = 0;
+            tebakCombo = 0;
+            tebakTimeLeft = 20;
+            tebakAnsweredTotal = 0;
+            tebakAnsweredCorrect = 0;
+
+            document.getElementById('tebakScore').textContent = '0';
+            document.getElementById('tebakComboBadge').classList.add('hidden');
+            document.getElementById('tebakTimer').textContent = '20s';
+            document.getElementById('tebakTimeBar').style.width = '100%';
+
+            switchScreen('Tebak');
+            generateTebakQuestion();
+
+            // Interval Timer Kuis
+            tebakInterval = setInterval(() => {
+                tebakTimeLeft -= 0.1;
+                if (tebakTimeLeft <= 0) {
+                    tebakTimeLeft = 0;
+                    endTebakGame();
+                }
+
+                // Update teks & visual bar waktu
+                document.getElementById('tebakTimer').textContent = `${Math.ceil(tebakTimeLeft)}s`;
+                document.getElementById('tebakTimeBar').style.width = `${(tebakTimeLeft / 20) * 100}%`;
+
+                if (tebakTimeLeft <= 5) {
+                    document.getElementById('tebakTimeBar').className = "bg-rose-500 h-full w-full transition-all duration-100 ease-linear";
+                } else {
+                    document.getElementById('tebakTimeBar').className = "bg-emerald-500 h-full w-full transition-all duration-100 ease-linear";
+                }
+            }, 100);
+        }
+
+        function generateTebakQuestion() {
+            // Pilih satu aksara acak sebagai pertanyaan
+            const targetAksara = aksaraList[Math.floor(Math.random() * aksaraList.length)];
+            tebakCorrectAnswer = targetAksara.latin;
+
+            document.getElementById('tebakQuestionChar').textContent = targetAksara.char;
+
+            // Kumpulkan 4 pilihan jawaban (termasuk kunci jawaban)
+            const choices = [targetAksara.latin];
+            while (choices.length < 4) {
+                const randomLatin = aksaraList[Math.floor(Math.random() * aksaraList.length)].latin;
+                if (!choices.includes(randomLatin)) {
+                    choices.push(randomLatin);
+                }
+            }
+
+            // Acak pilihan jawaban
+            choices.sort(() => Math.random() - 0.5);
+
+            // Populasikan tombol pilihan di DOM
+            const grid = document.getElementById('tebakChoicesGrid');
+            grid.innerHTML = '';
+            choices.forEach((choice) => {
+                const btn = document.createElement('button');
+                btn.className = "choice-btn bg-slate-50 hover:bg-emerald-50 border-2 border-slate-200 hover:border-emerald-300 rounded-2xl py-4 font-black text-xl text-slate-700 uppercase transition btn-bounce shadow-sm";
+                btn.textContent = choice;
+                btn.onclick = () => submitTebakAnswer(choice, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function submitTebakAnswer(selected, buttonElement) {
+            const allButtons = document.querySelectorAll('.choice-btn');
+            allButtons.forEach(btn => btn.disabled = true); // Nonaktifkan tombol agar tidak double click
+
+            const feedbackEl = document.getElementById('tebakFeedback');
+            tebakAnsweredTotal++;
+
+            if (selected === tebakCorrectAnswer) {
+                playSoundEffect('correct');
+                tebakAnsweredCorrect++;
+                tebakCombo++;
+
+                // Perhitungan Poin & Bonus combo
+                let points = 10;
+                if (tebakCombo >= 3) {
+                    points = 15;
+                    document.getElementById('tebakComboBadge').classList.remove('hidden');
+                    document.getElementById('tebakComboCount').textContent = tebakCombo;
+                }
+                tebakScore += points;
+
+                // Animasi tombol benar
+                buttonElement.className = "choice-btn bg-emerald-500 text-white border-2 border-emerald-600 rounded-2xl py-4 font-black text-xl uppercase shadow-md";
+
+                // Berikan kilatan teks feedback
+                feedbackEl.textContent = `Pinter! +${points} Poin`;
+                feedbackEl.className = "h-5 text-center text-xs font-extrabold uppercase text-emerald-600 opacity-100 animate-bounce";
+
+                // Tambahkan sedikit waktu bonus
+                tebakTimeLeft = Math.min(20, tebakTimeLeft + 1.5);
+            } else {
+                playSoundEffect('wrong');
+                tebakCombo = 0;
+                document.getElementById('tebakComboBadge').classList.add('hidden');
+
+                // Tandai tombol yang salah & tunjukkan kunci jawabannya
+                buttonElement.className = "choice-btn bg-rose-500 text-white border-2 border-rose-600 rounded-2xl py-4 font-black text-xl uppercase shadow-md";
+                allButtons.forEach(btn => {
+                    if (btn.textContent === tebakCorrectAnswer) {
+                        btn.className = "choice-btn bg-emerald-500 text-white border-2 border-emerald-600 rounded-2xl py-4 font-black text-xl uppercase shadow-md";
+                    }
+                });
+
+                feedbackEl.textContent = "Kurang Tepat!";
+                feedbackEl.className = "h-5 text-center text-xs font-extrabold uppercase text-rose-500 opacity-100";
+
+                // Kurangi waktu sebagai penalti kelalaian
+                tebakTimeLeft = Math.max(0, tebakTimeLeft - 2);
+            }
+
+            document.getElementById('tebakScore').textContent = tebakScore;
+
+            // Muat soal berikutnya setelah jeda singkat
+            setTimeout(() => {
+                feedbackEl.className = "h-5 text-center text-xs font-extrabold uppercase opacity-0 transition-opacity";
+                if (tebakTimeLeft > 0) {
+                    generateTebakQuestion();
+                }
+            }, 800);
+        }
+
+        function endTebakGame() {
+            clearInterval(tebakInterval);
+            playFanfareSlendro();
+
+            const accuracy = tebakAnsweredTotal > 0 ? Math.round((tebakAnsweredCorrect / tebakAnsweredTotal) * 100) : 0;
+            
+            // Kelola Penyimpanan Nilai Tertinggi
+            const oldHighScore = parseInt(localStorage.getItem(HIGH_SCORE_TEBAK_KEY)) || 0;
+            if (tebakScore > oldHighScore) {
+                localStorage.setItem(HIGH_SCORE_TEBAK_KEY, tebakScore);
+                document.getElementById('newHighScoreLabel').classList.remove('hidden');
+                triggerConfetti();
+            } else {
+                document.getElementById('newHighScoreLabel').classList.add('hidden');
+            }
+
+            // Tampilkan data ke Layar Game Over
+            document.getElementById('endGameName').textContent = "Tebak Cepat (Quiz)";
+            document.getElementById('endScoreLabel').textContent = "Skor Akhir:";
+            document.getElementById('endScoreValue').textContent = tebakScore;
+            document.getElementById('endMetaLabel').textContent = "Akurasi Jawaban:";
+            document.getElementById('endMetaValue').textContent = `${accuracy}%`;
+
+            renderStars(accuracy);
+            switchScreen('GameOver');
+        }
+
+        // ============================================================
+        // SCREEN: PASANG KARTU (MEMORY MATCH) LOGIC
+        // ============================================================
+        let memoryCards = [];
+        let memoryFlipped = [];
+        let memoryMatchedCount = 0;
+        let memoryMoves = 0;
+        let memoryTimeElapsed = 0;
+        let memoryInterval = null;
+
+        function startMemoryGame() {
+            memoryMatchedCount = 0;
+            memoryMoves = 0;
+            memoryTimeElapsed = 0;
+            memoryFlipped = [];
+            
+            document.getElementById('memoryMoves').textContent = '0';
+            document.getElementById('memoryTimer').textContent = '0s';
+
+            switchScreen('Memory');
+            buildMemoryBoard();
+
+            // Interval Timer Durasi
+            memoryInterval = setInterval(() => {
+                memoryTimeElapsed++;
+                document.getElementById('memoryTimer').textContent = `${memoryTimeElapsed}s`;
+            }, 1000);
+        }
+
+        function buildMemoryBoard() {
+            const grid = document.getElementById('memoryGrid');
+            grid.innerHTML = '';
+
+            // Ambil 4 aksara secara acak dari list utama
+            const pool = [...aksaraList].sort(() => Math.random() - 0.5).slice(0, 4);
+            
+            // Buat sepasang kartu untuk masing-masing (1 kartu Aksara Jawa, 1 kartu Transkripsi Latin)
+            const cardsData = [];
+            pool.forEach((item, idx) => {
+                cardsData.push({ id: idx, type: 'aksara', value: item.char, key: item.latin });
+                cardsData.push({ id: idx, type: 'latin', value: item.latin.toUpperCase(), key: item.latin });
+            });
+
+            // Acak letak kartu di papan permainan (8 kartu total)
+            cardsData.sort(() => Math.random() - 0.5);
+
+            cardsData.forEach((card, index) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = "flip-card cursor-pointer h-full";
+                cardEl.dataset.index = index;
+                cardEl.dataset.key = card.key;
+                cardEl.dataset.type = card.type;
+
+                cardEl.innerHTML = `
+                    <div class="flip-card-inner h-full">
+                        <div class="flip-card-front flex items-center justify-center border-2 border-emerald-500 shadow-md">
+                            <i class="fas fa-question text-xl text-emerald-200"></i>
+                        </div>
+                        <div class="flip-card-back flex flex-col items-center justify-center border-2 border-emerald-600 shadow-inner">
+                            <span class="${card.type === 'aksara' ? 'text-4xl aksara-font text-emerald-800' : 'text-xl font-black text-slate-700 tracking-wider'}">${card.value}</span>
+                        </div>
+                    </div>
+                `;
+
+                cardEl.onclick = () => flipMemoryCard(cardEl);
+                grid.appendChild(cardEl);
+            });
+        }
+
+        function flipMemoryCard(cardEl) {
+            // Hindari membalik kartu yang sudah terbuka atau jika sedang memproses 2 kartu
+            if (cardEl.classList.contains('flipped') || memoryFlipped.length >= 2) return;
+
+            playSoundEffect('click');
+            cardEl.classList.add('flipped');
+            memoryFlipped.push(cardEl);
+
+            if (memoryFlipped.length === 2) {
+                memoryMoves++;
+                document.getElementById('memoryMoves').textContent = memoryMoves;
+
+                const card1 = memoryFlipped[0];
+                const card2 = memoryFlipped[1];
+
+                // Memastikan kunci pencocokannya cocok & tipenya berbeda (menghindari kecurangan mengklik pasangan aksara dobel)
+                if (card1.dataset.key === card2.dataset.key && card1.dataset.type !== card2.dataset.type) {
+                    // COCOK!
+                    playSoundEffect('correct');
+                    memoryMatchedCount += 2;
+                    memoryFlipped = [];
+
+                    // Tandai kecocokan di visual
+                    card1.querySelector('.flip-card-back').classList.add('bg-emerald-100', 'border-emerald-500');
+                    card2.querySelector('.flip-card-back').classList.add('bg-emerald-100', 'border-emerald-500');
+
+                    // Jika semua pasangan (8 kartu) sudah terbuka
+                    if (memoryMatchedCount === 8) {
+                        setTimeout(endMemoryGame, 800);
+                    }
+                } else {
+                    // SALAH! Balik kembali setelah jeda
+                    playSoundEffect('wrong');
+                    setTimeout(() => {
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
+                        memoryFlipped = [];
+                    }, 1000);
+                }
+            }
+        }
+
+        function endMemoryGame() {
+            clearInterval(memoryInterval);
+            playFanfareSlendro();
+
+            // Aturan Rekor Waktu Tersingkat
+            const oldBestTime = parseFloat(localStorage.getItem(BEST_TIME_MEMORY_KEY)) || Infinity;
+            if (memoryTimeElapsed < oldBestTime) {
+                localStorage.setItem(BEST_TIME_MEMORY_KEY, memoryTimeElapsed);
+                document.getElementById('newHighScoreLabel').classList.remove('hidden');
+                triggerConfetti();
+            } else {
+                document.getElementById('newHighScoreLabel').classList.add('hidden');
+            }
+
+            // Persentase Kinerja
+            const maxPerfectMoves = 4; // Minimal langkah jika beruntung/hafal mutlak
+            const performance = Math.max(20, Math.round((maxPerfectMoves / memoryMoves) * 100));
+
+            document.getElementById('endGameName').textContent = "Pasang Kartu (Memory Match)";
+            document.getElementById('endScoreLabel').textContent = "Total Waktu Bermain:";
+            document.getElementById('endScoreValue').textContent = `${memoryTimeElapsed} detik`;
+            document.getElementById('endMetaLabel').textContent = "Jumlah Langkah:";
+            document.getElementById('endMetaValue').textContent = `${memoryMoves} langkah`;
+
+            renderStars(performance);
+            switchScreen('GameOver');
+        }
+
+
+        // ============================================================
+        // SCREEN: SUSUN KATA (EJA JAWA) LOGIC
+        // ============================================================
+        let susunCurrentLevel = 1;
+        let susunPlacedAksaras = [];
+        let susunTargetData = null;
+
+        function startSusunKata() {
+            susunCurrentLevel = 1;
+            loadSusunKataLevel();
+            switchScreen('Susun');
+        }
+
+        function loadSusunKataLevel() {
+            susunPlacedAksaras = [];
+            document.getElementById('susunLevel').textContent = susunCurrentLevel;
+            document.getElementById('susunPlacedArea').innerHTML = '';
+
+            // Ambil data kata dari database berdasarkan level saat ini (1 sampai 5)
+            susunTargetData = wordList[(susunCurrentLevel - 1) % wordList.length];
+            document.getElementById('susunTargetWord').textContent = susunTargetData.word;
+            document.getElementById('susunMeaning').textContent = `Artinya: ${susunTargetData.meaning}`;
+
+            // Kumpulkan sumber balok (termasuk huruf benar + beberapa huruf pengecoh)
+            const correctBlocks = [...susunTargetData.components];
+            const pool = [...aksaraList].filter(x => !correctBlocks.includes(x.char));
+            
+            // Ambil 2 huruf pengecoh acak agar pilihan berjumlah 4
+            const distractionBlocks = pool.sort(() => Math.random() - 0.5).slice(0, 2).map(x => x.char);
+            const finalBlocks = [...correctBlocks, ...distractionBlocks].sort(() => Math.random() - 0.5);
+
+            // Populasikan balok pilihan ke dalam DOM
+            const sourceArea = document.getElementById('susunSourceArea');
+            sourceArea.innerHTML = '';
+
+            finalBlocks.forEach((char) => {
+                const blockBtn = document.createElement('button');
+                blockBtn.className = "susun-block bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 rounded-xl w-14 h-14 font-black text-2xl text-amber-900 flex items-center justify-center transition active:scale-95 shadow-sm btn-bounce aksara-font";
+                blockBtn.textContent = char;
+                blockBtn.onclick = () => selectSusunBlock(char, blockBtn);
+                sourceArea.appendChild(blockBtn);
+            });
+        }
+
+        function selectSusunBlock(char, blockBtn) {
+            playSoundEffect('click');
+            
+            // Masukkan karakter ke area susunan hasil
+            susunPlacedAksaras.push(char);
+            
+            // Visualisasikan balok terpilih di area atas
+            const placedArea = document.getElementById('susunPlacedArea');
+            const visualBlock = document.createElement('div');
+            visualBlock.className = "bg-emerald-600 text-white rounded-xl w-12 h-12 flex items-center justify-center text-2xl font-black shadow shadow-emerald-700/20 aksara-font animate-fadeIn";
+            visualBlock.textContent = char;
+            placedArea.appendChild(visualBlock);
+
+            // Sembunyikan balok asal secara transisi agar tidak bisa diklik dua kali
+            blockBtn.classList.add('opacity-40', 'pointer-events-none');
+        }
+
+        function resetCurrentSusun() {
+            playSoundEffect('click');
+            susunPlacedAksaras = [];
+            document.getElementById('susunPlacedArea').innerHTML = '';
+            
+            // Aktifkan kembali semua balok pilihan asal
+            document.querySelectorAll('.susun-block').forEach((btn) => {
+                btn.classList.remove('opacity-40', 'pointer-events-none');
+            });
+        }
+
+        function checkSusunAnswer() {
+            // Gabungkan urutan aksara menjadi susunan verifikasi
+            const isCorrect = JSON.stringify(susunPlacedAksaras) === JSON.stringify(susunTargetData.components);
+
+            if (isCorrect) {
+                playSoundEffect('correct');
+                triggerConfetti();
+
+                // Lanjut ke level berikutnya atau tamat
+                if (susunCurrentLevel < 5) {
+                    susunCurrentLevel++;
+                    setTimeout(() => {
+                        loadSusunKataLevel();
+                    }, 1200);
+                } else {
+                    setTimeout(endSusunGame, 800);
+                }
+            } else {
+                playSoundEffect('wrong');
+                alert("❌ Susunan aksaramu kurang tepat. Silakan hapus dan coba lagi!");
+                resetCurrentSusun();
+            }
+        }
+
+        function endSusunGame() {
+            playFanfareSlendro();
+            triggerConfetti();
+
+            document.getElementById('endGameName').textContent = "Susun Kata (Eja Jawa)";
+            document.getElementById('endScoreLabel').textContent = "Prestasi Akhir:";
+            document.getElementById('endScoreValue').textContent = "LULUS 100%";
+            document.getElementById('endMetaLabel').textContent = "Level Diselesaikan:";
+            document.getElementById('endMetaValue').textContent = "5 Level Utama";
+
+            renderStars(100);
+            switchScreen('GameOver');
+        }
+
+
+        // ============================================================
+        // RATING STARS & EVALUATION RENDERING
+        // ============================================================
+        function renderStars(percentage) {
+            const container = document.getElementById('starContainer');
+            container.innerHTML = '';
+
+            let starsCount = 1;
+            if (percentage >= 80) {
+                starsCount = 3;
+            } else if (percentage >= 45) {
+                starsCount = 2;
+            }
+
+            for (let i = 0; i < 3; i++) {
+                const star = document.createElement('i');
+                if (i < starsCount) {
+                    star.className = "fas fa-star text-amber-400 animate-pulse";
+                } else {
+                    star.className = "far fa-star text-slate-300";
+                }
+                container.appendChild(star);
+            }
+        }
+
+        // ============================================================
+        // CANVAS CONFETTI EFFECT
+        // ============================================================
+        function triggerConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#10b981', '#fbbf24', '#3b82f6', '#ec4899', '#8b5cf6'];
+
+            for (let i = 0; i < 120; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 5 + 3,
+                    d: Math.random() * canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.05 + 0.01,
+                    tiltAngle: 0
+                });
+            }
+
+            let animationFrameId;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let remaining = false;
+
+                particles.forEach((p) => {
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                    p.x += Math.sin(p.tiltAngle);
+                    p.tilt = Math.sin(p.tiltAngle - p.r / 2) * 12;
+
+                    if (p.y <= canvas.height) {
+                        remaining = true;
+                    }
+
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    ctx.stroke();
+                });
+
+                if (remaining) {
+                    animationFrameId = requestAnimationFrame(draw);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            draw();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+    </script>
+</body>
+</html>

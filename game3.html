@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Tebak Pulau - SDN 3 Ngantru</title>
+    <!-- Tailwind CSS, Google Fonts, & Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+        /* Style untuk transisi hover SVG Pulau */
+        .map-island {
+            transition: fill 0.3s ease, filter 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+        .map-island:hover {
+            filter: drop-shadow(0px 8px 12px rgba(16, 185, 129, 0.4));
+            transform: translateY(-2px);
+        }
+        /* Efek denyut pada pulau yang aktif ditanyakan */
+        @keyframes pulse-gold {
+            0%, 100% { fill: #f59e0b; opacity: 1; }
+            50% { fill: #fbbf24; opacity: 0.8; }
+        }
+        .pulse-target {
+            animation: pulse-gold 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="bg-sky-50/50 min-h-screen flex flex-col justify-between text-slate-800">
+
+    <header class="bg-gradient-to-r from-emerald-800 to-teal-700 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-800 font-bold text-xl shadow shadow-black/20">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xs md:text-sm leading-none uppercase tracking-wide">Tebak Pulau Nusantara</h1>
+                    <p class="text-[10px] text-emerald-200 mt-0.5">SDN 3 Ngantru</p>
+                </div>
+            </div>
+            <a href="game.html" class="bg-emerald-700/50 hover:bg-amber-500 hover:text-emerald-950 border border-emerald-500/30 px-4 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fas fa-arrow-left"></i> Menu Game
+            </a>
+        </div>
+    </header>
+
+    <!-- Confetti Canvas untuk Selebrasi Prestasi -->
+    <canvas id="confettiCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
+
+    <!-- Workspace Utama Game -->
+    <main class="max-w-4xl w-full mx-auto p-4 flex-1 flex flex-col justify-center">
+
+        <!-- SCREEN 1: MENU UTAMA -->
+        <div id="screenMenu" class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-600 text-center space-y-6">
+            <div class="space-y-2">
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Game Board #3</span>
+                <h2 class="text-3xl font-extrabold text-emerald-900 leading-tight">Jelajah Nusantara:<br>Peta Buta Indonesia 🇮🇩</h2>
+                <p class="text-slate-500 text-sm">Kenali pulau-pulau besar dan kepulauan indah di tanah air tercinta melalui petualangan geografi interaktif!</p>
+            </div>
+
+            <!-- Rekor Nilai Terbaik -->
+            <div class="bg-emerald-50 rounded-2xl p-4 grid grid-cols-2 gap-2 border border-emerald-100 text-left">
+                <div>
+                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider leading-none">Skor Cari Peta</p>
+                    <p class="text-lg font-black text-emerald-800 mt-0.5" id="highScoreMap">0 Poin</p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider leading-none">Skor Tebak Siluet</p>
+                    <p class="text-lg font-black text-emerald-800 mt-0.5" id="highScoreSilhouette">0 Poin</p>
+                </div>
+            </div>
+
+            <!-- Pilihan Kegiatan Geografi -->
+            <div class="space-y-3 pt-2">
+                <p class="text-xs font-extrabold text-slate-400 uppercase tracking-widest text-left pl-1">Pilih Mode Belajar & Bermain:</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <!-- Mode 1: Jelajah -->
+                    <button onclick="startExplore()" class="bg-white hover:bg-emerald-50 border-2 border-emerald-500/30 rounded-2xl p-4 text-left flex flex-col justify-between transition btn-bounce shadow-sm">
+                        <div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white text-lg mb-3">
+                            <i class="fas fa-atlas"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-emerald-950">1. Atlas Interaktif</h4>
+                            <p class="text-[11px] text-slate-500 mt-1">Ketuk pulau apa saja pada peta untuk mempelajari nama kota utama dan fun-fact menariknya.</p>
+                        </div>
+                    </button>
+
+                    <!-- Mode 2: Cari Peta -->
+                    <button onclick="startFindGame()" class="bg-white hover:bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 text-left flex flex-col justify-between transition btn-bounce shadow-sm">
+                        <div class="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center text-emerald-950 text-lg mb-3">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">2. Cari di Peta (Buta)</h4>
+                            <p class="text-[11px] text-slate-500 mt-1">Tantangan menebak letak wilayah pulau yang disebutkan dengan mengeklik langsung pada peta.</p>
+                        </div>
+                    </button>
+
+                    <!-- Mode 3: Tebak Siluet -->
+                    <button onclick="startSilhouetteGame()" class="bg-white hover:bg-teal-50 border-2 border-teal-400 rounded-2xl p-4 text-left flex flex-col justify-between transition btn-bounce shadow-sm">
+                        <div class="w-10 h-10 bg-teal-600 rounded-xl flex items-center justify-center text-white text-lg mb-3">
+                            <i class="fas fa-shapes"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">3. Tebak Siluet Pulau</h4>
+                            <p class="text-[11px] text-slate-500 mt-1">Menebak nama pulau berdasarkan bentuk potongan bayangan/siluet secara cepat.</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: GAMEPLAY UTAMA (PETA INTERAKTIF / ATLAS & CARI DI PETA) -->
+        <div id="screenMapPlay" class="hidden bg-white rounded-3xl p-6 shadow-xl border-4 border-emerald-600 space-y-4">
+            <!-- Header Stats -->
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-black text-emerald-900" id="mapPlayTitle"><i class="fas fa-atlas"></i> Atlas Indonesia</h3>
+                    <p class="text-[11px] text-slate-400" id="mapPlayInstruction">Klik pulau apa saja untuk menampilkan ensiklopedia ringkas.</p>
+                </div>
+                <!-- Panel Stats Kuis (Hanya muncul jika mode kuis aktif) -->
+                <div id="mapQuizStats" class="hidden flex gap-4 text-right">
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400 leading-none">SKOR</p>
+                        <p class="text-sm font-black text-emerald-800" id="mapScore">0</p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400 leading-none">SOAL</p>
+                        <p class="text-sm font-black text-slate-700"><span id="mapQuestionIndex">1</span>/5</p>
+                    </div>
+                </div>
+                <button onclick="backToMenu()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold transition">
+                    <i class="fas fa-home"></i> Menu
+                </button>
+            </div>
+
+            <!-- Papan Kontainer Peta SVG -->
+            <div class="bg-sky-100 border-2 border-sky-200 rounded-2xl p-2 relative flex items-center justify-center overflow-x-auto">
+                <!-- Target Pertanyaan Mengambang (Hanya mode kuis) -->
+                <div id="mapQuestionCard" class="hidden absolute top-4 left-4 bg-amber-500 text-emerald-950 font-extrabold px-4 py-2 rounded-xl text-sm shadow-md animate-bounce">
+                    👉 Tunjukkan: <span id="mapTargetName" class="underline uppercase">Sulawesi</span>
+                </div>
+
+                <svg id="indonesiaMap" viewBox="0 0 1000 400" class="w-full h-auto min-w-[700px] select-none">
+                    <!-- Air Laut / Background Laut -->
+                    <rect width="1000" height="400" fill="none"/>
+                    
+                    <!-- SUMATRA -->
+                    <path id="island-sumatra" class="map-island fill-emerald-600 hover:fill-emerald-400 stroke-emerald-800 stroke-2" 
+                          d="M 60,80 L 100,60 L 160,110 L 250,220 L 270,260 L 245,280 L 210,260 L 120,160 Z" />
+                          
+                    <!-- JAWA -->
+                    <path id="island-jawa" class="map-island fill-teal-600 hover:fill-teal-400 stroke-teal-800 stroke-2" 
+                          d="M 280,285 L 430,305 L 490,310 L 490,320 L 410,318 L 280,298 Z" />
+                          
+                    <!-- KALIMANTAN -->
+                    <path id="island-kalimantan" class="map-island fill-cyan-600 hover:fill-cyan-400 stroke-cyan-800 stroke-2" 
+                          d="M 320,140 L 390,105 L 460,110 L 480,150 L 470,200 L 440,240 L 350,230 L 310,180 Z" />
+                          
+                    <!-- SULAWESI -->
+                    <path id="island-sulawesi" class="map-island fill-indigo-600 hover:fill-indigo-400 stroke-indigo-800 stroke-2" 
+                          d="M 520,145 Q 550,140 570,120 Q 560,165 610,175 Q 570,185 580,235 Q 555,215 530,240 Q 540,195 520,185 Q 505,185 500,170 Z" />
+                          
+                    <!-- BALI & NUSA TENGGARA -->
+                    <g id="island-nusa_tenggara" class="map-island fill-amber-600 hover:fill-amber-400 stroke-amber-800 stroke-2">
+                        <!-- Bali -->
+                        <path d="M 500,312 A 4,4 0 1,1 508,312 Z" />
+                        <!-- Lombok -->
+                        <path d="M 515,313 A 5,5 0 1,1 525,313 Z" />
+                        <!-- Sumbawa -->
+                        <path d="M 535,311 L 565,311 L 560,318 L 530,315 Z" />
+                        <!-- Flores -->
+                        <path d="M 580,309 L 635,307 L 630,314 L 585,314 Z" />
+                        <!-- Timor -->
+                        <path d="M 645,318 L 690,298 L 685,293 L 640,312 Z" />
+                    </g>
+                    
+                    <!-- MALUKU -->
+                    <g id="island-maluku" class="map-island fill-pink-600 hover:fill-pink-400 stroke-pink-800 stroke-2">
+                        <!-- Halmahera -->
+                        <path d="M 640,120 L 660,110 L 650,150 Z" />
+                        <!-- Seram -->
+                        <path d="M 650,190 L 700,190 L 695,195 L 655,195 Z" />
+                        <!-- Buru -->
+                        <path d="M 625,192 A 7,7 0 1,1 635,192 Z" />
+                    </g>
+                    
+                    <!-- PAPUA -->
+                    <path id="island-papua" class="map-island fill-sky-600 hover:fill-sky-400 stroke-sky-800 stroke-2" 
+                          d="M 750,180 Q 790,120 830,150 Q 870,170 930,200 L 940,260 L 830,260 Q 800,240 770,240 Z" />
+                </svg>
+            </div>
+
+            <!-- Kotak Info Atlas saat pulau diklik -->
+            <div id="exploreDetailBox" class="bg-amber-50 rounded-2xl p-4 border border-amber-200 text-center space-y-2 animate-fadeIn">
+                <p class="text-xs font-bold text-amber-800 uppercase tracking-widest"><i class="fas fa-info-circle"></i> Info Geografi:</p>
+                <h4 class="font-extrabold text-2xl text-emerald-900" id="infoIslandName">Indonesia</h4>
+                <div class="h-0.5 bg-amber-200 w-24 mx-auto my-1"></div>
+                <p class="text-xs text-slate-500"><strong>Kota Utama/Ibu Kota Regional:</strong> <span id="infoIslandCapital" class="text-slate-800">-</span></p>
+                <p class="text-xs italic text-slate-600 px-4 mt-1" id="infoIslandFact">Sentuh salah satu gugusan pulau pada peta untuk menampilkan rincian ensiklopedia sekolah!</p>
+            </div>
+
+            <div id="mapQuizFeedback" class="h-6 text-center text-sm font-extrabold uppercase tracking-wider opacity-0 transition-opacity">Hebat!</div>
+        </div>
+
+        <!-- SCREEN 3: TEBAK SILUET SCREEN -->
+        <div id="screenSilhouette" class="hidden bg-white rounded-3xl p-6 shadow-xl border-4 border-emerald-600 space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="font-extrabold text-emerald-900"><i class="fas fa-shapes"></i> Kuis Siluet Pulau</h3>
+                    <p class="text-xs text-slate-400">Pilih nama pulau berdasarkan bayangan berikut!</p>
+                </div>
+                <div class="text-right flex gap-3">
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400 leading-none">SKOR</p>
+                        <p class="text-sm font-black text-emerald-800" id="silScore">0</p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400 leading-none">SOAL</p>
+                        <p class="text-sm font-black text-slate-700"><span id="silQuestionIndex">1</span>/5</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kotak Gambar Bayangan Pulau -->
+            <div class="bg-slate-900 rounded-2xl p-6 flex items-center justify-center min-h-[180px] shadow-inner relative">
+                <div class="absolute top-2 left-4 text-[10px] text-emerald-400 font-mono">SILUET_SCANNING...</div>
+                <svg id="silhouetteDisplay" viewBox="0 0 300 180" class="w-48 h-auto filter drop-shadow(0 0 8px rgba(16,185,129,0.5))">
+                    <!-- Jalur siluet akan disalin ke sini secara dinamis dan diwarnai hitam/abu gelap -->
+                </svg>
+            </div>
+
+            <!-- Pilihan Jawaban -->
+            <div class="grid grid-cols-2 gap-3" id="silChoicesGrid">
+                <!-- JavaScript otomatis menaruh 4 opsi -->
+            </div>
+
+            <div id="silFeedback" class="h-5 text-center text-xs font-extrabold uppercase opacity-0 transition-opacity">Jawaban Benar!</div>
+        </div>
+
+        <!-- SCREEN 4: GAME OVER SCREEN -->
+        <div id="screenGameOver" class="hidden bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-500 text-center space-y-6 animate-fadeIn">
+            <div class="space-y-1">
+                <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-500 text-2xl mx-auto mb-2">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-emerald-950 leading-none">Petualangan Selesai!</h2>
+                <p class="text-slate-500 text-xs">Skor evaluasi geografi nusantaramu:</p>
+            </div>
+
+            <!-- Papan Bintang Hasil Performa -->
+            <div class="flex justify-center gap-3 text-3xl my-2" id="starContainer">
+                <i class="fas fa-star text-amber-400"></i>
+                <i class="fas fa-star text-amber-400"></i>
+                <i class="fas fa-star text-amber-400"></i>
+            </div>
+
+            <!-- Rincian Hasil Nilai Akhir -->
+            <div class="bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100 text-left space-y-2">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Mode Game:</span>
+                    <strong class="text-emerald-800" id="endGameMode">Cari Peta</strong>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Skor Akhir:</span>
+                    <strong class="text-2xl font-black text-emerald-800" id="endScoreValue">0</strong>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-medium">Akurasi Jawaban:</span>
+                    <strong class="text-emerald-800" id="endAccuracyValue">100%</strong>
+                </div>
+            </div>
+
+            <div id="newHighScoreBadge" class="hidden bg-amber-500 text-emerald-950 font-black text-xs px-4 py-2 rounded-2xl">
+                🎉 REKOR SKOR BARU BERHASIL DICAPAI!
+            </div>
+
+            <!-- Tombol Aksi Akhir -->
+            <div class="space-y-2">
+                <button onclick="backToMenu()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm py-3 rounded-2xl shadow-lg shadow-emerald-600/20 active:scale-95 transition">
+                    <i class="fas fa-home"></i> Kembali Ke Menu Game
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Identitas Sekolah -->
+    <footer class="text-center py-4 text-xs text-emerald-800 bg-emerald-100/50 border-t border-emerald-200">
+        <p>&copy; 2026 SDN 3 Ngantru. Program Edukasi Geografi Digital.</p>
+    </footer>
+
+    <script>
+        // ============================================================
+        // DATA GEOGRAFI INDONESIA (7 Gugusan Kepulauan Utama)
+        // ============================================================
+        const islandData = {
+            sumatra: {
+                name: "Sumatra",
+                capital: "Medan, Palembang, Pekanbaru",
+                fact: "Pulau terbesar ke-6 di dunia, memiliki Danau Toba sebagai danau vulkanik terbesar dan habitat Harimau Sumatra.",
+                pathId: "island-sumatra",
+                svgD: "M 60,80 L 100,60 L 160,110 L 250,220 L 270,260 L 245,280 L 210,260 L 120,160 Z"
+            },
+            jawa: {
+                name: "Jawa",
+                capital: "Jakarta, Surabaya, Bandung",
+                fact: "Pulau terpadat di dunia, pusat berdirinya kerajaan kuno nusantara (Majapahit) dan rumah bagi Gunung Bromo.",
+                pathId: "island-jawa",
+                svgD: "M 30,80 L 180,100 L 240,105 L 240,115 L 160,113 L 30,93 Z" // Dibuat pas di viewBox siluet
+            },
+            kalimantan: {
+                name: "Kalimantan",
+                capital: "Samarinda, Pontianak, Banjarmasin",
+                fact: "Sering dijuluki Borneo, memiliki hutan hujan tropis tertua di dunia dan tempat perlindungan Orangutan.",
+                pathId: "island-kalimantan",
+                svgD: "M 80,100 L 150,65 L 220,70 L 240,110 L 230,160 L 200,200 L 110,190 L 70,140 Z"
+            },
+            sulawesi: {
+                name: "Sulawesi",
+                capital: "Makassar, Manado, Kendari",
+                fact: "Pulau unik berbentuk menyerupai huruf K, terkenal dengan keindahan bawah laut Bunaken serta budaya Tana Toraja.",
+                pathId: "island-sulawesi",
+                svgD: "M 80,105 Q 110,100 130,80 Q 120,125 170,135 Q 130,145 140,195 Q 115,175 90,200 Q 100,155 80,145 Q 65,145 60,130 Z"
+            },
+            nusa_tenggara: {
+                name: "Bali & Nusa Tenggara",
+                capital: "Denpasar, Mataram, Kupang",
+                fact: "Gugusan kepulauan eksotis tempat pariwisata dunia dan habitat asli reptil purba raksasa Komodo.",
+                pathId: "island-nusa_tenggara",
+                svgD: "M 30,90 A 4,4 0 1,1 38,90 M 55,91 A 5,5 0 1,1 65,91 M 85,89 L 145,89 L 140,96 L 90,93 M 175,87 L 230,85 M 245,96 L 290,76 Z"
+            },
+            maluku: {
+                name: "Maluku",
+                capital: "Ambon, Ternate, Sofifi",
+                fact: "Dijuluki Kepulauan Rempah (Spice Islands) sejak abad kuno karena kaya akan cengkih dan pala yang dicari dunia.",
+                pathId: "island-maluku",
+                svgD: "M 100,60 L 120,50 L 110,90 M 110,130 L 160,130 M 85,132 A 7,7 0 1,1 95,132"
+            },
+            papua: {
+                name: "Papua",
+                capital: "Jayapura, Manokwari",
+                fact: "Pulau paling timur Indonesia, rumah bagi burung Cendrawasih yang cantik dan Puncak Jaya yang bersalju.",
+                pathId: "island-papua",
+                svgD: "M 50,110 Q 90,50 130,80 Q 170,100 230,130 L 240,190 L 130,190 Q 100,170 70,170 Z"
+            }
+        };
+
+        // ============================================================
+        // SYNTHESIZER AUDIO GAMELAN (SARON SLENDRO)
+        // ============================================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const slendroNotes = [262, 294, 327, 392, 440, 524]; // Nada Slendro (1, 2, 3, 5, 6, i)
+
+        function playGamelanSaron(frequency, duration = 1.0) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const now = audioCtx.currentTime;
+                
+                // Frekuensi harmonik agar berasa saron (logam/perunggu)
+                const overtones = [1.0, 2.76, 5.4, 8.1];
+                const gains = [0.6, 0.2, 0.1, 0.05];
+
+                const masterGain = audioCtx.createGain();
+                masterGain.gain.setValueAtTime(0.12, now);
+                masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                masterGain.connect(audioCtx.destination);
+
+                overtones.forEach((multiplier, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const oscGain = audioCtx.createGain();
+
+                    osc.type = index === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(frequency * multiplier, now);
+                    oscGain.gain.setValueAtTime(gains[index], now);
+
+                    osc.connect(oscGain);
+                    oscGain.connect(masterGain);
+
+                    osc.start(now);
+                    osc.stop(now + duration);
+                });
+            } catch (err) {
+                console.log("Audio Gamelan error:", err);
+            }
+        }
+
+        function playSoundEffect(type) {
+            if (type === 'correct') {
+                playGamelanSaron(440, 0.6);
+                setTimeout(() => playGamelanSaron(524, 0.8), 120);
+            } else if (type === 'wrong') {
+                playGamelanSaron(180, 0.5);
+            } else if (type === 'click') {
+                playGamelanSaron(327, 0.3);
+            }
+        }
+
+        function playFanfareSlendro() {
+            slendroNotes.forEach((freq, idx) => {
+                setTimeout(() => {
+                    playGamelanSaron(freq, 1.2);
+                }, idx * 140);
+            });
+        }
+
+        // ============================================================
+        // SISTEM STATE & NAVIGASI LAYAR
+        // ============================================================
+        let currentScreen = 'Menu';
+        const STORAGE_KEY_MAP = 'high_score_tebak_pulau_map';
+        const STORAGE_KEY_SIL = 'high_score_tebak_pulau_sil';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadHighScores();
+            initializeAtlasClickEvents();
+        });
+
+        function loadHighScores() {
+            const hsMap = localStorage.getItem(STORAGE_KEY_MAP) || 0;
+            const hsSil = localStorage.getItem(STORAGE_KEY_SIL) || 0;
+            document.getElementById('highScoreMap').textContent = `${hsMap} Poin`;
+            document.getElementById('highScoreSilhouette').textContent = `${hsSil} Poin`;
+        }
+
+        function switchScreen(screenName) {
+            playSoundEffect('click');
+            
+            // Sembunyikan semua screen
+            document.getElementById('screenMenu').classList.add('hidden');
+            document.getElementById('screenMapPlay').classList.add('hidden');
+            document.getElementById('screenSilhouette').classList.add('hidden');
+            document.getElementById('screenGameOver').classList.add('hidden');
+
+            // Tampilkan screen yang dituju
+            document.getElementById(`screen${screenName}`).classList.remove('hidden');
+            currentScreen = screenName;
+        }
+
+        function backToMenu() {
+            loadHighScores();
+            resetMapStyles();
+            switchScreen('Menu');
+        }
+
+        // ============================================================
+        // SCREEN: ATLAS INTERAKTIF (MODE JELAJAH)
+        // ============================================================
+        function startExplore() {
+            // Setup visual ke mode Jelajah Atlas
+            document.getElementById('mapPlayTitle').innerHTML = '<i class="fas fa-atlas"></i> Atlas Indonesia';
+            document.getElementById('mapPlayInstruction').textContent = 'Sentuh/Klik gugusan pulau pada peta untuk menampilkan ensiklopedia ringkas.';
+            document.getElementById('mapQuizStats').classList.add('hidden');
+            document.getElementById('mapQuestionCard').classList.add('hidden');
+            document.getElementById('exploreDetailBox').classList.remove('hidden');
+
+            // Set detail info default
+            document.getElementById('infoIslandName').textContent = "Indonesia";
+            document.getElementById('infoIslandCapital').textContent = "-";
+            document.getElementById('infoIslandFact').textContent = "Sentuh salah satu gugusan pulau pada peta untuk menampilkan rincian ensiklopedia sekolah!";
+
+            resetMapStyles();
+            mapGameMode = "explore";
+            switchScreen('MapPlay');
+        }
+
+        function initializeAtlasClickEvents() {
+            // Sambungkan semua elemen pulau dengan klik handler
+            Object.keys(islandData).forEach((key) => {
+                const data = islandData[key];
+                const element = document.getElementById(data.pathId);
+                if (element) {
+                    element.addEventListener('click', () => {
+                        handleIslandClick(key);
+                    });
+                }
+            });
+        }
+
+        function handleIslandClick(key) {
+            if (mapGameMode === "explore") {
+                playSoundEffect('click');
+                const data = islandData[key];
+                
+                // Perbarui Box Rincian Ensiklopedia
+                document.getElementById('infoIslandName').textContent = data.name;
+                document.getElementById('infoIslandCapital').textContent = data.capital;
+                document.getElementById('infoIslandFact').textContent = data.fact;
+
+                // Beri efek kilasan warna pulau yang sedang diklik
+                resetMapStyles();
+                const el = document.getElementById(data.pathId);
+                el.style.fill = "#fbbf24"; // Warna Amber Emas untuk highlight
+            } else if (mapGameMode === "quiz") {
+                submitQuizMapAnswer(key);
+            }
+        }
+
+        function resetMapStyles() {
+            // Kembalikan ke warna aslinya masing-masing
+            document.getElementById('island-sumatra').style.fill = "";
+            document.getElementById('island-jawa').style.fill = "";
+            document.getElementById('island-kalimantan').style.fill = "";
+            document.getElementById('island-sulawesi').style.fill = "";
+            document.getElementById('island-nusa_tenggara').style.fill = "";
+            document.getElementById('island-maluku').style.fill = "";
+            document.getElementById('island-papua').style.fill = "";
+
+            // Hapus kelas denyut kuis
+            document.querySelectorAll('.map-island').forEach(el => {
+                el.classList.remove('pulse-target');
+            });
+        }
+
+        // ============================================================
+        // SCREEN: CARI DI PETA (MODE KUIS PETA BUTA)
+        // ============================================================
+        let mapGameMode = "explore"; // explore atau quiz
+        let mapQuizScore = 0;
+        let mapQuizStep = 1;
+        let mapQuizQuestions = [];
+        let mapCorrectAnswer = "";
+        let mapAnsweredCorrectCount = 0;
+
+        function startFindGame() {
+            mapGameMode = "quiz";
+            mapQuizScore = 0;
+            mapQuizStep = 1;
+            mapAnsweredCorrectCount = 0;
+
+            document.getElementById('mapScore').textContent = "0";
+            document.getElementById('mapQuestionIndex').textContent = "1";
+
+            document.getElementById('mapPlayTitle').innerHTML = '<i class="fas fa-map-marked-alt"></i> Kuis Peta Buta';
+            document.getElementById('mapPlayInstruction').textContent = 'Pecahkan tantangan dengan mengeklik letak pulau yang diminta secara tepat!';
+            document.getElementById('mapQuizStats').classList.remove('hidden');
+            document.getElementById('mapQuestionCard').classList.remove('hidden');
+            document.getElementById('exploreDetailBox').classList.add('hidden'); // Sembunyikan info box saat kuis
+
+            // Acak daftar pertanyaan (5 dari 7 pulau)
+            mapQuizQuestions = Object.keys(islandData).sort(() => Math.random() - 0.5).slice(0, 5);
+
+            resetMapStyles();
+            generateMapQuestion();
+            switchScreen('MapPlay');
+        }
+
+        function generateMapQuestion() {
+            resetMapStyles();
+            mapCorrectAnswer = mapQuizQuestions[mapQuizStep - 1];
+            const targetName = islandData[mapCorrectAnswer].name;
+
+            document.getElementById('mapQuestionIndex').textContent = mapQuizStep;
+            document.getElementById('mapTargetName').textContent = targetName;
+        }
+
+        function submitQuizMapAnswer(selectedKey) {
+            const feedbackEl = document.getElementById('mapQuizFeedback');
+            const clickedElement = document.getElementById(islandData[selectedKey].pathId);
+
+            // Matikan sementara event klik dengan menyembunyikan mapQuestionCard agar tidak spamming
+            document.getElementById('mapQuestionCard').classList.add('pointer-events-none');
+
+            if (selectedKey === mapCorrectAnswer) {
+                playSoundEffect('correct');
+                mapQuizScore += 20;
+                mapAnsweredCorrectCount++;
+
+                // Beri warna hijau menyala pada pilihan benar
+                clickedElement.style.fill = "#10b981";
+
+                feedbackEl.textContent = "Hebat! Benar Sekali";
+                feedbackEl.className = "h-6 text-center text-sm font-extrabold uppercase tracking-wider text-emerald-600 opacity-100 animate-bounce";
+            } else {
+                playSoundEffect('wrong');
+                
+                // Warnai merah pulau yang salah, dan tunjukkan kunci warna hijau
+                clickedElement.style.fill = "#ef4444";
+                document.getElementById(islandData[mapCorrectAnswer].pathId).style.fill = "#10b981";
+
+                feedbackEl.textContent = `Kurang Tepat! Itu Pulau ${islandData[selectedKey].name}`;
+                feedbackEl.className = "h-6 text-center text-sm font-extrabold uppercase tracking-wider text-rose-500 opacity-100";
+            }
+
+            document.getElementById('mapScore').textContent = mapQuizScore;
+
+            setTimeout(() => {
+                feedbackEl.className = "h-6 text-center text-sm font-extrabold uppercase tracking-wider opacity-0 transition-opacity";
+                document.getElementById('mapQuestionCard').classList.remove('pointer-events-none');
+
+                if (mapQuizStep < 5) {
+                    mapQuizStep++;
+                    generateMapQuestion();
+                } else {
+                    endMapQuizGame();
+                }
+            }, 1500);
+        }
+
+        function endMapQuizGame() {
+            resetMapStyles();
+            playFanfareSlendro();
+
+            const accuracy = Math.round((mapAnsweredCorrectCount / 5) * 100);
+
+            // Simpan Rekor High Score
+            const oldHighScore = parseInt(localStorage.getItem(STORAGE_KEY_MAP)) || 0;
+            if (mapQuizScore > oldHighScore) {
+                localStorage.setItem(STORAGE_KEY_MAP, mapQuizScore);
+                document.getElementById('newHighScoreBadge').classList.remove('hidden');
+                triggerConfetti();
+            } else {
+                document.getElementById('newHighScoreBadge').classList.add('hidden');
+            }
+
+            // Tampilkan Data Akhir ke GameOver
+            document.getElementById('endGameMode').textContent = "Cari di Peta (Peta Buta)";
+            document.getElementById('endScoreValue').textContent = `${mapQuizScore} Poin`;
+            document.getElementById('endAccuracyValue').textContent = `${accuracy}%`;
+
+            renderStars(accuracy);
+            switchScreen('GameOver');
+        }
+
+        // ============================================================
+        // SCREEN: TEBAK SILUET PULAU (QUIZ MODE)
+        // ============================================================
+        let silQuizScore = 0;
+        let silQuizStep = 1;
+        let silQuizQuestions = [];
+        let silCorrectAnswer = "";
+        let silAnsweredCorrectCount = 0;
+
+        function startSilhouetteGame() {
+            silQuizScore = 0;
+            silQuizStep = 1;
+            silAnsweredCorrectCount = 0;
+
+            document.getElementById('silScore').textContent = "0";
+            document.getElementById('silQuestionIndex').textContent = "1";
+
+            // Acak urutan soal
+            silQuizQuestions = Object.keys(islandData).sort(() => Math.random() - 0.5).slice(0, 5);
+
+            generateSilhouetteQuestion();
+            switchScreen('Silhouette');
+        }
+
+        function generateSilhouetteQuestion() {
+            silCorrectAnswer = silQuizQuestions[silQuizStep - 1];
+            const targetData = islandData[silCorrectAnswer];
+
+            // Render Path SVG pada box siluet (Skala & koordinat diatur agar di tengah)
+            const silDisplay = document.getElementById('silhouetteDisplay');
+            silDisplay.innerHTML = `
+                <!-- Background grid atau radar hiasan -->
+                <circle cx="150" cy="90" r="70" fill="none" stroke="#1f2937" stroke-width="2" stroke-dasharray="5 5"/>
+                <circle cx="150" cy="90" r="40" fill="none" stroke="#1f2937" stroke-width="2" stroke-dasharray="5 5"/>
+                <path d="${targetData.svgD}" class="fill-slate-800 stroke-emerald-500 stroke-2" transform="translate(45, 10) scale(0.7)"/>
+            `;
+
+            // Buat pilihan jawaban (1 benar, 3 salah acak)
+            const choices = [targetData.name];
+            const allNames = Object.values(islandData).map(x => x.name);
+
+            while (choices.length < 4) {
+                const randName = allNames[Math.floor(Math.random() * allNames.length)];
+                if (!choices.includes(randName)) {
+                    choices.push(randName);
+                }
+            }
+
+            // Acak tata letak tombol pilihan jawaban
+            choices.sort(() => Math.random() - 0.5);
+
+            // Bangun DOM tombol pilihan
+            const grid = document.getElementById('silChoicesGrid');
+            grid.innerHTML = '';
+
+            choices.forEach((choice) => {
+                const btn = document.createElement('button');
+                btn.className = "sil-choice-btn bg-slate-50 hover:bg-emerald-50 border-2 border-slate-200 hover:border-emerald-300 rounded-2xl py-4 font-black text-sm text-slate-700 uppercase transition btn-bounce shadow-sm";
+                btn.textContent = choice;
+                btn.onclick = () => submitSilhouetteAnswer(choice, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function submitSilhouetteAnswer(selected, btnEl) {
+            const allButtons = document.querySelectorAll('.sil-choice-btn');
+            allButtons.forEach(btn => btn.disabled = true); // Hindari multi-klik
+
+            const feedbackEl = document.getElementById('silFeedback');
+            const correctAnswerName = islandData[silCorrectAnswer].name;
+
+            if (selected === correctAnswerName) {
+                playSoundEffect('correct');
+                silQuizScore += 20;
+                silAnsweredCorrectCount++;
+
+                btnEl.className = "sil-choice-btn bg-emerald-500 text-white border-2 border-emerald-600 rounded-2xl py-4 font-black text-sm uppercase shadow-md";
+
+                feedbackEl.textContent = "Hebat! Benar";
+                feedbackEl.className = "h-5 text-center text-xs font-extrabold uppercase text-emerald-600 opacity-100 animate-bounce";
+            } else {
+                playSoundEffect('wrong');
+
+                btnEl.className = "sil-choice-btn bg-rose-500 text-white border-2 border-rose-600 rounded-2xl py-4 font-black text-sm uppercase shadow-md";
+                allButtons.forEach(btn => {
+                    if (btn.textContent === correctAnswerName) {
+                        btn.className = "sil-choice-btn bg-emerald-500 text-white border-2 border-emerald-600 rounded-2xl py-4 font-black text-sm uppercase shadow-md";
+                    }
+                });
+
+                feedbackEl.textContent = "Belum Tepat!";
+                feedbackEl.className = "h-5 text-center text-xs font-extrabold uppercase text-rose-500 opacity-100";
+            }
+
+            document.getElementById('silScore').textContent = silQuizScore;
+
+            setTimeout(() => {
+                feedbackEl.className = "h-5 text-center text-xs font-extrabold uppercase opacity-0 transition-opacity";
+
+                if (silQuizStep < 5) {
+                    silQuizStep++;
+                    generateSilhouetteQuestion();
+                } else {
+                    endSilhouetteQuizGame();
+                }
+            }, 1500);
+        }
+
+        function endSilhouetteQuizGame() {
+            playFanfareSlendro();
+
+            const accuracy = Math.round((silAnsweredCorrectCount / 5) * 100);
+
+            // Kelola Simpanan Skor Terbaik
+            const oldHighScore = parseInt(localStorage.getItem(STORAGE_KEY_SIL)) || 0;
+            if (silQuizScore > oldHighScore) {
+                localStorage.setItem(STORAGE_KEY_SIL, silQuizScore);
+                document.getElementById('newHighScoreBadge').classList.remove('hidden');
+                triggerConfetti();
+            } else {
+                document.getElementById('newHighScoreBadge').classList.add('hidden');
+            }
+
+            document.getElementById('endGameMode').textContent = "Tebak Siluet Pulau";
+            document.getElementById('endScoreValue').textContent = `${silQuizScore} Poin`;
+            document.getElementById('endAccuracyValue').textContent = `${accuracy}%`;
+
+            renderStars(accuracy);
+            switchScreen('GameOver');
+        }
+
+        // ============================================================
+        // RATING BINTANG & EVALUASI SELEBRASI
+        // ============================================================
+        function renderStars(percentage) {
+            const container = document.getElementById('starContainer');
+            container.innerHTML = '';
+
+            let starsCount = 1;
+            if (percentage >= 80) {
+                starsCount = 3;
+            } else if (percentage >= 45) {
+                starsCount = 2;
+            }
+
+            for (let i = 0; i < 3; i++) {
+                const star = document.createElement('i');
+                if (i < starsCount) {
+                    star.className = "fas fa-star text-amber-400 animate-pulse";
+                } else {
+                    star.className = "far fa-star text-slate-300";
+                }
+                container.appendChild(star);
+            }
+        }
+
+        // ============================================================
+        // CANVAS CONFETTI EFFECT
+        // ============================================================
+        function triggerConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#10b981', '#fbbf24', '#3b82f6', '#ec4899', '#8b5cf6'];
+
+            for (let i = 0; i < 120; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 5 + 3,
+                    d: Math.random() * canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.05 + 0.01,
+                    tiltAngle: 0
+                });
+            }
+
+            let animationFrameId;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let remaining = false;
+
+                particles.forEach((p) => {
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                    p.x += Math.sin(p.tiltAngle);
+                    p.tilt = Math.sin(p.tiltAngle - p.r / 2) * 12;
+
+                    if (p.y <= canvas.height) {
+                        remaining = true;
+                    }
+
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    ctx.stroke();
+                });
+
+                if (remaining) {
+                    animationFrameId = requestAnimationFrame(draw);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            draw();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+    </script>
+</body>
+</html>
