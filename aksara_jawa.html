@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Sinau Aksara Jawa + Pasangan | SD Negeri 3 Ngantru</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fef9e6;
+            color: #2d2a24;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        /* Header */
+        .top-header {
+            background: linear-gradient(135deg, #0b3b2f 0%, #1a5d4a 100%);
+            color: white;
+            padding: 12px 0;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .school-logo {
+            width: 70px;
+            height: 70px;
+            background-image: url('logo sekolah.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 20px;
+        }
+        .logo-text h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+        .logo-text p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            list-style: none;
+            padding: 12px 0;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .nav-menu li a {
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1e293b;
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+        .nav-menu li a:hover {
+            background: #e6f7f0;
+            color: #0b5e42;
+        }
+        .page-title h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #b45309, #f59e0b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+        .aksara-hero {
+            background: linear-gradient(115deg, #fff5e6, #ffefdb);
+            border-radius: 32px;
+            padding: 32px;
+            margin: 20px 0 32px;
+            text-align: center;
+            border: 1px solid #f3d9b1;
+        }
+        .aksara-hero i {
+            font-size: 3rem;
+            color: #d97706;
+            animation: gentleBounce 2s infinite;
+        }
+        @keyframes gentleBounce {
+            0%,100%{transform:translateY(0);}
+            50%{transform:translateY(-8px);}
+        }
+        /* card grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+            margin: 32px 0;
+        }
+        .card-aksara {
+            background: white;
+            border-radius: 28px;
+            padding: 20px;
+            transition: all 0.25s;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+            border: 1px solid #ffe2b5;
+            cursor: pointer;
+            text-align: center;
+        }
+        .card-aksara:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.1);
+            border-color: #f3b33d;
+        }
+        .aksara-besar {
+            font-family: 'Noto Sans Javanese', monospace;
+            font-size: 4rem;
+            background: #fef3e2;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            color: #a55217;
+            border: 2px solid #f9cf86;
+        }
+        .btn-belajar {
+            background: #f7b05e;
+            border: none;
+            margin-top: 14px;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        /* tabel pasangan aksara jawa */
+        .pasangan-section {
+            background: white;
+            border-radius: 28px;
+            padding: 24px;
+            margin: 40px 0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+        .pasangan-section h2 {
+            font-size: 1.8rem;
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+        .pasangan-sub {
+            color: #6b4c2c;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Inter', monospace;
+        }
+        th, td {
+            padding: 14px 8px;
+            text-align: center;
+            border-bottom: 1px solid #f0dbc0;
+            font-size: 0.95rem;
+        }
+        th {
+            background: #fbe9cf;
+            font-weight: 700;
+            color: #5e3a1a;
+        }
+        .aksara-jawa {
+            font-family: 'Noto Sans Javanese', monospace;
+            font-size: 2rem;
+        }
+        .pasangan-jawa {
+            font-family: 'Noto Sans Javanese', monospace;
+            font-size: 2rem;
+            color: #b45309;
+            font-weight: 500;
+        }
+        .latin-teks {
+            font-weight: 600;
+        }
+        .info-badge {
+            background: #fef1df;
+            border-radius: 28px;
+            padding: 16px 24px;
+            margin: 20px 0;
+            border-left: 6px solid #f3b33d;
+        }
+        .external-link-card {
+            background: linear-gradient(120deg, #f0e7d8, #fff1e0);
+            border-radius: 32px;
+            padding: 30px 24px;
+            margin: 40px 0;
+            text-align: center;
+            border: 2px dashed #e6b87e;
+        }
+        .btn-kongres {
+            display: inline-block;
+            background: #b45309;
+            color: white;
+            font-weight: bold;
+            padding: 12px 32px;
+            border-radius: 60px;
+            text-decoration: none;
+            margin-top: 16px;
+            transition: 0.2s;
+        }
+        .footer {
+            background: #0b2c23;
+            color: #ccdcd5;
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 30px;
+        }
+        .footer-col h4 {
+            color: white;
+            margin-bottom: 16px;
+        }
+        .footer-col ul {
+            list-style: none;
+        }
+        .footer-col a {
+            color: #bbdfd0;
+            text-decoration: none;
+        }
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid #2a5546;
+            font-size: 0.75rem;
+        }
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eef2ff;
+            padding: 8px 20px;
+            border-radius: 40px;
+            margin-bottom: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            color: #1e4620;
+        }
+        @media (max-width: 768px) {
+            .aksara-besar { width: 70px; height: 70px; font-size: 2.8rem; }
+            .pasangan-jawa { font-size: 1.6rem; }
+            th, td { padding: 8px 4px; font-size: 0.8rem; }
+        }
+        .tooltip-materi {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: #f1b24a;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo-area">
+                <div class="school-logo" style="background-image: url('logo sekolah.png');"></div>
+                <div class="logo-text">
+                    <h1>SD NEGERI 3 NGANTRU</h1>
+                    <p>Kecamatan Ngantang, Kabupaten Malang</p>
+                </div>
+            </div>
+            <div style="font-size: 0.85rem; background: rgba(255,255,255,0.2); padding: 6px 16px; border-radius: 50px;">
+                <i class="fas fa-language"></i> ꦱꦶꦤꦲꦸ ꦲꦏ꧀ꦱꦫꦗꦮ + ꦥꦱꦔꦤ꧀
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="nav-bar">
+    <div class="container">
+        <ul class="nav-menu">
+            <li><a href="index.html">🏠 Beranda</a></li>
+            <li><a href="profil-sekolah.html">📋 Profil Sekolah</a></li>
+            <li><a href="administrasi.html">📁 Administrasi</a></li>
+            <li><a href="pembelajaran.html">📰 Pembelajaran</a></li>
+            <li><a href="lingkungan.html">⭐ Lingkungan</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1q4y9LnUdVf2BuDlRawAKI7NRwYuarjmF?usp=drive_link" target="_blank">🎓 Pengembangan Diri</a></li>
+            <li><a href="https://raporsd.page.gd" target="_blank">🔐 Rapor Online</a></li>
+            <li><a href="aksara_jawa.html" style="background:#f3d38230; font-weight:800;">✨ Sinau Aksara Jawa</a></li>
+        </ul>
+    </div>
+</div>
+
+<main class="container">
+    <div style="margin: 20px 0 8px;">
+        <a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Kembali ke Beranda</a>
+    </div>
+    <div class="page-title">
+        <h1><i class="fas fa-pen-fancy"></i> ꦱꦶꦤꦲꦸ ꦲꦏ꧀ꦱꦫꦗꦮ & ꦥꦱꦔꦤ꧀</h1>
+        <p>Belajar Aksara Dasar (Nglegena) + Pasangan (Sandhangan Swara & Wyanjana) | Lestarikan Budaya Jawa</p>
+    </div>
+
+    <div class="aksara-hero">
+        <i class="fas fa-feather-alt"></i>
+        <h2 style="font-size: 1.8rem;">Ha Na Ca Ra Ka</h2>
+        <p style="font-size: 1.4rem; font-family:'Noto Sans Javanese'; letter-spacing: 4px;">ꦲꦤꦕꦫꦏ</p>
+        <p><strong>Pasangan aksara Jawa</strong> digunakan untuk mematikan vokal aksara sebelumnya (sandhangan panyigeg). Yuk, pelajari pasangan setiap aksara dasar!</p>
+    </div>
+
+    <!-- 20 Kartu Aksara Dasar Interaktif -->
+    <h2 style="font-size: 1.6rem; margin-bottom: 10px;"><i class="fas fa-star"></i> ✨ Aksara Dasar (Nglegena)</h2>
+    <div class="card-grid" id="aksaraCardContainer"></div>
+
+    <!-- TABEL PASANGAN AKSARA JAWA LENGKAP 20 Pasangan -->
+    <div class="pasangan-section">
+        <h2><i class="fas fa-hand-peace"></i> ꦥꦱꦔꦤ꧀ ꦲꦏ꧀ꦱꦫꦗꦮ (Pasangan Aksara Jawa)</h2>
+        <div class="pasangan-sub">📖 Pasangan digunakan untuk menulis rangkaian suku kata tertutup atau menghilangkan vokal 'a' pada aksara sebelumnya. Setiap aksara dasar memiliki bentuk pasangan yang unik.</div>
+        <div class="info-badge">
+            <i class="fas fa-lightbulb"></i> <strong>Fungsi Pasangan:</strong> Dalam aksara Jawa, jika dua suku kata berurutan tanpa vokal (misal "ngga"), suku kata kedua ditulis dengan pasangan dari aksara dasar. Contoh: ꦱꦒꦫ (sagara) → aksara 'ga' ditulis pasangan di bawah 'sa'. Pelajari 20 pasangan berikut!
+        </div>
+        <div style="overflow-x: auto;">
+            <table id="pasanganTable">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Aksara Dasar</th>
+                        <th>Nama Aksara</th>
+                        <th>Bentuk Pasangan</th>
+                        <th>Contoh Kata</th>
+                        <th>Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data akan diisi via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Penjelasan tambahan sandhangan & panyigeg -->
+    <div class="info-badge" style="background:#eef5eb;">
+        <i class="fas fa-graduation-cap"></i> <strong>Belajar Pasangan Lebih Mudah:</strong> Pasangan biasanya ditulis di bawah atau di samping aksara utama. Dalam tabel ini kamu bisa melihat bentuk pasangan dari Ha hingga Nga. Klik pada baris tabel untuk melihat contoh pengucapan dan tips menulis!
+    </div>
+
+    <!-- Tabel Ringkasan Pasangan populer + interaktif -->
+    <div class="pasangan-section" style="margin-top: 10px;">
+        <h2><i class="fas fa-table-list"></i> Contoh Kalimat dengan Pasangan</h2>
+        <table id="contohKalimatTable">
+            <thead><tr><th>Kalimat Jawa</th><th>Latin</th><th>Terjemahan</th></tr></thead>
+            <tbody>
+                <tr><td class="aksara-jawa">ꦱꦼꦩꦁꦏꦺꦴꦤ꧀ꦢꦶꦤ</td><td>Semangko dina</td><td>Selamat siang</td></tr>
+                <tr><td class="aksara-jawa">ꦧꦼꦭꦗꦂꦲꦏ꧀ꦱꦫ</td><td>Belajar aksara</td><td>Belajar aksara</td></tr>
+                <tr><td class="aksara-jawa">ꦏꦶꦠꦥꦱꦔꦤ꧀</td><td>Kita pasangan</td><td>Kita belajar pasangan</td></tr>
+            </tbody>
+        </table>
+        <p style="margin-top: 16px; font-size:0.85rem;">✨ Klik pada aksara di tabel pasangan untuk mendengar (simulasi) dan belajar menulis.</p>
+    </div>
+
+    <!-- Link Eksternal Kongres Aksara Jawa -->
+    <div class="external-link-card">
+        <i class="fas fa-globe-asia"></i>
+        <h3>📖 Sumber Belajar Online Resmi</h3>
+        <p>Kunjungi portal <strong>Kongres Aksara Jawa</strong> untuk materi lengkap pasangan, aksara murda, dan aksara rekan.</p>
+        <a href="https://kongresaksarajawa.id/salinsaja/" target="_blank" class="btn-kongres" rel="noopener noreferrer">
+            <i class="fas fa-external-link-alt"></i> kongresaksarajawa.id (DIY yokyakarya) 
+        </a>
+        <p style="margin-top: 12px;">Situs mitra resmi untuk mendalami aksara Jawa secara digital.</p>
+    </div>
+
+    <div style="background:#e7f3ed; border-radius: 28px; padding: 24px; margin: 30px 0; text-align: center;">
+        <i class="fas fa-quote-left" style="font-size: 2rem; color:#0f6b52;"></i>
+        <p style="font-style: italic;">"Aksara Jawa iku pepesthening budaya, pasangan iku nyambung rasa" – SD Negeri 3 Ngantru, Gerakan Literasi Budaya</p>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>SD Negeri 3 Ngantru</h4>
+                <p>Jln Sawahan, Bayanan, Ngantru<br>Kec. Ngantang, Kab. Malang</p>
+                <p>Email: sdn3ngantru.ngantang@gmail.com</p>
+            </div>
+            <div class="footer-col">
+                <h4>Belajar Aksara</h4>
+                <ul>
+                    <li><a href="aksara_jawa.html">📖 Sinau Hanacaraka & Pasangan</a></li>
+                    <li><a href="https://kongresaksarajawa.id/salinsaja/" target="_blank">Kongres Aksara Jawa</a></li>
+                    <li><a href="https://id.wikipedia.org/wiki/Aksara_Jawa" target="_blank">Wiki Aksara Jawa</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Sosial Media</h4>
+                <ul>
+                    <li><a href="https://www.facebook.com/profile.php?id=100080344573562" target="_blank"><i class="fab fa-facebook"></i> Facebook</a></li>
+                    <li><a href="https://www.instagram.com/sd_negeri_3_ngantru_ngantang" target="_blank"><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="https://www.youtube.com/@sdnegeri3ngantrukecamatann821" target="_blank"><i class="fab fa-youtube"></i> YouTube</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 SD Negeri 3 NGANTRU | Sinau Aksara Jawa & Pasangan | Lestarikan Budaya Nusantara
+        </div>
+    </div>
+</footer>
+
+<div class="tooltip-materi" id="floatingKongres">
+    <i class="fas fa-link"></i> Kamus Aksara Jawa
+</div>
+
+<script>
+    // Data aksara dasar untuk kartu
+    const aksaraList = [
+        { aksara: "ꦲ", latin: "Ha", contoh: "Hati", arti: "Hati" }, { aksara: "ꦤ", latin: "Na", contoh: "Nama", arti: "Nama" },
+        { aksara: "ꦕ", latin: "Ca", contoh: "Caca", arti: "Hitung" }, { aksara: "ꦫ", latin: "Ra", contoh: "Rasa", arti: "Rasa" },
+        { aksara: "ꦏ", latin: "Ka", contoh: "Kaca", arti: "Kaca" }, { aksara: "ꦢ", latin: "Da", contoh: "Dadi", arti: "Menjadi" },
+        { aksara: "ꦠ", latin: "Ta", contoh: "Tata", arti: "Atur" }, { aksara: "ꦱ", latin: "Sa", contoh: "Sapa", arti: "Sapa" },
+        { aksara: "ꦮ", latin: "Wa", contoh: "Watu", arti: "Batu" }, { aksara: "ꦭ", latin: "La", contoh: "Laku", arti: "Perilaku" },
+        { aksara: "ꦥ", latin: "Pa", contoh: "Papa", arti: "Susah" }, { aksara: "ꦝ", latin: "Dha", contoh: "Padha", arti: "Sama" },
+        { aksara: "ꦗ", latin: "Ja", contoh: "Jaja", arti: "Dada" }, { aksara: "ꦪ", latin: "Ya", contoh: "Yoga", arti: "Yoga" },
+        { aksara: "ꦚ", latin: "Nya", contoh: "Nyata", arti: "Nyata" }, { aksara: "ꦩ", latin: "Ma", contoh: "Mata", arti: "Mata" },
+        { aksara: "ꦒ", latin: "Ga", contoh: "Gaga", arti: "Semangat" }, { aksara: "ꦧ", latin: "Ba", contoh: "Basa", arti: "Bahasa" },
+        { aksara: "ꦛ", latin: "Tha", contoh: "Pathi", arti: "Mati" }, { aksara: "ꦔ", latin: "Nga", contoh: "Ngaca", arti: "Bercermin" }
+    ];
+
+    // Data PASANGAN AKSARA JAWA (20 pasangan standar untuk Ha - Nga)
+    const pasanganData = [
+        { no:1, aksaraDasar:"ꦲ", nama:"Ha", pasangan:"꧀ꦲ", contoh:"ꦱꦼꦝꦼꦒ꧀ꦲꦸꦗꦂ", ket:"pasangan ha (di bawah aksara sebelumnya)" },
+        { no:2, aksaraDasar:"ꦤ", nama:"Na", pasangan:"꧀ꦤ", contoh:"ꦥꦤꦱ꧀ꦤ", ket:"pasangan na: ꧀ꦤ" },
+        { no:3, aksaraDasar:"ꦕ", nama:"Ca", pasangan:"꧀ꦕ", contoh:"ꦏꦕꦕ꧀ꦕ", ket:"pasangan ca" },
+        { no:4, aksaraDasar:"ꦫ", nama:"Ra", pasangan:"꧀ꦫ", contoh:"ꦱꦫꦱ꧀ꦫ", ket:"pasangan ra: layar? bentuk pasangan khas" },
+        { no:5, aksaraDasar:"ꦏ", nama:"Ka", pasangan:"꧀ꦏ", contoh:"ꦲꦏꦏ꧀ꦏ", ket:"pasangan ka" },
+        { no:6, aksaraDasar:"ꦢ", nama:"Da", pasangan:"꧀ꦢ", contoh:"ꦮꦢꦢ꧀ꦢ", ket:"pasangan da" },
+        { no:7, aksaraDasar:"ꦠ", nama:"Ta", pasangan:"꧀ꦠ", contoh:"ꦥꦠꦠ꧀ꦠ", ket:"pasangan ta" },
+        { no:8, aksaraDasar:"ꦱ", nama:"Sa", pasangan:"꧀ꦱ", contoh:"ꦧꦱꦱ꧀ꦱ", ket:"pasangan sa" },
+        { no:9, aksaraDasar:"ꦮ", nama:"Wa", pasangan:"꧀ꦮ", contoh:"ꦗꦮꦮ꧀ꦮ", ket:"pasangan wa" },
+        { no:10, aksaraDasar:"ꦭ", nama:"La", pasangan:"꧀ꦭ", contoh:"ꦏꦭꦭ꧀ꦭ", ket:"pasangan la" },
+        { no:11, aksaraDasar:"ꦥ", nama:"Pa", pasangan:"꧀ꦥ", contoh:"ꦭꦥꦥ꧀ꦥ", ket:"pasangan pa" },
+        { no:12, aksaraDasar:"ꦝ", nama:"Dha", pasangan:"꧀ꦝ", contoh:"ꦩꦼꦝꦝ꧀ꦝ", ket:"pasangan dha" },
+        { no:13, aksaraDasar:"ꦗ", nama:"Ja", pasangan:"꧀ꦗ", contoh:"ꦧꦗꦗ꧀ꦗ", ket:"pasangan ja" },
+        { no:14, aksaraDasar:"ꦪ", nama:"Ya", pasangan:"꧀ꦪ", contoh:"ꦒꦪꦪ꧀ꦪ", ket:"pasangan ya" },
+        { no:15, aksaraDasar:"ꦚ", nama:"Nya", pasangan:"꧀ꦚ", contoh:"ꦠꦚꦚ꧀ꦚ", ket:"pasangan nya" },
+        { no:16, aksaraDasar:"ꦩ", nama:"Ma", pasangan:"꧀ꦩ", contoh:"ꦲꦩꦩ꧀ꦩ", ket:"pasangan ma" },
+        { no:17, aksaraDasar:"ꦒ", nama:"Ga", pasangan:"꧀ꦒ", contoh:"ꦮꦒꦒ꧀ꦒ", ket:"pasangan ga" },
+        { no:18, aksaraDasar:"ꦧ", nama:"Ba", pasangan:"꧀ꦧ", contoh:"ꦭꦧꦧ꧀ꦧ", ket:"pasangan ba" },
+        { no:19, aksaraDasar:"ꦛ", nama:"Tha", pasangan:"꧀ꦛ", contoh:"ꦏꦛꦛ꧀ꦛ", ket:"pasangan tha" },
+        { no:20, aksaraDasar:"ꦔ", nama:"Nga", pasangan:"꧀ꦔ", contoh:"ꦱꦔꦔ꧀ꦔ", ket:"pasangan nga (panyigeg wanda)" }
+    ];
+
+    // Render kartu aksara dasar
+    function renderCards() {
+        const container = document.getElementById('aksaraCardContainer');
+        if(!container) return;
+        container.innerHTML = '';
+        aksaraList.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card-aksara';
+            card.innerHTML = `
+                <div class="aksara-besar" style="font-family:'Noto Sans Javanese';">${item.aksara}</div>
+                <h3>${item.latin}</h3>
+                <span class="latin"><i class="fas fa-comment-dots"></i> ${item.contoh}</span>
+                <p>${item.arti}</p>
+                <button class="btn-belajar" data-aks="${item.aksara}" data-lat="${item.latin}"><i class="fas fa-graduation-cap"></i> Pelajari</button>
+            `;
+            container.appendChild(card);
+        });
+        document.querySelectorAll('.btn-belajar').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const aks = btn.getAttribute('data-aks');
+                const lat = btn.getAttribute('data-lat');
+                alert(`✨ Aksara ${aks} (${lat})\nCoba hafalkan bentuk dasarnya. Untuk pasangan, lihat tabel di bawah! Kunjungi Kongres Aksara Jawa.`);
+            });
+        });
+        document.querySelectorAll('.card-aksara').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if(e.target.classList.contains('btn-belajar')) return;
+                const aksaraDiv = card.querySelector('.aksara-besar');
+                if(aksaraDiv) alert(`🔊 ${aksaraDiv.innerText} -> Pelajari pasangannya di tabel pasangan.`);
+            });
+        });
+    }
+
+    // Render tabel pasangan aksara jawa
+    function renderPasanganTable() {
+        const tbody = document.querySelector('#pasanganTable tbody');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        pasanganData.forEach(p => {
+            const row = document.createElement('tr');
+            row.style.cursor = 'pointer';
+            row.setAttribute('data-pasangan', p.pasangan);
+            row.innerHTML = `
+                <td>${p.no}</td>
+                <td class="aksara-jawa">${p.aksaraDasar}</td>
+                <td class="latin-teks">${p.nama}</td>
+                <td class="pasangan-jawa" style="font-family:'Noto Sans Javanese';">${p.pasangan}</td>
+                <td class="latin-teks">${p.contoh}</td>
+                <td style="font-size:0.8rem;">${p.ket}</td>
+            `;
+            row.addEventListener('click', () => {
+                alert(`📖 Pasangan aksara ${p.nama} (${p.aksaraDasar}) : ${p.pasangan}\nContoh: ${p.contoh}\nFungsi: menghilangkan vokal 'a' pada aksara sebelumnya.\nLatihan menulis di buku tulis Anda!`);
+            });
+            tbody.appendChild(row);
+        });
+    }
+
+    // tambahkan tooltip floating
+    function addFloatingHelp() {
+        const floatDiv = document.getElementById('floatingKongres');
+        if(floatDiv) {
+            floatDiv.addEventListener('click', () => {
+                window.open('https://kongresaksarajawa.id/salinsaja/', '_blank');
+            });
+        }
+    }
+
+    // inisiasi semua fitur
+    function init() {
+        renderCards();
+        renderPasanganTable();
+        addFloatingHelp();
+
+        // toast selamat datang
+        setTimeout(() => {
+            const toast = document.createElement('div');
+            toast.innerText = "꧋ꦱꦶꦤꦲꦸꦥꦱꦔꦤ꧀ꦲꦏ꧀ꦱꦫꦗꦮ | klik tabel untuk detail!";
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.left = '20px';
+            toast.style.background = '#1f5e49';
+            toast.style.color = 'white';
+            toast.style.padding = '8px 18px';
+            toast.style.borderRadius = '30px';
+            toast.style.fontSize = '0.8rem';
+            toast.style.zIndex = '1000';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4500);
+        }, 500);
+    }
+    init();
+</script>
+</body>
+</html>
