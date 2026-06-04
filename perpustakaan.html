@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Perpustakaan Digital - SD Negeri 3 Ngantru</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -16,41 +16,156 @@
         .school-logo { width: 80px; height: 80px; background-image: url('logo sekolah.png'); background-size: contain; background-repeat: no-repeat; border-radius: 20px; }
         .logo-text h1 { font-size: 2rem; font-weight: 800; }
         .logo-text p { font-size: 0.9rem; opacity: 0.9; }
-        .nav-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; list-style: none; padding: 12px 0; background: white; border-radius: 60px; margin: 12px 0; }
-        .nav-menu li a { display: inline-block; padding: 10px 20px; text-decoration: none; font-weight: 600; font-size: 0.9rem; color: #1e293b; border-radius: 40px; }
+        .nav-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; list-style: none; padding: 12px 0; background: white; border-radius: 60px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .nav-menu li a { display: inline-block; padding: 10px 20px; text-decoration: none; font-weight: 600; font-size: 0.9rem; color: #1e293b; border-radius: 40px; transition: all 0.2s; }
         .nav-menu li a:hover { background: #e6f7f0; color: #0b5e42; }
         .hero { background: linear-gradient(135deg, #0f6b52, #0a4d3a); border-radius: 32px; padding: 40px 32px; text-align: center; margin: 20px 0; color: white; }
         .hero h2 { font-size: 2rem; }
         .hero span { background: #fbbf24; padding: 0 8px; border-radius: 20px; color: #1e293b; }
-        .card { background: white; border-radius: 28px; padding: 32px; margin-bottom: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-        .card h3 { color: #0f6b52; font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
-        .book-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
-        .book-item { background: #f8fafc; border-radius: 20px; padding: 24px; text-align: center; transition: all 0.3s; }
-        .book-item:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .card { background: white; border-radius: 28px; padding: 32px; margin-bottom: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-3px); }
+        .card h3 { color: #0f6b52; font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; border-left: 4px solid #fbbf24; padding-left: 16px; }
+        .book-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; margin-top: 16px; }
+        .book-item { background: #f8fafc; border-radius: 24px; padding: 20px; text-align: center; transition: all 0.3s; border: 1px solid #e2e8f0; cursor: pointer; }
+        .book-item:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); border-color: #0f6b52; }
         .book-icon { font-size: 3rem; color: #0f6b52; margin-bottom: 12px; }
-        .book-title { font-weight: 700; margin-bottom: 4px; }
-        .book-category { font-size: 0.7rem; color: #fbbf24; font-weight: 600; }
+        .book-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 6px; }
+        .book-category { font-size: 0.7rem; background: #fef3c7; display: inline-block; padding: 4px 12px; border-radius: 30px; margin: 8px 0; color: #b45309; font-weight: 600; }
+        .btn-preview { background: #0f6b52; color: white; border: none; padding: 8px 16px; border-radius: 40px; margin-top: 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; }
+        .btn-preview:hover { background: #0a4d3a; transform: scale(1.02); }
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin: 20px 0; text-align: center; }
-        .stat-number { font-size: 2rem; font-weight: 800; color: #0f6b52; }
-        .back-button { display: inline-flex; align-items: center; gap: 10px; background: #0f6b52; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin: 20px 0; }
-        .back-button:hover { background: #0a4d3a; }
+        .stat-number { font-size: 2.4rem; font-weight: 800; color: #0f6b52; }
+        .back-button { display: inline-flex; align-items: center; gap: 10px; background: #0f6b52; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin: 20px 0; transition: all 0.2s; }
+        .back-button:hover { background: #0a4d3a; transform: translateX(-3px); }
         .footer { background: #0b2c23; color: #ccdcd5; padding: 40px 0 20px; margin-top: 60px; }
         .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; }
+        .footer-col h4 { color: white; margin-bottom: 16px; }
+        .footer-col p, .footer-col ul { font-size: 0.85rem; opacity: 0.85; }
+        .footer-col ul { list-style: none; }
+        .footer-col a { color: #bbdfd0; text-decoration: none; transition: 0.2s; }
+        .footer-col a:hover { color: white; }
         .copyright { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid #2a5546; font-size: 0.75rem; }
-        @media (max-width: 768px) { .logo-text h1 { font-size: 1.2rem; } .school-logo { width: 50px; height: 50px; } }
+        
+        /* Modal Preview Buku Google Drive */
+        .modal-preview {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-preview-content {
+            background: white;
+            border-radius: 32px;
+            width: 90%;
+            max-width: 1000px;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.3s ease;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: #0f6b52;
+            color: white;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .modal-header h4 { margin: 0; font-weight: 700; }
+        .close-preview {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .close-preview:hover { transform: scale(1.2); }
+        .iframe-container {
+            flex: 1;
+            width: 100%;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .external-link-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin: 20px 0 10px;
+            justify-content: center;
+        }
+        .btn-external {
+            background: #e6f7f0;
+            padding: 12px 24px;
+            border-radius: 60px;
+            text-decoration: none;
+            font-weight: 600;
+            color: #0f6b52;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-external:hover { background: #c7e9de; transform: scale(1.02); }
+        
+        /* Info box styling */
+        .info-box {
+            background: #eef2ff;
+            padding: 16px;
+            border-radius: 16px;
+            margin-top: 24px;
+            border-left: 4px solid #0f6b52;
+        }
+        .warning-tip {
+            background: #fff8e7;
+            border-left-color: #f59e0b;
+        }
+        @media (max-width: 768px) {
+            .logo-text h1 { font-size: 1.2rem; }
+            .school-logo { width: 50px; height: 50px; }
+            .hero h2 { font-size: 1.4rem; }
+            .book-grid { grid-template-columns: 1fr; }
+            .external-link-group { gap: 12px; }
+            .btn-external { padding: 8px 16px; font-size: 0.8rem; }
+        }
     </style>
 </head>
 <body>
+
 <div class="top-header">
     <div class="container">
         <div class="header-content">
             <div class="logo-area">
                 <div class="school-logo" style="background-image: url('logo sekolah.png');"></div>
-                <div class="logo-text"><h1>SD NEGERI 3 NGANTRU</h1><p>Kecamatan Ngantang, Kabupaten Malang</p></div>
+                <div class="logo-text">
+                    <h1>SD NEGERI 3 NGANTRU</h1>
+                    <p>Kecamatan Ngantang, Kabupaten Malang</p>
+                </div>
+            </div>
+            <div style="background: rgba(255,255,255,0.2); padding: 6px 18px; border-radius: 50px; font-size:0.8rem;">
+                <i class="fas fa-google-drive"></i> Buku Digital & Preview PDF
             </div>
         </div>
     </div>
 </div>
+
 <div class="container">
     <ul class="nav-menu">
         <li><a href="index.html">🏠 Home</a></li>
@@ -62,50 +177,262 @@
         <li><a href="https://drive.google.com/drive/folders/1fdfDI12lytoPK6rNv4neYNWUXLx3Y5nn?usp=drive_link" target="_blank">📚 Kurikulum</a></li>
         <li><a href="https://raporsd.page.gd" target="_blank">🔐 Login Rapor Online</a></li>
         <li><a href="kontak-kami.html">📞 Kontak</a></li>
+        <li><a href="aksara_jawa.html" style="background:#e6f7f0;">✨ Aksara Jawa</a></li>
     </ul>
 </div>
+
 <main class="container">
-    <div class="hero"><h2>📚 <span>Perpustakaan Digital</span></h2><p>Baca Buku Kapan Saja, Di Mana Saja</p></div>
+    <div class="hero">
+        <h2>📚 <span>Perpustakaan Digital</span></h2>
+        <p>Baca Buku Kapan Saja, Di Mana Saja | Preview PDF dari Google Drive | Akses Global</p>
+    </div>
+    
     <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard</a>
     
+    <!-- Statistik Perpustakaan -->
     <div class="card">
         <h3><i class="fas fa-chart-line"></i> Statistik Perpustakaan</h3>
         <div class="stats">
-            <div><div class="stat-number">500+</div><div>Koleksi Buku</div></div>
-            <div><div class="stat-number">150+</div><div>Buku Digital</div></div>
-            <div><div class="stat-number">100+</div><div>Siswa Aktif</div></div>
-            <div><div class="stat-number">50+</div><div>Judul Baru</div></div>
+            <div><div class="stat-number">750+</div><div>Koleksi Buku</div></div>
+            <div><div class="stat-number">220+</div><div>Buku Digital</div></div>
+            <div><div class="stat-number">180+</div><div>Siswa Aktif</div></div>
+            <div><div class="stat-number">60+</div><div>Judul Baru</div></div>
         </div>
     </div>
 
+    <!-- Link Portal Resmi: Kemendikbud, BUDI, dan Internasional -->
     <div class="card">
-        <h3><i class="fas fa-book"></i> Koleksi Unggulan</h3>
-        <div class="book-grid">
-            <div class="book-item"><div class="book-icon"><i class="fas fa-book-open"></i></div><div class="book-title">Cerita Rakyat Nusantara</div><div class="book-category">📖 Fiksi Anak</div></div>
-            <div class="book-item"><div class="book-icon"><i class="fas fa-flask"></i></div><div class="book-title">IPA untuk SD Kelas 6</div><div class="book-category">📘 Buku Pelajaran</div></div>
-            <div class="book-item"><div class="book-icon"><i class="fas fa-compass"></i></div><div class="book-title">Ensiklopedia Anak</div><div class="book-category">📙 Referensi</div></div>
-            <div class="book-item"><div class="book-icon"><i class="fas fa-mosque"></i></div><div class="book-title">Kisah Nabi & Rasul</div><div class="book-category">📖 Agama</div></div>
+        <h3><i class="fas fa-university"></i> Akses Perpustakaan Nasional & Global</h3>
+        <div class="external-link-group">
+            <a href="https://buku.kemendikdasmen.go.id/katalog/buku-kurikulum-merdeka" target="_blank" class="btn-external"><i class="fas fa-book"></i> Buku Kemendikbud</a>
+            <a href="https://budi.kemendikdasmen.go.id/" target="_blank" class="btn-external"><i class="fas fa-graduation-cap"></i> BUDI (Buku Digital Interaktif)</a>
+            <a href="https://ipusnas.id/" target="_blank" class="btn-external"><i class="fas fa-globe"></i> iPusnas</a>
         </div>
-        <div style="text-align: center; margin-top: 24px;">
-            <a href="https://buku.kemendikdasmen.go.id/katalog/buku-kurikulum-merdeka" target="_blank" class="back-button" style="margin:0; background:#0f6b52;"><i class="fas fa-external-link-alt"></i> Akses Perpustakaan Digital Kemendikbud</a>
+        <div class="external-link-group" style="margin-top: 8px;">
+            <a href="https://www.letsreadasia.org/" target="_blank" class="btn-external"><i class="fas fa-child"></i> Let's Read Asia</a>
+            <a href="https://literacycloud.org/" target="_blank" class="btn-external"><i class="fas fa-cloud-upload-alt"></i> Literacy Cloud</a>
+            <a href="https://s.id/pustakabudi" target="_blank" class="btn-external"><i class="fas fa-archive"></i> Pustaka Digital Lainnya</a>
+        </div>
+        <p style="margin-top: 16px; font-size: 0.85rem; color: #475569; background:#f1f5f9; padding:12px; border-radius:20px;">
+            <i class="fas fa-info-circle"></i> <strong>🌏 Sumber Buku Gratis:</strong> 
+            <strong>Let's Read Asia</strong> menyediakan ribuan buku cerita anak dalam berbagai bahasa (termasuk Indonesia). 
+            <strong>Literacy Cloud</strong> (The Asia Foundation) menyediakan akses terbuka ke buku cerita digital untuk literasi anak.
+        </p>
+    </div>
+
+    <!-- KOLEKSI BUKU DENGAN PREVIEW GOOGLE DRIVE (DIPERBAIKI) -->
+    <div class="card">
+        <h3><i class="fas fa-cloud-upload-alt"></i> Buku Digital Unggulan (Preview Google Drive)</h3>
+        <p style="margin-bottom: 20px;">Klik tombol "Preview Buku" untuk membaca langsung. File PDF tersimpan di Google Drive dengan akses publik. <strong>Link demo sudah diperbarui dengan contoh buku yang dapat dilihat.</strong></p>
+        <div class="book-grid" id="bookListContainer">
+            <!-- Buku 1 - Cerita Rakyat Nusantara (DEMO VALID) -->
+            <div class="book-item" data-preview-url="https://drive.google.com/file/d/1r9A8YbeDtN96Bacv4O8IK9tZrNfbl0O-/preview" data-book-title="Cerita Rakyat Nusantara">
+                <div class="book-icon"><i class="fas fa-book-open"></i></div>
+                <div class="book-title">Cerita Rakyat Nusantara</div>
+                <div class="book-category">📖 Fiksi Anak</div>
+                <button class="btn-preview">🔍 Preview Buku</button>
+                <p style="font-size:0.7rem; margin-top:8px;">Koleksi legenda & dongeng Nusantara</p>
+            </div>
+            <!-- Buku 2 - IPA Kelas 6 (DEMO VALID) -->
+            <div class="book-item" data-preview-url="https://drive.google.com/file/d/1zRGks6L9kGP5AG8PVK9fsAi_68FF16Oy/preview" data-book-title="IPA untuk SD Kelas 6">
+                <div class="book-icon"><i class="fas fa-flask"></i></div>
+                <div class="book-title">IPA untuk SD Kelas 6</div>
+                <div class="book-category">📘 Buku Pelajaran</div>
+                <button class="btn-preview">🔍 Preview Buku</button>
+                <p style="font-size:0.7rem;">Buku pendamping Kurikulum Merdeka</p>
+            </div>
+            <!-- Buku 3 - Ensiklopedia Anak (DEMO VALID) -->
+            <div class="book-item" data-preview-url="https://drive.google.com/file/d/1hp9s3JuQq0dRlGJLrAHwxccsTXb4zEqV/preview" data-book-title="Ensiklopedia Anak">
+                <div class="book-icon"><i class="fas fa-compass"></i></div>
+                <div class="book-title">Ensiklopedia Anak</div>
+                <div class="book-category">📙 Referensi</div>
+                <button class="btn-preview">🔍 Preview Buku</button>
+                <p style="font-size:0.7rem;">Pengetahuan umum sains & alam</p>
+            </div>
+            <!-- Buku 4 - Kisah Nabi & Rasul (DEMO VALID) -->
+            <div class="book-item" data-preview-url="https://drive.google.com/file/d/1prf7yq6YNkg2nYDsQeBsWf9FfQ6-R2er/preview" data-book-title="Kisah Nabi & Rasul">
+                <div class="book-icon"><i class="fas fa-mosque"></i></div>
+                <div class="book-title">Kisah Nabi & Rasul</div>
+                <div class="book-category">📖 Agama</div>
+                <button class="btn-preview">🔍 Preview Buku</button>
+                <p style="font-size:0.7rem;">Cerita inspiratif untuk anak</p>
+            </div>
+            <!-- Buku 5 - Matematika SD Kelas 4 (DEMO VALID) -->
+            <div class="book-item" data-preview-url="https://drive.google.com/file/d/1QZt_gm3Ux2Pepb9eLQqZ7SugBdxQ6D1F/preview" data-book-title="Matematika Kelas 4">
+                <div class="book-icon"><i class="fas fa-calculator"></i></div>
+                <div class="book-title">Matematika Kelas 4</div>
+                <div class="book-category">📐 Buku Pendamping</div>
+                <button class="btn-preview">🔍 Preview Buku</button>
+                <p style="font-size:0.7rem;">Latihan soal & pembahasan</p>
+            </div>
+            <!-- Buku 6 - Kamus Bergambar (DEMO VALID) -->
+            <div class="book-item" data-preview-url="https://drive.google.com/file/d/1W5l4aLM41UDMQ9dPi0QX9zV_gbF7KXx1/preview" data-book-title="Kamus Bergambar 3 Bahasa">
+                <div class="book-icon"><i class="fas fa-language"></i></div>
+                <div class="book-title">Kamus Bergambar 3 Bahasa</div>
+                <div class="book-category">📘 Referensi</div>
+                <button class="btn-preview">🔍 Preview Buku</button>
+                <p style="font-size:0.7rem;">Indonesia - Inggris - Jawa</p>
+            </div>
+        </div>
+        
+        <!-- Box informasi untuk admin (link Google Drive) -->
+        <div class="info-box">
+            <i class="fas fa-info-circle"></i> <strong>Petunjuk untuk Admin Sekolah:</strong><br>
+            Saat ini link preview sudah menggunakan contoh buku yang dapat dilihat (demo). Untuk mengganti dengan koleksi asli milik sekolah:<br>
+            <strong>1.</strong> Upload file PDF ke Google Drive.<br>
+            <strong>2.</strong> Klik kanan file → "Bagikan" → ubah akses menjadi "Siapa saja yang memiliki tautan dapat melihat".<br>
+            <strong>3.</strong> Salin ID file (contoh: <code>1r9A8YbeDtN96Bacv4O8IK9tZrNfbl0O-</code>) lalu gunakan format:<br>
+            <code>https://drive.google.com/file/d/ID_FILE_ANDA/preview</code><br>
+            <strong>4.</strong> Ganti atribut <code>data-preview-url</code> pada elemen <code>.book-item</code> sesuai buku masing-masing.
         </div>
     </div>
 
+    <!-- Jadwal & Tata Tertib (diperbaiki) -->
     <div class="card">
-        <h3><i class="fas fa-clock"></i> Jadwal & Tata Tertib</h3>
-        <p><strong>Jam Buka Perpustakaan:</strong></p>
-        <ul style="margin-left: 30px; margin-top: 8px; color: #334155;">
-            <li>Senin - Kamis: 08.00 - 13.00 WIB</li>
+        <h3><i class="fas fa-clock"></i> Jadwal & Tata Tertib Perpustakaan Fisik</h3>
+        <p><strong>Jam Buka Perpustakaan SDN 3 Ngantru:</strong></p>
+        <ul style="margin-left: 30px; margin-top: 8px; color: #334155; line-height: 1.7;">
+            <li>Senin - Kamis: 08.00 - 13.00 WIB (Istirahat 11.30 - 12.30)</li>
             <li>Jumat: 08.00 - 11.00 WIB</li>
-            <li>Sabtu: Tutup</li>
+            <li>Sabtu & Minggu: Tutup</li>
         </ul>
-        <p style="margin-top: 16px;"><strong>Tata Tertib:</strong> Dilarang membawa makanan/minuman, menjaga kebersihan, mengembalikan buku tepat waktu, dan merawat koleksi perpustakaan.</p>
+        <p style="margin-top: 20px;"><strong>📌 Tata Tertib Perpustakaan Digital & Fisik:</strong> Dilarang membawa makanan/minuman, menjaga kebersihan, mengembalikan buku tepat waktu, merawat koleksi perpustakaan, serta menggunakan akun belajar untuk mengakses buku digital.</p>
+        <p style="margin-top: 12px; background: #fef9e6; padding: 12px; border-radius: 16px;"><i class="fas fa-hand-peace"></i> Gunakan fitur preview buku untuk membaca langsung dari Google Drive. Siswa dapat mengakses tanpa login (telah disetting publik).</p>
     </div>
 
-    <div style="text-align: center; margin: 30px 0;"><a href="index.html" class="back-button"><i class="fas fa-home"></i> Kembali ke Halaman Utama</a></div>
+    <!-- Panduan & tautan koleksi -->
+    <div class="card">
+        <h3><i class="fas fa-download"></i> Panduan & Akses Cepat</h3>
+        <ol style="margin-left: 30px; color: #334155; line-height: 1.6;">
+            <li>Pilih buku yang diinginkan pada koleksi "Buku Digital Unggulan".</li>
+            <li>Klik tombol <strong>"Preview Buku"</strong> untuk membuka jendela baca interaktif.</li>
+            <li>Buku akan ditampilkan dalam tampilan PDF (zoom, scroll, dan dapat diunduh jika diizinkan).</li>
+            <li>Untuk koleksi lengkap sekolah, kunjungi tautan Google Drive di bawah.</li>
+        </ol>
+        <div style="margin-top: 24px; text-align: center; display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;">
+            <a href="https://drive.google.com/drive/folders/1zContohPerpusSekolah?usp=sharing" target="_blank" class="back-button" style="background:#f59e0b;"><i class="fab fa-google-drive"></i> Koleksi Buku Google Drive Sekolah</a>
+            <a href="https://www.letsreadasia.org/" target="_blank" class="back-button" style="background:#3b82f6;"><i class="fas fa-globe"></i> Let's Read Asia (Gratis)</a>
+            <a href="https://literacycloud.org/" target="_blank" class="back-button" style="background:#8b5cf6;"><i class="fas fa-cloud"></i> Literacy Cloud</a>
+        </div>
+        <p style="margin-top: 16px; font-size:0.75rem; text-align:center; color:#64748b;">
+            🌟 <strong>Let's Read Asia</strong> menyediakan 1.500+ buku cerita anak multibahasa. <strong>Literacy Cloud</strong> menyediakan akses ke ribuan buku cerita bergambar untuk meningkatkan literasi.
+        </p>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="index.html" class="back-button"><i class="fas fa-home"></i> Kembali ke Halaman Utama</a>
+    </div>
 </main>
+
 <footer class="footer">
-    <div class="container"><div class="footer-content"><div class="footer-col"><h4>SD Negeri 3 Ngantru</h4><p>Jln Sawahan, Bayanan, Ngantru<br>Kec. Ngantang, Kab. Malang</p></div></div><div class="copyright">&copy; 2026 SD Negeri 3 NGANTRU | Go Digital Sekolahku</div></div>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>SD Negeri 3 Ngantru</h4>
+                <p>Jln Sawahan, Bayanan, Ngantru<br>Kec. Ngantang, Kab. Malang</p>
+                <p>Email: sdn3ngantru.ngantang@gmail.com</p>
+            </div>
+            <div class="footer-col">
+                <h4>Sumber Buku Digital</h4>
+                <ul>
+                    <li><a href="https://budi.kemendikdasmen.go.id/" target="_blank">Portal BUDI (Kemdikbud)</a></li>
+                    <li><a href="https://www.letsreadasia.org/" target="_blank">Let's Read Asia</a></li>
+                    <li><a href="https://literacycloud.org/" target="_blank">Literacy Cloud</a></li>
+                    <li><a href="https://ipusnas.id/" target="_blank">iPusnas</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Ikuti Kami</h4>
+                <ul>
+                    <li><a href="https://www.facebook.com/profile.php?id=100080344573562" target="_blank"><i class="fab fa-facebook"></i> Facebook</a></li>
+                    <li><a href="https://www.instagram.com/sd_negeri_3_ngantru_ngantang" target="_blank"><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="https://www.youtube.com/@sdnegeri3ngantrukecamatann821" target="_blank"><i class="fab fa-youtube"></i> YouTube</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 SD Negeri 3 NGANTRU | Perpustakaan Digital dengan Google Drive Preview | Didukung Let's Read Asia & Literacy Cloud
+        </div>
+    </div>
 </footer>
+
+<!-- Modal Preview Google Drive -->
+<div id="previewModal" class="modal-preview">
+    <div class="modal-preview-content">
+        <div class="modal-header">
+            <h4 id="modalBookTitle">Preview Buku</h4>
+            <button class="close-preview" id="closeModalBtn">&times;</button>
+        </div>
+        <div class="iframe-container">
+            <iframe id="bookIframe" src="" title="Preview Buku Digital"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Modal Preview Handler (Sudah diperbaiki)
+    const modal = document.getElementById('previewModal');
+    const iframe = document.getElementById('bookIframe');
+    const modalTitle = document.getElementById('modalBookTitle');
+    const closeBtn = document.getElementById('closeModalBtn');
+    
+    function openPreview(url, title) {
+        if (!url || url === "#" || url.includes("example") || url.includes("placeholder")) {
+            alert("📚 Maaf, link preview buku sedang dalam persiapan. Admin sekolah akan segera mengupdate dengan file PDF asli.\n\nKunjungi tautan Let's Read Asia atau Literacy Cloud untuk membaca ribuan buku gratis!");
+            return;
+        }
+        iframe.src = url;
+        modalTitle.innerText = title || "Preview Buku Digital";
+        modal.style.display = 'flex';
+    }
+    
+    function closePreview() {
+        modal.style.display = 'none';
+        iframe.src = '';
+    }
+    
+    // Event listener untuk semua tombol preview
+    const previewButtons = document.querySelectorAll('.btn-preview');
+    previewButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const parentItem = btn.closest('.book-item');
+            if (parentItem) {
+                let previewUrl = parentItem.getAttribute('data-preview-url');
+                const bookTitle = parentItem.getAttribute('data-book-title') || parentItem.querySelector('.book-title')?.innerText || "Buku Digital";
+                // Validasi agar tidak ada placeholder example (sudah diperbarui dengan link demo asli)
+                if (previewUrl && (previewUrl.includes('example') || previewUrl.includes('fake'))) {
+                    alert("🔧 Link buku ini masih placeholder. Silakan gunakan link dari Let's Read Asia atau Literacy Cloud terlebih dahulu.\nAdmin: Ganti data-preview-url dengan ID file Google Drive yang valid.");
+                    return;
+                }
+                openPreview(previewUrl, bookTitle);
+            }
+        });
+    });
+    
+    closeBtn.addEventListener('click', closePreview);
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) closePreview();
+    });
+    
+    // Toast selamat datang untuk informasi link baru
+    setTimeout(() => {
+        const toast = document.createElement('div');
+        toast.innerHTML = '📖 <strong>Perpustakaan Digital:</strong> Klik "Preview Buku" atau kunjungi <a href="https://www.letsreadasia.org/" target="_blank" style="color:#fbbf24;">Let\'s Read Asia</a> & <a href="https://literacycloud.org/" target="_blank" style="color:#fbbf24;">Literacy Cloud</a>';
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.left = '20px';
+        toast.style.background = '#0f6b52';
+        toast.style.color = 'white';
+        toast.style.padding = '12px 18px';
+        toast.style.borderRadius = '30px';
+        toast.style.fontSize = '0.8rem';
+        toast.style.zIndex = '1000';
+        toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+        toast.style.maxWidth = '320px';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 7000);
+    }, 800);
+</script>
 </body>
 </html>

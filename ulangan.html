@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Try Out - SD Negeri 3 Ngantru</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Ulangan Harian & Sumatif - SD Negeri 3 Ngantru</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -16,41 +16,202 @@
         .school-logo { width: 80px; height: 80px; background-image: url('logo sekolah.png'); background-size: contain; background-repeat: no-repeat; border-radius: 20px; }
         .logo-text h1 { font-size: 2rem; font-weight: 800; }
         .logo-text p { font-size: 0.9rem; opacity: 0.9; }
-        .nav-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; list-style: none; padding: 12px 0; background: white; border-radius: 60px; margin: 12px 0; }
-        .nav-menu li a { display: inline-block; padding: 10px 20px; text-decoration: none; font-weight: 600; font-size: 0.9rem; color: #1e293b; border-radius: 40px; }
+        .nav-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; list-style: none; padding: 12px 0; background: white; border-radius: 60px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .nav-menu li a { display: inline-block; padding: 10px 20px; text-decoration: none; font-weight: 600; font-size: 0.9rem; color: #1e293b; border-radius: 40px; transition: all 0.2s; }
         .nav-menu li a:hover { background: #e6f7f0; color: #0b5e42; }
         .hero { background: linear-gradient(135deg, #0f6b52, #0a4d3a); border-radius: 32px; padding: 40px 32px; text-align: center; margin: 20px 0; color: white; }
         .hero h2 { font-size: 2rem; }
         .hero span { background: #fbbf24; padding: 0 8px; border-radius: 20px; color: #1e293b; }
-        .card { background: white; border-radius: 28px; padding: 32px; margin-bottom: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-        .card h3 { color: #0f6b52; font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
-        .tryout-schedule { display: flex; flex-direction: column; gap: 16px; }
-        .schedule-row { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding: 16px; background: #f8fafc; border-radius: 16px; border-left: 4px solid #0f6b52; }
+        .card { background: white; border-radius: 28px; padding: 32px; margin-bottom: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-3px); }
+        .card h3 { color: #0f6b52; font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; border-left: 4px solid #fbbf24; padding-left: 16px; }
+        .schedule-row { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding: 16px; background: #f8fafc; border-radius: 16px; border-left: 4px solid #0f6b52; margin-bottom: 12px; }
         .schedule-date { min-width: 120px; font-weight: 700; color: #0f6b52; }
         .schedule-subject { flex: 1; font-weight: 600; }
         .schedule-time { color: #64748b; font-size: 0.85rem; }
         .badge { background: #fef3c7; color: #b45309; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
-        .btn-tryout { display: inline-block; background: #0f6b52; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin-top: 16px; transition: all 0.2s; }
-        .btn-tryout:hover { background: #0a4d3a; transform: scale(1.02); }
-        .back-button { display: inline-flex; align-items: center; gap: 10px; background: #0f6b52; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin: 20px 0; }
-        .back-button:hover { background: #0a4d3a; }
+        .btn-ulangan { display: inline-block; background: #0f6b52; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin-top: 16px; transition: all 0.2s; border: none; cursor: pointer; }
+        .btn-ulangan:hover { background: #0a4d3a; transform: scale(1.02); }
+        .back-button { display: inline-flex; align-items: center; gap: 10px; background: #0f6b52; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin: 20px 0; transition: all 0.2s; }
+        .back-button:hover { background: #0a4d3a; transform: translateX(-3px); }
+        
+        /* Grid Kelas 1-6 Baru */
+        .kelas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 28px;
+            margin-top: 20px;
+        }
+        .kelas-card {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        .kelas-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 28px rgba(0,0,0,0.12);
+            border-color: #0f6b52;
+        }
+        .kelas-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e6f7f0;
+        }
+        .kelas-header i {
+            font-size: 2rem;
+            color: #0f6b52;
+            background: #e6f7f0;
+            padding: 10px;
+            border-radius: 20px;
+        }
+        .kelas-header h4 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        .mapel-list {
+            list-style: none;
+            margin: 16px 0;
+        }
+        .mapel-list li {
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px dashed #f1f5f9;
+            font-size: 0.9rem;
+        }
+        .mapel-list li i {
+            width: 28px;
+            color: #f59e0b;
+            font-size: 0.9rem;
+        }
+        .mapel-list li a {
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 500;
+            transition: all 0.2s;
+            flex: 1;
+        }
+        .mapel-list li a:hover {
+            color: #0f6b52;
+            transform: translateX(4px);
+            display: inline-block;
+        }
+        .btn-mulai-kelas {
+            display: inline-block;
+            background: #0f6b52;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 16px;
+            transition: all 0.2s;
+            text-align: center;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-mulai-kelas:hover {
+            background: #0a4d3a;
+            transform: scale(1.02);
+        }
+        .info-box {
+            background: #eef2ff;
+            padding: 16px;
+            border-radius: 16px;
+            margin-top: 16px;
+            border-left: 4px solid #0f6b52;
+        }
         .footer { background: #0b2c23; color: #ccdcd5; padding: 40px 0 20px; margin-top: 60px; }
         .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; }
+        .footer-col h4 { color: white; margin-bottom: 16px; }
+        .footer-col p, .footer-col ul { font-size: 0.85rem; opacity: 0.85; }
+        .footer-col ul { list-style: none; }
+        .footer-col a { color: #bbdfd0; text-decoration: none; }
         .copyright { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid #2a5546; font-size: 0.75rem; }
-        @media (max-width: 768px) { .logo-text h1 { font-size: 1.2rem; } .school-logo { width: 50px; height: 50px; } .schedule-row { flex-direction: column; align-items: flex-start; } }
+        
+        @media (max-width: 768px) {
+            .logo-text h1 { font-size: 1.2rem; }
+            .school-logo { width: 50px; height: 50px; }
+            .hero h2 { font-size: 1.4rem; }
+            .kelas-header h4 { font-size: 1.2rem; }
+            .card { padding: 20px; }
+        }
+        
+        /* Modal untuk simulasi latihan (opsional) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: fadeInUp 0.3s ease;
+        }
+        .modal-content h3 { color: #0f6b52; margin-bottom: 16px; }
+        .modal-content p { margin-bottom: 20px; color: #334155; }
+        .close-modal {
+            background: #0f6b52;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .small-note {
+            font-size: 0.7rem;
+            color: #6c757d;
+            margin-top: 8px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+
 <div class="top-header">
     <div class="container">
         <div class="header-content">
             <div class="logo-area">
                 <div class="school-logo" style="background-image: url('logo sekolah.png');"></div>
-                <div class="logo-text"><h1>SD NEGERI 3 NGANTRU</h1><p>Kecamatan Ngantang, Kabupaten Malang</p></div>
+                <div class="logo-text">
+                    <h1>SD NEGERI 3 NGANTRU</h1>
+                    <p>Kecamatan Ngantang, Kabupaten Malang</p>
+                </div>
+            </div>
+            <div style="background: rgba(255,255,255,0.2); padding: 8px 20px; border-radius: 40px;">
+                <i class="fas fa-pen-alt"></i> Portal Ulangan & Evaluasi
             </div>
         </div>
     </div>
 </div>
+
 <div class="container">
     <ul class="nav-menu">
         <li><a href="index.html">🏠 Home</a></li>
@@ -62,52 +223,233 @@
         <li><a href="https://drive.google.com/drive/folders/1fdfDI12lytoPK6rNv4neYNWUXLx3Y5nn?usp=drive_link" target="_blank">📚 Kurikulum</a></li>
         <li><a href="https://raporsd.page.gd" target="_blank">🔐 Login Rapor Online</a></li>
         <li><a href="kontak-kami.html">📞 Kontak</a></li>
+        <li><a href="aksara_jawa.html" style="background:#e6f7f0;">✨ Aksara Jawa</a></li>
     </ul>
 </div>
+
 <main class="container">
-    <div class="hero"><h2>🎯 <span>Try Out</span></h2><p>Persiapan Ujian Sekolah & Ujian Nasional</p></div>
-    <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard</a>
+    <div class="hero">
+        <h2>📝 <span>Ulangan Harian & Sumatif</span></h2>
+        <p>Evaluasi belajar siswa kelas 1 - 6 | Persiapan Ujian Sekolah & Asesmen</p>
+    </div>
     
+    <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard</a>
+
+    <!-- JADWAL ULANGAN BULANAN -->
     <div class="card">
-        <h3><i class="fas fa-calendar-week"></i> Jadwal Try Out Kelas 6</h3>
-        <div class="tryout-schedule">
-            <div class="schedule-row"><div class="schedule-date">Try Out 1</div><div class="schedule-subject">🎯 10 - 14 Januari 2027</div><div class="schedule-time">Semua Mata Pelajaran</div><span class="badge">Wajib</span></div>
-            <div class="schedule-row"><div class="schedule-date">Try Out 2</div><div class="schedule-subject">🎯 21 - 25 Februari 2027</div><div class="schedule-time">Semua Mata Pelajaran</div><span class="badge">Wajib</span></div>
-            <div class="schedule-row"><div class="schedule-date">Try Out 3</div><div class="schedule-subject">🎯 14 - 18 Maret 2027</div><div class="schedule-time">Semua Mata Pelajaran</div><span class="badge">Wajib</span></div>
-            <div class="schedule-row"><div class="schedule-date">Try Out 4 (Intensif)</div><div class="schedule-subject">🎯 4 - 8 April 2027</div><div class="schedule-time">Semua Mata Pelajaran</div><span class="badge">Wajib</span></div>
+        <h3><i class="fas fa-calendar-alt"></i> Jadwal Ulangan Tengah Semester & Akhir Semester</h3>
+        <div class="schedule-row">
+            <div class="schedule-date">📅 UTS Ganjil</div>
+            <div class="schedule-subject">📖 18 - 22 September 2026</div>
+            <div class="schedule-time">Semua Mata Pelajaran</div>
+            <span class="badge">Kelas 1-6</span>
+        </div>
+        <div class="schedule-row">
+            <div class="schedule-date">📅 UAS Ganjil</div>
+            <div class="schedule-subject">📖 5 - 10 Desember 2026</div>
+            <div class="schedule-time">Semua Mata Pelajaran</div>
+            <span class="badge">Kelas 1-6</span>
+        </div>
+        <div class="schedule-row">
+            <div class="schedule-date">📅 UTS Genap</div>
+            <div class="schedule-subject">📖 12 - 16 Maret 2027</div>
+            <div class="schedule-time">Semua Mata Pelajaran</div>
+            <span class="badge">Kelas 1-6</span>
+        </div>
+        <div class="schedule-row">
+            <div class="schedule-date">📅 UAS Genap</div>
+            <div class="schedule-subject">📖 5 - 10 Juni 2027</div>
+            <div class="schedule-time">Semua Mata Pelajaran</div>
+            <span class="badge">Kelas 1-6</span>
+        </div>
+        <div class="schedule-row">
+            <div class="schedule-date">🎯 Try Out US (Kelas 6)</div>
+            <div class="schedule-subject">📖 3 - 7 April 2027</div>
+            <div class="schedule-time">Matematika, IPA, Bahasa Indonesia</div>
+            <span class="badge">Kelas 6 Intensif</span>
         </div>
     </div>
 
+    <!-- AREA ULANGAN PER KELAS (KELAS 1-6) DENGAN LINK UNTUK PENGEMBANGAN FILE HTML -->
     <div class="card">
-        <h3><i class="fas fa-download"></i> Latihan Soal Try Out</h3>
-        <p>Silakan unduh dan pelajari soal-soal try out tahun sebelumnya:</p>
-        <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px;">
-            <a href="#" class="btn-tryout" style="background:#e2e8f0; color:#0f6b52;"><i class="fas fa-download"></i> Soal Try Out 1 (2025)</a>
-            <a href="#" class="btn-tryout" style="background:#e2e8f0; color:#0f6b52;"><i class="fas fa-download"></i> Soal Try Out 2 (2025)</a>
-            <a href="#" class="btn-tryout" style="background:#e2e8f0; color:#0f6b52;"><i class="fas fa-download"></i> Pembahasan Soal</a>
+        <h3><i class="fas fa-chalkboard-user"></i> Bank Soal & Latihan Ulangan per Kelas</h3>
+        <p style="margin-bottom: 20px; color: #475569;">Pilih kelas, lalu klik mata pelajaran untuk mengakses soal ulangan harian, PTS, PAS, atau Try Out. Setiap link bisa dikembangkan menjadi file HTML tersendiri.</p>
+        
+        <div class="kelas-grid" id="kelasGrid">
+            <!-- KELAS 1 -->
+            <div class="kelas-card">
+                <div class="kelas-header">
+                    <i class="fas fa-star-of-life"></i>
+                    <h4>Kelas 1</h4>
+                </div>
+                <ul class="mapel-list">
+                    <li><i class="fas fa-book-open"></i> <a href="ulangan-kelas1-bahasa-indonesia.html">Bahasa Indonesia</a></li>
+                    <li><i class="fas fa-calculator"></i> <a href="ulangan-kelas1-matematika.html">Matematika</a></li>
+                    <li><i class="fas fa-flag-checkered"></i> <a href="ulangan-kelas1-tematik.html">PKN & Tematik</a></li>
+                </ul>
+                <a href="ulangan-kelas1-semua-mapel.html" class="btn-mulai-kelas">📋 Akses Semua Ulangan Kelas 1</a>
+                <div class="small-note">Klik mapel untuk buka halaman khusus</div>
+            </div>
+            <!-- KELAS 2 -->
+            <div class="kelas-card">
+                <div class="kelas-header">
+                    <i class="fas fa-bicycle"></i>
+                    <h4>Kelas 2</h4>
+                </div>
+                <ul class="mapel-list">
+                    <li><i class="fas fa-book-open"></i> <a href="ulangan-kelas2-bahasa-indonesia.html">Bahasa Indonesia</a></li>
+                    <li><i class="fas fa-calculator"></i> <a href="ulangan-kelas2-matematika.html">Matematika</a></li>
+                    <li><i class="fas fa-paintbrush"></i> <a href="ulangan-kelas2-sbdp.html">SBdP & Tematik</a></li>
+                </ul>
+                <a href="ulangan-kelas2-semua-mapel.html" class="btn-mulai-kelas">📋 Akses Semua Ulangan Kelas 2</a>
+                <div class="small-note">Kembangkan file HTML sesuai mapel</div>
+            </div>
+            <!-- KELAS 3 -->
+            <div class="kelas-card">
+                <div class="kelas-header">
+                    <i class="fas fa-dragon"></i>
+                    <h4>Kelas 3</h4>
+                </div>
+                <ul class="mapel-list">
+                    <li><i class="fas fa-book-open"></i> <a href="ulangan-kelas3-bahasa-indonesia.html">Bahasa Indonesia</a></li>
+                    <li><i class="fas fa-calculator"></i> <a href="ulangan-kelas3-matematika.html">Matematika</a></li>
+                    <li><i class="fas fa-globe"></i> <a href="ulangan-kelas3-ipas.html">IPAS (IPA & IPS)</a></li>
+                </ul>
+                <a href="ulangan-kelas3-semua-mapel.html" class="btn-mulai-kelas">📋 Akses Semua Ulangan Kelas 3</a>
+                <div class="small-note">Link menuju halaman terpisah</div>
+            </div>
+            <!-- KELAS 4 -->
+            <div class="kelas-card">
+                <div class="kelas-header">
+                    <i class="fas fa-rocket"></i>
+                    <h4>Kelas 4</h4>
+                </div>
+                <ul class="mapel-list">
+                    <li><i class="fas fa-book-open"></i> <a href="ulangan-kelas4-bahasa-indonesia.html">Bahasa Indonesia</a></li>
+                    <li><i class="fas fa-calculator"></i> <a href="ulangan-kelas4-matematika.html">Matematika</a></li>
+                    <li><i class="fas fa-flask"></i> <a href="ulangan-kelas4-ipa-ips.html">IPA & IPS Terpadu</a></li>
+                    <li><i class="fas fa-language"></i> <a href="ulangan-kelas4-bahasa-jawa.html">Bahasa Jawa</a></li>
+                </ul>
+                <a href="ulangan-kelas4-semua-mapel.html" class="btn-mulai-kelas">📋 Akses Semua Ulangan Kelas 4</a>
+                <div class="small-note">Setiap mapel bisa diisi konten soal</div>
+            </div>
+            <!-- KELAS 5 -->
+            <div class="kelas-card">
+                <div class="kelas-header">
+                    <i class="fas fa-crown"></i>
+                    <h4>Kelas 5</h4>
+                </div>
+                <ul class="mapel-list">
+                    <li><i class="fas fa-book-open"></i> <a href="ulangan-kelas5-bahasa-indonesia.html">Bahasa Indonesia</a></li>
+                    <li><i class="fas fa-calculator"></i> <a href="ulangan-kelas5-matematika.html">Matematika</a></li>
+                    <li><i class="fas fa-microscope"></i> <a href="ulangan-kelas5-ipa-ips.html">IPA & IPS</a></li>
+                    <li><i class="fas fa-language"></i> <a href="ulangan-kelas5-bahasa-jawa-inggris.html">Bahasa Jawa & Inggris</a></li>
+                </ul>
+                <a href="ulangan-kelas5-semua-mapel.html" class="btn-mulai-kelas">📋 Akses Semua Ulangan Kelas 5</a>
+                <div class="small-note">Siapkan file HTML untuk latihan</div>
+            </div>
+            <!-- KELAS 6 (TRY OUT) -->
+            <div class="kelas-card">
+                <div class="kelas-header">
+                    <i class="fas fa-trophy"></i>
+                    <h4>Kelas 6 (Try Out)</h4>
+                </div>
+                <ul class="mapel-list">
+                    <li><i class="fas fa-book-open"></i> <a href="ulangan-kelas6-bahasa-indonesia.html">Bahasa Indonesia (+TO)</a></li>
+                    <li><i class="fas fa-calculator"></i> <a href="ulangan-kelas6-matematika.html">Matematika (Intensif)</a></li>
+                    <li><i class="fas fa-dna"></i> <a href="ulangan-kelas6-ipa-ips.html">IPA & IPS Terpadu</a></li>
+                    <li><i class="fas fa-history"></i> <a href="ulangan-kelas6-bank-soal-us.html">Bank Soal US / Try Out</a></li>
+                </ul>
+                <a href="ulangan-kelas6-tryout-paket.html" class="btn-mulai-kelas">🎯 Akses Try Out / Ulangan Kelas 6</a>
+                <div class="small-note">Setiap link dapat diisi file html terpisah</div>
+            </div>
+        </div>
+        
+        <div class="info-box" style="margin-top: 24px;">
+            <i class="fas fa-info-circle" style="color: #0f6b52;"></i> <strong>Petunjuk Pengembangan:</strong> Setiap link pada mata pelajaran di atas (contoh: <code>ulangan-kelas1-bahasa-indonesia.html</code>) sudah disiapkan. Anda dapat membuat file-file HTML tersebut satu per satu untuk menampilkan daftar soal, ujian online, atau embed Google Form sesuai kebutuhan. Struktur link sudah konsisten dan mudah dikenali.
         </div>
     </div>
 
+    <!-- DOWNLOAD SOAL LATIHAN (Umum) -->
     <div class="card">
-        <h3><i class="fas fa-lightbulb"></i> Tips Sukses Try Out</h3>
+        <h3><i class="fas fa-download"></i> Unduh Kumpulan Soal Ulangan & Pembahasan</h3>
+        <p>Dapatkan file PDF soal ulangan harian, UTS, UAS, dan try out untuk persiapan belajar di rumah.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px;">
+            <a href="#" class="btn-ulangan" style="background:#e2e8f0; color:#0f6b52;" id="downloadSoalKelas1"><i class="fas fa-download"></i> Paket Soal Kelas 1-3</a>
+            <a href="#" class="btn-ulangan" style="background:#e2e8f0; color:#0f6b52;" id="downloadSoalKelas4"><i class="fas fa-download"></i> Paket Soal Kelas 4-5</a>
+            <a href="#" class="btn-ulangan" style="background:#e2e8f0; color:#0f6b52;" id="downloadSoalKelas6"><i class="fas fa-download"></i> Try Out US Kelas 6 + Kunci</a>
+        </div>
+        <div class="info-box" style="margin-top: 18px; background: #e6f7f0;">
+            <i class="fas fa-lightbulb"></i> <strong>Tips Ulangan:</strong> Kerjakan latihan soal minimal 30 menit setiap hari, diskusikan jawaban dengan guru/orang tua, dan catat materi yang sulit.
+        </div>
+    </div>
+
+    <!-- Tips Sukses Menghadapi Ulangan -->
+    <div class="card">
+        <h3><i class="fas fa-lightbulb"></i> 7 Tips Sukses Menghadapi Ulangan</h3>
         <ul style="margin-left: 30px; color: #334155; line-height: 1.8;">
-            <li>Belajar secara rutin, jangan hanya saat mendekati ujian</li>
-            <li>Latihan soal-soal try out tahun sebelumnya</li>
-            <li>Istirahat cukup sebelum hari pelaksanaan try out</li>
-            <li>Bawa alat tulis lengkap (pensil 2B, penghapus, penggaris)</li>
-            <li>Baca soal dengan teliti sebelum menjawab</li>
-            <li>Kerjakan soal yang mudah terlebih dahulu</li>
-            <li>Jaga kesehatan dan makan makanan bergizi</li>
+            <li><i class="fas fa-check-circle" style="color:#0f6b52;"></i> Belajar secara rutin setiap hari, bukan hanya semalam sebelum ulangan</li>
+            <li><i class="fas fa-check-circle" style="color:#0f6b52;"></i> Latihan soal-soal ulangan tahun sebelumnya</li>
+            <li><i class="fas fa-check-circle" style="color:#0f6b52;"></i> Istirahat cukup (7-8 jam) sebelum hari ulangan</li>
+            <li><i class="fas fa-check-circle" style="color:#0f6b52;"></i> Bawa alat tulis lengkap (pensil 2B, penghapus, penggaris, pena)</li>
+            <li><i class="fas fa-check-circle" style="color:#0f6b52;"></i> Baca soal dengan teliti, pahami perintah sebelum menjawab</li>
+            <li><i class="fas fa-check-circle" style="color:#0f6b52;"></i> Dahulukan soal yang mudah, jangan terjebak pada soal sulit terlalu lama</li>
+            <li><i class="fas fa-check-circle" style="color:#0f6b52;"></i> Jaga kesehatan, sarapan bergizi, dan berdoa sebelum ujian</li>
         </ul>
-        <div class="info-box" style="background: #eef2ff; padding: 16px; border-radius: 16px; margin-top: 16px; border-left: 4px solid #0f6b52;">
-            <i class="fas fa-info-circle" style="color: #0f6b52;"></i> <strong>Pengingat:</strong> Try out adalah simulasi ujian yang bertujuan mengukur kesiapan siswa. Jangan jadikan nilai try out sebagai patokan utama, tetapi gunakan sebagai bahan evaluasi belajar.
+        <div style="text-align: center; margin-top: 24px;">
+            <a href="index.html" class="back-button" style="background:#f59e0b;"><i class="fas fa-home"></i> Kembali ke Beranda Sekolah</a>
         </div>
     </div>
-
-    <div style="text-align: center; margin: 30px 0;"><a href="index.html" class="back-button"><i class="fas fa-home"></i> Kembali ke Halaman Utama</a></div>
 </main>
+
 <footer class="footer">
-    <div class="container"><div class="footer-content"><div class="footer-col"><h4>SD Negeri 3 Ngantru</h4><p>Jln Sawahan, Bayanan, Ngantru<br>Kec. Ngantang, Kab. Malang</p></div></div><div class="copyright">&copy; 2026 SD Negeri 3 NGANTRU | Go Digital Sekolahku</div></div>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>SD Negeri 3 Ngantru</h4>
+                <p>Jln Sawahan, Bayanan, Ngantru<br>Kec. Ngantang, Kab. Malang</p>
+                <p>Email: sdn3ngantru.ngantang@gmail.com</p>
+            </div>
+            <div class="footer-col">
+                <h4>Layanan Ulangan</h4>
+                <ul>
+                    <li><a href="ulangan.html">📝 Bank Soal Kelas 1-6</a></li>
+                    <li><a href="https://raporsd.page.gd" target="_blank">📊 Rapor Digital</a></li>
+                    <li><a href="jadwal-pelajaran.html">📅 Jadwal Pelajaran</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Sosial Media</h4>
+                <ul>
+                    <li><a href="https://www.facebook.com/profile.php?id=100080344573562" target="_blank"><i class="fab fa-facebook"></i> Facebook</a></li>
+                    <li><a href="https://www.instagram.com/sd_negeri_3_ngantru_ngantang" target="_blank"><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="https://www.youtube.com/@sdnegeri3ngantrukecamatann821" target="_blank"><i class="fab fa-youtube"></i> YouTube</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 SD Negeri 3 NGANTRU | Portal Ulangan & Evaluasi | Setiap kelas memiliki tautan pengembangan mandiri
+        </div>
+    </div>
 </footer>
+
+<script>
+    // Fungsi tambahan untuk download (demo)
+    document.getElementById('downloadSoalKelas1')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        alert("📥 Paket soal kelas 1-3 akan segera tersedia. Anda dapat membuat link download menuju Google Drive.");
+    });
+    document.getElementById('downloadSoalKelas4')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        alert("📥 Paket soal kelas 4-5 dapat diunduh. Silakan upload file PDF dan ganti link # dengan URL asli.");
+    });
+    document.getElementById('downloadSoalKelas6')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        alert("🎯 Soal Try Out US Kelas 6 + kunci jawaban dapat disiapkan pada file terpisah.");
+    });
+    
+    // Pesan ramah untuk pengembang (console)
+    console.log("Halaman ulangan dengan link per mapel per kelas sudah siap. Silakan buat file HTML seperti: ulangan-kelas1-bahasa-indonesia.html, ulangan-kelas2-matematika.html, dst.");
+</script>
 </body>
 </html>
