@@ -53,7 +53,7 @@
 
     <!-- Header Instansi & Menu Daftar API -->
     <header class="gradient-header text-white py-6 px-4 shadow-md mb-8">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-4">
                 <div class="bg-white/10 p-3 rounded-2xl backdrop-blur-sm border border-white/20">
                     <i class="fa-solid fa-school text-3xl text-emerald-300"></i>
@@ -66,6 +66,10 @@
             
             <!-- Menu Cepat Daftar API Key (Menu Atas) -->
             <div class="flex flex-wrap items-center gap-3">
+                <!-- Tombol Kembali ke Index -->
+                <a href="index.html" class="glow-button flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-xl border border-white/10 text-xs shadow-sm transition">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+                </a>
                 <a href="https://aistudio.google.com/" target="_blank" class="glow-button flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-2 px-4 rounded-xl border border-emerald-400/30 text-xs shadow-sm transition">
                     <i class="fa-solid fa-key"></i> Daftar API Key Gemini (Gratis) <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-85"></i>
                 </a>
@@ -88,7 +92,7 @@
                     <i class="fa-solid fa-key text-emerald-600"></i> Konfigurasi API Gemini
                 </h2>
                 
-                <!-- Kotak Edukasi / Petunjuk Daftar API Key (Di atas Kolom Input) -->
+                <!-- Kotak Edukasi / Petunjuk Daftar API Key -->
                 <div class="mb-4 bg-emerald-50 border border-emerald-100 p-3 rounded-xl flex items-start gap-2.5">
                     <i class="fa-solid fa-circle-info text-emerald-600 mt-0.5 text-sm"></i>
                     <div>
@@ -122,7 +126,11 @@
                 <h2 class="text-md font-bold mb-4 text-slate-900 flex items-center gap-2">
                     <i class="fa-solid fa-file-invoice text-emerald-600"></i> Atribut Lembar Ujian
                 </h2>
-                <div class="space-y-3">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Siswa</label>
+                        <input type="text" id="studentNameInput" value="" placeholder="Kosongkan untuk cetak garis titik-titik (...)" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Mata Pelajaran</label>
                         <input type="text" id="subjectInput" value="Bahasa Indonesia" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
@@ -130,7 +138,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 mb-1">Kelas</label>
-                            <input type="text" id="classInput" value="IV (Empat)" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <input type="text" id="classInput" value="V (Lima)" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 mb-1">Semester</label>
@@ -147,6 +155,28 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Waktu Pengerjaan (Menit)</label>
                         <input type="number" id="durationInput" value="90" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    
+                    <!-- Form Input Logo Kiri & Logo Kanan -->
+                    <div class="border-t border-slate-100 pt-3 space-y-3">
+                        <span class="block text-xs font-bold text-slate-700 uppercase tracking-wide">Logo Kop Lembar Ujian</span>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-1">Logo Kiri (Pemkab/Kab)</label>
+                                <div class="flex flex-col gap-1.5">
+                                    <input type="file" id="logoKiriInput" accept="image/*" onchange="handleLogoUpload(event, 'kiri')" class="w-full text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                                    <button type="button" id="btnHapusLogoKiri" onclick="clearLogo('kiri')" class="hidden text-[9px] text-rose-500 hover:text-rose-700 font-bold self-start"><i class="fa-solid fa-trash-can"></i> Hapus Logo</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-1">Logo Kanan (Sekolah)</label>
+                                <div class="flex flex-col gap-1.5">
+                                    <input type="file" id="logoKananInput" accept="image/*" onchange="handleLogoUpload(event, 'kanan')" class="w-full text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                                    <button type="button" id="btnHapusLogoKanan" onclick="clearLogo('kanan')" class="hidden text-[9px] text-rose-500 hover:text-rose-700 font-bold self-start"><i class="fa-solid fa-trash-can"></i> Hapus Logo</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -265,7 +295,7 @@
             <div id="resultContainer" class="hidden space-y-4">
                 
                 <!-- Bar Kontrol Hasil Pratinjau Terlebih Dahulu -->
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
                     <div class="space-y-1">
                         <span class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
                             <i class="fa-solid fa-eye text-emerald-600"></i> Pratinjau Kertas Soal (Ukuran A4)
@@ -273,9 +303,9 @@
                         <p class="text-xs text-slate-400">Silakan tinjau lembar kertas di bawah sebelum mengunduh berkas PDF.</p>
                     </div>
                     
-                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <div class="flex flex-wrap items-center gap-2.5 w-full xl:w-auto justify-start xl:justify-end">
                         <!-- Pilihan Tampilan Pratinjau -->
-                        <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-lg text-xs font-semibold">
+                        <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg text-xs font-semibold">
                             <button id="viewSiswaBtn" onclick="togglePreviewMode('siswa')" class="px-3 py-1.5 rounded-md bg-white text-slate-800 shadow-sm transition">Mode Siswa</button>
                             <button id="viewGuruBtn" onclick="togglePreviewMode('guru')" class="px-3 py-1.5 rounded-md text-slate-500 hover:text-slate-800 transition">Mode Guru</button>
                         </div>
@@ -287,8 +317,13 @@
                         <button onclick="downloadExamPDF('guru')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center gap-1.5 shadow-sm transition">
                             <i class="fa-solid fa-key"></i> Unduh PDF Guru (Kunci)
                         </button>
-                        <button onclick="downloadDirectPreviewPDF()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center gap-1.5 shadow-sm transition">
+                        <button onclick="downloadDirectPreviewPDF()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center gap-1.5 shadow-sm transition">
                             <i class="fa-solid fa-print"></i> Unduh PDF Sesuai Pratinjau
+                        </button>
+                        
+                        <!-- Tombol Buat Soal Lagi -->
+                        <button onclick="resetAndCreateAgain()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center gap-1.5 shadow-sm transition">
+                            <i class="fa-solid fa-rotate-right"></i> Buat Soal Lagi
                         </button>
                     </div>
                 </div>
@@ -327,24 +362,97 @@
     </div>
 
     <script>
-        // Data kisi-kisi default (Diatur KOSONG secara default berdasarkan instruksi)
         let indicatorData = [];
-
-        // Data awal untuk Input Cepat (Diatur KOSONG secara default berdasarkan instruksi)
         let fastInputData = [];
-
         let generatedQuestions = [];
+        
+        // State base64 untuk penyimpanan logo kiri dan kanan
+        let logoKiriData = "";
+        let logoKananData = "";
 
-        // Inisialisasi awal saat halaman termuat
         window.onload = function() {
             renderTable();
             renderFastTable();
         }
 
-        // Fungsi pembersih abjad ganda yang sangat andal
+        // Fungsi bantu untuk menampilkan Notifikasi Toast
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toast");
+            const toastIcon = document.getElementById("toastIcon");
+            const toastMsg = document.getElementById("toastMsg");
+
+            toastMsg.textContent = message;
+            
+            // Setel icon dan warna icon berdasarkan jenis pesan
+            if (type === "success") {
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400";
+            } else if (type === "error") {
+                toastIcon.className = "fa-solid fa-circle-exclamation text-rose-500";
+            } else if (type === "warning") {
+                toastIcon.className = "fa-solid fa-triangle-exclamation text-amber-500";
+            } else {
+                toastIcon.className = "fa-solid fa-circle-info text-sky-400";
+            }
+
+            // Tampilkan elemen toast dengan menghapus kelas sembunyi
+            toast.classList.remove("translate-y-12", "opacity-0", "pointer-events-none");
+            toast.classList.add("translate-y-0", "opacity-100");
+
+            // Sembunyikan kembali secara otomatis setelah 3 detik
+            setTimeout(() => {
+                toast.classList.add("translate-y-12", "opacity-0", "pointer-events-none");
+                toast.classList.remove("translate-y-0", "opacity-100");
+            }, 3000);
+        }
+
+        // Fungsi handle unggah file gambar logo (kiri / kanan)
+        function handleLogoUpload(event, side) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (side === 'kiri') {
+                    logoKiriData = e.target.result;
+                    document.getElementById("btnHapusLogoKiri").classList.remove("hidden");
+                } else {
+                    logoKananData = e.target.result;
+                    document.getElementById("btnHapusLogoKanan").classList.remove("hidden");
+                }
+                // Update tampilan lembar ujian jika data soal sudah ada
+                if (generatedQuestions.length > 0) {
+                    renderExamPaper();
+                }
+                showToast(`Logo ${side === 'kiri' ? 'Kiri' : 'Kanan'} berhasil diunggah!`, "success");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Fungsi membersihkan file logo yang telah dipilih
+        function clearLogo(side) {
+            if (side === 'kiri') {
+                logoKiriData = "";
+                document.getElementById("logoKiriInput").value = "";
+                document.getElementById("btnHapusLogoKiri").classList.add("hidden");
+            } else {
+                logoKananData = "";
+                document.getElementById("logoKananInput").value = "";
+                document.getElementById("btnHapusLogoKanan").classList.add("hidden");
+            }
+            if (generatedQuestions.length > 0) {
+                renderExamPaper();
+            }
+            showToast(`Logo ${side === 'kiri' ? 'Kiri' : 'Kanan'} dikosongkan.`, "info");
+        }
+
+        // Fungsi reset untuk membuat soal kembali
+        function resetAndCreateAgain() {
+            document.getElementById("resultContainer").classList.add("hidden");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showToast("Silakan sesuaikan konfigurasi atau isi tabel kisi-kisi untuk merancang soal lagi.", "info");
+        }
+
         function sanitizeOption(opt) {
             if (!opt) return "";
-            // Menghapus pola seperti "A. ", "B. ", "C) ", "d - ", dsb di awal string pilihan
             return opt.replace(/^[A-D]\.\s*|^[a-d]\.\s*|^[A-D]\)\s*|^[a-d]\)\s*|^[A-D]\s*-\s*|^[a-d]\s*-\s*/, "").trim();
         }
 
@@ -390,6 +498,8 @@
                     <td class="p-2 text-center">
                         <select onchange="updateData(${idx}, 'bentuk', this.value)" class="w-full px-1 py-1.5 border border-slate-200 rounded-lg text-xs bg-transparent focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
                             <option value="Pilihan Ganda" ${row.bentuk === 'Pilihan Ganda' ? 'selected' : ''}>Pilihan Ganda</option>
+                            <option value="Pilihan Ganda Kompleks" ${row.bentuk === 'Pilihan Ganda Kompleks' ? 'selected' : ''}>Pilihan Ganda Kompleks</option>
+                            <option value="Mencocokkan" ${row.bentuk === 'Mencocokkan' ? 'selected' : ''}>Menjodohkan (Mencocokkan)</option>
                             <option value="Isian" ${row.bentuk === 'Isian' ? 'selected' : ''}>Isian</option>
                             <option value="Uraian" ${row.bentuk === 'Uraian' ? 'selected' : ''}>Uraian</option>
                         </select>
@@ -411,7 +521,6 @@
             document.getElementById("totalIndicators").innerText = `Total Kisi-Kisi: ${indicatorData.length}`;
         }
 
-        // Mengubah mode visual antara mode siswa dan guru di pratinjau halaman
         function togglePreviewMode(mode) {
             const previewEl = document.getElementById("paperPreview");
             const siswaBtn = document.getElementById("viewSiswaBtn");
@@ -457,6 +566,8 @@
                     <td class="p-2 text-center">
                         <select onchange="updateFastData(${idx}, 'bentuk', this.value)" class="w-full px-1 py-1.5 border border-slate-200 rounded-lg text-xs bg-transparent focus:bg-white focus:ring-1 focus:ring-amber-500 focus:outline-none">
                             <option value="Pilihan Ganda" ${row.bentuk === 'Pilihan Ganda' ? 'selected' : ''}>Pilihan Ganda</option>
+                            <option value="Pilihan Ganda Kompleks" ${row.bentuk === 'Pilihan Ganda Kompleks' ? 'selected' : ''}>Pilihan Ganda Kompleks</option>
+                            <option value="Mencocokkan" ${row.bentuk === 'Mencocokkan' ? 'selected' : ''}>Menjodohkan (Mencocokkan)</option>
                             <option value="Isian" ${row.bentuk === 'Isian' ? 'selected' : ''}>Isian</option>
                             <option value="Uraian" ${row.bentuk === 'Uraian' ? 'selected' : ''}>Uraian</option>
                         </select>
@@ -538,7 +649,6 @@
                 document.getElementById("subjectInput").value = validRows[0].mapel;
             }
 
-            // Kosongkan tabel cepat setelah diterapkan agar bersih kembali
             fastInputData = [];
             renderFastTable();
             renderTable();
@@ -624,42 +734,15 @@
             showToast("Templat Excel berhasil diunduh", "success");
         }
 
-        function showToast(message, type = "success") {
-            const toast = document.getElementById("toast");
-            const icon = document.getElementById("toastIcon");
-            const msgSpan = document.getElementById("toastMsg");
-
-            msgSpan.innerText = message;
-            
-            if (type === "success") {
-                toast.className = "fixed bottom-5 right-5 z-50 transform translate-y-0 opacity-100 transition-all duration-300 bg-emerald-600 text-white text-xs font-semibold py-3 px-4 rounded-xl shadow-lg flex items-center gap-2";
-                icon.className = "fa-solid fa-circle-check";
-            } else if (type === "error") {
-                toast.className = "fixed bottom-5 right-5 z-50 transform translate-y-0 opacity-100 transition-all duration-300 bg-rose-600 text-white text-xs font-semibold py-3 px-4 rounded-xl shadow-lg flex items-center gap-2";
-                icon.className = "fa-solid fa-circle-xmark";
-            } else if (type === "warning") {
-                toast.className = "fixed bottom-5 right-5 z-50 transform translate-y-0 opacity-100 transition-all duration-300 bg-amber-500 text-white text-xs font-semibold py-3 px-4 rounded-xl shadow-lg flex items-center gap-2";
-                icon.className = "fa-solid fa-circle-exclamation";
-            } else {
-                toast.className = "fixed bottom-5 right-5 z-50 transform translate-y-0 opacity-100 transition-all duration-300 bg-slate-900 text-white text-xs font-semibold py-3 px-4 rounded-xl shadow-lg flex items-center gap-2";
-                icon.className = "fa-solid fa-info-circle";
-            }
-
-            setTimeout(() => {
-                toast.className = "fixed bottom-5 right-5 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 text-xs font-semibold py-3 px-4 rounded-xl flex items-center gap-2";
-            }, 3500);
-        }
-
         async function fetchGeminiWithRetry(prompt, systemPrompt, customKey) {
             const targetKey = customKey;
             if (!targetKey) {
                 throw new Error("API Key kosong. Silakan isi API Key Anda di panel kiri.");
             }
 
-            // Kami mendahulukan model stabil yang andal & hemat kuota
             const modelsToTry = [
-                "gemini-1.5-flash",
-                "gemini-2.5-flash"
+                "gemini-2.5-flash",
+                "gemini-1.5-flash"
             ];
 
             let lastError = null;
@@ -716,7 +799,6 @@
                         }
 
                         if (response.status === 401) {
-                            // Jika salah kunci, tidak perlu retry agar tidak membuang waktu guru
                             throw new Error("Kunci API (API Key) Anda tidak valid (Error 401). Silakan cek kembali atau buat API Key baru gratis.");
                         }
 
@@ -793,11 +875,13 @@
                 PENTING: Perhatikan properti "jumlah" di setiap kisi-kisi. Jika properti "jumlah" berharga N, Anda HARUS menghasilkan N butir soal yang berbeda dan kreatif untuk indikator tersebut.
                 Total soal yang dihasilkan harus tepat berjumlah ${totalTargetSoal} butir soal.
 
-                Kriteria pengerjaan:
-                1. Bentuk Soal: "Pilihan Ganda" wajib memiliki array "pilihan" berisi 4 item (A, B, C, D). "Isian" dan "Uraian" harus memiliki array "pilihan" kosong [].
-                2. Kunci Jawaban: Untuk PG berikan nilai huruf pilihan benar misal "A" atau "B" atau "C" or "D". Untuk Isian/Uraian berikan kata kunci/kalimat kunci jawaban yang tepat.
-                3. Berikan "pembahasan" yang logis dan mendidik dalam bahasa Indonesia yang ringkas.
-                4. Soal disesuaikan dengan kurikulum SD kelas yang bersangkutan.
+                Kriteria pengerjaan per bentuk soal:
+                1. "Pilihan Ganda": Wajib memiliki array "pilihan" berisi 4 opsi jawaban. "kunci_jawaban" berisi satu abjad (A, B, C, atau D).
+                2. "Pilihan Ganda Kompleks": Wajib memiliki array "pilihan" berisi 4 opsi jawaban. Tulis soal yang memiliki lebih dari satu pilihan jawaban yang benar. "kunci_jawaban" mendaftarkan seluruh pilihan abjad benar dipisahkan koma (contoh: "A, C" atau "A, B, D").
+                3. "Mencocokkan": Wajib memiliki array "pilihan" berisi tepat 4 item pasangan riil berformat "Premis | Respon" (contoh: "Mata | Melihat", "Telinga | Mendengar", "Hidung | Mencium", "Lidah | Mengecap"). "kunci_jawaban" berisi daftar kecocokan yang benar.
+                4. "Isian" and "Uraian": Array "pilihan" harus berupa array kosong []. "kunci_jawaban" berisi pedoman jawaban.
+                5. Berikan "pembahasan" yang logis dan mendidik dalam bahasa Indonesia yang ringkas.
+                6. Soal disesuaikan dengan kurikulum SD kelas yang bersangkutan.
             `;
 
             try {
@@ -816,7 +900,6 @@
                 let mappedIndex = 0;
                 generatedQuestions = [];
 
-                // Mapping indikator dengan loop jumlah soal yang diminta
                 indicatorData.forEach((indicator) => {
                     const targetCount = Number(indicator.jumlah) || 1;
                     for (let i = 0; i < targetCount; i++) {
@@ -835,7 +918,6 @@
                     }
                 });
 
-                // Fail-safe jika jumlah JSON respons dari AI melebihi target mapping
                 while (mappedIndex < parsedData.questions.length) {
                     const rawQ = parsedData.questions[mappedIndex];
                     generatedQuestions.push({
@@ -849,16 +931,10 @@
                     mappedIndex++;
                 }
 
-                // Render pratinjau lembar kertas di halaman terlebih dahulu
                 renderExamPaper();
-                
-                // Aktifkan default mode pratinjau: Mode Siswa
                 togglePreviewMode('siswa');
-
-                // Tampilkan container pratinjau yang berisi tombol unduh yang sekarang siap digunakan
                 resultDiv.classList.remove("hidden");
                 showToast("Soal berhasil dirancang! Silakan tinjau lembar pratinjau di bawah.", "success");
-
                 resultDiv.scrollIntoView({ behavior: 'smooth' });
 
             } catch (err) {
@@ -874,6 +950,7 @@
         function renderExamPaper() {
             const container = document.getElementById("paperPreview");
             
+            const namaSiswa = document.getElementById("studentNameInput").value.trim() || "..................................................";
             const mapel = document.getElementById("subjectInput").value;
             const kelas = document.getElementById("classInput").value;
             const semester = document.getElementById("semesterInput").value;
@@ -881,23 +958,42 @@
             const durasi = document.getElementById("durationInput").value;
 
             let htmlContent = `
-                <!-- Kop Dinas Pendidikan Malang -->
-                <div class="text-center border-b-4 border-double border-slate-800 pb-3 mb-6">
-                    <h2 class="text-xs md:text-sm font-bold tracking-wide uppercase">PEMERINTAH KABUPATEN MALANG</h2>
-                    <h2 class="text-xs md:text-sm font-bold tracking-wide uppercase">DINAS PENDIDIKAN</h2>
-                    <h1 class="text-base md:text-lg font-extrabold tracking-wider uppercase mt-0.5">SD NEGERI 3 NGANTRU</h1>
-                    <p class="text-[9px] md:text-[10px] italic text-slate-500 mt-1">Alamat: Kecamatan Ngantang, Kabupaten Malang, Jawa Timur</p>
+                <!-- Kop Dinas Pendidikan Malang dengan Dukungan Logo Kiri & Kanan -->
+                <div class="flex items-center justify-between border-b-4 border-double border-slate-800 pb-3 mb-6 gap-4">
+                    <!-- Sisi Logo Kiri -->
+                    <div class="w-16 h-16 flex items-center justify-center flex-shrink-0">
+                        ${logoKiriData ? `<img src="${logoKiriData}" class="max-h-16 max-w-full object-contain" alt="Logo Kiri">` : `
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-12 h-12 text-slate-300 fill-current"><path d="M50 5 L15 25 V65 C15 80 50 95 50 95 C50 95 85 80 85 65 V25 L50 5 Z M50 15 L75 30 V60 C75 70 50 82 50 82 C50 82 25 70 25 60 V30 L50 15 Z" /></svg>
+                        `}
+                    </div>
+                    
+                    <!-- Detail Informasi Lembaga (Tengah) -->
+                    <div class="text-center flex-grow">
+                        <h2 class="text-xs md:text-sm font-bold tracking-wide uppercase">PEMERINTAH KABUPATEN MALANG</h2>
+                        <h2 class="text-xs md:text-sm font-bold tracking-wide uppercase">DINAS PENDIDIKAN</h2>
+                        <h1 class="text-base md:text-lg font-extrabold tracking-wider uppercase mt-0.5">SD NEGERI 3 NGANTRU</h1>
+                        <p class="text-[9px] md:text-[10px] italic text-slate-500 mt-1">Alamat: Kecamatan Ngantang, Kabupaten Malang, Jawa Timur</p>
+                    </div>
+
+                    <!-- Sisi Logo Kanan -->
+                    <div class="w-16 h-16 flex items-center justify-center flex-shrink-0">
+                        ${logoKananData ? `<img src="${logoKananData}" class="max-h-16 max-w-full object-contain" alt="Logo Kanan">` : `
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-12 h-12 text-slate-300 fill-current"><path d="M12 25 L50 6 L88 25 L50 44 Z M12 35 L50 54 L88 35 V60 C88 75 50 94 50 94 C50 94 12 75 12 60 Z" /></svg>
+                        `}
+                    </div>
                 </div>
 
                 <!-- Identitas Ujian -->
                 <div class="grid grid-cols-2 gap-4 text-[10px] md:text-xs font-bold border border-slate-300 p-4 rounded-xl mb-6 bg-slate-50">
                     <div class="space-y-1">
+                        <div>NAMA SISWA : <span class="font-normal">${namaSiswa}</span></div>
                         <div>MATA PELAJARAN : <span class="font-normal uppercase">${mapel}</span></div>
                         <div>KELAS / SEMESTER : <span class="font-normal">${kelas} / ${semester}</span></div>
                     </div>
                     <div class="space-y-1">
                         <div>TAHUN AJARAN : <span class="font-normal">${tahunAjaran}</span></div>
                         <div>ALOKASI WAKTU : <span class="font-normal">${durasi} MENIT</span></div>
+                        <div>NILAI / PARAF : <span class="font-normal">..................................................</span></div>
                     </div>
                 </div>
 
@@ -916,6 +1012,8 @@
             `;
 
             const pgList = generatedQuestions.filter(q => q.bentuk === "Pilihan Ganda");
+            const pgkList = generatedQuestions.filter(q => q.bentuk === "Pilihan Ganda Kompleks");
+            const matchList = generatedQuestions.filter(q => q.bentuk === "Mencocokkan");
             const isianList = generatedQuestions.filter(q => q.bentuk === "Isian");
             const uraianList = generatedQuestions.filter(q => q.bentuk === "Uraian");
 
@@ -938,14 +1036,116 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 ml-4">
                                 ${q.pilihan.map((pil, idx) => {
                                     const code = String.fromCharCode(65 + idx);
-                                    // Mencegah penulisan abjad ganda dengan sanitizeOption
                                     return `<div>${code}. ${sanitizeOption(pil)}</div>`;
                                 }).join('')}
                             </div>
                             
-                            <!-- Kunci dan pembahasan tersembunyi/ditampilkan via CSS .solution-text -->
                             <div class="solution-text hidden mt-2.5 ml-4 p-2 bg-emerald-50/50 border-l-2 border-emerald-500 rounded-r-lg text-[10px]">
                                 <span class="font-bold text-emerald-800">Kunci Jawaban: ${q.kunci_jawaban}</span>
+                                <p class="text-slate-600 mt-0.5"><span class="font-semibold">Pembahasan:</span> ${q.pembahasan}</p>
+                            </div>
+                        </div>
+                    `;
+                    currentGlobalNo++;
+                });
+                htmlContent += `</div></div>`;
+            }
+
+            if (pgkList.length > 0) {
+                htmlContent += `
+                    <div class="mb-6">
+                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">II. Pilihan Ganda Kompleks</h3>
+                        <p class="italic text-slate-500 mb-4 text-[10px]">Pilihlah semua jawaban yang benar dengan memberikan tanda centang pada kotak [ ] di depan pilihan jawaban!</p>
+                        <div class="space-y-4">
+                `;
+                pgkList.forEach((q) => {
+                    htmlContent += `
+                        <div class="question-item pl-2 border-l-2 border-teal-600/20">
+                            <div class="font-medium mb-1.5 flex justify-between items-start">
+                                <span>${currentGlobalNo}. ${q.pertanyaan}</span>
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-100 ml-2 whitespace-nowrap">Skor: ${q.skor}</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 ml-4">
+                                ${q.pilihan.map((pil, idx) => {
+                                    const code = String.fromCharCode(65 + idx);
+                                    return `<div>[ &nbsp; ] &nbsp; ${code}. ${sanitizeOption(pil)}</div>`;
+                                }).join('')}
+                            </div>
+                            
+                            <div class="solution-text hidden mt-2.5 ml-4 p-2 bg-emerald-50/50 border-l-2 border-teal-600 rounded-r-lg text-[10px]">
+                                <span class="font-bold text-teal-800">Kunci Jawaban: ${q.kunci_jawaban}</span>
+                                <p class="text-slate-600 mt-0.5"><span class="font-semibold">Pembahasan:</span> ${q.pembahasan}</p>
+                            </div>
+                        </div>
+                    `;
+                    currentGlobalNo++;
+                });
+                htmlContent += `</div></div>`;
+            }
+
+            if (matchList.length > 0) {
+                htmlContent += `
+                    <div class="mb-6">
+                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">III. Menjodohkan (Mencocokkan)</h3>
+                        <p class="italic text-slate-500 mb-4 text-[10px]">Hubungkanlah pernyataan di sebelah kiri dengan pilihan pasangan yang tepat di sebelah kanan!</p>
+                        <div class="space-y-4">
+                `;
+                matchList.forEach((q) => {
+                    let pairs = [];
+                    if (Array.isArray(q.pilihan)) {
+                        pairs = q.pilihan.map(p => {
+                            let parts = p.split('|');
+                            return { left: parts[0]?.trim() || p, right: parts[1]?.trim() || "" };
+                        }).filter(p => p.left);
+                    }
+
+                    if (pairs.length === 0) {
+                        pairs = [{left: "Premis data kosong", right: "Respon data kosong"}];
+                    }
+
+                    let lefts = pairs.map(p => p.left);
+                    let rights = pairs.map(p => p.right).filter(r => r !== "");
+                    
+                    let shuffledRights = [...rights];
+                    for (let i = shuffledRights.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffledRights[i], shuffledRights[j]] = [shuffledRights[j], shuffledRights[i]];
+                    }
+
+                    htmlContent += `
+                        <div class="question-item pl-2 border-l-2 border-amber-500/20">
+                            <div class="font-medium mb-1.5 flex justify-between items-start">
+                                <span>${currentGlobalNo}. ${q.pertanyaan}</span>
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100 ml-2 whitespace-nowrap">Skor: ${q.skor}</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-8 ml-4 max-w-xl my-3">
+                                <div class="space-y-2">
+                                    <span class="font-bold text-[10px] text-slate-400 block border-b pb-1">PERNYATAAN / PREMIS</span>
+                                    ${lefts.map((lItem, idx) => `
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-bold text-[10px] bg-slate-100 text-slate-600 w-5 h-5 flex items-center justify-center rounded-full">${idx + 1}</span>
+                                            <span class="border border-slate-200 p-2 rounded-lg bg-slate-50 flex-grow text-[11px]">${lItem}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="space-y-2">
+                                    <span class="font-bold text-[10px] text-slate-400 block border-b pb-1">PILIHAN RESPONS</span>
+                                    ${shuffledRights.map((rItem, idx) => {
+                                        const code = String.fromCharCode(65 + idx);
+                                        return `
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-bold text-[10px] bg-emerald-50 text-emerald-700 w-5 h-5 flex items-center justify-center rounded-full">${code}</span>
+                                                <span class="border border-slate-200 p-2 rounded-lg bg-white flex-grow text-[11px]">${rItem}</span>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                            
+                            <div class="solution-text hidden mt-2.5 ml-4 p-2 bg-amber-50/50 border-l-2 border-amber-500 rounded-r-lg text-[10px]">
+                                <span class="font-bold text-amber-800">Kunci Jawaban:</span>
+                                <p class="text-slate-700 mt-0.5">${q.kunci_jawaban}</p>
                                 <p class="text-slate-600 mt-0.5"><span class="font-semibold">Pembahasan:</span> ${q.pembahasan}</p>
                             </div>
                         </div>
@@ -958,7 +1158,7 @@
             if (isianList.length > 0) {
                 htmlContent += `
                     <div class="mb-6">
-                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">II. Isian Singkat</h3>
+                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">IV. Isian Singkat</h3>
                         <p class="italic text-slate-500 mb-4 text-[10px]">Isilah titik-titik di bawah ini dengan jawaban yang singkat dan tepat!</p>
                         <div class="space-y-4">
                 `;
@@ -970,7 +1170,6 @@
                                 <span class="text-[9px] font-bold px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100 ml-2 whitespace-nowrap">Skor: ${q.skor}</span>
                             </div>
                             
-                            <!-- Kunci dan pembahasan tersembunyi/ditampilkan via CSS .solution-text -->
                             <div class="solution-text hidden mt-2 ml-4 p-2 bg-amber-50/50 border-l-2 border-amber-500 rounded-r-lg text-[10px]">
                                 <span class="font-bold text-amber-800">Kunci Jawaban: ${q.kunci_jawaban}</span>
                                 <p class="text-slate-600 mt-0.5"><span class="font-semibold">Pembahasan:</span> ${q.pembahasan}</p>
@@ -985,7 +1184,7 @@
             if (uraianList.length > 0) {
                 htmlContent += `
                     <div class="mb-6">
-                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">III. Uraian</h3>
+                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">V. Uraian</h3>
                         <p class="italic text-slate-500 mb-4 text-[10px]">Jawablah pertanyaan-pertanyaan di bawah ini secara lengkap, jelas, dan berurutan!</p>
                         <div class="space-y-4">
                 `;
@@ -997,7 +1196,6 @@
                                 <span class="text-[9px] font-bold px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded-md border border-indigo-100 ml-2 whitespace-nowrap">Skor: ${q.skor}</span>
                             </div>
                             
-                            <!-- Kunci dan pembahasan tersembunyi/ditampilkan via CSS .solution-text -->
                             <div class="solution-text hidden mt-2 ml-4 p-2 bg-indigo-50/50 border-l-2 border-indigo-500 rounded-r-lg text-[10px]">
                                 <span class="font-bold text-indigo-800">Kunci Jawaban Utama: ${q.kunci_jawaban}</span>
                                 <p class="text-slate-600 mt-0.5"><span class="font-semibold">Pembahasan:</span> ${q.pembahasan}</p>
@@ -1021,11 +1219,8 @@
 
             const mapel = document.getElementById("subjectInput").value;
             const kelas = document.getElementById("classInput").value;
-
-            // Simpan status pratinjau asli pengguna terlebih dahulu
             const isGuruModeCurrently = document.getElementById("paperPreview").classList.contains("print-guru");
 
-            // Terapkan mode cetak target secara dinamis ke pratinjau visual
             if (mode === 'siswa') {
                 document.getElementById("paperPreview").classList.add("print-siswa");
                 document.getElementById("paperPreview").classList.remove("print-guru");
@@ -1035,36 +1230,33 @@
             }
 
             const element = document.getElementById("paperPreview");
-
-            // SOLUSI JITU PDF KOSONG & KEBOCORAN LAYOUT:
-            // Lakukan kloning node element untuk melepas pengaturan visual kaku layar (seperti width: 210mm dan padding: 20mm)
-            // agar content di dalam PDF mengalir fluid 100% mengikuti batas margin A4 jsPDF yang kita inginkan.
             const optElement = element.cloneNode(true);
-            optElement.style.width = '100%';
-            optElement.style.minHeight = 'auto';
-            optElement.style.padding = '0';
+            
+            // Atur agar klon memiliki ukuran murni A4 (210mm x 297mm) dengan padding murni untuk mencegah pemotongan.
+            optElement.style.width = '210mm';
+            optElement.style.minHeight = '297mm';
+            optElement.style.padding = '20mm';
             optElement.style.margin = '0';
             optElement.style.boxShadow = 'none';
             optElement.style.border = 'none';
+            optElement.style.background = 'white';
 
             const fileName = mode === "siswa" 
                 ? `Soal_Ujian_${mapel.replace(/\s+/g, '_')}_Kelas_${kelas.replace(/\s+/g, '_')}.pdf`
                 : `Kunci_Jawaban_${mapel.replace(/\s+/g, '_')}_Kelas_${kelas.replace(/\s+/g, '_')}.pdf`;
 
-            // Konfigurasi Standar Lembar Kertas A4 Internasional dengan margin proporsional
             const opt = {
-                margin:       [15, 15, 15, 15], // Margin 1.5 cm di sekeliling kertas
+                margin:       0, // Gunakan padding 20mm internal dari HTML sebagai margin murni
                 filename:     fileName,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['css', 'legacy'], avoid: '.question-item' } // Hindari soal terbelah canggung
+                pagebreak:    { mode: ['css', 'legacy'], avoid: '.question-item' }
             };
 
             showToast(`Sedang merender lembar PDF ${mode.toUpperCase()} (Ukuran A4)...`, "info");
             
             html2pdf().set(opt).from(optElement).save().then(() => {
-                // Kembalikan status kelas visual ke bentuk asalnya di preview monitor
                 if (isGuruModeCurrently) {
                     document.getElementById("paperPreview").classList.add("print-guru");
                     document.getElementById("paperPreview").classList.remove("print-siswa");
@@ -1079,7 +1271,6 @@
             });
         }
 
-        // Mencetak persis sesuai dengan tampilan pratinjau aktif saat ini ke format A4
         function downloadDirectPreviewPDF() {
             const element = document.getElementById("paperPreview");
             if (!element || element.innerHTML.trim() === "") {
@@ -1090,17 +1281,17 @@
             const mapel = document.getElementById("subjectInput").value;
             const kelas = document.getElementById("classInput").value;
 
-            // Kloning element pratinjau aktif saat ini untuk pencetakan fluid bebas bug
             const optElement = element.cloneNode(true);
-            optElement.style.width = '100%';
-            optElement.style.minHeight = 'auto';
-            optElement.style.padding = '0';
+            optElement.style.width = '210mm';
+            optElement.style.minHeight = '297mm';
+            optElement.style.padding = '20mm';
             optElement.style.margin = '0';
             optElement.style.boxShadow = 'none';
             optElement.style.border = 'none';
+            optElement.style.background = 'white';
 
             const opt = {
-                margin:       [15, 15, 15, 15],
+                margin:       0, // Gunakan padding 20mm internal dari HTML sebagai margin murni
                 filename:     `Pratinjau_Ujian_${mapel.replace(/\s+/g, '_')}_Kelas_${kelas.replace(/\s+/g, '_')}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
