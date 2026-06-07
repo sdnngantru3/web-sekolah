@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>APSO (Aplikasi Pembuat Soal Online) - Generator Soal AI (ByGemini)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -159,21 +159,26 @@
                     
                     <!-- Form Input Logo Kiri & Logo Kanan -->
                     <div class="border-t border-slate-100 pt-3 space-y-3">
-                        <span class="block text-xs font-bold text-slate-700 uppercase tracking-wide">Logo Kop Lembar Ujian</span>
+                        <span class="block text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
+                            <i class="fa-regular fa-image text-emerald-600"></i> Logo Kop Lembar Ujian
+                        </span>
+                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-150 text-[10px] text-slate-500 leading-relaxed">
+                            Secara default, sistem akan otomatis memuat file <span class="font-bold">"logo kabupaten.png"</span> & <span class="font-bold">"logo sekolah.png"</span> dari folder lokal yang sama.
+                        </div>
                         
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-1">Logo Kiri (Pemkab/Kab)</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-1">Ganti Logo Kiri (Manual)</label>
                                 <div class="flex flex-col gap-1.5">
                                     <input type="file" id="logoKiriInput" accept="image/*" onchange="handleLogoUpload(event, 'kiri')" class="w-full text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                                    <button type="button" id="btnHapusLogoKiri" onclick="clearLogo('kiri')" class="hidden text-[9px] text-rose-500 hover:text-rose-700 font-bold self-start"><i class="fa-solid fa-trash-can"></i> Hapus Logo</button>
+                                    <button type="button" id="btnHapusLogoKiri" onclick="clearLogo('kiri')" class="hidden text-[9px] text-rose-500 hover:text-rose-700 font-bold self-start"><i class="fa-solid fa-trash-can"></i> Reset Default</button>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-1">Logo Kanan (Sekolah)</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-1">Ganti Logo Kanan (Manual)</label>
                                 <div class="flex flex-col gap-1.5">
                                     <input type="file" id="logoKananInput" accept="image/*" onchange="handleLogoUpload(event, 'kanan')" class="w-full text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                                    <button type="button" id="btnHapusLogoKanan" onclick="clearLogo('kanan')" class="hidden text-[9px] text-rose-500 hover:text-rose-700 font-bold self-start"><i class="fa-solid fa-trash-can"></i> Hapus Logo</button>
+                                    <button type="button" id="btnHapusLogoKanan" onclick="clearLogo('kanan')" class="hidden text-[9px] text-rose-500 hover:text-rose-700 font-bold self-start"><i class="fa-solid fa-trash-can"></i> Reset Default</button>
                                 </div>
                             </div>
                         </div>
@@ -317,8 +322,9 @@
                         <button onclick="downloadExamPDF('guru')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center gap-1.5 shadow-sm transition">
                             <i class="fa-solid fa-key"></i> Unduh PDF Guru (Kunci)
                         </button>
-                        <button onclick="downloadDirectPreviewPDF()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center gap-1.5 shadow-sm transition">
-                            <i class="fa-solid fa-print"></i> Unduh PDF Sesuai Pratinjau
+                        <!-- Tombol ekspor format Word (.doc) yang stabil dan bebas CORS -->
+                        <button onclick="downloadExamDOC()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center gap-1.5 shadow-sm transition">
+                            <i class="fa-solid fa-file-word"></i> Unduh Format .doc (MS Word)
                         </button>
                         
                         <!-- Tombol Buat Soal Lagi -->
@@ -361,21 +367,26 @@
         </div>
     </div>
 
+    <!-- Global Application Logic Scripts -->
     <script>
         let indicatorData = [];
         let fastInputData = [];
         let generatedQuestions = [];
         
-        // State base64 untuk penyimpanan logo kiri dan kanan
+        // Base64 storage states for left & right logos
         let logoKiriData = "";
         let logoKananData = "";
+
+        // Premium Base64-Encoded SVGs (Guarantees no "Tainted Canvas" SecurityErrors across all browsers)
+        const fallbackLogoKiriSVG = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YxZjVmOSIgcng9IjE2Ii8+PHBhdGggZD0iTTUwIDE1IEw4MCAzNSBMODAgNzUgTDUwIDkwIEwyMCA3NSBMMjAgMzUgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGY3NjZlIiBzdHJva2Utd2lkdGg9IjQiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIxOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGY3NjZlIiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNNTAgMjUgTDUwIDQwIE01MCA2MCBMNTAgNzUiIHN0cm9rZT0iIzBmNzY2ZSIgc3Ryb2tlLXdpZHRoPSIzIi8+PC9zdmc+";
+        const fallbackLogoKananSVG = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YxZjVmOSIgcng9IjE2Ii8+PHBhdGggZD0iTTIwIDM1IEw1MCAyMCBMODAgMzUgTDUwIDUwIFoiIGZpbGw9IiMwNjRlM2IiLz48cGF0aCBkPSJNMzAgNDUgTDMwIDcwIEw1MCA8MCBMNzAgNzAgTDcwIDQ1IEw1MCA1NSBaIiBmaWxsPSIjMGY3NjZlIi8+PHBhdGggZD0iTTgwIDM1IEw4MCA2NSIgc3Ryb2tlPSIjMGY3NjZlIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==";
 
         window.onload = function() {
             renderTable();
             renderFastTable();
         }
 
-        // Fungsi bantu untuk menampilkan Notifikasi Toast
+        // Helper helper to show toast notifications smoothly
         function showToast(message, type = "success") {
             const toast = document.getElementById("toast");
             const toastIcon = document.getElementById("toastIcon");
@@ -383,7 +394,6 @@
 
             toastMsg.textContent = message;
             
-            // Setel icon dan warna icon berdasarkan jenis pesan
             if (type === "success") {
                 toastIcon.className = "fa-solid fa-circle-check text-emerald-400";
             } else if (type === "error") {
@@ -394,18 +404,16 @@
                 toastIcon.className = "fa-solid fa-circle-info text-sky-400";
             }
 
-            // Tampilkan elemen toast dengan menghapus kelas sembunyi
             toast.classList.remove("translate-y-12", "opacity-0", "pointer-events-none");
             toast.classList.add("translate-y-0", "opacity-100");
 
-            // Sembunyikan kembali secara otomatis setelah 3 detik
             setTimeout(() => {
                 toast.classList.add("translate-y-12", "opacity-0", "pointer-events-none");
                 toast.classList.remove("translate-y-0", "opacity-100");
             }, 3000);
         }
 
-        // Fungsi handle unggah file gambar logo (kiri / kanan)
+        // Handle dynamic manual logo uploads
         function handleLogoUpload(event, side) {
             const file = event.target.files[0];
             if (!file) return;
@@ -418,7 +426,6 @@
                     logoKananData = e.target.result;
                     document.getElementById("btnHapusLogoKanan").classList.remove("hidden");
                 }
-                // Update tampilan lembar ujian jika data soal sudah ada
                 if (generatedQuestions.length > 0) {
                     renderExamPaper();
                 }
@@ -427,7 +434,7 @@
             reader.readAsDataURL(file);
         }
 
-        // Fungsi membersihkan file logo yang telah dipilih
+        // Reset custom logo back to automatic folders (.png)
         function clearLogo(side) {
             if (side === 'kiri') {
                 logoKiriData = "";
@@ -441,10 +448,10 @@
             if (generatedQuestions.length > 0) {
                 renderExamPaper();
             }
-            showToast(`Logo ${side === 'kiri' ? 'Kiri' : 'Kanan'} dikosongkan.`, "info");
+            showToast(`Logo ${side === 'kiri' ? 'Kiri' : 'Kanan'} dikosongkan ke pengaturan default.`, "info");
         }
 
-        // Fungsi reset untuk membuat soal kembali
+        // Reset workspace to build more tests
         function resetAndCreateAgain() {
             document.getElementById("resultContainer").classList.add("hidden");
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -456,7 +463,7 @@
             return opt.replace(/^[A-D]\.\s*|^[a-d]\.\s*|^[A-D]\)\s*|^[a-d]\)\s*|^[A-D]\s*-\s*|^[a-d]\s*-\s*/, "").trim();
         }
 
-        // Render data kisi-kisi ke dalam tabel HTML
+        // Render indicator tables
         function renderTable() {
             const tbody = document.getElementById("indicatorsTableBody");
             tbody.innerHTML = "";
@@ -537,7 +544,7 @@
             }
         }
 
-        // Render tabel input cepat
+        // Render fast input tables
         function renderFastTable() {
             const tbody = document.getElementById("fastTableBody");
             tbody.innerHTML = "";
@@ -686,6 +693,7 @@
             }
         }
 
+        // Trigger file input
         function triggerExcelUpload() {
             document.getElementById("excelFile").click();
         }
@@ -909,7 +917,7 @@
                                 ...rawQ,
                                 no_soal: generatedQuestions.length + 1,
                                 skor: indicator.skor || 10,
-                                bentuk: indicator.bentuk || "Pilihan Ganda",
+                                bentuk: indicator.shapes || indicator.bentuk || "Pilihan Ganda",
                                 materi: indicator.materi || "Umum",
                                 indikator: indicator.indikator
                             });
@@ -947,6 +955,18 @@
             }
         }
 
+        // Secara otomatis menangani kesalahan muat gambar PNG lokal dan beralih ke representasi SVG aman
+        function handleInlineLogoError(imgElement, side) {
+            imgElement.onerror = null; // Mencegah loop tak terbatas
+            if (side === 'kiri') {
+                imgElement.src = fallbackLogoKiriSVG;
+                console.log("Fallback: 'logo kabupaten.png' lokal tidak ditemukan. Menggunakan logo placeholder kabupaten.");
+            } else {
+                imgElement.src = fallbackLogoKananSVG;
+                console.log("Fallback: 'logo sekolah.png' lokal tidak ditemukan. Menggunakan logo placeholder sekolah.");
+            }
+        }
+
         function renderExamPaper() {
             const container = document.getElementById("paperPreview");
             
@@ -957,14 +977,16 @@
             const tahunAjaran = document.getElementById("academicYearInput").value;
             const durasi = document.getElementById("durationInput").value;
 
+            // Jalur logo dinamis
+            const finalLogoKiriPath = logoKiriData || "logo kabupaten.png";
+            const finalLogoKananPath = logoKananData || "logo sekolah.png";
+
             let htmlContent = `
-                <!-- Kop Dinas Pendidikan Malang dengan Dukungan Logo Kiri & Kanan -->
+                <!-- Kop Dinas Pendidikan Malang -->
                 <div class="flex items-center justify-between border-b-4 border-double border-slate-800 pb-3 mb-6 gap-4">
                     <!-- Sisi Logo Kiri -->
                     <div class="w-16 h-16 flex items-center justify-center flex-shrink-0">
-                        ${logoKiriData ? `<img src="${logoKiriData}" class="max-h-16 max-w-full object-contain" alt="Logo Kiri">` : `
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-12 h-12 text-slate-300 fill-current"><path d="M50 5 L15 25 V65 C15 80 50 95 50 95 C50 95 85 80 85 65 V25 L50 5 Z M50 15 L75 30 V60 C75 70 50 82 50 82 C50 82 25 70 25 60 V30 L50 15 Z" /></svg>
-                        `}
+                        <img id="logo-kop-kiri-img" src="${finalLogoKiriPath}" onerror="handleInlineLogoError(this, 'kiri')" class="max-h-16 max-w-full object-contain" alt="Logo Kabupaten">
                     </div>
                     
                     <!-- Detail Informasi Lembaga (Tengah) -->
@@ -977,9 +999,7 @@
 
                     <!-- Sisi Logo Kanan -->
                     <div class="w-16 h-16 flex items-center justify-center flex-shrink-0">
-                        ${logoKananData ? `<img src="${logoKananData}" class="max-h-16 max-w-full object-contain" alt="Logo Kanan">` : `
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-12 h-12 text-slate-300 fill-current"><path d="M12 25 L50 6 L88 25 L50 44 Z M12 35 L50 54 L88 35 V60 C88 75 50 94 50 94 C50 94 12 75 12 60 Z" /></svg>
-                        `}
+                        <img id="logo-kop-kanan-img" src="${finalLogoKananPath}" onerror="handleInlineLogoError(this, 'kanan')" class="max-h-16 max-w-full object-contain" alt="Logo Sekolah">
                     </div>
                 </div>
 
@@ -1167,7 +1187,7 @@
                         <div class="question-item pl-2 border-l-2 border-amber-500/20">
                             <div class="font-medium mb-1 flex justify-between items-start">
                                 <span>${currentGlobalNo}. ${q.pertanyaan}</span>
-                                <span class="text-[9px] font-bold px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100 ml-2 whitespace-nowrap">Skor: ${q.skor}</span>
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 bg-amber-50 text-emerald-700 rounded-md border border-amber-100 ml-2 whitespace-nowrap">Skor: ${q.skor}</span>
                             </div>
                             
                             <div class="solution-text hidden mt-2 ml-4 p-2 bg-amber-50/50 border-l-2 border-amber-500 rounded-r-lg text-[10px]">
@@ -1211,6 +1231,78 @@
             container.innerHTML = htmlContent;
         }
 
+        // Fungsi unduh berkas .doc (Microsoft Word) dengan layout A4 yang presisi
+        function downloadExamDOC() {
+            const element = document.getElementById("paperPreview");
+            if (!element || element.innerHTML.trim() === "") {
+                showToast("Belum ada pratinjau soal untuk diunduh!", "error");
+                return;
+            }
+            const mapel = document.getElementById("subjectInput").value;
+            const kelas = document.getElementById("classInput").value;
+            
+            // Duplikasi pratinjau dan ganti gambar lokal menjadi base64 SVG yang aman agar gambar ter-load sempurna di Word
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = element.innerHTML;
+            
+            const leftImg = tempDiv.querySelector('#logo-kop-kiri-img');
+            const rightImg = tempDiv.querySelector('#logo-kop-kanan-img');
+            
+            // Konversi path lokal menjadi data URI fallback murni pada file .doc
+            if (leftImg && !leftImg.src.startsWith('data:')) {
+                leftImg.src = fallbackLogoKiriSVG;
+            }
+            if (rightImg && !rightImg.src.startsWith('data:')) {
+                rightImg.src = fallbackLogoKananSVG;
+            }
+
+            let htmlContent = tempDiv.innerHTML;
+            
+            // Konfigurasi layout lembar A4 presisi untuk MS Word
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+                           "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+                           "xmlns='http://www.w3.org/TR/REC-html40'>" +
+                           "<head><title>Lembar Ujian</title>" +
+                           "<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom>" +
+                           "<w:PageSetup><w:PageSize w:w='11906' w:h='16838'/><w:PageMargins w:top='1134' w:bottom='1134' w:left='1134' w:right='1134'/></w:PageSetup>" +
+                           "</w:WordDocument></xml><![endif]-->" +
+                           "<style>" +
+                           "@page { size: 210mm 297mm; margin: 20mm; }" +
+                           "body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; color: black; line-height: 1.25; }" +
+                           ".kop-table { width: 100%; border-bottom: 4px double #000; margin-bottom: 20px; border-collapse: collapse; }" +
+                           ".kop-logo-cell { width: 15%; text-align: center; vertical-align: middle; padding-bottom: 8px; }" +
+                           ".kop-text-cell { width: 70%; text-align: center; vertical-align: middle; padding-bottom: 8px; }" +
+                           ".kop-logo { max-height: 80px; max-width: 80px; object-fit: contain; }" +
+                           ".kop-text-1 { font-size: 14pt; font-weight: bold; text-transform: uppercase; line-height: 1.2; }" +
+                           ".kop-text-2 { font-size: 16pt; font-weight: bold; text-transform: uppercase; line-height: 1.2; }" +
+                           ".kop-text-3 { font-size: 13pt; font-weight: bold; text-transform: uppercase; line-height: 1.2; }" +
+                           ".kop-text-4 { font-size: 10pt; font-style: italic; font-weight: normal; line-height: 1.3; }" +
+                           ".question-item { margin-bottom: 14px; page-break-inside: avoid; }" +
+                           ".options-grid { margin-left: 20px; display: table; width: 100%; }" +
+                           ".options-row { display: table-row; }" +
+                           ".option-item { display: table-cell; width: 50%; padding: 2px 0; }" +
+                           "</style></head><body>" +
+                           "<div style='width: 170mm; margin: 0 auto;'>";
+            const footer = "</div></body></html>";
+            
+            const sourceHTML = header + htmlContent + footer;
+            const blob = new Blob(['\ufeff' + sourceHTML], {
+                type: 'application/msword'
+            });
+            
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `Soal_Ujian_${mapel.replace(/\s+/g, '_')}_Kelas_${kelas.replace(/\s+/g, '_')}.doc`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast("Berkas .doc (MS Word) berhasil diunduh!", "success");
+        }
+
+        // Fungsi ekspor PDF yang presisi dengan perlindungan CORS Canvas
         function downloadExamPDF(mode) {
             if (generatedQuestions.length === 0) {
                 showToast("Tidak ada pertanyaan untuk diunduh", "error");
@@ -1232,7 +1324,7 @@
             const element = document.getElementById("paperPreview");
             const optElement = element.cloneNode(true);
             
-            // Atur agar klon memiliki ukuran murni A4 (210mm x 297mm) dengan padding murni untuk mencegah pemotongan.
+            // Atur dimensi fisik presisi A4
             optElement.style.width = '210mm';
             optElement.style.minHeight = '297mm';
             optElement.style.padding = '20mm';
@@ -1241,15 +1333,27 @@
             optElement.style.border = 'none';
             optElement.style.background = 'white';
 
+            // PENTING: Untuk mencegah "Tainted Canvas SecurityError" pada protocol file://, 
+            // kita ganti sementara tautan gambar lokal dengan SVG Base64 yang aman sebelum diproses oleh html2pdf.
+            const clonedKiri = optElement.querySelector('#logo-kop-kiri-img');
+            const clonedKanan = optElement.querySelector('#logo-kop-kanan-img');
+            
+            if (clonedKiri && !clonedKiri.src.startsWith('data:')) {
+                clonedKiri.src = fallbackLogoKiriSVG;
+            }
+            if (clonedKanan && !clonedKanan.src.startsWith('data:')) {
+                clonedKanan.src = fallbackLogoKananSVG;
+            }
+
             const fileName = mode === "siswa" 
                 ? `Soal_Ujian_${mapel.replace(/\s+/g, '_')}_Kelas_${kelas.replace(/\s+/g, '_')}.pdf`
                 : `Kunci_Jawaban_${mapel.replace(/\s+/g, '_')}_Kelas_${kelas.replace(/\s+/g, '_')}.pdf`;
 
             const opt = {
-                margin:       0, // Gunakan padding 20mm internal dari HTML sebagai margin murni
+                margin:       0, // Margin diatur secara internal oleh padding 20mm agar tidak terpotong
                 filename:     fileName,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
+                html2canvas:  { scale: 2, useCORS: true, allowTaint: false, logging: false, scrollX: 0, scrollY: 0 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
                 pagebreak:    { mode: ['css', 'legacy'], avoid: '.question-item' }
             };
@@ -1268,44 +1372,6 @@
             }).catch(err => {
                 console.error("PDF generation error:", err);
                 showToast("Gagal menyimpan PDF: " + err, "error");
-            });
-        }
-
-        function downloadDirectPreviewPDF() {
-            const element = document.getElementById("paperPreview");
-            if (!element || element.innerHTML.trim() === "") {
-                showToast("Belum ada pratinjau soal untuk diunduh!", "error");
-                return;
-            }
-
-            const mapel = document.getElementById("subjectInput").value;
-            const kelas = document.getElementById("classInput").value;
-
-            const optElement = element.cloneNode(true);
-            optElement.style.width = '210mm';
-            optElement.style.minHeight = '297mm';
-            optElement.style.padding = '20mm';
-            optElement.style.margin = '0';
-            optElement.style.boxShadow = 'none';
-            optElement.style.border = 'none';
-            optElement.style.background = 'white';
-
-            const opt = {
-                margin:       0, // Gunakan padding 20mm internal dari HTML sebagai margin murni
-                filename:     `Pratinjau_Ujian_${mapel.replace(/\s+/g, '_')}_Kelas_${kelas.replace(/\s+/g, '_')}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['css', 'legacy'], avoid: '.question-item' }
-            };
-
-            showToast("Sedang mengekspor pratinjau aktif ke berkas A4...", "info");
-            
-            html2pdf().set(opt).from(optElement).save().then(() => {
-                showToast("PDF Pratinjau berhasil diunduh!", "success");
-            }).catch(err => {
-                console.error("PDF preview generation error:", err);
-                showToast("Gagal mengunduh PDF: " + err, "error");
             });
         }
     </script>
