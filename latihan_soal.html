@@ -531,16 +531,16 @@
         function togglePreviewMode(mode) {
             const previewEl = document.getElementById("paperPreview");
             const siswaBtn = document.getElementById("viewSiswaBtn");
-            const guruBtn = document.getElementById("viewGuruBtn");
+            const fontBtn = document.getElementById("viewGuruBtn");
             
             if (mode === "siswa") {
                 previewEl.className = "a4-preview-sheet print-siswa";
                 siswaBtn.className = "px-3 py-1.5 rounded-md bg-white text-slate-800 shadow-sm transition";
-                guruBtn.className = "px-3 py-1.5 rounded-md text-slate-500 hover:text-slate-800 transition";
+                fontBtn.className = "px-3 py-1.5 rounded-md text-slate-500 hover:text-slate-800 transition";
             } else {
                 previewEl.className = "a4-preview-sheet print-guru";
                 siswaBtn.className = "px-3 py-1.5 rounded-md text-slate-500 hover:text-slate-800 transition";
-                guruBtn.className = "px-3 py-1.5 rounded-md bg-white text-slate-800 shadow-sm transition";
+                fontBtn.className = "px-3 py-1.5 rounded-md bg-white text-slate-800 shadow-sm transition";
             }
         }
 
@@ -1231,6 +1231,27 @@
             container.innerHTML = htmlContent;
         }
 
+        // Fungsi pembantu untuk mengonversi gambar aktif ke format Base64 secara instan sebelum diekspor
+        function getBase64FromImage(imgElement, fallbackSVG) {
+            if (!imgElement) return fallbackSVG;
+            if (imgElement.src.startsWith('data:')) return imgElement.src;
+            
+            try {
+                // Hanya lakukan konversi canvas jika gambar terunggah/termuat dengan sempurna di peramban
+                if (imgElement.naturalWidth > 0 && window.location.protocol !== 'file:') {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = imgElement.naturalWidth;
+                    canvas.height = imgElement.naturalHeight;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(imgElement, 0, 0);
+                    return canvas.toDataURL("image/png");
+                }
+            } catch (e) {
+                console.warn("Gagal konversi gambar ke Base64 (CORS/Lokal):", e);
+            }
+            return fallbackSVG;
+        }
+
         // Fungsi unduh berkas .doc (Microsoft Word) dengan layout A4 yang presisi
         function downloadExamDOC() {
             const element = document.getElementById("paperPreview");
@@ -1241,19 +1262,20 @@
             const mapel = document.getElementById("subjectInput").value;
             const kelas = document.getElementById("classInput").value;
             
-            // Duplikasi pratinjau dan ganti gambar lokal menjadi base64 SVG yang aman agar gambar ter-load sempurna di Word
+            // Duplikasi pratinjau dan ganti gambar lokal menjadi base64 murni agar gambar ter-load sempurna di Word
             const tempDiv = document.createElement("div");
             tempDiv.innerHTML = element.innerHTML;
             
             const leftImg = tempDiv.querySelector('#logo-kop-kiri-img');
             const rightImg = tempDiv.querySelector('#logo-kop-kanan-img');
-            
-            // Konversi path lokal menjadi data URI fallback murni pada file .doc
-            if (leftImg && !leftImg.src.startsWith('data:')) {
-                leftImg.src = fallbackLogoKiriSVG;
+            const originalKiri = document.getElementById('logo-kop-kiri-img');
+            const originalKanan = document.getElementById('logo-kop-kanan-img');
+
+            if (leftImg) {
+                leftImg.src = getBase64FromImage(originalKiri, fallbackLogoKiriSVG);
             }
-            if (rightImg && !rightImg.src.startsWith('data:')) {
-                rightImg.src = fallbackLogoKananSVG;
+            if (rightImg) {
+                rightImg.src = getBase64FromImage(originalKanan, fallbackLogoKananSVG);
             }
 
             let htmlContent = tempDiv.innerHTML;
@@ -1333,16 +1355,18 @@
             optElement.style.border = 'none';
             optElement.style.background = 'white';
 
-            // PENTING: Untuk mencegah "Tainted Canvas SecurityError" pada protocol file://, 
-            // kita ganti sementara tautan gambar lokal dengan SVG Base64 yang aman sebelum diproses oleh html2pdf.
+            // PENTING: Untuk mencegah "Tainted Canvas SecurityError" pada GitHub Pages maupun lokal file://,
+            // kita ganti sementara tautan gambar lokal dengan representasi Base64 murni yang dihasilkan oleh getBase64FromImage.
             const clonedKiri = optElement.querySelector('#logo-kop-kiri-img');
             const clonedKanan = optElement.querySelector('#logo-kop-kanan-img');
+            const originalKiri = document.getElementById('logo-kop-kiri-img');
+            const originalKanan = document.getElementById('logo-kop-kanan-img');
             
-            if (clonedKiri && !clonedKiri.src.startsWith('data:')) {
-                clonedKiri.src = fallbackLogoKiriSVG;
+            if (clonedKiri) {
+                clonedKiri.src = getBase64FromImage(originalKiri, fallbackLogoKiriSVG);
             }
-            if (clonedKanan && !clonedKanan.src.startsWith('data:')) {
-                clonedKanan.src = fallbackLogoKananSVG;
+            if (clonedKanan) {
+                clonedKanan.src = getBase64FromImage(originalKanan, fallbackLogoKananSVG);
             }
 
             const fileName = mode === "siswa" 
