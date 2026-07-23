@@ -1643,37 +1643,9 @@
 
             optElement.classList.remove('edit-mode');
 
-            const headerHTML = `
-                <div style="text-align: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 15px;">
-                    <div style="font-size: 14pt; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">${settings.headerTitle}</div>
-                    <div style="font-size: 12pt; font-weight: 600; color: #1e293b;">${settings.headerSub}</div>
-                    <div style="font-size: 10pt; font-weight: 500; color: #475569; margin-top: 2px;">${settings.headerYear}</div>
-                </div>
-            `;
-
-            let footerHTML = `
-                <div style="border-top: 2px solid #cbd5e1; padding-top: 10px; margin-top: 20px; display: flex; justify-content: space-between; font-size: 9pt; color: #64748b;">
-                    <span>${settings.footerLeft}</span>
-                    <span>${settings.footerRight}</span>
-                </div>
-            `;
-
-            if (settings.pageNumberStyle !== 'none') {
-                let pageText = '';
-                if (settings.pageNumberStyle === 'bottom-center') {
-                    pageText = 'Halaman {page} dari {total}';
-                } else if (settings.pageNumberStyle === 'bottom-right') {
-                    pageText = 'Halaman {page}';
-                }
-                footerHTML += `
-                    <div style="text-align: ${settings.pageNumberStyle === 'bottom-right' ? 'right' : 'center'}; font-size: 9pt; color: #94a3b8; margin-top: 5px;">
-                        ${pageText}
-                    </div>
-                `;
-            }
-
+            // Hanya gunakan konten preview tanpa header/footer tambahan
             const contentHTML = optElement.innerHTML;
-            optElement.innerHTML = headerHTML + contentHTML + footerHTML;
+            optElement.innerHTML = contentHTML;
 
             const clonedKiri = optElement.querySelector('#logo-kop-kiri-img');
             const clonedKanan = optElement.querySelector('#logo-kop-kanan-img');
