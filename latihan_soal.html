@@ -29,6 +29,26 @@
             box-sizing: border-box;
         }
 
+        .a4-page-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .a4-page-label {
+            background: #1e293b;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 14px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .solution-text {
             display: none !important;
         }
@@ -37,10 +57,8 @@
         }
         
         .question-item {
-            page-break-inside: avoid;
-            break-inside: avoid;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
             border-bottom: 1px dashed #e2e8f0;
             transition: all 0.2s ease;
         }
@@ -59,12 +77,6 @@
             border-radius: 8px;
             padding: 12px;
             background: #fffbeb;
-        }
-        .edit-mode .question-item .edit-controls {
-            display: flex !important;
-        }
-        .edit-controls {
-            display: none;
         }
         .edit-input {
             display: none;
@@ -382,8 +394,8 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto p-4 bg-slate-200/50 rounded-2xl border border-slate-300 flex justify-center custom-scrollbar">
-                    <div class="a4-preview-sheet print-siswa" id="paperPreview"></div>
+                <div class="overflow-x-auto p-4 bg-slate-200/50 rounded-2xl border border-slate-300 flex flex-col items-center custom-scrollbar">
+                    <div id="paperPreview"></div>
                 </div>
             </div>
 
@@ -555,8 +567,6 @@
         let logoKananData = "";
 
         // ===================== DEFAULT LOGO PATHS =====================
-        // Logo default diambil dari file lokal di folder yang sama.
-        // Sesuai nama file di GitHub: pakai SPASI.
         const DEFAULT_LOGO_KIRI = "logo kabupaten.png";
         const DEFAULT_LOGO_KANAN = "logo sekolah.png";
 
@@ -585,18 +595,19 @@
             }, 3000);
         }
 
+        // ===================== EDIT MODE =====================
         function toggleEditMode() {
             isEditMode = !isEditMode;
-            const previewEl = document.getElementById("paperPreview");
             const btn = document.getElementById("toggleEditBtn");
+            const allPages = document.querySelectorAll('.a4-preview-sheet');
             
             if (isEditMode) {
-                previewEl.classList.add("edit-mode");
+                allPages.forEach(p => p.classList.add("edit-mode"));
                 btn.classList.add("active");
                 btn.innerHTML = '<i class="fa-solid fa-check"></i> Selesai Edit';
                 showToast("Mode Edit aktif!", "info");
             } else {
-                previewEl.classList.remove("edit-mode");
+                allPages.forEach(p => p.classList.remove("edit-mode"));
                 btn.classList.remove("active");
                 btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Edit Soal';
                 saveEditsFromPreview();
@@ -624,7 +635,9 @@
                 }
             });
             renderExamPaper();
-            if (isEditMode) document.getElementById("paperPreview").classList.add("edit-mode");
+            if (isEditMode) {
+                document.querySelectorAll('.a4-preview-sheet').forEach(p => p.classList.add("edit-mode"));
+            }
         }
 
         function handleLogoUpload(event, side) {
@@ -670,6 +683,7 @@
             return opt.replace(/^[A-D]\.\s*|^[a-d]\.\s*|^[A-D]\)\s*|^[a-d]\)\s*|^[A-D]\s*-\s*|^[a-d]\s*-\s*/, "").trim();
         }
 
+        // ===================== RENDER TABLES =====================
         function renderTable() {
             const tbody = document.getElementById("indicatorsTableBody");
             tbody.innerHTML = "";
@@ -735,24 +749,26 @@
         }
 
         function togglePreviewMode(mode) {
-            const previewEl = document.getElementById("paperPreview");
             const siswaBtn = document.getElementById("viewSiswaBtn");
             const guruBtn = document.getElementById("viewGuruBtn");
             
             if (isEditMode) saveEditsFromPreview();
             
+            pdfMode = mode;
+            
+            const allPages = document.querySelectorAll('.a4-preview-sheet');
+            allPages.forEach(page => {
+                page.classList.remove("print-siswa", "print-guru");
+                page.classList.add(mode === 'guru' ? "print-guru" : "print-siswa");
+                if (isEditMode) page.classList.add("edit-mode");
+            });
+            
             if (mode === "siswa") {
-                previewEl.className = "a4-preview-sheet print-siswa";
-                if (isEditMode) previewEl.classList.add("edit-mode");
                 siswaBtn.className = "px-3 py-1.5 rounded-md bg-white text-slate-800 shadow-sm transition";
                 guruBtn.className = "px-3 py-1.5 rounded-md text-slate-500 hover:text-slate-800 transition";
-                pdfMode = 'siswa';
             } else {
-                previewEl.className = "a4-preview-sheet print-guru";
-                if (isEditMode) previewEl.classList.add("edit-mode");
                 siswaBtn.className = "px-3 py-1.5 rounded-md text-slate-500 hover:text-slate-800 transition";
                 guruBtn.className = "px-3 py-1.5 rounded-md bg-white text-slate-800 shadow-sm transition";
-                pdfMode = 'guru';
             }
         }
 
@@ -940,6 +956,7 @@
             showToast("Templat Excel diunduh", "success");
         }
 
+        // ===================== GEMINI API =====================
         async function fetchGeminiWithRetry(prompt, systemPrompt, customKey) {
             const targetKey = customKey;
             if (!targetKey) throw new Error("API Key kosong.");
@@ -1132,17 +1149,16 @@
             }
         }
 
-        // ===================== HANDLE LOGO ERROR =====================
         function handleInlineLogoError(imgElement, side) {
             imgElement.onerror = null;
             imgElement.style.visibility = 'hidden';
             console.warn(`⚠️ Logo ${side} gagal dimuat: ${imgElement.src}`);
         }
 
-        // ===================== RENDER EXAM PAPER =====================
+        // ===================== RENDER EXAM PAPER - MULTI HALAMAN =====================
         function renderExamPaper() {
             const container = document.getElementById("paperPreview");
-            
+
             const namaSiswa = document.getElementById("studentNameInput").value.trim() || "..................................................";
             const mapel = document.getElementById("subjectInput").value;
             const kelas = document.getElementById("classInput").value;
@@ -1150,66 +1166,59 @@
             const tahunAjaran = document.getElementById("academicYearInput").value;
             const durasi = document.getElementById("durationInput").value;
 
-            // LOGO: pakai upload manual kalau ada, kalau tidak pakai file default lokal (pakai SPASI)
             const finalLogoKiriPath = logoKiriData || DEFAULT_LOGO_KIRI;
             const finalLogoKananPath = logoKananData || DEFAULT_LOGO_KANAN;
 
-            let htmlContent = `
-                <div class="flex items-center justify-between border-b-4 border-double border-slate-800 pb-3 mb-6 gap-4">
-                    <div class="w-16 h-16 flex items-center justify-center flex-shrink-0">
-                        <img id="logo-kop-kiri-img" src="${finalLogoKiriPath}" onerror="handleInlineLogoError(this, 'kiri')" class="max-h-16 max-w-full object-contain" alt="Logo Kabupaten">
+            // ===== KOP LENGKAP (HALAMAN 1) =====
+            function buildFullHeader() {
+                return `
+                    <div class="flex items-center justify-between border-b-4 border-double border-slate-800 pb-3 mb-5 gap-4">
+                        <div class="w-16 h-16 flex items-center justify-center flex-shrink-0">
+                            <img src="${finalLogoKiriPath}" onerror="handleInlineLogoError(this, 'kiri')" class="max-h-16 max-w-full object-contain" alt="Logo Kabupaten">
+                        </div>
+                        <div class="text-center flex-grow">
+                            <h2 class="text-xs md:text-sm font-bold tracking-wide uppercase">PEMERINTAH KABUPATEN MALANG</h2>
+                            <h2 class="text-xs md:text-sm font-bold tracking-wide uppercase">DINAS PENDIDIKAN</h2>
+                            <h1 class="text-base md:text-lg font-extrabold tracking-wider uppercase mt-0.5">SD NEGERI 3 NGANTRU</h1>
+                            <p class="text-[9px] md:text-[10px] italic text-slate-500 mt-1">Alamat: Kecamatan Ngantang, Kabupaten Malang, Jawa Timur</p>
+                        </div>
+                        <div class="w-16 h-16 flex items-center justify-center flex-shrink-0">
+                            <img src="${finalLogoKananPath}" onerror="handleInlineLogoError(this, 'kanan')" class="max-h-16 max-w-full object-contain" alt="Logo Sekolah">
+                        </div>
                     </div>
-                    <div class="text-center flex-grow">
-                        <h2 class="text-xs md:text-sm font-bold tracking-wide uppercase">PEMERINTAH KABUPATEN MALANG</h2>
-                        <h2 class="text-xs md:text-sm font-bold tracking-wide uppercase">DINAS PENDIDIKAN</h2>
-                        <h1 class="text-base md:text-lg font-extrabold tracking-wider uppercase mt-0.5">SD NEGERI 3 NGANTRU</h1>
-                        <p class="text-[9px] md:text-[10px] italic text-slate-500 mt-1">Alamat: Kecamatan Ngantang, Kabupaten Malang, Jawa Timur</p>
+
+                    <div class="grid grid-cols-2 gap-4 text-[10px] md:text-xs font-bold border border-slate-300 p-3 rounded-xl mb-4 bg-slate-50">
+                        <div class="space-y-1">
+                            <div>NAMA SISWA : <span class="font-normal">${namaSiswa}</span></div>
+                            <div>MATA PELAJARAN : <span class="font-normal uppercase">${mapel}</span></div>
+                            <div>KELAS / SEMESTER : <span class="font-normal">${kelas} / ${semester}</span></div>
+                        </div>
+                        <div class="space-y-1">
+                            <div>TAHUN AJARAN : <span class="font-normal">${tahunAjaran}</span></div>
+                            <div>ALOKASI WAKTU : <span class="font-normal">${durasi} MENIT</span></div>
+                            <div>NILAI / PARAF : <span class="font-normal">..................................................</span></div>
+                        </div>
                     </div>
-                    <div class="w-16 h-16 flex items-center justify-center flex-shrink-0">
-                        <img id="logo-kop-kanan-img" src="${finalLogoKananPath}" onerror="handleInlineLogoError(this, 'kanan')" class="max-h-16 max-w-full object-contain" alt="Logo Sekolah">
+
+                    <div class="border border-slate-300 rounded-xl p-3 mb-4 bg-slate-50/50 text-[10px] md:text-xs">
+                        <h4 class="font-bold text-slate-700 mb-1"><i class="fa-solid fa-circle-info text-emerald-600"></i> PETUNJUK UMUM:</h4>
+                        <ol class="list-decimal list-inside text-slate-600 space-y-0.5">
+                            <li>Berdoalah terlebih dahulu sebelum mengerjakan soal ujian.</li>
+                            <li>Tuliskan nama lengkap Anda pada lembar jawab yang telah disediakan.</li>
+                            <li>Periksa kembali setiap jawaban Anda sebelum diserahkan kepada guru.</li>
+                        </ol>
                     </div>
-                </div>
+                `;
+            }
 
-                <div class="grid grid-cols-2 gap-4 text-[10px] md:text-xs font-bold border border-slate-300 p-4 rounded-xl mb-6 bg-slate-50">
-                    <div class="space-y-1">
-                        <div>NAMA SISWA : <span class="font-normal">${namaSiswa}</span></div>
-                        <div>MATA PELAJARAN : <span class="font-normal uppercase">${mapel}</span></div>
-                        <div>KELAS / SEMESTER : <span class="font-normal">${kelas} / ${semester}</span></div>
-                    </div>
-                    <div class="space-y-1">
-                        <div>TAHUN AJARAN : <span class="font-normal">${tahunAjaran}</span></div>
-                        <div>ALOKASI WAKTU : <span class="font-normal">${durasi} MENIT</span></div>
-                        <div>NILAI / PARAF : <span class="font-normal">..................................................</span></div>
-                    </div>
-                </div>
-
-                <div class="border border-slate-300 rounded-xl p-3 mb-6 bg-slate-50/50 text-[10px] md:text-xs">
-                    <h4 class="font-bold text-slate-700 mb-1"><i class="fa-solid fa-circle-info text-emerald-600"></i> PETUNJUK UMUM:</h4>
-                    <ol class="list-decimal list-inside text-slate-600 space-y-0.5">
-                        <li>Berdoalah terlebih dahulu sebelum mengerjakan soal ujian.</li>
-                        <li>Tuliskan nama lengkap Anda pada lembar jawab yang telah disediakan.</li>
-                        <li>Periksa kembali setiap jawaban Anda sebelum diserahkan kepada guru.</li>
-                    </ol>
-                </div>
-
-                <div class="space-y-6 text-[11px] md:text-xs text-slate-800" id="questionListPreview">
-            `;
-
-            const pgList = generatedQuestions.filter(q => q.bentuk === "Pilihan Ganda");
-            const pgkList = generatedQuestions.filter(q => q.bentuk === "Pilihan Ganda Kompleks");
-            const matchList = generatedQuestions.filter(q => q.bentuk === "Mencocokkan");
-            const isianList = generatedQuestions.filter(q => q.bentuk === "Isian");
-            const uraianList = generatedQuestions.filter(q => q.bentuk === "Uraian");
-
-            let currentGlobalNo = 1;
-
+            // ===== HTML SOAL =====
             function generateQuestionHTML(no, q) {
                 const pilihan = q.pilihan || [];
-                
                 let optionsHTML = '';
+
                 if (pilihan.length > 0) {
                     optionsHTML = `
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 ml-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-1.5 ml-4">
                             ${pilihan.map((pil, idx) => {
                                 const code = String.fromCharCode(65 + idx);
                                 return `
@@ -1246,10 +1255,8 @@
                             </span>
                             <span class="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-100 ml-2 whitespace-nowrap">Skor: ${q.skor}</span>
                         </div>
-                        
                         ${optionsHTML}
                         ${keyHTML}
-                        
                         <div class="solution-text hidden mt-2.5 ml-4 p-2 bg-emerald-50/50 border-l-2 border-emerald-500 rounded-r-lg text-[10px]">
                             <span class="font-bold text-emerald-800">Kunci Jawaban: ${q.kunci_jawaban}</span>
                             <p class="text-slate-600 mt-0.5"><span class="font-semibold">Pembahasan:</span> ${q.pembahasan || 'Tidak ada pembahasan'}</p>
@@ -1258,138 +1265,129 @@
                 `;
             }
 
+            // ===== JUDUL SECTION =====
+            function buildSectionTitle(roman, title, instruction) {
+                return `
+                    <div class="mb-3">
+                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-2 text-slate-900 uppercase">${roman}. ${title}</h3>
+                        <p class="italic text-slate-500 mb-3 text-[10px]">${instruction}</p>
+                    </div>
+                `;
+            }
+
+            // ===== BAGI PER HALAMAN =====
+            const MAX_UNITS_PAGE_1 = 6;
+            const MAX_UNITS_PAGE_OTHER = 9;
+
+            const pgList = generatedQuestions.filter(q => q.bentuk === "Pilihan Ganda");
+            const pgkList = generatedQuestions.filter(q => q.bentuk === "Pilihan Ganda Kompleks");
+            const matchList = generatedQuestions.filter(q => q.bentuk === "Mencocokkan");
+            const isianList = generatedQuestions.filter(q => q.bentuk === "Isian");
+            const uraianList = generatedQuestions.filter(q => q.bentuk === "Uraian");
+
+            let allItems = [];
+            let globalNo = 1;
+
+            function getUnit(q) {
+                if (q.bentuk === "Menjodohkan") return 3;
+                if (q.bentuk === "Uraian") return 1.5;
+                if (q.bentuk === "Pilihan Ganda Kompleks") return 1.2;
+                return 1;
+            }
+
             if (pgList.length > 0) {
-                htmlContent += `
-                    <div class="mb-6">
-                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">I. Pilihan Ganda</h3>
-                        <p class="italic text-slate-500 mb-4 text-[10px]">Pilihlah salah satu jawaban yang paling tepat dengan tanda silang (X) pada huruf A, B, C, atau D!</p>
-                        <div class="space-y-4">
-                `;
-                pgList.forEach((q) => { htmlContent += generateQuestionHTML(currentGlobalNo++, q); });
-                htmlContent += `</div></div>`;
+                allItems.push({ type: 'section', html: buildSectionTitle('I', 'Pilihan Ganda', 'Pilihlah salah satu jawaban yang paling tepat dengan tanda silang (X) pada huruf A, B, C, atau D!'), unit: 1.2 });
+                pgList.forEach(q => allItems.push({ type: 'question', data: q, no: globalNo++, unit: getUnit(q) }));
             }
-
             if (pgkList.length > 0) {
-                htmlContent += `
-                    <div class="mb-6">
-                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">II. Pilihan Ganda Kompleks</h3>
-                        <p class="italic text-slate-500 mb-4 text-[10px]">Pilihlah semua jawaban yang benar dengan tanda centang [ ]!</p>
-                        <div class="space-y-4">
-                `;
-                pgkList.forEach((q) => { htmlContent += generateQuestionHTML(currentGlobalNo++, q); });
-                htmlContent += `</div></div>`;
+                allItems.push({ type: 'section', html: buildSectionTitle('II', 'Pilihan Ganda Kompleks', 'Pilihlah semua jawaban yang benar dengan tanda centang [ ]!'), unit: 1.2 });
+                pgkList.forEach(q => allItems.push({ type: 'question', data: q, no: globalNo++, unit: getUnit(q) }));
+            }
+            if (matchList.length > 0) {
+                allItems.push({ type: 'section', html: buildSectionTitle('III', 'Menjodohkan', 'Hubungkan pernyataan kiri dengan pasangan yang tepat di kanan!'), unit: 1.2 });
+                matchList.forEach(q => allItems.push({ type: 'question', data: q, no: globalNo++, unit: getUnit(q) }));
+            }
+            if (isianList.length > 0) {
+                allItems.push({ type: 'section', html: buildSectionTitle('IV', 'Isian Singkat', 'Isilah titik-titik di bawah ini dengan jawaban yang singkat dan tepat!'), unit: 1.2 });
+                isianList.forEach(q => allItems.push({ type: 'question', data: q, no: globalNo++, unit: getUnit(q) }));
+            }
+            if (uraianList.length > 0) {
+                allItems.push({ type: 'section', html: buildSectionTitle('V', 'Uraian', 'Jawablah pertanyaan berikut secara lengkap, jelas, dan berurutan!'), unit: 1.2 });
+                uraianList.forEach(q => allItems.push({ type: 'question', data: q, no: globalNo++, unit: getUnit(q) }));
             }
 
-            if (matchList.length > 0) {
-                htmlContent += `
-                    <div class="mb-6">
-                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">III. Menjodohkan</h3>
-                        <p class="italic text-slate-500 mb-4 text-[10px]">Hubungkan pernyataan kiri dengan pasangan yang tepat di kanan!</p>
-                        <div class="space-y-4">
+            const pages = [];
+            let currentPage = [];
+            let currentUnits = 0;
+            let maxUnits = MAX_UNITS_PAGE_1;
+
+            allItems.forEach(item => {
+                if (currentUnits + item.unit > maxUnits && currentPage.length > 0) {
+                    pages.push(currentPage);
+                    currentPage = [];
+                    currentUnits = 0;
+                    maxUnits = MAX_UNITS_PAGE_OTHER;
+                }
+                currentPage.push(item);
+                currentUnits += item.unit;
+            });
+            if (currentPage.length > 0) pages.push(currentPage);
+            if (pages.length === 0) pages = [[]];
+
+            const totalPages = pages.length;
+
+            // ===== RENDER SETIAP HALAMAN =====
+            let finalHTML = '';
+
+            pages.forEach((pageItems, pageIdx) => {
+                const pageNum = pageIdx + 1;
+                const isFirstPage = pageIdx === 0;
+
+                finalHTML += `
+                    <div class="a4-page-wrapper">
+                        <div class="a4-page-label no-print">
+                            <i class="fa-solid fa-file-lines"></i> Halaman ${pageNum} dari ${totalPages}
+                        </div>
+                        <div class="a4-preview-sheet print-${pdfMode} ${isEditMode ? 'edit-mode' : ''}" data-page="${pageNum}">
+                            ${isFirstPage ? buildFullHeader() : ''}
+                            <div class="space-y-3 text-[11px] md:text-xs text-slate-800">
                 `;
-                matchList.forEach((q) => {
-                    let pairs = [];
-                    if (Array.isArray(q.pilihan)) {
-                        pairs = q.pilihan.map(p => {
-                            let parts = p.split('|');
-                            return { left: parts[0]?.trim() || p, right: parts[1]?.trim() || "" };
-                        }).filter(p => p.left);
-                    }
-                    if (pairs.length === 0) pairs = [{left: "Premis kosong", right: "Respon kosong"}];
 
-                    let lefts = pairs.map(p => p.left);
-                    let rights = pairs.map(p => p.right).filter(r => r !== "");
-                    
-                    let shuffledRights = [...rights];
-                    for (let i = shuffledRights.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [shuffledRights[i], shuffledRights[j]] = [shuffledRights[j], shuffledRights[i]];
+                pageItems.forEach(item => {
+                    if (item.type === 'section') {
+                        finalHTML += item.html;
+                    } else {
+                        finalHTML += generateQuestionHTML(item.no, item.data);
                     }
+                });
 
-                    htmlContent += `
-                        <div class="question-item pl-2 border-l-2 border-amber-500/20">
-                            <div class="font-medium mb-1.5 flex justify-between items-start">
-                                <span>
-                                    <span class="view-text">${currentGlobalNo}. ${q.pertanyaan}</span>
-                                    <input class="edit-input edit-question-input" type="text" value="${currentGlobalNo}. ${q.pertanyaan}" placeholder="Tulis pertanyaan...">
-                                </span>
-                                <span class="text-[9px] font-bold px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100 ml-2 whitespace-nowrap">Skor: ${q.skor}</span>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-8 ml-4 max-w-xl my-3">
-                                <div class="space-y-2">
-                                    <span class="font-bold text-[10px] text-slate-400 block border-b pb-1">PERNYATAAN / PREMIS</span>
-                                    ${lefts.map((lItem, idx) => `
-                                        <div class="flex items-center gap-2">
-                                            <span class="font-bold text-[10px] bg-slate-100 text-slate-600 w-5 h-5 flex items-center justify-center rounded-full">${idx + 1}</span>
-                                            <span class="border border-slate-200 p-2 rounded-lg bg-slate-50 flex-grow text-[11px]">${lItem}</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                                <div class="space-y-2">
-                                    <span class="font-bold text-[10px] text-slate-400 block border-b pb-1">PILIHAN RESPONS</span>
-                                    ${shuffledRights.map((rItem, idx) => {
-                                        const code = String.fromCharCode(65 + idx);
-                                        return `
-                                            <div class="flex items-center gap-2">
-                                                <span class="font-bold text-[10px] bg-emerald-50 text-emerald-700 w-5 h-5 flex items-center justify-center rounded-full">${code}</span>
-                                                <span class="border border-slate-200 p-2 rounded-lg bg-white flex-grow text-[11px]">${rItem}</span>
-                                            </div>
-                                        `;
-                                    }).join('')}
-                                </div>
-                            </div>
-                            
-                            <div class="kunci-jawaban-text mt-1.5">
-                                <span class="key-badge"><i class="fa-solid fa-key"></i> Kunci Jawaban: ${q.kunci_jawaban || '-'}</span>
-                            </div>
-                            
-                            <div class="solution-text hidden mt-2.5 ml-4 p-2 bg-amber-50/50 border-l-2 border-amber-500 rounded-r-lg text-[10px]">
-                                <span class="font-bold text-amber-800">Kunci Jawaban:</span>
-                                <p class="text-slate-700 mt-0.5">${q.kunci_jawaban}</p>
-                                <p class="text-slate-600 mt-0.5"><span class="font-semibold">Pembahasan:</span> ${q.pembahasan || 'Tidak ada pembahasan'}</p>
+                finalHTML += `
                             </div>
                         </div>
-                    `;
-                    currentGlobalNo++;
-                });
-                htmlContent += `</div></div>`;
-            }
-
-            if (isianList.length > 0) {
-                htmlContent += `
-                    <div class="mb-6">
-                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">IV. Isian Singkat</h3>
-                        <p class="italic text-slate-500 mb-4 text-[10px]">Isilah titik-titik di bawah ini dengan jawaban yang singkat dan tepat!</p>
-                        <div class="space-y-4">
+                    </div>
                 `;
-                isianList.forEach((q) => { htmlContent += generateQuestionHTML(currentGlobalNo++, q); });
-                htmlContent += `</div></div>`;
-            }
+            });
 
-            if (uraianList.length > 0) {
-                htmlContent += `
-                    <div class="mb-6">
-                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">V. Uraian</h3>
-                        <p class="italic text-slate-500 mb-4 text-[10px]">Jawablah pertanyaan berikut secara lengkap, jelas, dan berurutan!</p>
-                        <div class="space-y-4">
-                `;
-                uraianList.forEach((q) => { htmlContent += generateQuestionHTML(currentGlobalNo++, q); });
-                htmlContent += `</div></div>`;
-            }
-
-            htmlContent += `</div>`;
-            container.innerHTML = htmlContent;
-            
-            if (isEditMode) container.classList.add("edit-mode");
+            container.innerHTML = finalHTML;
         }
 
+        // ===================== PDF SETTINGS MODAL =====================
         function openPDFSettings() {
             if (generatedQuestions.length === 0) {
                 showToast("Tidak ada pertanyaan untuk dicetak", "error");
                 return;
             }
             if (isEditMode) saveEditsFromPreview();
+            
+            // SINKRON: baca mode dari preview yang aktif
+            const previewEl = document.querySelector('.a4-preview-sheet');
+            if (previewEl && previewEl.classList.contains('print-guru')) {
+                pdfMode = 'guru';
+            } else {
+                pdfMode = 'siswa';
+            }
+            setPDFMode(pdfMode);
+            
             document.getElementById("pdfSettingsModal").classList.remove("hidden");
             document.body.style.overflow = "hidden";
         }
@@ -1411,6 +1409,13 @@
                 btnGuru.className = "py-2 px-3 rounded-lg text-xs font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-700 transition";
                 btnSiswa.className = "py-2 px-3 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-600 transition";
             }
+            
+            // FIX: Update class di semua halaman preview agar sinkron
+            const allPages = document.querySelectorAll('.a4-preview-sheet');
+            allPages.forEach(page => {
+                page.classList.remove("print-siswa", "print-guru");
+                page.classList.add(mode === 'guru' ? "print-guru" : "print-siswa");
+            });
         }
 
         // ===================== CETAK VIA TAB BARU =====================
@@ -1427,37 +1432,19 @@
             const marginBottom = Number(document.getElementById("pdfMarginBottom").value) || 15;
             const marginLeft   = Number(document.getElementById("pdfMarginLeft").value)   || 20;
             const marginRight  = Number(document.getElementById("pdfMarginRight").value)  || 20;
-            const useHeaderFooter = document.getElementById("toggleHeaderFooter").checked;
-            const headerTitle  = document.getElementById("pdfHeaderTitle").value  || "SOAL UJIAN SEKOLAH DASAR";
-            const headerSub    = document.getElementById("pdfHeaderSub").value    || "SD NEGERI 3 NGANTRU - KABUPATEN MALANG";
-            const headerYear   = document.getElementById("pdfHeaderYear").value   || "TAHUN AJARAN 2025/2026";
-            const footerLeft   = document.getElementById("pdfFooterLeft").value   || "Dinas Pendidikan Kabupaten Malang";
-            const footerRight  = document.getElementById("pdfFooterRight").value  || "Selamat Mengerjakan! - Jaga Kejujuran";
 
-            const clone = element.cloneNode(true);
-            clone.classList.remove("edit-mode", "print-siswa", "print-guru");
-            clone.classList.add(pdfMode === 'guru' ? "print-guru" : "print-siswa");
+            // Ambil semua halaman
+            const pageElements = element.querySelectorAll('.a4-preview-sheet');
+            let contentHTML = '';
 
-            let contentHTML = clone.innerHTML;
-
-            const headerHTML = useHeaderFooter ? `
-                <div class="pdf-header">
-                    <div class="pdf-header-title">${headerTitle}</div>
-                    <div class="pdf-header-sub">${headerSub}</div>
-                    <div class="pdf-header-year">${headerYear}</div>
-                    <hr class="pdf-header-hr">
-                </div>
-            ` : '';
-
-            const footerHTML = useHeaderFooter ? `
-                <div class="pdf-footer">
-                    <hr class="pdf-footer-hr">
-                    <div class="pdf-footer-content">
-                        <span>${footerLeft}</span>
-                        <span>${footerRight}</span>
-                    </div>
-                </div>
-            ` : '';
+            pageElements.forEach((pageEl) => {
+                const clone = pageEl.cloneNode(true);
+                clone.classList.remove("edit-mode", "print-siswa", "print-guru");
+                
+                // PENTING: class mode di-set ke WRAPPER (a4-page), BUKAN inner
+                const wrapperClass = pdfMode === 'guru' ? 'print-guru' : 'print-siswa';
+                contentHTML += `<div class="a4-page ${wrapperClass}">${clone.innerHTML}</div>`;
+            });
 
             const newTabHTML = `<!DOCTYPE html>
 <html lang="id">
@@ -1503,9 +1490,8 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.2s;
         }
-        .toolbar-btn:hover { background: #059669; transform: translateY(-1px); }
+        .toolbar-btn:hover { background: #059669; }
         .toolbar-btn-secondary {
             background: rgba(255,255,255,0.15);
             color: white;
@@ -1526,27 +1512,19 @@
             width: 210mm;
             min-height: 297mm;
             margin: 90px auto 20px auto;
-            padding: ${useHeaderFooter ? `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm` : '15mm'};
+            padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm;
             background: white;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             box-sizing: border-box;
+            page-break-after: always;
         }
-        
-        .pdf-header { margin-bottom: 12px; }
-        .pdf-header-title { text-align: center; font-weight: bold; font-size: 14pt; text-transform: uppercase; letter-spacing: 0.5px; }
-        .pdf-header-sub { text-align: center; font-size: 11pt; font-weight: 600; color: #1e293b; margin-top: 2px; }
-        .pdf-header-year { text-align: center; font-size: 10pt; color: #475569; margin-top: 1px; }
-        .pdf-header-hr { border: none; border-top: 2px solid #000; margin: 8px 0 12px 0; }
-        
-        .pdf-footer { margin-top: 20px; }
-        .pdf-footer-hr { border: none; border-top: 1px solid #cbd5e1; margin: 12px 0 6px 0; }
-        .pdf-footer-content { display: flex; justify-content: space-between; font-size: 9pt; color: #64748b; }
+        .a4-page:last-child { page-break-after: avoid; margin-bottom: 20px; }
         
         .question-item {
             page-break-inside: avoid;
             break-inside: avoid;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
             border-bottom: 1px dashed #e2e8f0;
         }
         .question-item:last-child { border-bottom: none; }
@@ -1582,7 +1560,7 @@
         }
         .print-info b { color: #92400e; }
         
-        /* Tailwind-like utility classes untuk konten (dari preview) */
+        /* Tailwind utility classes */
         .flex { display: flex; }
         .grid { display: grid; }
         .items-center { align-items: center; }
@@ -1622,8 +1600,10 @@
         .rounded-r-lg { border-top-right-radius: 0.5rem; border-bottom-right-radius: 0.5rem; }
         .mb-1 { margin-bottom: 0.25rem; }
         .mb-1\\.5 { margin-bottom: 0.375rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
         .mb-3 { margin-bottom: 0.75rem; }
         .mb-4 { margin-bottom: 1rem; }
+        .mb-5 { margin-bottom: 1.25rem; }
         .mb-6 { margin-bottom: 1.5rem; }
         .mt-0\\.5 { margin-top: 0.125rem; }
         .mt-1 { margin-top: 0.25rem; }
@@ -1640,14 +1620,16 @@
         .pb-3 { padding-bottom: 0.75rem; }
         .px-1\\.5 { padding-left: 0.375rem; padding-right: 0.375rem; }
         .py-0\\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+        .gap-1\\.5 { gap: 0.375rem; }
         .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
         .gap-4 { gap: 1rem; }
         .gap-8 { gap: 2rem; }
         .space-y-0\\.5 > * + * { margin-top: 0.125rem; }
         .space-y-1 > * + * { margin-top: 0.25rem; }
         .space-y-2 > * + * { margin-top: 0.5rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
         .space-y-4 > * + * { margin-top: 1rem; }
-        .space-y-6 > * + * { margin-top: 1.5rem; }
         .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
         .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .w-5 { width: 1.25rem; }
@@ -1697,7 +1679,7 @@
                 width: 210mm !important;
                 min-height: 297mm !important;
                 margin: 0 !important;
-                padding: ${useHeaderFooter ? `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm` : '15mm'} !important;
+                padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
                 box-shadow: none !important;
                 page-break-after: always;
             }
@@ -1718,7 +1700,7 @@
     <div class="toolbar">
         <div>
             <div class="toolbar-title"><i class="fa-solid fa-file-lines"></i> Lembar Ujian Siap Cetak</div>
-            <div class="toolbar-info">Mode: ${pdfMode === 'guru' ? 'Guru (dengan kunci)' : 'Siswa'} • Ukuran: A4 (210×297 mm)</div>
+            <div class="toolbar-info">Mode: ${pdfMode === 'guru' ? 'Guru (dengan kunci)' : 'Siswa'} • Ukuran: A4 (210×297 mm) • ${pageElements.length} halaman</div>
         </div>
         <div style="display: flex; align-items: center;">
             <button class="toolbar-btn-secondary" onclick="window.close()">
@@ -1734,11 +1716,7 @@
         💡 <b>Cara simpan sebagai PDF:</b> Klik tombol <b>Cetak / Save as PDF</b> di atas (atau tekan <b>Ctrl+P</b>), lalu di dialog print pilih <b>Destination: Save as PDF</b>, ukuran kertas <b>A4</b>, dan <b>Margins: None</b>.
     </div>
 
-    <div class="a4-page">
-        ${headerHTML}
-        ${contentHTML}
-        ${footerHTML}
-    </div>
+    ${contentHTML}
 </body>
 </html>`;
 
@@ -1779,49 +1757,7 @@
 
             closePDFSettings();
 
-            const originalClassName = element.className;
-            const originalStyleCSS = element.getAttribute("style") || "";
-
-            element.classList.remove("print-siswa", "print-guru", "edit-mode");
-            element.classList.add(pdfMode === 'guru' ? "print-guru" : "print-siswa");
-
-            element.style.width = "210mm";
-            element.style.minHeight = "297mm";
-            element.style.padding = useHeaderFooter
-                ? `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`
-                : "15mm";
-            element.style.margin = "0";
-            element.style.boxShadow = "none";
-            element.style.border = "none";
-            element.style.background = "white";
-            element.style.boxSizing = "border-box";
-
-            let tempHeader = null;
-            let tempFooter = null;
-
-            if (useHeaderFooter) {
-                tempHeader = document.createElement("div");
-                tempHeader.setAttribute("data-temp-header", "true");
-                tempHeader.innerHTML = `
-                    <div style="text-align:center; font-weight:bold; font-size:14pt; text-transform:uppercase;">${headerTitle}</div>
-                    <div style="text-align:center; font-size:11pt; font-weight:600; color:#1e293b; margin-top:2px;">${headerSub}</div>
-                    <div style="text-align:center; font-size:10pt; color:#475569; margin-top:1px;">${headerYear}</div>
-                    <hr style="border:none; border-top:2px solid #000; margin:8px 0 12px 0;">
-                `;
-                element.prepend(tempHeader);
-
-                tempFooter = document.createElement("div");
-                tempFooter.setAttribute("data-temp-footer", "true");
-                tempFooter.innerHTML = `
-                    <hr style="border:none; border-top:1px solid #cbd5e1; margin:12px 0 6px 0;">
-                    <div style="display:flex; justify-content:space-between; font-size:9pt; color:#64748b;">
-                        <span>${footerLeft}</span>
-                        <span>${footerRight}</span>
-                    </div>
-                `;
-                element.appendChild(tempFooter);
-            }
-
+            // Sembunyikan semua elemen, hanya tampilkan #paperPreview
             const styleEl = document.createElement("style");
             styleEl.id = "temp-print-style";
             styleEl.innerHTML = `
@@ -1834,15 +1770,21 @@
                         left: 0 !important;
                         top: 0 !important;
                         width: 210mm !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+                    .a4-page-wrapper { margin-bottom: 0 !important; }
+                    .a4-preview-sheet {
+                        width: 210mm !important;
                         min-height: 297mm !important;
                         margin: 0 !important;
-                        padding: ${useHeaderFooter ? `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm` : '15mm'} !important;
+                        padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
                         box-shadow: none !important;
                         border: none !important;
-                        background: white !important;
-                        box-sizing: border-box !important;
+                        page-break-after: always !important;
                     }
-                    .question-item { page-break-inside: avoid !important; }
+                    .a4-page-label { display: none !important; }
+                    .question-item { page-break-inside: avoid !important; break-inside: avoid !important; }
                     .kunci-jawaban-text { display: none !important; }
                     .print-guru .kunci-jawaban-text { display: block !important; }
                     .solution-text { display: none !important; }
@@ -1858,22 +1800,16 @@
                 window.print();
 
                 const restoreState = () => {
-                    if (tempHeader && tempHeader.parentNode) tempHeader.parentNode.removeChild(tempHeader);
-                    if (tempFooter && tempFooter.parentNode) tempFooter.parentNode.removeChild(tempFooter);
                     if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
-
-                    element.className = originalClassName;
-                    if (originalStyleCSS) element.setAttribute("style", originalStyleCSS);
-                    else element.removeAttribute("style");
-
                     window.removeEventListener("afterprint", restoreState);
                 };
 
                 window.addEventListener("afterprint", restoreState);
-                setTimeout(() => { if (tempHeader && tempHeader.parentNode) restoreState(); }, 2000);
+                setTimeout(restoreState, 2000);
             }, 300);
         }
 
+        // ===================== UNDUH .DOC =====================
         function downloadExamDOC() {
             if (isEditMode) saveEditsFromPreview();
 
@@ -1885,13 +1821,15 @@
             const mapel = document.getElementById("subjectInput").value;
             const kelas = document.getElementById("classInput").value;
             
-            const tempDiv = document.createElement("div");
-            const clone = element.cloneNode(true);
-            clone.classList.remove('edit-mode');
-            tempDiv.innerHTML = clone.innerHTML;
+            // Gabung semua halaman
+            const pageElements = element.querySelectorAll('.a4-preview-sheet');
+            let contentHTML = '';
+            pageElements.forEach(pageEl => {
+                const clone = pageEl.cloneNode(true);
+                clone.classList.remove('edit-mode');
+                contentHTML += clone.innerHTML;
+            });
 
-            let htmlContent = tempDiv.innerHTML;
-            
             const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
                            "xmlns:w='urn:schemas-microsoft-com:office:word' " +
                            "xmlns='http://www.w3.org/TR/REC-html40'>" +
@@ -1914,7 +1852,7 @@
                            "<div style='width: 170mm; margin: 0 auto;'>";
             const footer = "</div></body></html>";
             
-            const sourceHTML = header + htmlContent + footer;
+            const sourceHTML = header + contentHTML + footer;
             const blob = new Blob(['\ufeff' + sourceHTML], { type: 'application/msword' });
             
             const url = URL.createObjectURL(blob);
