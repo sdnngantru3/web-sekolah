@@ -96,13 +96,26 @@
             display: block !important;
         }
         
+        /* ============================================
+           CSS PRINT - A4 PRESISI
+           ============================================
+           - Width & min-height dipaksa A4 (210mm x 297mm)
+           - Margin & padding di-nol-kan (padding dihandle JS saat render PDF)
+           - Box-shadow & border dihilangkan saat print
+           - page-break-after: always untuk multi-halaman
+        */
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
             .a4-preview-sheet {
-                padding: 25mm 20mm 20mm 20mm !important;
+                width: 210mm !important;
+                min-height: 297mm !important;
                 margin: 0 auto !important;
+                padding: 0 !important;
                 box-shadow: none !important;
                 border: none !important;
-                min-height: 297mm !important;
                 page-break-after: always !important;
                 page-break-inside: avoid !important;
             }
@@ -523,6 +536,15 @@
                     </div>
                 </div>
 
+                <!-- CHECKBOX TOGGLE HEADER & FOOTER -->
+                <div class="border-t border-slate-100 pt-3">
+                    <label class="flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer select-none">
+                        <input type="checkbox" id="toggleHeaderFooter" checked class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 cursor-pointer">
+                        <span>Aktifkan Header & Footer (hindari double kop)</span>
+                    </label>
+                    <p class="text-[10px] text-slate-400 mt-1 ml-6">Jika dimatikan, hanya kop bawaan lembar ujian yang ditampilkan (tanpa header/footer PDF tambahan).</p>
+                </div>
+
                 <div class="border-t border-slate-100 pt-3">
                     <label class="block text-xs font-semibold text-slate-600 mb-1.5">
                         <i class="fa-solid fa-heading text-emerald-600"></i> Header / Kop Surat
@@ -816,7 +838,7 @@
         function togglePreviewMode(mode) {
             const previewEl = document.getElementById("paperPreview");
             const siswaBtn = document.getElementById("viewSiswaBtn");
-            const fontBtn = document.getElementById("viewGuruBtn");
+            const guruBtn = document.getElementById("viewGuruBtn");
             
             // Simpan perubahan jika dalam mode edit
             if (isEditMode) {
@@ -827,13 +849,13 @@
                 previewEl.className = "a4-preview-sheet print-siswa";
                 if (isEditMode) previewEl.classList.add("edit-mode");
                 siswaBtn.className = "px-3 py-1.5 rounded-md bg-white text-slate-800 shadow-sm transition";
-                fontBtn.className = "px-3 py-1.5 rounded-md text-slate-500 hover:text-slate-800 transition";
+                guruBtn.className = "px-3 py-1.5 rounded-md text-slate-500 hover:text-slate-800 transition";
                 pdfMode = 'siswa';
             } else {
                 previewEl.className = "a4-preview-sheet print-guru";
                 if (isEditMode) previewEl.classList.add("edit-mode");
                 siswaBtn.className = "px-3 py-1.5 rounded-md text-slate-500 hover:text-slate-800 transition";
-                fontBtn.className = "px-3 py-1.5 rounded-md bg-white text-slate-800 shadow-sm transition";
+                guruBtn.className = "px-3 py-1.5 rounded-md bg-white text-slate-800 shadow-sm transition";
                 pdfMode = 'guru';
             }
         }
@@ -1572,124 +1594,176 @@
             }
         }
 
+        // ===================== REWRITE TOTAL: processPDFDownload() =====================
+        // FIX kertas kosong:
+        // - JANGAN pakai position: absolute + left: -9999px (html2canvas tidak bisa render elemen off-screen)
+        // - Pakai position: fixed + opacity: 0 + zIndex: -9999 (masih di viewport)
+        // - Terapkan class print-guru/print-siswa KE CLONE, bukan elemen asli
+        // - height: auto (bukan height: 297mm) agar konten panjang tidak terpotong
+        // - setTimeout 100ms agar render selesai sebelum html2canvas
         function processPDFDownload() {
-            const marginTop = parseInt(document.getElementById("pdfMarginTop").value) || 25;
-            const marginBottom = parseInt(document.getElementById("pdfMarginBottom").value) || 20;
-            const marginLeft = parseInt(document.getElementById("pdfMarginLeft").value) || 20;
-            const marginRight = parseInt(document.getElementById("pdfMarginRight").value) || 20;
-            
-            const headerTitle = document.getElementById("pdfHeaderTitle").value || "SOAL UJIAN SEKOLAH DASAR";
-            const headerSub = document.getElementById("pdfHeaderSub").value || "SD NEGERI 3 NGANTRU - KABUPATEN MALANG";
-            const headerYear = document.getElementById("pdfHeaderYear").value || "TAHUN AJARAN 2025/2026";
-            const footerLeft = document.getElementById("pdfFooterLeft").value || "Dinas Pendidikan Kabupaten Malang";
-            const footerRight = document.getElementById("pdfFooterRight").value || "Selamat Mengerjakan! - Jaga Kejujuran";
-            const pageNumberStyle = document.getElementById("pdfPageNumber").value;
-
-            closePDFSettings();
-            downloadExamPDFWithSettings(pdfMode, {
-                marginTop,
-                marginBottom,
-                marginLeft,
-                marginRight,
-                headerTitle,
-                headerSub,
-                headerYear,
-                footerLeft,
-                footerRight,
-                pageNumberStyle
-            });
-        }
-
-        // ===================== DOWNLOAD PDF WITH SETTINGS =====================
-        function downloadExamPDFWithSettings(mode, settings) {
-            if (generatedQuestions.length === 0) {
+            const element = document.getElementById("paperPreview");
+            if (!element || generatedQuestions.length === 0) {
                 showToast("Tidak ada pertanyaan untuk diunduh", "error");
                 return;
             }
 
+            // Simpan perubahan edit jika sedang dalam mode edit
             if (isEditMode) {
                 saveEditsFromPreview();
             }
 
+            // ===== 1. AMBIL SETTING =====
+            const marginTop    = Number(document.getElementById("pdfMarginTop").value)    || 25;
+            const marginBottom = Number(document.getElementById("pdfMarginBottom").value) || 20;
+            const marginLeft   = Number(document.getElementById("pdfMarginLeft").value)   || 20;
+            const marginRight  = Number(document.getElementById("pdfMarginRight").value)  || 20;
+
+            const useHeaderFooter = document.getElementById("toggleHeaderFooter").checked;
+
+            const headerTitle  = document.getElementById("pdfHeaderTitle").value  || "SOAL UJIAN SEKOLAH DASAR";
+            const headerSub    = document.getElementById("pdfHeaderSub").value    || "SD NEGERI 3 NGANTRU - KABUPATEN MALANG";
+            const headerYear   = document.getElementById("pdfHeaderYear").value   || "TAHUN AJARAN 2025/2026";
+            const footerLeft   = document.getElementById("pdfFooterLeft").value   || "Dinas Pendidikan Kabupaten Malang";
+            const footerRight  = document.getElementById("pdfFooterRight").value  || "Selamat Mengerjakan! - Jaga Kejujuran";
+            const pageNumberStyle = document.getElementById("pdfPageNumber").value;
+
             const mapel = document.getElementById("subjectInput").value;
             const kelas = document.getElementById("classInput").value;
-            const isGuruModeCurrently = document.getElementById("paperPreview").classList.contains("print-guru");
 
-            if (mode === 'siswa') {
-                document.getElementById("paperPreview").classList.add("print-siswa");
-                document.getElementById("paperPreview").classList.remove("print-guru");
+            // ===== 2. CLONE ELEMEN (sebelum class apapun diubah di elemen asli) =====
+            const clone = element.cloneNode(true);
+            clone.removeAttribute("id");
+
+            // ===== 3. TERAPKAN CLASS MODE KE CLONE =====
+            clone.classList.remove("edit-mode", "print-siswa", "print-guru");
+            if (pdfMode === 'guru') {
+                clone.classList.add("print-guru");
             } else {
-                document.getElementById("paperPreview").classList.add("print-guru");
-                document.getElementById("paperPreview").classList.remove("print-siswa");
+                clone.classList.add("print-siswa");
             }
 
-            const element = document.getElementById("paperPreview");
-            const optElement = element.cloneNode(true);
-            
-            const marginTop = settings.marginTop || 25;
-            const marginBottom = settings.marginBottom || 20;
-            const marginLeft = settings.marginLeft || 20;
-            const marginRight = settings.marginRight || 20;
-            
-            optElement.style.width = '210mm';
-            optElement.style.minHeight = '297mm';
-            optElement.style.padding = `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`;
-            optElement.style.margin = '0';
-            optElement.style.boxShadow = 'none';
-            optElement.style.border = 'none';
-            optElement.style.background = 'white';
-            optElement.style.position = 'relative';
-            optElement.style.boxSizing = 'border-box';
+            // ===== 4. PAKSA UKURAN A4 PRESISI =====
+            clone.style.width = "210mm";
+            clone.style.minHeight = "297mm";
+            clone.style.height = "auto";  // PENTING: agar konten panjang tidak terpotong
+            clone.style.margin = "0";
+            clone.style.boxShadow = "none";
+            clone.style.border = "none";
+            clone.style.background = "white";
+            clone.style.boxSizing = "border-box";
+            // PENTING: JANGAN pakai position absolute + left -9999px (bikin kosong di html2canvas)
+            // Pakai fixed + opacity 0 (masih di viewport, html2canvas bisa render)
+            clone.style.position = "fixed";
+            clone.style.top = "0";
+            clone.style.left = "0";
+            clone.style.zIndex = "-9999";
+            clone.style.opacity = "0";
+            clone.style.pointerEvents = "none";
 
-            optElement.classList.remove('edit-mode');
+            // Padding hanya jika pakai header/footer
+            if (useHeaderFooter) {
+                clone.style.padding = `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`;
+            } else {
+                clone.style.padding = "10mm";
+            }
 
-            // Hanya gunakan konten preview tanpa header/footer tambahan
-            const contentHTML = optElement.innerHTML;
-            optElement.innerHTML = contentHTML;
+            // ===== 5. HEADER & FOOTER OPSIONAL =====
+            if (useHeaderFooter) {
+                // HEADER
+                const header = document.createElement("div");
+                header.setAttribute("data-pdf-header", "true");
+                header.innerHTML = `
+                    <div style="text-align:center; font-weight:bold; font-size:14pt; text-transform:uppercase; letter-spacing:0.5px;">
+                        ${headerTitle}
+                    </div>
+                    <div style="text-align:center; font-size:11pt; font-weight:600; color:#1e293b; margin-top:2px;">
+                        ${headerSub}
+                    </div>
+                    <div style="text-align:center; font-size:10pt; color:#475569; margin-top:1px;">
+                        ${headerYear}
+                    </div>
+                    <hr style="border:none; border-top:2px solid #000; margin:8px 0 12px 0;">
+                `;
+                clone.prepend(header);
 
-            const clonedKiri = optElement.querySelector('#logo-kop-kiri-img');
-            const clonedKanan = optElement.querySelector('#logo-kop-kanan-img');
-            const originalKiri = document.getElementById('logo-kop-kiri-img');
-            const originalKanan = document.getElementById('logo-kop-kanan-img');
-            
-            if (clonedKiri) {
+                // FOOTER
+                const footer = document.createElement("div");
+                footer.setAttribute("data-pdf-footer", "true");
+                let pageText = "";
+                if (pageNumberStyle === "bottom-center") {
+                    pageText = "Halaman {page} dari {total}";
+                } else if (pageNumberStyle === "bottom-right") {
+                    pageText = "Halaman {page}";
+                }
+
+                footer.innerHTML = `
+                    <hr style="border:none; border-top:1px solid #cbd5e1; margin:12px 0 6px 0;">
+                    <div style="display:flex; justify-content:space-between; font-size:9pt; color:#64748b;">
+                        <span>${footerLeft}</span>
+                        <span>${footerRight}</span>
+                    </div>
+                    ${pageText ? `<div style="text-align:${pageNumberStyle === 'bottom-right' ? 'right' : 'center'}; font-size:9pt; color:#94a3b8; margin-top:4px;">${pageText}</div>` : ''}
+                `;
+                clone.appendChild(footer);
+            }
+
+            // ===== 6. KONVERSI LOGO KE BASE64 =====
+            const clonedKiri = clone.querySelector('img[alt="Logo Kabupaten"]');
+            const clonedKanan = clone.querySelector('img[alt="Logo Sekolah"]');
+            const originalKiri = element.querySelector('img[alt="Logo Kabupaten"]');
+            const originalKanan = element.querySelector('img[alt="Logo Sekolah"]');
+
+            if (clonedKiri && originalKiri) {
                 clonedKiri.src = getBase64FromImage(originalKiri, fallbackLogoKiriSVG);
             }
-            if (clonedKanan) {
+            if (clonedKanan && originalKanan) {
                 clonedKanan.src = getBase64FromImage(originalKanan, fallbackLogoKananSVG);
             }
 
-            const fileName = mode === "siswa" 
+            // ===== 7. APPEND KE BODY =====
+            document.body.appendChild(clone);
+
+            const fileName = pdfMode === "siswa"
                 ? `Soal_Ujian_${mapel.replace(/\s+/g, '_')}_Kelas_${kelas.replace(/\s+/g, '_')}.pdf`
                 : `Kunci_Jawaban_${mapel.replace(/\s+/g, '_')}_Kelas_${kelas.replace(/\s+/g, '_')}.pdf`;
 
             const opt = {
-                margin:       0,
-                filename:     fileName,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, allowTaint: false, logging: false, scrollX: 0, scrollY: 0 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['css', 'legacy'], avoid: '.question-item' }
+                margin: 0,
+                filename: fileName,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: false,
+                    letterRendering: true,
+                    logging: false,
+                    scrollX: 0,
+                    scrollY: 0,
+                    windowWidth: clone.scrollWidth,
+                    windowHeight: clone.scrollHeight
+                },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['css', 'legacy'], avoid: '.question-item' }
             };
 
-            showToast(`Sedang merender lembar PDF ${mode.toUpperCase()} (Ukuran A4)...`, "info");
-            
-            html2pdf().set(opt).from(optElement).save().then(() => {
-                if (isGuruModeCurrently) {
-                    document.getElementById("paperPreview").classList.add("print-guru");
-                    document.getElementById("paperPreview").classList.remove("print-siswa");
-                } else {
-                    document.getElementById("paperPreview").classList.add("print-siswa");
-                    document.getElementById("paperPreview").classList.remove("print-guru");
-                }
-                if (isEditMode) {
-                    document.getElementById("paperPreview").classList.add("edit-mode");
-                }
-                showToast("PDF Berhasil diunduh!", "success");
-            }).catch(err => {
-                console.error("PDF generation error:", err);
-                showToast("Gagal menyimpan PDF: " + err.message, "error");
-            });
+            showToast(`Sedang merender lembar PDF ${pdfMode.toUpperCase()} (Ukuran A4)...`, "info");
+
+            // Tunggu 1 frame agar render selesai sebelum html2canvas
+            setTimeout(() => {
+                html2pdf().set(opt).from(clone).save().then(() => {
+                    if (clone.parentNode) {
+                        document.body.removeChild(clone);
+                    }
+                    showToast("PDF Berhasil diunduh!", "success");
+                }).catch(err => {
+                    console.error("PDF generation error:", err);
+                    if (clone.parentNode) {
+                        document.body.removeChild(clone);
+                    }
+                    showToast("Gagal menyimpan PDF: " + err.message, "error");
+                });
+            }, 100);
         }
 
         // ===================== DOWNLOAD DOC =====================
