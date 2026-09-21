@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background: #f3f4f6; }
@@ -97,51 +96,63 @@
         }
         
         /* ============================================
-           CSS PRINT - A4 PRESISI
+           CSS PRINT - VIA WINDOW.PRINT BROWSER
            ============================================
-           - Width & min-height dipaksa A4 (210mm x 297mm)
-           - Margin & padding di-nol-kan (padding dihandle JS saat render PDF)
-           - Box-shadow & border dihilangkan saat print
-           - page-break-after: always untuk multi-halaman
+           Strategi: sembunyikan SEMUA elemen, lalu tampilkan hanya #paperPreview.
+           Ini supaya saat user Ctrl+P / Save as PDF, hanya lembar ujian yang tercetak.
         */
         @media print {
             @page {
                 size: A4 portrait;
                 margin: 0;
             }
-            .a4-preview-sheet {
+            
+            /* Sembunyikan semua elemen */
+            body * {
+                visibility: hidden;
+            }
+            
+            /* Tampilkan hanya #paperPreview dan anak-anaknya */
+            #paperPreview,
+            #paperPreview * {
+                visibility: visible;
+            }
+            
+            /* Posisikan #paperPreview di pojok kiri atas */
+            #paperPreview {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
                 width: 210mm !important;
                 min-height: 297mm !important;
-                margin: 0 auto !important;
+                margin: 0 !important;
                 padding: 0 !important;
                 box-shadow: none !important;
                 border: none !important;
-                page-break-after: always !important;
-                page-break-inside: avoid !important;
-            }
-            .a4-preview-sheet:last-child {
-                page-break-after: avoid !important;
-            }
-            body {
                 background: white !important;
-                margin: 0 !important;
-                padding: 0 !important;
+                box-sizing: border-box !important;
             }
-            .no-print {
+            
+            /* Pastikan elemen no-print tidak ikut tercetak */
+            .no-print,
+            .no-print * {
                 display: none !important;
+                visibility: hidden !important;
             }
+            
+            /* Hindari question item terpotong di tengah halaman */
             .question-item {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
+            
+            /* Reset edit-mode saat print */
             .edit-mode .question-item {
                 border: none !important;
                 background: transparent !important;
                 padding: 0 !important;
             }
-            .edit-controls {
-                display: none !important;
-            }
+            .edit-controls,
             .edit-input {
                 display: none !important;
             }
@@ -151,11 +162,18 @@
             .question-item:hover {
                 background: transparent !important;
             }
+            
+            /* Kunci jawaban: tampil hanya di mode guru */
             .kunci-jawaban-text {
                 display: none !important;
             }
             .print-guru .kunci-jawaban-text {
                 display: block !important;
+            }
+            
+            /* Sembunyikan toast & modal saat print */
+            #toast, #confirmModal, #pdfSettingsModal {
+                display: none !important;
             }
         }
 
@@ -302,7 +320,7 @@
                             <i class="fa-regular fa-image text-emerald-600"></i> Logo Kop Lembar Ujian
                         </span>
                         <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-150 text-[10px] text-slate-500 leading-relaxed">
-                            Secara default, sistem akan otomatis memuat file <span class="font-bold">"logo kabupaten.png"</span> & <span class="font-bold">"logo sekolah.png"</span> dari folder lokal yang sama.
+                            Secara default, sistem akan menampilkan logo placeholder. Anda dapat mengganti logo dengan mengunggah file gambar di bawah ini.
                         </div>
                         
                         <div class="grid grid-cols-2 gap-3">
@@ -458,9 +476,9 @@
                             <button id="viewGuruBtn" onclick="togglePreviewMode('guru')" class="px-3 py-1.5 rounded-md text-slate-500 hover:text-slate-800 transition">Mode Guru</button>
                         </div>
                         
-                        <!-- Tombol Download PDF -->
+                        <!-- Tombol Download PDF (via Print Browser) -->
                         <button onclick="openPDFSettings()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center gap-1.5 shadow-sm transition">
-                            <i class="fa-solid fa-file-pdf"></i> Download PDF
+                            <i class="fa-solid fa-print"></i> Cetak / Save PDF
                         </button>
                         
                         <!-- Tombol ekspor format Word (.doc) -->
@@ -492,7 +510,7 @@
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl modal-content border border-slate-200">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-file-pdf text-emerald-600"></i> Pengaturan PDF
+                    <i class="fa-solid fa-print text-emerald-600"></i> Pengaturan Cetak PDF
                 </h3>
                 <button onclick="closePDFSettings()" class="text-slate-400 hover:text-slate-600 text-xl">
                     <i class="fa-solid fa-times"></i>
@@ -500,8 +518,16 @@
             </div>
             
             <div class="space-y-4">
+                <div class="bg-sky-50 border border-sky-100 p-3 rounded-xl flex items-start gap-2.5">
+                    <i class="fa-solid fa-circle-info text-sky-600 mt-0.5 text-sm"></i>
+                    <div>
+                        <h4 class="text-xs font-bold text-sky-900">Cara Simpan PDF</h4>
+                        <p class="text-[10px] text-sky-700/90 mt-0.5">Setelah klik tombol di bawah, dialog print akan muncul. Pilih <b>Destination: Save as PDF</b>, ukuran kertas <b>A4</b>, dan <b>Margins: None</b>.</p>
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Mode Download</label>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Mode Cetak</label>
                     <div class="grid grid-cols-2 gap-2">
                         <button id="pdfModeSiswa" onclick="setPDFMode('siswa')" class="py-2 px-3 rounded-lg text-xs font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-700 transition">
                             <i class="fa-solid fa-user-graduate"></i> Mode Siswa
@@ -542,7 +568,7 @@
                         <input type="checkbox" id="toggleHeaderFooter" checked class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 cursor-pointer">
                         <span>Aktifkan Header & Footer (hindari double kop)</span>
                     </label>
-                    <p class="text-[10px] text-slate-400 mt-1 ml-6">Jika dimatikan, hanya kop bawaan lembar ujian yang ditampilkan (tanpa header/footer PDF tambahan).</p>
+                    <p class="text-[10px] text-slate-400 mt-1 ml-6">Jika dimatikan, hanya kop bawaan lembar ujian yang ditampilkan.</p>
                 </div>
 
                 <div class="border-t border-slate-100 pt-3">
@@ -592,7 +618,7 @@
                 <div class="flex gap-3 pt-2 border-t border-slate-100">
                     <button onclick="closePDFSettings()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition">Batal</button>
                     <button onclick="processPDFDownload()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-download"></i> Download PDF
+                        <i class="fa-solid fa-print"></i> Cetak / Save PDF
                     </button>
                 </div>
             </div>
@@ -600,13 +626,13 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 bg-slate-950 text-white text-xs font-semibold py-3 px-4 rounded-xl shadow-lg flex items-center gap-2">
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 bg-slate-950 text-white text-xs font-semibold py-3 px-4 rounded-xl shadow-lg flex items-center gap-2 no-print">
         <i id="toastIcon" class="fa-solid"></i>
         <span id="toastMsg"></span>
     </div>
 
     <!-- Custom Confirmation Modal -->
-    <div id="confirmModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div id="confirmModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 no-print">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex items-center gap-3 text-rose-600">
                 <i class="fa-solid fa-circle-exclamation text-2xl animate-bounce"></i>
@@ -691,7 +717,6 @@
             questionItems.forEach((item, idx) => {
                 if (idx >= generatedQuestions.length) return;
                 
-                // Ambil input pertanyaan
                 const qInput = item.querySelector('.edit-question-input');
                 if (qInput) {
                     let newText = qInput.value.trim();
@@ -701,7 +726,6 @@
                     }
                 }
                 
-                // Ambil input pilihan jawaban
                 const optionInputs = item.querySelectorAll('.edit-option-input');
                 if (optionInputs.length > 0 && generatedQuestions[idx].pilihan) {
                     optionInputs.forEach((input, optIdx) => {
@@ -715,7 +739,6 @@
                 }
             });
             
-            // Render ulang preview dengan data terbaru
             renderExamPaper();
             if (isEditMode) {
                 document.getElementById("paperPreview").classList.add("edit-mode");
@@ -840,7 +863,6 @@
             const siswaBtn = document.getElementById("viewSiswaBtn");
             const guruBtn = document.getElementById("viewGuruBtn");
             
-            // Simpan perubahan jika dalam mode edit
             if (isEditMode) {
                 saveEditsFromPreview();
             }
@@ -1290,8 +1312,9 @@
             const tahunAjaran = document.getElementById("academicYearInput").value;
             const durasi = document.getElementById("durationInput").value;
 
-            const finalLogoKiriPath = logoKiriData || "logo kabupaten.png";
-            const finalLogoKananPath = logoKananData || "logo sekolah.png";
+            // PERBAIKAN: Langsung pakai base64 SVG sebagai default (hindari CORS file://)
+            const finalLogoKiriPath = logoKiriData || fallbackLogoKiriSVG;
+            const finalLogoKananPath = logoKananData || fallbackLogoKananSVG;
 
             let htmlContent = `
                 <div class="flex items-center justify-between border-b-4 border-double border-slate-800 pb-3 mb-6 gap-4">
@@ -1370,7 +1393,6 @@
                     `;
                 }
 
-                // Kunci jawaban - hanya muncul di mode guru dan TIDAK bisa diedit
                 const keyHTML = `
                     <div class="kunci-jawaban-text mt-1.5">
                         <span class="key-badge"><i class="fa-solid fa-key"></i> Kunci Jawaban: ${q.kunci_jawaban || '-'}</span>
@@ -1399,7 +1421,6 @@
                 `;
             }
 
-            // Render Pilihan Ganda
             if (pgList.length > 0) {
                 htmlContent += `
                     <div class="mb-6">
@@ -1413,7 +1434,6 @@
                 htmlContent += `</div></div>`;
             }
 
-            // Render Pilihan Ganda Kompleks
             if (pgkList.length > 0) {
                 htmlContent += `
                     <div class="mb-6">
@@ -1427,7 +1447,6 @@
                 htmlContent += `</div></div>`;
             }
 
-            // Render Menjodohkan
             if (matchList.length > 0) {
                 htmlContent += `
                     <div class="mb-6">
@@ -1506,7 +1525,6 @@
                 htmlContent += `</div></div>`;
             }
 
-            // Render Isian
             if (isianList.length > 0) {
                 htmlContent += `
                     <div class="mb-6">
@@ -1520,7 +1538,6 @@
                 htmlContent += `</div></div>`;
             }
 
-            // Render Uraian
             if (uraianList.length > 0) {
                 htmlContent += `
                     <div class="mb-6">
@@ -1565,7 +1582,7 @@
         // ===================== PDF SETTINGS MODAL =====================
         function openPDFSettings() {
             if (generatedQuestions.length === 0) {
-                showToast("Tidak ada pertanyaan untuk diunduh", "error");
+                showToast("Tidak ada pertanyaan untuk dicetak", "error");
                 return;
             }
             if (isEditMode) {
@@ -1594,21 +1611,17 @@
             }
         }
 
-        // ===================== REWRITE TOTAL: processPDFDownload() =====================
-        // FIX kertas kosong:
-        // - JANGAN pakai position: absolute + left: -9999px (html2canvas tidak bisa render elemen off-screen)
-        // - Pakai position: fixed + opacity: 0 + zIndex: -9999 (masih di viewport)
-        // - Terapkan class print-guru/print-siswa KE CLONE, bukan elemen asli
-        // - height: auto (bukan height: 297mm) agar konten panjang tidak terpotong
-        // - setTimeout 100ms agar render selesai sebelum html2canvas
+        // ===================== processPDFDownload() - VIA WINDOW.PRINT =====================
+        // Strategi: pakai fitur print browser (Ctrl+P / Save as PDF).
+        // 100% dijamin jalan karena browser sendiri yang render, bukan html2canvas.
+        // CSS @media print sudah menyembunyikan semua elemen kecuali #paperPreview.
         function processPDFDownload() {
             const element = document.getElementById("paperPreview");
             if (!element || generatedQuestions.length === 0) {
-                showToast("Tidak ada pertanyaan untuk diunduh", "error");
+                showToast("Tidak ada pertanyaan untuk dicetak", "error");
                 return;
             }
 
-            // Simpan perubahan edit jika sedang dalam mode edit
             if (isEditMode) {
                 saveEditsFromPreview();
             }
@@ -1628,52 +1641,36 @@
             const footerRight  = document.getElementById("pdfFooterRight").value  || "Selamat Mengerjakan! - Jaga Kejujuran";
             const pageNumberStyle = document.getElementById("pdfPageNumber").value;
 
-            const mapel = document.getElementById("subjectInput").value;
-            const kelas = document.getElementById("classInput").value;
+            closePDFSettings();
 
-            // ===== 2. CLONE ELEMEN (sebelum class apapun diubah di elemen asli) =====
-            const clone = element.cloneNode(true);
-            clone.removeAttribute("id");
+            // ===== 2. SIMPAN STATE ASLI =====
+            const originalClassName = element.className;
+            const originalStyleCSS = element.getAttribute("style") || "";
 
-            // ===== 3. TERAPKAN CLASS MODE KE CLONE =====
-            clone.classList.remove("edit-mode", "print-siswa", "print-guru");
-            if (pdfMode === 'guru') {
-                clone.classList.add("print-guru");
-            } else {
-                clone.classList.add("print-siswa");
-            }
+            // ===== 3. SET CLASS SESUAI MODE =====
+            element.classList.remove("print-siswa", "print-guru", "edit-mode");
+            element.classList.add(pdfMode === 'guru' ? "print-guru" : "print-siswa");
 
-            // ===== 4. PAKSA UKURAN A4 PRESISI =====
-            clone.style.width = "210mm";
-            clone.style.minHeight = "297mm";
-            clone.style.height = "auto";  // PENTING: agar konten panjang tidak terpotong
-            clone.style.margin = "0";
-            clone.style.boxShadow = "none";
-            clone.style.border = "none";
-            clone.style.background = "white";
-            clone.style.boxSizing = "border-box";
-            // PENTING: JANGAN pakai position absolute + left -9999px (bikin kosong di html2canvas)
-            // Pakai fixed + opacity 0 (masih di viewport, html2canvas bisa render)
-            clone.style.position = "fixed";
-            clone.style.top = "0";
-            clone.style.left = "0";
-            clone.style.zIndex = "-9999";
-            clone.style.opacity = "0";
-            clone.style.pointerEvents = "none";
+            // ===== 4. SET STYLE A4 PRESISI UNTUK PRINT =====
+            element.style.width = "210mm";
+            element.style.minHeight = "297mm";
+            element.style.padding = useHeaderFooter
+                ? `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`
+                : "10mm";
+            element.style.margin = "0";
+            element.style.boxShadow = "none";
+            element.style.border = "none";
+            element.style.background = "white";
+            element.style.boxSizing = "border-box";
 
-            // Padding hanya jika pakai header/footer
+            // ===== 5. HEADER & FOOTER SEMENTARA =====
+            let tempHeader = null;
+            let tempFooter = null;
+
             if (useHeaderFooter) {
-                clone.style.padding = `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`;
-            } else {
-                clone.style.padding = "10mm";
-            }
-
-            // ===== 5. HEADER & FOOTER OPSIONAL =====
-            if (useHeaderFooter) {
-                // HEADER
-                const header = document.createElement("div");
-                header.setAttribute("data-pdf-header", "true");
-                header.innerHTML = `
+                tempHeader = document.createElement("div");
+                tempHeader.setAttribute("data-temp-header", "true");
+                tempHeader.innerHTML = `
                     <div style="text-align:center; font-weight:bold; font-size:14pt; text-transform:uppercase; letter-spacing:0.5px;">
                         ${headerTitle}
                     </div>
@@ -1685,19 +1682,15 @@
                     </div>
                     <hr style="border:none; border-top:2px solid #000; margin:8px 0 12px 0;">
                 `;
-                clone.prepend(header);
+                element.prepend(tempHeader);
 
-                // FOOTER
-                const footer = document.createElement("div");
-                footer.setAttribute("data-pdf-footer", "true");
                 let pageText = "";
-                if (pageNumberStyle === "bottom-center") {
-                    pageText = "Halaman {page} dari {total}";
-                } else if (pageNumberStyle === "bottom-right") {
-                    pageText = "Halaman {page}";
-                }
+                if (pageNumberStyle === "bottom-center") pageText = "Halaman {page} dari {total}";
+                else if (pageNumberStyle === "bottom-right") pageText = "Halaman {page}";
 
-                footer.innerHTML = `
+                tempFooter = document.createElement("div");
+                tempFooter.setAttribute("data-temp-footer", "true");
+                tempFooter.innerHTML = `
                     <hr style="border:none; border-top:1px solid #cbd5e1; margin:12px 0 6px 0;">
                     <div style="display:flex; justify-content:space-between; font-size:9pt; color:#64748b;">
                         <span>${footerLeft}</span>
@@ -1705,65 +1698,37 @@
                     </div>
                     ${pageText ? `<div style="text-align:${pageNumberStyle === 'bottom-right' ? 'right' : 'center'}; font-size:9pt; color:#94a3b8; margin-top:4px;">${pageText}</div>` : ''}
                 `;
-                clone.appendChild(footer);
+                element.appendChild(tempFooter);
             }
 
-            // ===== 6. KONVERSI LOGO KE BASE64 =====
-            const clonedKiri = clone.querySelector('img[alt="Logo Kabupaten"]');
-            const clonedKanan = clone.querySelector('img[alt="Logo Sekolah"]');
-            const originalKiri = element.querySelector('img[alt="Logo Kabupaten"]');
-            const originalKanan = element.querySelector('img[alt="Logo Sekolah"]');
+            // ===== 6. TRIGGER PRINT =====
+            showToast("Pilih 'Save as PDF' di dialog print untuk menyimpan sebagai PDF.", "info");
 
-            if (clonedKiri && originalKiri) {
-                clonedKiri.src = getBase64FromImage(originalKiri, fallbackLogoKiriSVG);
-            }
-            if (clonedKanan && originalKanan) {
-                clonedKanan.src = getBase64FromImage(originalKanan, fallbackLogoKananSVG);
-            }
-
-            // ===== 7. APPEND KE BODY =====
-            document.body.appendChild(clone);
-
-            const fileName = pdfMode === "siswa"
-                ? `Soal_Ujian_${mapel.replace(/\s+/g, '_')}_Kelas_${kelas.replace(/\s+/g, '_')}.pdf`
-                : `Kunci_Jawaban_${mapel.replace(/\s+/g, '_')}_Kelas_${kelas.replace(/\s+/g, '_')}.pdf`;
-
-            const opt = {
-                margin: 0,
-                filename: fileName,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: {
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: false,
-                    letterRendering: true,
-                    logging: false,
-                    scrollX: 0,
-                    scrollY: 0,
-                    windowWidth: clone.scrollWidth,
-                    windowHeight: clone.scrollHeight
-                },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['css', 'legacy'], avoid: '.question-item' }
-            };
-
-            showToast(`Sedang merender lembar PDF ${pdfMode.toUpperCase()} (Ukuran A4)...`, "info");
-
-            // Tunggu 1 frame agar render selesai sebelum html2canvas
             setTimeout(() => {
-                html2pdf().set(opt).from(clone).save().then(() => {
-                    if (clone.parentNode) {
-                        document.body.removeChild(clone);
+                window.print();
+
+                // ===== 7. RESTORE STATE =====
+                const restoreState = () => {
+                    if (tempHeader && tempHeader.parentNode) tempHeader.parentNode.removeChild(tempHeader);
+                    if (tempFooter && tempFooter.parentNode) tempFooter.parentNode.removeChild(tempFooter);
+
+                    element.className = originalClassName;
+                    if (originalStyleCSS) {
+                        element.setAttribute("style", originalStyleCSS);
+                    } else {
+                        element.removeAttribute("style");
                     }
-                    showToast("PDF Berhasil diunduh!", "success");
-                }).catch(err => {
-                    console.error("PDF generation error:", err);
-                    if (clone.parentNode) {
-                        document.body.removeChild(clone);
-                    }
-                    showToast("Gagal menyimpan PDF: " + err.message, "error");
-                });
-            }, 100);
+
+                    window.removeEventListener("afterprint", restoreState);
+                };
+
+                window.addEventListener("afterprint", restoreState);
+
+                // Fallback kalau afterprint tidak jalan
+                setTimeout(() => {
+                    if (tempHeader && tempHeader.parentNode) restoreState();
+                }, 2000);
+            }, 300);
         }
 
         // ===================== DOWNLOAD DOC =====================
