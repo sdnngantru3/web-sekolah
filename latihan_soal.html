@@ -54,7 +54,6 @@
             padding-right: 8px;
         }
 
-        /* Edit Mode Styling */
         .edit-mode .question-item {
             border: 2px solid #fbbf24;
             border-radius: 8px;
@@ -87,7 +86,6 @@
             display: block;
         }
         
-        /* Kunci jawaban hanya muncul di mode guru */
         .kunci-jawaban-text {
             display: none !important;
         }
@@ -116,7 +114,6 @@
             background: #f59e0b;
         }
         
-        /* Badge kunci jawaban */
         .key-badge {
             background: #fef3c7;
             color: #92400e;
@@ -126,138 +123,10 @@
             font-size: 9px;
             font-weight: bold;
         }
-
-        /* ============================================
-           CSS PRINT - VIA WINDOW.PRINT BROWSER (FIX)
-           ============================================
-           Strategi: PAKAI display:none (bukan visibility:hidden).
-           visibility:hidden pada parent membuat child tetap hidden 
-           walau di-set visible — ini penyebab preview kosong.
-           
-           Yang di-display:none: header, section panel kontrol, modal, toast.
-           Yang di-display:block: #resultContainer + #paperPreview.
-        */
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 0;
-            }
-            
-            /* Reset html & body */
-            html, body {
-                background: white !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 210mm !important;
-                min-height: 297mm !important;
-            }
-            
-            /* Sembunyikan SEMUA elemen utama kecuali resultContainer */
-            body > header,
-            body > main > section:first-child,
-            body > #pdfSettingsModal,
-            body > #confirmModal,
-            body > #toast {
-                display: none !important;
-            }
-            
-            /* Sembunyikan panel kanan kecuali resultContainer */
-            body > main > section:last-child > *:not(#resultContainer) {
-                display: none !important;
-            }
-            
-            /* Sembunyikan bar kontrol preview (child pertama resultContainer) */
-            #resultContainer > div:first-child {
-                display: none !important;
-            }
-            
-            /* Reset wrapper overflow-x-auto */
-            #resultContainer {
-                display: block !important;
-                position: static !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: white !important;
-            }
-            
-            #resultContainer > div.overflow-x-auto {
-                display: block !important;
-                overflow: visible !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                background: white !important;
-                border: none !important;
-                border-radius: 0 !important;
-                box-shadow: none !important;
-            }
-            
-            /* Tampilkan kertas A4 */
-            #paperPreview {
-                display: block !important;
-                position: static !important;
-                width: 210mm !important;
-                min-height: 297mm !important;
-                margin: 0 auto !important;
-                padding: 15mm !important;
-                box-shadow: none !important;
-                border: none !important;
-                background: white !important;
-                box-sizing: border-box !important;
-                visibility: visible !important;
-            }
-            
-            #paperPreview * {
-                visibility: visible !important;
-            }
-            
-            /* Logo harus muncul */
-            #paperPreview img {
-                display: inline-block !important;
-                max-height: 64px !important;
-                max-width: 100% !important;
-            }
-            
-            /* Hindari soal terpotong */
-            .question-item {
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
-            }
-            
-            /* Reset edit mode saat print */
-            .edit-mode .question-item {
-                border: none !important;
-                background: transparent !important;
-                padding: 0 !important;
-            }
-            .edit-controls,
-            .edit-input {
-                display: none !important;
-            }
-            .view-text {
-                display: block !important;
-            }
-            .question-item:hover {
-                background: transparent !important;
-            }
-            
-            /* Kunci jawaban: hanya tampil di mode guru */
-            .kunci-jawaban-text {
-                display: none !important;
-            }
-            .print-guru .kunci-jawaban-text {
-                display: block !important;
-            }
-            
-            /* Pastikan elemen no-print tetap tersembunyi */
-            .no-print {
-                display: none !important;
-            }
-        }
     </style>
 </head>
 <body class="text-slate-800 antialiased min-h-screen pb-12">
 
-    <!-- Header Instansi & Menu Daftar API -->
     <header class="gradient-header text-white py-6 px-4 shadow-md mb-8 no-print">
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-4">
@@ -275,22 +144,16 @@
                     <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
                 </a>
                 <a href="https://aistudio.google.com/" target="_blank" class="glow-button flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-2 px-4 rounded-xl border border-emerald-400/30 text-xs shadow-sm transition">
-                    <i class="fa-solid fa-key"></i> Daftar API Key Gemini (Gratis) <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-85"></i>
+                    <i class="fa-solid fa-key"></i> Daftar API Key Gemini <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-85"></i>
                 </a>
-                <div class="flex items-center gap-2 text-xs bg-black/20 px-3 py-1.5 rounded-full border border-white/10">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>Auto-Fallback Active</span>
-                </div>
             </div>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- Panel Kontrol (Kiri) -->
         <section class="lg:col-span-4 space-y-6 no-print">
             
-            <!-- API Key & Konfigurasi -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
                 <h2 class="text-md font-bold mb-4 text-slate-900 flex items-center gap-2">
                     <i class="fa-solid fa-key text-emerald-600"></i> Konfigurasi API Gemini
@@ -300,31 +163,27 @@
                     <i class="fa-solid fa-circle-info text-emerald-600 mt-0.5 text-sm"></i>
                     <div>
                         <h4 class="text-xs font-bold text-emerald-900">Belum punya API Key?</h4>
-                        <p class="text-[10px] text-emerald-700/90 mt-0.5 mb-1.5">Silakan daftar gratis menggunakan akun Google (Gmail) Anda untuk mendapatkan akses AI tanpa batas kuota.</p>
+                        <p class="text-[10px] text-emerald-700/90 mt-0.5 mb-1.5">Daftar gratis dengan akun Google (Gmail) Anda untuk akses AI tanpa batas kuota.</p>
                         <a href="https://aistudio.google.com/" target="_blank" class="inline-flex items-center gap-1 text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-2.5 rounded-lg transition-colors">
-                            Ambil Kunci Gratis Di Sini <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>
+                            Ambil Kunci Gratis <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>
                         </a>
                     </div>
                 </div>
 
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">API KEY GEMINI ANDA</label>
-                        <div class="relative">
-                            <input type="password" id="apiKeyInput" 
-                                   value="" 
-                                   class="w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50"
-                                   placeholder="Tempel API Key di sini (AIzaSy...)">
-                            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
-                                <i id="eyeIcon" class="fa-solid fa-eye-slash text-sm"></i>
-                            </button>
-                        </div>
-                        <p class="text-[10px] text-slate-400 mt-1.5">API Key disimpan secara aman di memori lokal peramban Anda.</p>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">API KEY GEMINI ANDA</label>
+                    <div class="relative">
+                        <input type="password" id="apiKeyInput" value="" 
+                               class="w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50"
+                               placeholder="Tempel API Key di sini (AIzaSy...)">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                            <i id="eyeIcon" class="fa-solid fa-eye-slash text-sm"></i>
+                        </button>
                     </div>
+                    <p class="text-[10px] text-slate-400 mt-1.5">API Key disimpan di memori lokal peramban Anda.</p>
                 </div>
             </div>
 
-            <!-- Detail Ujian / Kop Soal -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
                 <h2 class="text-md font-bold mb-4 text-slate-900 flex items-center gap-2">
                     <i class="fa-solid fa-file-invoice text-emerald-600"></i> Atribut Lembar Ujian
@@ -364,23 +223,23 @@
                         <span class="block text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
                             <i class="fa-regular fa-image text-emerald-600"></i> Logo Kop Lembar Ujian
                         </span>
-                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-150 text-[10px] text-slate-500 leading-relaxed">
-                            Secara default, sistem akan menampilkan logo placeholder. Anda dapat mengganti logo dengan mengunggah file gambar di bawah ini.
+                        <div class="bg-slate-50 p-2.5 rounded-lg text-[10px] text-slate-500 leading-relaxed">
+                            Default: <span class="font-bold">logo_kabupaten.png</span> & <span class="font-bold">logo_sekolah.png</span> dari folder yang sama. Upload untuk mengganti.
                         </div>
                         
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-1">Ganti Logo Kiri (Manual)</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-1">Logo Kiri</label>
                                 <div class="flex flex-col gap-1.5">
                                     <input type="file" id="logoKiriInput" accept="image/*" onchange="handleLogoUpload(event, 'kiri')" class="w-full text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                                    <button type="button" id="btnHapusLogoKiri" onclick="clearLogo('kiri')" class="hidden text-[9px] text-rose-500 hover:text-rose-700 font-bold self-start"><i class="fa-solid fa-trash-can"></i> Reset Default</button>
+                                    <button type="button" id="btnHapusLogoKiri" onclick="clearLogo('kiri')" class="hidden text-[9px] text-rose-500 hover:text-rose-700 font-bold self-start"><i class="fa-solid fa-trash-can"></i> Reset ke Default</button>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 mb-1">Ganti Logo Kanan (Manual)</label>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-1">Logo Kanan</label>
                                 <div class="flex flex-col gap-1.5">
                                     <input type="file" id="logoKananInput" accept="image/*" onchange="handleLogoUpload(event, 'kanan')" class="w-full text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                                    <button type="button" id="btnHapusLogoKanan" onclick="clearLogo('kanan')" class="hidden text-[9px] text-rose-500 hover:text-rose-700 font-bold self-start"><i class="fa-solid fa-trash-can"></i> Reset Default</button>
+                                    <button type="button" id="btnHapusLogoKanan" onclick="clearLogo('kanan')" class="hidden text-[9px] text-rose-500 hover:text-rose-700 font-bold self-start"><i class="fa-solid fa-trash-can"></i> Reset ke Default</button>
                                 </div>
                             </div>
                         </div>
@@ -388,14 +247,12 @@
                 </div>
             </div>
 
-            <!-- Tombol Aksi Utama -->
             <button id="btnGenerate" onclick="generateQuestions()" class="w-full glow-button bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md flex items-center justify-center gap-3">
                 <i class="fa-solid fa-wand-magic-sparkles"></i> Mulai Generator AI
             </button>
             
         </section>
 
-        <!-- Kisi-Kisi & Tabel Pengisian (Kanan) -->
         <section class="lg:col-span-8 space-y-6 no-print">
             
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
@@ -404,7 +261,7 @@
                         <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
                             <i class="fa-solid fa-list-check text-emerald-600"></i> Kisi-Kisi & Indikator Soal
                         </h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Tentukan indikator soal beserta jumlah target butir soal yang diinginkan.</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Tentukan indikator soal beserta jumlah target butir soal.</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <button onclick="addTableRow()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
@@ -414,7 +271,7 @@
                             <i class="fa-solid fa-file-import"></i> Impor Excel
                         </button>
                         <button onclick="downloadExcelTemplate()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-export"></i> Template Excel
+                            <i class="fa-solid fa-file-export"></i> Template
                         </button>
                         <input type="file" id="excelFile" class="hidden" accept=".xlsx, .xls" onchange="importExcel(event)">
                     </div>
@@ -427,15 +284,14 @@
                                 <th class="p-3 text-center w-12">No</th>
                                 <th class="p-3 min-w-[120px]">Materi</th>
                                 <th class="p-3 min-w-[180px]">Indikator Soal</th>
-                                <th class="p-3 w-28 text-center">Level Kognitif</th>
-                                <th class="p-3 w-32 text-center">Bentuk Soal</th>
+                                <th class="p-3 w-28 text-center">Level</th>
+                                <th class="p-3 w-32 text-center">Bentuk</th>
                                 <th class="p-3 w-16 text-center">Skor</th>
-                                <th class="p-3 w-20 text-center">Jml Soal</th>
+                                <th class="p-3 w-20 text-center">Jml</th>
                                 <th class="p-3 w-12 text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="indicatorsTableBody" class="divide-y divide-slate-100">
-                        </tbody>
+                        <tbody id="indicatorsTableBody" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
 
@@ -447,17 +303,16 @@
                 </div>
             </div>
 
-            <!-- Mode Input Cepat -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
                     <div>
                         <h2 class="text-md font-bold text-slate-900 flex items-center gap-2">
                             <i class="fa-solid fa-bolt text-amber-500 animate-pulse"></i> Mode Input Cepat (⚡ Instan)
                         </h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Cara instan: Cukup ketik Mata Pelajaran & Materi Pokok. Sistem akan melengkapi kisi-kisi standar otomatis.</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Cukup ketik Mata Pelajaran & Materi Pokok. Sistem lengkapi otomatis.</p>
                     </div>
                     <button onclick="addFastRow()" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
-                        <i class="fa-solid fa-plus"></i> Tambah Baris Cepat
+                        <i class="fa-solid fa-plus"></i> Tambah Baris
                     </button>
                 </div>
 
@@ -472,39 +327,35 @@
                                 <th class="p-3 w-12 text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="fastTableBody" class="divide-y divide-slate-100">
-                        </tbody>
+                        <tbody id="fastTableBody" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
                 <div class="flex justify-end">
                     <button onclick="applyFastInputsToMainTable()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all duration-300">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Terapkan ke Tabel Kisi-Kisi Utama
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Terapkan ke Tabel Utama
                     </button>
                 </div>
             </div>
 
-            <!-- Loader & Status Progress -->
             <div id="aiLoader" class="hidden bg-white p-8 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col items-center justify-center text-center space-y-4">
                 <div class="relative flex items-center justify-center">
                     <div class="animate-spin rounded-full h-14 w-14 border-t-4 border-b-4 border-emerald-600"></div>
                     <i class="fa-solid fa-brain absolute text-xl text-emerald-500 animate-pulse"></i>
                 </div>
                 <div>
-                    <h3 class="text-md font-bold text-slate-800" id="loaderTitle">Menghubungi AI Gemini...</h3>
-                    <p class="text-xs text-slate-400 mt-1 max-w-md mx-auto" id="loaderMessage">Mohon tunggu, AI sedang merancang butir-butir soal ujian berkualitas tinggi berdasarkan kisi-kisi Anda.</p>
+                    <h3 class="text-md font-bold text-slate-800">Menghubungi AI Gemini...</h3>
+                    <p class="text-xs text-slate-400 mt-1 max-w-md mx-auto">Mohon tunggu, AI sedang merancang butir-butir soal ujian.</p>
                 </div>
             </div>
 
-            <!-- Area Tampilan Hasil Pembuatan Soal -->
             <div id="resultContainer" class="hidden space-y-4">
                 
-                <!-- Bar Kontrol Hasil Pratinjau -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 no-print">
                     <div class="space-y-1">
                         <span class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-eye text-emerald-600"></i> Pratinjau Kertas Soal (Ukuran A4)
+                            <i class="fa-solid fa-eye text-emerald-600"></i> Pratinjau Kertas Soal (A4)
                         </span>
-                        <p class="text-xs text-slate-400">Silakan tinjau lembar kertas di bawah sebelum mengunduh berkas PDF.</p>
+                        <p class="text-xs text-slate-400">Tinjau lembar kertas di bawah sebelum cetak.</p>
                     </div>
                     
                     <div class="flex flex-wrap items-center gap-2.5 w-full xl:w-auto justify-start xl:justify-end">
@@ -526,15 +377,13 @@
                         </button>
                         
                         <button onclick="resetAndCreateAgain()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center gap-1.5 shadow-sm transition">
-                            <i class="fa-solid fa-rotate-right"></i> Buat Soal Lagi
+                            <i class="fa-solid fa-rotate-right"></i> Buat Lagi
                         </button>
                     </div>
                 </div>
 
-                <!-- Lembar Pratinjau Kertas Ujian -->
-                <div class="overflow-x-auto p-4 bg-slate-200/50 rounded-2xl border border-slate-300 flex justify-center custom-scrollbar no-print">
-                    <div class="a4-preview-sheet print-siswa" id="paperPreview">
-                    </div>
+                <div class="overflow-x-auto p-4 bg-slate-200/50 rounded-2xl border border-slate-300 flex justify-center custom-scrollbar">
+                    <div class="a4-preview-sheet print-siswa" id="paperPreview"></div>
                 </div>
             </div>
 
@@ -542,12 +391,12 @@
 
     </main>
 
-    <!-- MODAL PENGATURAN HEADER & FOOTER PDF -->
+    <!-- MODAL PENGATURAN CETAK -->
     <div id="pdfSettingsModal" class="fixed inset-0 z-[999] hidden modal-overlay flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl modal-content border border-slate-200">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl modal-content border border-slate-200">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-print text-emerald-600"></i> Pengaturan Cetak PDF
+                    <i class="fa-solid fa-print text-emerald-600"></i> Cetak Lembar Ujian
                 </h3>
                 <button onclick="closePDFSettings()" class="text-slate-400 hover:text-slate-600 text-xl">
                     <i class="fa-solid fa-times"></i>
@@ -555,129 +404,143 @@
             </div>
             
             <div class="space-y-4">
+                
                 <div class="bg-sky-50 border border-sky-100 p-3 rounded-xl flex items-start gap-2.5">
-                    <i class="fa-solid fa-circle-info text-sky-600 mt-0.5 text-sm"></i>
+                    <i class="fa-solid fa-lightbulb text-sky-600 mt-0.5 text-sm"></i>
                     <div>
-                        <h4 class="text-xs font-bold text-sky-900">Cara Simpan PDF</h4>
-                        <p class="text-[10px] text-sky-700/90 mt-0.5">Setelah klik tombol di bawah, dialog print akan muncul. Pilih <b>Destination: Save as PDF</b>, ukuran kertas <b>A4</b>, dan centang <b>Background graphics</b>.</p>
+                        <h4 class="text-xs font-bold text-sky-900">Cara Terbaik Simpan PDF</h4>
+                        <p class="text-[10px] text-sky-700/90 mt-0.5">Klik <b>Cetak di Tab Baru</b> → tab baru terbuka dengan lembar ujian → klik tombol <b>Cetak / Save as PDF</b> atau tekan <b>Ctrl+P</b> → pilih <b>Save as PDF</b>, ukuran <b>A4</b>, margins <b>None</b>.</p>
                     </div>
                 </div>
 
                 <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Pilih Metode Cetak</label>
+                    <div class="space-y-2">
+                        
+                        <button onclick="printViaNewTab()" class="w-full flex items-center gap-3 p-3 border-2 border-emerald-500 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition text-left">
+                            <div class="bg-emerald-500 text-white p-2 rounded-lg">
+                                <i class="fa-solid fa-up-right-from-square"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <div class="text-xs font-bold text-emerald-900">🖨️ Cetak di Tab Baru (Rekomendasi)</div>
+                                <div class="text-[10px] text-emerald-700 mt-0.5">Tab baru terbuka dengan lembar ujian siap cetak.</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-emerald-600"></i>
+                        </button>
+
+                        <button onclick="printDirect()" class="w-full flex items-center gap-3 p-3 border-2 border-slate-200 bg-white hover:bg-slate-50 rounded-xl transition text-left">
+                            <div class="bg-slate-600 text-white p-2 rounded-lg">
+                                <i class="fa-solid fa-print"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <div class="text-xs font-bold text-slate-800">🖨️ Cetak Langsung (Halaman Ini)</div>
+                                <div class="text-[10px] text-slate-500 mt-0.5">Dialog print muncul di halaman ini.</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-slate-400"></i>
+                        </button>
+
+                        <button onclick="closePDFSettings(); downloadExamDOC();" class="w-full flex items-center gap-3 p-3 border-2 border-slate-200 bg-white hover:bg-slate-50 rounded-xl transition text-left">
+                            <div class="bg-blue-600 text-white p-2 rounded-lg">
+                                <i class="fa-solid fa-file-word"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <div class="text-xs font-bold text-slate-800">💾 Unduh sebagai .doc (Word)</div>
+                                <div class="text-[10px] text-slate-500 mt-0.5">Unduh file Word, bisa diedit lalu print dari Word.</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-slate-400"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-3">
                     <label class="block text-xs font-semibold text-slate-600 mb-1.5">Mode Cetak</label>
                     <div class="grid grid-cols-2 gap-2">
                         <button id="pdfModeSiswa" onclick="setPDFMode('siswa')" class="py-2 px-3 rounded-lg text-xs font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-700 transition">
-                            <i class="fa-solid fa-user-graduate"></i> Mode Siswa
+                            <i class="fa-solid fa-user-graduate"></i> Siswa
                         </button>
                         <button id="pdfModeGuru" onclick="setPDFMode('guru')" class="py-2 px-3 rounded-lg text-xs font-bold border-2 border-slate-200 bg-white text-slate-600 transition">
-                            <i class="fa-solid fa-chalkboard-user"></i> Mode Guru (Kunci)
+                            <i class="fa-solid fa-chalkboard-user"></i> Guru (Kunci)
                         </button>
                     </div>
                 </div>
 
-                <div class="border-t border-slate-100 pt-3">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                        <i class="fa-solid fa-arrows-to-dot text-emerald-600"></i> Pengaturan Margin Halaman
-                    </label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] text-slate-500 mb-0.5">Margin Atas (mm)</label>
-                            <input type="number" id="pdfMarginTop" value="20" min="10" max="40" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <details class="border-t border-slate-100 pt-3">
+                    <summary class="text-xs font-bold text-slate-700 cursor-pointer hover:text-emerald-700 select-none">
+                        <i class="fa-solid fa-sliders text-emerald-600"></i> Pengaturan Lanjutan (Opsional)
+                    </summary>
+                    <div class="space-y-3 mt-3">
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-500 mb-0.5">Margin Atas (mm)</label>
+                                <input type="number" id="pdfMarginTop" value="20" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 mb-0.5">Margin Bawah (mm)</label>
+                                <input type="number" id="pdfMarginBottom" value="15" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 mb-0.5">Margin Kiri (mm)</label>
+                                <input type="number" id="pdfMarginLeft" value="20" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 mb-0.5">Margin Kanan (mm)</label>
+                                <input type="number" id="pdfMarginRight" value="20" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-500 mb-0.5">Margin Bawah (mm)</label>
-                            <input type="number" id="pdfMarginBottom" value="15" min="10" max="40" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-500 mb-0.5">Margin Kiri (mm)</label>
-                            <input type="number" id="pdfMarginLeft" value="20" min="10" max="30" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-500 mb-0.5">Margin Kanan (mm)</label>
-                            <input type="number" id="pdfMarginRight" value="20" min="10" max="30" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                    </div>
-                </div>
 
-                <div class="border-t border-slate-100 pt-3">
-                    <label class="flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer select-none">
-                        <input type="checkbox" id="toggleHeaderFooter" class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 cursor-pointer">
-                        <span>Aktifkan Header & Footer tambahan</span>
-                    </label>
-                    <p class="text-[10px] text-slate-400 mt-1 ml-6">Jika dicentang, kop tambahan akan muncul di atas lembar ujian.</p>
-                </div>
+                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer select-none">
+                            <input type="checkbox" id="toggleHeaderFooter" class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 cursor-pointer">
+                            <span>Aktifkan Header & Footer tambahan</span>
+                        </label>
 
-                <div class="border-t border-slate-100 pt-3">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                        <i class="fa-solid fa-heading text-emerald-600"></i> Header / Kop Surat
-                    </label>
-                    <div class="space-y-2">
                         <div>
-                            <label class="block text-[10px] text-slate-500 mb-0.5">Judul Utama</label>
+                            <label class="block text-[10px] text-slate-500 mb-0.5">Judul Header</label>
                             <input type="text" id="pdfHeaderTitle" value="SOAL UJIAN SEKOLAH DASAR" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
                         </div>
                         <div>
-                            <label class="block text-[10px] text-slate-500 mb-0.5">Sub Judul / Instansi</label>
+                            <label class="block text-[10px] text-slate-500 mb-0.5">Sub Judul Header</label>
                             <input type="text" id="pdfHeaderSub" value="SD NEGERI 3 NGANTRU - KABUPATEN MALANG" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
                         </div>
                         <div>
-                            <label class="block text-[10px] text-slate-500 mb-0.5">Tahun Ajaran</label>
+                            <label class="block text-[10px] text-slate-500 mb-0.5">Tahun Ajaran Header</label>
                             <input type="text" id="pdfHeaderYear" value="TAHUN AJARAN 2025/2026" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
                         </div>
-                    </div>
-                </div>
-
-                <div class="border-t border-slate-100 pt-3">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                        <i class="fa-solid fa-pencil text-emerald-600"></i> Footer / Catatan Kaki
-                    </label>
-                    <div class="space-y-2">
-                        <div>
-                            <label class="block text-[10px] text-slate-500 mb-0.5">Teks Footer Kiri</label>
-                            <input type="text" id="pdfFooterLeft" value="Dinas Pendidikan Kabupaten Malang" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-500 mb-0.5">Teks Footer Kanan</label>
-                            <input type="text" id="pdfFooterRight" value="Selamat Mengerjakan! - Jaga Kejujuran" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-500 mb-0.5">Nomor Halaman</label>
-                            <select id="pdfPageNumber" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                                <option value="none">Tanpa Nomor Halaman</option>
-                                <option value="bottom-center" selected>Halaman {page} dari {total}</option>
-                                <option value="bottom-right">Halaman {page}</option>
-                            </select>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-500 mb-0.5">Footer Kiri</label>
+                                <input type="text" id="pdfFooterLeft" value="Dinas Pendidikan Kabupaten Malang" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 mb-0.5">Footer Kanan</label>
+                                <input type="text" id="pdfFooterRight" value="Selamat Mengerjakan! - Jaga Kejujuran" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
                         </div>
                     </div>
-                </div>
+                </details>
 
-                <div class="flex gap-3 pt-2 border-t border-slate-100">
-                    <button onclick="closePDFSettings()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition">Batal</button>
-                    <button onclick="processPDFDownload()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-print"></i> Cetak / Save PDF
-                    </button>
+                <div class="pt-2 border-t border-slate-100">
+                    <button onclick="closePDFSettings()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition">Tutup</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 bg-slate-950 text-white text-xs font-semibold py-3 px-4 rounded-xl shadow-lg flex items-center gap-2 no-print">
         <i id="toastIcon" class="fa-solid"></i>
         <span id="toastMsg"></span>
     </div>
 
-    <!-- Custom Confirmation Modal -->
     <div id="confirmModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 no-print">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 space-y-4">
             <div class="flex items-center gap-3 text-rose-600">
                 <i class="fa-solid fa-circle-exclamation text-2xl animate-bounce"></i>
-                <h3 class="font-bold text-lg text-slate-900">Konfirmasi Tindakan</h3>
+                <h3 class="font-bold text-lg text-slate-900">Konfirmasi</h3>
             </div>
-            <p class="text-sm text-slate-600" id="confirmModalText">Apakah Anda yakin ingin melakukan tindakan ini?</p>
+            <p class="text-sm text-slate-600" id="confirmModalText">Apakah Anda yakin?</p>
             <div class="flex gap-3 justify-end pt-2">
                 <button onclick="closeConfirmModal(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-colors">Batal</button>
-                <button id="btnConfirmModalAction" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg transition-colors">Ya, Kosongkan</button>
+                <button id="btnConfirmModalAction" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg transition-colors">Ya</button>
             </div>
         </div>
     </div>
@@ -692,9 +555,11 @@
         let logoKiriData = "";
         let logoKananData = "";
 
-        // SVG base64 (agar tidak butuh file eksternal / hindari CORS)
-        const fallbackLogoKiriSVG = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YxZjVmOSIgcng9IjE2Ii8+PHBhdGggZD0iTTUwIDE1IEw4MCAzNSBMODAgNzUgTDUwIDkwIEwyMCA3NSBMMjAgMzUgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGY3NjZlIiBzdHJva2Utd2lkdGg9IjQiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIxOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGY3NjZlIiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNNTAgMjUgTDUwIDQwIE01MCA2MCBMNTAgNzUiIHN0cm9rZT0iIzBmNzY2ZSIgc3Ryb2tlLXdpZHRoPSIzIi8+PC9zdmc+";
-        const fallbackLogoKananSVG = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YxZjVmOSIgcng9IjE2Ii8+PHBhdGggZD0iTTIwIDM1IEw1MCAyMCBMODAgMzUgTDUwIDUwIFoiIGZpbGw9IiMwNjRlM2IiLz48cGF0aCBkPSJNMzAgNDUgTDMwIDcwIEw1MCA4MCBMNzAgNzAgTDcwIDQ1IEw1MCA1NSBaIiBmaWxsPSIjMGY3NjZlIi8+PHBhdGggZD0iTTgwIDM1IEw4MCA2NSIgc3Ryb2tlPSIjMGY3NjZlIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==";
+        // ===================== DEFAULT LOGO PATHS =====================
+        // Logo default diambil dari file lokal di folder yang sama.
+        // Pastikan file "logo_kabupaten.png" dan "logo_sekolah.png" ada.
+        const DEFAULT_LOGO_KIRI = "logo_kabupaten.png";
+        const DEFAULT_LOGO_KANAN = "logo_sekolah.png";
 
         window.onload = function() {
             renderTable();
@@ -705,18 +570,12 @@
             const toast = document.getElementById("toast");
             const toastIcon = document.getElementById("toastIcon");
             const toastMsg = document.getElementById("toastMsg");
-
             toastMsg.textContent = message;
             
-            if (type === "success") {
-                toastIcon.className = "fa-solid fa-circle-check text-emerald-400";
-            } else if (type === "error") {
-                toastIcon.className = "fa-solid fa-circle-exclamation text-rose-500";
-            } else if (type === "warning") {
-                toastIcon.className = "fa-solid fa-triangle-exclamation text-amber-500";
-            } else {
-                toastIcon.className = "fa-solid fa-circle-info text-sky-400";
-            }
+            if (type === "success") toastIcon.className = "fa-solid fa-circle-check text-emerald-400";
+            else if (type === "error") toastIcon.className = "fa-solid fa-circle-exclamation text-rose-500";
+            else if (type === "warning") toastIcon.className = "fa-solid fa-triangle-exclamation text-amber-500";
+            else toastIcon.className = "fa-solid fa-info-circle text-sky-400";
 
             toast.classList.remove("translate-y-12", "opacity-0", "pointer-events-none");
             toast.classList.add("translate-y-0", "opacity-100");
@@ -727,7 +586,6 @@
             }, 3000);
         }
 
-        // ===================== EDIT MODE TOGGLE =====================
         function toggleEditMode() {
             isEditMode = !isEditMode;
             const previewEl = document.getElementById("paperPreview");
@@ -737,52 +595,39 @@
                 previewEl.classList.add("edit-mode");
                 btn.classList.add("active");
                 btn.innerHTML = '<i class="fa-solid fa-check"></i> Selesai Edit';
-                showToast("Mode Edit aktif! Ubah soal atau opsi jawaban.", "info");
+                showToast("Mode Edit aktif!", "info");
             } else {
                 previewEl.classList.remove("edit-mode");
                 btn.classList.remove("active");
                 btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Edit Soal';
                 saveEditsFromPreview();
-                showToast("Perubahan soal telah disimpan!", "success");
+                showToast("Perubahan disimpan!", "success");
             }
         }
 
-        // ===================== SAVE EDITS FROM PREVIEW =====================
         function saveEditsFromPreview() {
             const questionItems = document.querySelectorAll('#paperPreview .question-item');
-            
             questionItems.forEach((item, idx) => {
                 if (idx >= generatedQuestions.length) return;
-                
                 const qInput = item.querySelector('.edit-question-input');
                 if (qInput) {
-                    let newText = qInput.value.trim();
-                    newText = newText.replace(/^\d+\.\s*/, '');
-                    if (newText) {
-                        generatedQuestions[idx].pertanyaan = newText;
-                    }
+                    let newText = qInput.value.trim().replace(/^\d+\.\s*/, '');
+                    if (newText) generatedQuestions[idx].pertanyaan = newText;
                 }
-                
                 const optionInputs = item.querySelectorAll('.edit-option-input');
                 if (optionInputs.length > 0 && generatedQuestions[idx].pilihan) {
                     optionInputs.forEach((input, optIdx) => {
                         if (optIdx < generatedQuestions[idx].pilihan.length) {
                             const newOpt = input.value.trim();
-                            if (newOpt) {
-                                generatedQuestions[idx].pilihan[optIdx] = newOpt;
-                            }
+                            if (newOpt) generatedQuestions[idx].pilihan[optIdx] = newOpt;
                         }
                     });
                 }
             });
-            
             renderExamPaper();
-            if (isEditMode) {
-                document.getElementById("paperPreview").classList.add("edit-mode");
-            }
+            if (isEditMode) document.getElementById("paperPreview").classList.add("edit-mode");
         }
 
-        // ===================== HANDLE LOGO =====================
         function handleLogoUpload(event, side) {
             const file = event.target.files[0];
             if (!file) return;
@@ -795,10 +640,8 @@
                     logoKananData = e.target.result;
                     document.getElementById("btnHapusLogoKanan").classList.remove("hidden");
                 }
-                if (generatedQuestions.length > 0) {
-                    renderExamPaper();
-                }
-                showToast(`Logo ${side === 'kiri' ? 'Kiri' : 'Kanan'} berhasil diunggah!`, "success");
+                if (generatedQuestions.length > 0) renderExamPaper();
+                showToast(`Logo ${side} berhasil diunggah!`, "success");
             };
             reader.readAsDataURL(file);
         }
@@ -813,16 +656,14 @@
                 document.getElementById("logoKananInput").value = "";
                 document.getElementById("btnHapusLogoKanan").classList.add("hidden");
             }
-            if (generatedQuestions.length > 0) {
-                renderExamPaper();
-            }
-            showToast(`Logo ${side === 'kiri' ? 'Kiri' : 'Kanan'} dikosongkan ke pengaturan default.`, "info");
+            if (generatedQuestions.length > 0) renderExamPaper();
+            showToast(`Logo ${side} direset ke default.`, "info");
         }
 
         function resetAndCreateAgain() {
             document.getElementById("resultContainer").classList.add("hidden");
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            showToast("Silakan sesuaikan konfigurasi atau isi tabel kisi-kisi untuk merancang soal lagi.", "info");
+            showToast("Silakan atur ulang kisi-kisi.", "info");
         }
 
         function sanitizeOption(opt) {
@@ -830,7 +671,6 @@
             return opt.replace(/^[A-D]\.\s*|^[a-d]\.\s*|^[A-D]\)\s*|^[a-d]\)\s*|^[A-D]\s*-\s*|^[a-d]\s*-\s*/, "").trim();
         }
 
-        // ===================== RENDER TABLES =====================
         function renderTable() {
             const tbody = document.getElementById("indicatorsTableBody");
             tbody.innerHTML = "";
@@ -861,18 +701,18 @@
                     </td>
                     <td class="p-2 text-center">
                         <select onchange="updateData(${idx}, 'level', this.value)" class="w-full px-1 py-1.5 border border-slate-200 rounded-lg text-xs bg-transparent focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-                            <option value="C1" ${row.level === 'C1' ? 'selected' : ''}>C1 (Mengingat)</option>
-                            <option value="C2" ${row.level === 'C2' ? 'selected' : ''}>C2 (Memahami)</option>
-                            <option value="C3" ${row.level === 'C3' ? 'selected' : ''}>C3 (Menerapkan)</option>
-                            <option value="C4" ${row.level === 'C4' ? 'selected' : ''}>C4 (Menganalisis)</option>
-                            <option value="C5" ${row.level === 'C5' ? 'selected' : ''}>C5 (Mengevaluasi)</option>
-                            <option value="C6" ${row.level === 'C6' ? 'selected' : ''}>C6 (Mencipta)</option>
+                            <option value="C1" ${row.level === 'C1' ? 'selected' : ''}>C1</option>
+                            <option value="C2" ${row.level === 'C2' ? 'selected' : ''}>C2</option>
+                            <option value="C3" ${row.level === 'C3' ? 'selected' : ''}>C3</option>
+                            <option value="C4" ${row.level === 'C4' ? 'selected' : ''}>C4</option>
+                            <option value="C5" ${row.level === 'C5' ? 'selected' : ''}>C5</option>
+                            <option value="C6" ${row.level === 'C6' ? 'selected' : ''}>C6</option>
                         </select>
                     </td>
                     <td class="p-2 text-center">
                         <select onchange="updateData(${idx}, 'bentuk', this.value)" class="w-full px-1 py-1.5 border border-slate-200 rounded-lg text-xs bg-transparent focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
                             <option value="Pilihan Ganda" ${row.bentuk === 'Pilihan Ganda' ? 'selected' : ''}>Pilihan Ganda</option>
-                            <option value="Pilihan Ganda Kompleks" ${row.bentuk === 'Pilihan Ganda Kompleks' ? 'selected' : ''}>Pilihan Ganda Kompleks</option>
+                            <option value="Pilihan Ganda Kompleks" ${row.bentuk === 'Pilihan Ganda Kompleks' ? 'selected' : ''}>PG Kompleks</option>
                             <option value="Mencocokkan" ${row.bentuk === 'Mencocokkan' ? 'selected' : ''}>Menjodohkan</option>
                             <option value="Isian" ${row.bentuk === 'Isian' ? 'selected' : ''}>Isian</option>
                             <option value="Uraian" ${row.bentuk === 'Uraian' ? 'selected' : ''}>Uraian</option>
@@ -900,9 +740,7 @@
             const siswaBtn = document.getElementById("viewSiswaBtn");
             const guruBtn = document.getElementById("viewGuruBtn");
             
-            if (isEditMode) {
-                saveEditsFromPreview();
-            }
+            if (isEditMode) saveEditsFromPreview();
             
             if (mode === "siswa") {
                 previewEl.className = "a4-preview-sheet print-siswa";
@@ -926,7 +764,7 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="5" class="p-4 text-center text-slate-400 italic bg-slate-50/50">
-                            <i class="fa-solid fa-bolt-lightning text-xl mb-1 block text-slate-300"></i>
+                            <i class="fa-solid fa-bolt text-xl mb-1 block text-slate-300"></i>
                             Belum ada baris cepat.
                         </td>
                     </tr>
@@ -947,7 +785,7 @@
                     <td class="p-2 text-center">
                         <select onchange="updateFastData(${idx}, 'bentuk', this.value)" class="w-full px-1 py-1.5 border border-slate-200 rounded-lg text-xs bg-transparent focus:bg-white focus:ring-1 focus:ring-amber-500 focus:outline-none">
                             <option value="Pilihan Ganda" ${row.bentuk === 'Pilihan Ganda' ? 'selected' : ''}>Pilihan Ganda</option>
-                            <option value="Pilihan Ganda Kompleks" ${row.bentuk === 'Pilihan Ganda Kompleks' ? 'selected' : ''}>Pilihan Ganda Kompleks</option>
+                            <option value="Pilihan Ganda Kompleks" ${row.bentuk === 'Pilihan Ganda Kompleks' ? 'selected' : ''}>PG Kompleks</option>
                             <option value="Mencocokkan" ${row.bentuk === 'Mencocokkan' ? 'selected' : ''}>Menjodohkan</option>
                             <option value="Isian" ${row.bentuk === 'Isian' ? 'selected' : ''}>Isian</option>
                             <option value="Uraian" ${row.bentuk === 'Uraian' ? 'selected' : ''}>Uraian</option>
@@ -963,13 +801,8 @@
             });
         }
 
-        function updateData(index, field, value) {
-            indicatorData[index][field] = value;
-        }
-
-        function updateFastData(index, field, value) {
-            fastInputData[index][field] = value;
-        }
+        function updateData(index, field, value) { indicatorData[index][field] = value; }
+        function updateFastData(index, field, value) { fastInputData[index][field] = value; }
 
         function addTableRow() {
             indicatorData.push({
@@ -986,11 +819,7 @@
 
         function addFastRow() {
             const currentSubject = document.getElementById("subjectInput").value || "Mata Pelajaran";
-            fastInputData.push({
-                mapel: currentSubject,
-                materi: "",
-                bentuk: "Pilihan Ganda"
-            });
+            fastInputData.push({ mapel: currentSubject, materi: "", bentuk: "Pilihan Ganda" });
             renderFastTable();
             showToast("Baris input cepat ditambahkan", "info");
         }
@@ -998,19 +827,19 @@
         function deleteTableRow(idx) {
             indicatorData.splice(idx, 1);
             renderTable();
-            showToast("Baris kisi-kisi berhasil dihapus", "info");
+            showToast("Baris kisi-kisi dihapus", "info");
         }
 
         function deleteFastRow(idx) {
             fastInputData.splice(idx, 1);
             renderFastTable();
-            showToast("Baris input cepat berhasil dihapus", "info");
+            showToast("Baris cepat dihapus", "info");
         }
 
         function applyFastInputsToMainTable() {
             const validRows = fastInputData.filter(r => r.materi.trim() !== "");
             if (validRows.length === 0) {
-                showToast("Tulis minimal satu Materi Pokok di Mode Cepat!", "warning");
+                showToast("Tulis minimal satu Materi Pokok!", "warning");
                 return;
             }
 
@@ -1039,15 +868,14 @@
         function showClearConfirmModal() {
             const modal = document.getElementById("confirmModal");
             const btnAction = document.getElementById("btnConfirmModalAction");
-            
-            document.getElementById("confirmModalText").innerText = "Apakah Anda benar-benar yakin ingin menghapus seluruh kisi-kisi di tabel utama?";
+            document.getElementById("confirmModalText").innerText = "Apakah Anda yakin ingin menghapus seluruh kisi-kisi di tabel utama?";
             modal.classList.remove("hidden");
             
             btnAction.onclick = function() {
                 indicatorData = [];
                 renderTable();
                 modal.classList.add("hidden");
-                showToast("Tabel kisi-kisi berhasil dikosongkan", "warning");
+                showToast("Tabel kisi-kisi dikosongkan", "warning");
             };
         }
 
@@ -1067,9 +895,7 @@
             }
         }
 
-        function triggerExcelUpload() {
-            document.getElementById("excelFile").click();
-        }
+        function triggerExcelUpload() { document.getElementById("excelFile").click(); }
 
         function importExcel(event) {
             const file = event.target.files[0];
@@ -1105,32 +931,26 @@
         function downloadExcelTemplate() {
             const header = [["Materi", "Indikator Soal", "Level Kognitif", "Bentuk Soal", "Skor", "Jumlah Soal"]];
             const sampleData = [
-                ["Membaca", "Disajikan teks bacaan, siswa dapat menyimpulkan amanat penting dengan tepat", "C4", "Pilihan Ganda", 10, 1],
-                ["Menulis", "Siswa dapat menyusun susunan kalimat yang utuh dan rumpang dengan menggunakan kata baku", "C3", "Isian", 15, 1],
+                ["Membaca", "Disajikan teks bacaan, siswa dapat menyimpulkan amanat penting", "C4", "Pilihan Ganda", 10, 1],
+                ["Menulis", "Siswa dapat menyusun kalimat utuh dengan kata baku", "C3", "Isian", 15, 1],
             ];
             const ws = XLSX.utils.aoa_to_sheet(header.concat(sampleData));
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Template_Kisi_Kisi");
             XLSX.writeFile(wb, "Template_Kisi_Kisi_SDN3_Ngantru.xlsx");
-            showToast("Templat Excel berhasil diunduh", "success");
+            showToast("Templat Excel diunduh", "success");
         }
 
         // ===================== GEMINI API =====================
         async function fetchGeminiWithRetry(prompt, systemPrompt, customKey) {
             const targetKey = customKey;
-            if (!targetKey) {
-                throw new Error("API Key kosong. Silakan isi API Key Anda di panel kiri.");
-            }
+            if (!targetKey) throw new Error("API Key kosong.");
 
-            const modelsToTry = [
-                "gemini-2.5-flash",
-                "gemini-1.5-flash"
-            ];
-
+            const modelsToTry = ["gemini-2.5-flash", "gemini-1.5-flash"];
             let lastError = null;
 
             for (const modelName of modelsToTry) {
-                console.log(`Mencoba membuat soal menggunakan model: ${modelName}...`);
+                console.log(`Mencoba model: ${modelName}...`);
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${targetKey}`;
                 
                 const payload = {
@@ -1149,10 +969,7 @@
                                             no_soal: { type: "NUMBER" },
                                             indikator: { type: "STRING" },
                                             pertanyaan: { type: "STRING" },
-                                            pilihan: {
-                                                type: "ARRAY",
-                                                items: { type: "STRING" }
-                                            },
+                                            pilihan: { type: "ARRAY", items: { type: "STRING" } },
                                             kunci_jawaban: { type: "STRING" },
                                             pembahasan: { type: "STRING" }
                                         },
@@ -1176,17 +993,11 @@
                             body: JSON.stringify(payload)
                         });
 
-                        if (response.ok) {
-                            return await response.json();
-                        }
+                        if (response.ok) return await response.json();
 
-                        if (response.status === 401) {
-                            throw new Error("Kunci API (API Key) Anda tidak valid (Error 401). Silakan cek kembali atau buat API Key baru gratis.");
-                        }
-
+                        if (response.status === 401) throw new Error("API Key tidak valid (401).");
                         if (response.status === 404) {
-                            console.warn(`Model ${modelName} tidak didukung (404). Mencoba model lain.`);
-                            lastError = new Error(`Model ${modelName} tidak didukung (HTTP 404).`);
+                            lastError = new Error(`Model ${modelName} tidak didukung (404).`);
                             break;
                         }
 
@@ -1196,19 +1007,17 @@
                             continue;
                         }
 
-                        throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     } catch (error) {
-                        if (attempt === maxRetries - 1) {
-                            lastError = error;
-                        } else {
+                        if (attempt === maxRetries - 1) lastError = error;
+                        else {
                             await new Promise(resolve => setTimeout(resolve, delay));
                             delay *= 2;
                         }
                     }
                 }
             }
-
-            throw lastError || new Error("Gagal menghubungi API setelah mencoba semua model cadangan.");
+            throw lastError || new Error("Gagal menghubungi API.");
         }
 
         async function generateQuestions() {
@@ -1219,7 +1028,7 @@
 
             const customKey = document.getElementById("apiKeyInput").value.trim();
             if (!customKey) {
-                showToast("Error: Masukkan API Key Anda pada kolom atas terlebih dahulu!", "error");
+                showToast("Error: Masukkan API Key terlebih dahulu!", "error");
                 return;
             }
 
@@ -1236,47 +1045,43 @@
                 mapel: document.getElementById("subjectInput").value,
                 kelas: document.getElementById("classInput").value,
                 semester: document.getElementById("semesterInput").value,
-                tahunAjaran: document.getElementById("academicYearInput").value,
-                durasi: document.getElementById("durationInput").value
+                tahunAjaran: document.getElementById("academicYearInput").value
             };
 
             const totalTargetSoal = indicatorData.reduce((acc, curr) => acc + (Number(curr.jumlah) || 1), 0);
 
-            const systemPrompt = `Anda adalah seorang ahli pembuat soal ujian sekolah dasar (SD) di Indonesia. Tugas Anda adalah menghasilkan soal-soal berkualitas tinggi berdasarkan kisi-kisi, indikator kognitif, dan jumlah soal yang diinginkan oleh guru. Hasilkan output dalam format JSON valid sesuai dengan skema yang telah didefinisikan secara ketat.`;
+            const systemPrompt = `Anda adalah ahli pembuat soal ujian SD di Indonesia. Hasilkan output JSON valid sesuai skema.`;
             
             const prompt = `
-                Buatlah butir soal ujian untuk jenjang Sekolah Dasar (SD) sesuai dengan kisi-kisi berikut:
+                Buat butir soal ujian SD sesuai kisi-kisi:
                 Mata Pelajaran: ${metaInfo.mapel}
                 Kelas: ${metaInfo.kelas}
                 Semester: ${metaInfo.semester}
                 Tahun Ajaran: ${metaInfo.tahunAjaran}
 
-                Kisi-Kisi/Indikator Soal yang Harus Dibuat:
+                Kisi-Kisi:
                 ${JSON.stringify(indicatorData, null, 2)}
 
-                PENTING: Perhatikan properti "jumlah" di setiap kisi-kisi. Jika properti "jumlah" berharga N, Anda HARUS menghasilkan N butir soal yang berbeda dan kreatif untuk indikator tersebut.
-                Total soal yang dihasilkan harus tepat berjumlah ${totalTargetSoal} butir soal.
+                PENTING: Properti "jumlah" = N, harus hasilkan N soal berbeda untuk indikator tersebut.
+                Total soal harus tepat ${totalTargetSoal} butir.
 
-                Kriteria pengerjaan per bentuk soal:
-                1. "Pilihan Ganda": Wajib memiliki array "pilihan" berisi 4 opsi jawaban. "kunci_jawaban" berisi satu abjad (A, B, C, atau D).
-                2. "Pilihan Ganda Kompleks": Wajib memiliki array "pilihan" berisi 4 opsi jawaban. Tulis soal yang memiliki lebih dari satu pilihan jawaban yang benar. "kunci_jawaban" mendaftarkan seluruh pilihan abjad benar dipisahkan koma (contoh: "A, C" atau "A, B, D").
-                3. "Mencocokkan": Wajib memiliki array "pilihan" berisi tepat 4 item pasangan riil berformat "Premis | Respon" (contoh: "Mata | Melihat", "Telinga | Mendengar", "Hidung | Mencium", "Lidah | Mengecap"). "kunci_jawaban" berisi daftar kecocokan yang benar.
-                4. "Isian" and "Uraian": Array "pilihan" harus berupa array kosong []. "kunci_jawaban" berisi pedoman jawaban.
-                5. Berikan "pembahasan" yang logis dan mendidik dalam bahasa Indonesia yang ringkas.
-                6. Soal disesuaikan dengan kurikulum SD kelas yang bersangkutan.
+                Kriteria per bentuk:
+                1. "Pilihan Ganda": 4 opsi, kunci 1 abjad (A/B/C/D).
+                2. "Pilihan Ganda Kompleks": 4 opsi, kunci bisa lebih dari 1 (contoh: "A, C").
+                3. "Mencocokkan": 4 pasangan format "Premis | Respon", kunci daftar kecocokan.
+                4. "Isian"/"Uraian": pilihan = [], kunci = pedoman jawaban.
+                5. Berikan "pembahasan" ringkas.
             `;
 
             try {
                 const responseData = await fetchGeminiWithRetry(prompt, systemPrompt, customKey);
                 
                 let rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (!rawText) {
-                    throw new Error("Format respons API kosong.");
-                }
+                if (!rawText) throw new Error("Respons API kosong.");
 
                 const parsedData = JSON.parse(rawText);
                 if (!parsedData.questions || parsedData.questions.length === 0) {
-                    throw new Error("Tidak ada daftar pertanyaan yang dihasilkan oleh AI.");
+                    throw new Error("Tidak ada pertanyaan dari AI.");
                 }
 
                 let mappedIndex = 0;
@@ -1291,7 +1096,7 @@
                                 ...rawQ,
                                 no_soal: generatedQuestions.length + 1,
                                 skor: indicator.skor || 10,
-                                bentuk: indicator.shapes || indicator.bentuk || "Pilihan Ganda",
+                                bentuk: indicator.bentuk || "Pilihan Ganda",
                                 materi: indicator.materi || "Umum",
                                 indikator: indicator.indikator
                             });
@@ -1308,7 +1113,7 @@
                         skor: 10,
                         bentuk: "Pilihan Ganda",
                         materi: "Umum",
-                        indikator: "Indikator Tambahan"
+                        indikator: "Tambahan"
                     });
                     mappedIndex++;
                 }
@@ -1316,7 +1121,7 @@
                 renderExamPaper();
                 togglePreviewMode('siswa');
                 resultDiv.classList.remove("hidden");
-                showToast("Soal berhasil dirancang! Silakan tinjau lembar pratinjau di bawah.", "success");
+                showToast("Soal berhasil dirancang!", "success");
                 resultDiv.scrollIntoView({ behavior: 'smooth' });
 
             } catch (err) {
@@ -1329,16 +1134,16 @@
             }
         }
 
+        // ===================== HANDLE LOGO ERROR =====================
+        // Kalau logo_kabupaten.png / logo_sekolah.png tidak ada di folder,
+        // sembunyikan img-nya (tidak error) dan log ke console.
         function handleInlineLogoError(imgElement, side) {
             imgElement.onerror = null;
-            if (side === 'kiri') {
-                imgElement.src = fallbackLogoKiriSVG;
-            } else {
-                imgElement.src = fallbackLogoKananSVG;
-            }
+            imgElement.style.visibility = 'hidden';
+            console.warn(`⚠️ Logo ${side} gagal dimuat: ${imgElement.src}`);
         }
 
-        // ===================== RENDER EXAM PAPER WITH EDIT MODE =====================
+        // ===================== RENDER EXAM PAPER =====================
         function renderExamPaper() {
             const container = document.getElementById("paperPreview");
             
@@ -1349,9 +1154,9 @@
             const tahunAjaran = document.getElementById("academicYearInput").value;
             const durasi = document.getElementById("durationInput").value;
 
-            // PERBAIKAN: Langsung pakai base64 SVG sebagai default (hindari CORS file://)
-            const finalLogoKiriPath = logoKiriData || fallbackLogoKiriSVG;
-            const finalLogoKananPath = logoKananData || fallbackLogoKananSVG;
+            // LOGO: pakai upload manual kalau ada, kalau tidak pakai file default lokal
+            const finalLogoKiriPath = logoKiriData || DEFAULT_LOGO_KIRI;
+            const finalLogoKananPath = logoKananData || DEFAULT_LOGO_KANAN;
 
             let htmlContent = `
                 <div class="flex items-center justify-between border-b-4 border-double border-slate-800 pb-3 mb-6 gap-4">
@@ -1447,7 +1252,6 @@
                         </div>
                         
                         ${optionsHTML}
-                        
                         ${keyHTML}
                         
                         <div class="solution-text hidden mt-2.5 ml-4 p-2 bg-emerald-50/50 border-l-2 border-emerald-500 rounded-r-lg text-[10px]">
@@ -1462,12 +1266,10 @@
                 htmlContent += `
                     <div class="mb-6">
                         <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">I. Pilihan Ganda</h3>
-                        <p class="italic text-slate-500 mb-4 text-[10px]">Pilihlah salah satu jawaban yang paling tepat dengan memberikan tanda silang (X) pada huruf A, B, C, atau D!</p>
+                        <p class="italic text-slate-500 mb-4 text-[10px]">Pilihlah salah satu jawaban yang paling tepat dengan tanda silang (X) pada huruf A, B, C, atau D!</p>
                         <div class="space-y-4">
                 `;
-                pgList.forEach((q) => {
-                    htmlContent += generateQuestionHTML(currentGlobalNo++, q);
-                });
+                pgList.forEach((q) => { htmlContent += generateQuestionHTML(currentGlobalNo++, q); });
                 htmlContent += `</div></div>`;
             }
 
@@ -1475,20 +1277,18 @@
                 htmlContent += `
                     <div class="mb-6">
                         <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">II. Pilihan Ganda Kompleks</h3>
-                        <p class="italic text-slate-500 mb-4 text-[10px]">Pilihlah semua jawaban yang benar dengan memberikan tanda centang pada kotak [ ] di depan pilihan jawaban!</p>
+                        <p class="italic text-slate-500 mb-4 text-[10px]">Pilihlah semua jawaban yang benar dengan tanda centang [ ]!</p>
                         <div class="space-y-4">
                 `;
-                pgkList.forEach((q) => {
-                    htmlContent += generateQuestionHTML(currentGlobalNo++, q);
-                });
+                pgkList.forEach((q) => { htmlContent += generateQuestionHTML(currentGlobalNo++, q); });
                 htmlContent += `</div></div>`;
             }
 
             if (matchList.length > 0) {
                 htmlContent += `
                     <div class="mb-6">
-                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">III. Menjodohkan (Mencocokkan)</h3>
-                        <p class="italic text-slate-500 mb-4 text-[10px]">Hubungkanlah pernyataan di sebelah kiri dengan pilihan pasangan yang tepat di sebelah kanan!</p>
+                        <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">III. Menjodohkan</h3>
+                        <p class="italic text-slate-500 mb-4 text-[10px]">Hubungkan pernyataan kiri dengan pasangan yang tepat di kanan!</p>
                         <div class="space-y-4">
                 `;
                 matchList.forEach((q) => {
@@ -1499,9 +1299,7 @@
                             return { left: parts[0]?.trim() || p, right: parts[1]?.trim() || "" };
                         }).filter(p => p.left);
                     }
-                    if (pairs.length === 0) {
-                        pairs = [{left: "Premis data kosong", right: "Respon data kosong"}];
-                    }
+                    if (pairs.length === 0) pairs = [{left: "Premis kosong", right: "Respon kosong"}];
 
                     let lefts = pairs.map(p => p.left);
                     let rights = pairs.map(p => p.right).filter(r => r !== "");
@@ -1569,9 +1367,7 @@
                         <p class="italic text-slate-500 mb-4 text-[10px]">Isilah titik-titik di bawah ini dengan jawaban yang singkat dan tepat!</p>
                         <div class="space-y-4">
                 `;
-                isianList.forEach((q) => {
-                    htmlContent += generateQuestionHTML(currentGlobalNo++, q);
-                });
+                isianList.forEach((q) => { htmlContent += generateQuestionHTML(currentGlobalNo++, q); });
                 htmlContent += `</div></div>`;
             }
 
@@ -1579,41 +1375,17 @@
                 htmlContent += `
                     <div class="mb-6">
                         <h3 class="font-extrabold text-xs md:text-sm border-b pb-1 mb-3 text-slate-900 uppercase">V. Uraian</h3>
-                        <p class="italic text-slate-500 mb-4 text-[10px]">Jawablah pertanyaan-pertanyaan di bawah ini secara lengkap, jelas, dan berurutan!</p>
+                        <p class="italic text-slate-500 mb-4 text-[10px]">Jawablah pertanyaan berikut secara lengkap, jelas, dan berurutan!</p>
                         <div class="space-y-4">
                 `;
-                uraianList.forEach((q) => {
-                    htmlContent += generateQuestionHTML(currentGlobalNo++, q);
-                });
+                uraianList.forEach((q) => { htmlContent += generateQuestionHTML(currentGlobalNo++, q); });
                 htmlContent += `</div></div>`;
             }
 
             htmlContent += `</div>`;
             container.innerHTML = htmlContent;
             
-            if (isEditMode) {
-                container.classList.add("edit-mode");
-            }
-        }
-
-        // ===================== GET BASE64 FROM IMAGE =====================
-        function getBase64FromImage(imgElement, fallbackSVG) {
-            if (!imgElement) return fallbackSVG;
-            if (imgElement.src.startsWith('data:')) return imgElement.src;
-            
-            try {
-                if (imgElement.naturalWidth > 0 && window.location.protocol !== 'file:') {
-                    const canvas = document.createElement("canvas");
-                    canvas.width = imgElement.naturalWidth;
-                    canvas.height = imgElement.naturalHeight;
-                    const ctx = canvas.getContext("2d");
-                    ctx.drawImage(imgElement, 0, 0);
-                    return canvas.toDataURL("image/png");
-                }
-            } catch (e) {
-                console.warn("Gagal konversi gambar ke Base64 (CORS/Lokal):", e);
-            }
-            return fallbackSVG;
+            if (isEditMode) container.classList.add("edit-mode");
         }
 
         // ===================== PDF SETTINGS MODAL =====================
@@ -1622,9 +1394,7 @@
                 showToast("Tidak ada pertanyaan untuk dicetak", "error");
                 return;
             }
-            if (isEditMode) {
-                saveEditsFromPreview();
-            }
+            if (isEditMode) saveEditsFromPreview();
             document.getElementById("pdfSettingsModal").classList.remove("hidden");
             document.body.style.overflow = "hidden";
         }
@@ -1648,46 +1418,378 @@
             }
         }
 
-        // ===================== processPDFDownload() - VIA WINDOW.PRINT =====================
-        // Strategi: pakai fitur print browser (Ctrl+P / Save as PDF).
-        // CSS @media print sudah menyembunyikan semua elemen kecuali #paperPreview.
-        function processPDFDownload() {
+        // ===================== CETAK VIA TAB BARU =====================
+        // Strategi paling pasti: buka tab baru berisi HTML murni lembar ujian 
+        // dengan CSS A4 presisi. Di tab baru, user tinggal Ctrl+P → Save as PDF.
+        function printViaNewTab() {
             const element = document.getElementById("paperPreview");
             if (!element || generatedQuestions.length === 0) {
                 showToast("Tidak ada pertanyaan untuk dicetak", "error");
                 return;
             }
 
-            if (isEditMode) {
-                saveEditsFromPreview();
-            }
+            if (isEditMode) saveEditsFromPreview();
 
-            // ===== 1. AMBIL SETTING =====
             const marginTop    = Number(document.getElementById("pdfMarginTop").value)    || 20;
             const marginBottom = Number(document.getElementById("pdfMarginBottom").value) || 15;
             const marginLeft   = Number(document.getElementById("pdfMarginLeft").value)   || 20;
             const marginRight  = Number(document.getElementById("pdfMarginRight").value)  || 20;
+            const useHeaderFooter = document.getElementById("toggleHeaderFooter").checked;
+            const headerTitle  = document.getElementById("pdfHeaderTitle").value  || "SOAL UJIAN SEKOLAH DASAR";
+            const headerSub    = document.getElementById("pdfHeaderSub").value    || "SD NEGERI 3 NGANTRU - KABUPATEN MALANG";
+            const headerYear   = document.getElementById("pdfHeaderYear").value   || "TAHUN AJARAN 2025/2026";
+            const footerLeft   = document.getElementById("pdfFooterLeft").value   || "Dinas Pendidikan Kabupaten Malang";
+            const footerRight  = document.getElementById("pdfFooterRight").value  || "Selamat Mengerjakan! - Jaga Kejujuran";
+
+            // Clone konten preview
+            const clone = element.cloneNode(true);
+            clone.classList.remove("edit-mode", "print-siswa", "print-guru");
+            clone.classList.add(pdfMode === 'guru' ? "print-guru" : "print-siswa");
+
+            let contentHTML = clone.innerHTML;
+
+            const headerHTML = useHeaderFooter ? `
+                <div class="pdf-header">
+                    <div class="pdf-header-title">${headerTitle}</div>
+                    <div class="pdf-header-sub">${headerSub}</div>
+                    <div class="pdf-header-year">${headerYear}</div>
+                    <hr class="pdf-header-hr">
+                </div>
+            ` : '';
+
+            const footerHTML = useHeaderFooter ? `
+                <div class="pdf-footer">
+                    <hr class="pdf-footer-hr">
+                    <div class="pdf-footer-content">
+                        <span>${footerLeft}</span>
+                        <span>${footerRight}</span>
+                    </div>
+                </div>
+            ` : '';
+
+            const newTabHTML = `<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Cetak Lembar Ujian - ${pdfMode === 'guru' ? 'Mode Guru' : 'Mode Siswa'}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e5e7eb;
+            color: #1e293b;
+            line-height: 1.5;
+            padding: 20px 0;
+        }
+        
+        .toolbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: #064e3b;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .toolbar-title { font-weight: bold; font-size: 14px; }
+        .toolbar-info { font-size: 11px; opacity: 0.9; margin-top: 2px; }
+        .toolbar-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .toolbar-btn:hover { background: #059669; transform: translateY(-1px); }
+        .toolbar-btn-secondary {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .toolbar-btn-secondary:hover { background: rgba(255,255,255,0.25); }
+        
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 90px auto 20px auto;
+            padding: ${useHeaderFooter ? `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm` : '15mm'};
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+        }
+        
+        .pdf-header { margin-bottom: 12px; }
+        .pdf-header-title { text-align: center; font-weight: bold; font-size: 14pt; text-transform: uppercase; letter-spacing: 0.5px; }
+        .pdf-header-sub { text-align: center; font-size: 11pt; font-weight: 600; color: #1e293b; margin-top: 2px; }
+        .pdf-header-year { text-align: center; font-size: 10pt; color: #475569; margin-top: 1px; }
+        .pdf-header-hr { border: none; border-top: 2px solid #000; margin: 8px 0 12px 0; }
+        
+        .pdf-footer { margin-top: 20px; }
+        .pdf-footer-hr { border: none; border-top: 1px solid #cbd5e1; margin: 12px 0 6px 0; }
+        .pdf-footer-content { display: flex; justify-content: space-between; font-size: 9pt; color: #64748b; }
+        
+        .question-item {
+            page-break-inside: avoid;
+            break-inside: avoid;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .question-item:last-child { border-bottom: none; }
+        
+        .kunci-jawaban-text { display: none; }
+        .print-guru .kunci-jawaban-text { display: block; }
+        .solution-text { display: none; }
+        .print-guru .solution-text { display: block; }
+        
+        .key-badge {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .edit-input, .edit-controls { display: none !important; }
+        .view-text { display: block !important; }
+        
+        .print-info {
+            max-width: 210mm;
+            margin: 0 auto 20px auto;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #78350f;
+        }
+        .print-info b { color: #92400e; }
+        
+        /* Tailwind-like utility classes untuk konten (dari preview) */
+        .flex { display: flex; }
+        .grid { display: grid; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .text-center { text-align: center; }
+        .text-xs { font-size: 0.75rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-base { font-size: 1rem; }
+        .text-lg { font-size: 1.125rem; }
+        .font-bold { font-weight: bold; }
+        .font-extrabold { font-weight: 800; }
+        .font-medium { font-weight: 500; }
+        .font-normal { font-weight: 400; }
+        .uppercase { text-transform: uppercase; }
+        .italic { font-style: italic; }
+        .tracking-wide { letter-spacing: 0.025em; }
+        .tracking-wider { letter-spacing: 0.05em; }
+        .border-b-4 { border-bottom-width: 4px; }
+        .border-b-2 { border-bottom-width: 2px; }
+        .border-double { border-style: double; }
+        .border-b { border-bottom-width: 1px; }
+        .border { border-width: 1px; }
+        .border-l-2 { border-left-width: 2px; }
+        .border-slate-800 { border-color: #1e293b; }
+        .border-slate-300 { border-color: #cbd5e1; }
+        .border-slate-200 { border-color: #e2e8f0; }
+        .border-emerald-500\\/20 { border-color: rgba(16,185,129,0.2); }
+        .border-amber-500\\/20 { border-color: rgba(245,158,11,0.2); }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-md { border-radius: 0.375rem; }
+        .rounded-full { border-radius: 9999px; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-1\\.5 { margin-bottom: 0.375rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-0\\.5 { margin-top: 0.125rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-1\\.5 { margin-top: 0.375rem; }
+        .mt-2\\.5 { margin-top: 0.625rem; }
+        .ml-2 { margin-left: 0.5rem; }
+        .ml-4 { margin-left: 1rem; }
+        .my-3 { margin-top: 0.75rem; margin-bottom: 0.75rem; }
+        .p-2 { padding: 0.5rem; }
+        .p-3 { padding: 0.75rem; }
+        .p-4 { padding: 1rem; }
+        .pl-2 { padding-left: 0.5rem; }
+        .pb-1 { padding-bottom: 0.25rem; }
+        .pb-3 { padding-bottom: 0.75rem; }
+        .pt-1 { padding-top: 0.25rem; }
+        .px-1\\.5 { padding-left: 0.375rem; padding-right: 0.375rem; }
+        .py-0\\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-8 { gap: 2rem; }
+        .space-y-0\\.5 > * + * { margin-top: 0.125rem; }
+        .space-y-1 > * + * { margin-top: 0.25rem; }
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .space-y-6 > * + * { margin-top: 1.5rem; }
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .w-5 { width: 1.25rem; }
+        .w-16 { width: 4rem; }
+        .h-5 { height: 1.25rem; }
+        .h-16 { height: 4rem; }
+        .max-h-16 { max-height: 4rem; }
+        .max-w-full { max-width: 100%; }
+        .max-w-xl { max-width: 36rem; }
+        .flex-shrink-0 { flex-shrink: 0; }
+        .flex-grow { flex-grow: 1; }
+        .list-decimal { list-style-type: decimal; }
+        .list-inside { list-style-position: inside; }
+        .object-contain { object-fit: contain; }
+        .bg-slate-50 { background-color: #f8fafc; }
+        .bg-slate-100 { background-color: #f1f5f9; }
+        .bg-emerald-50 { background-color: #ecfdf5; }
+        .bg-amber-50 { background-color: #fffbeb; }
+        .bg-white { background-color: white; }
+        .text-slate-500 { color: #64748b; }
+        .text-slate-600 { color: #475569; }
+        .text-slate-700 { color: #334155; }
+        .text-slate-800 { color: #1e293b; }
+        .text-slate-900 { color: #0f172a; }
+        .text-emerald-600 { color: #059669; }
+        .text-emerald-700 { color: #047857; }
+        .text-emerald-800 { color: #065f46; }
+        .text-amber-700 { color: #b45309; }
+        .text-amber-800 { color: #92400e; }
+        .text-white { color: white; }
+        .italic { font-style: italic; }
+        
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+        
+        @media print {
+            body {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .toolbar, .print-info { display: none !important; }
+            .a4-page {
+                width: 210mm !important;
+                min-height: 297mm !important;
+                margin: 0 !important;
+                padding: ${useHeaderFooter ? `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm` : '15mm'} !important;
+                box-shadow: none !important;
+                page-break-after: always;
+            }
+            .a4-page:last-child { page-break-after: avoid; }
+            .question-item {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .kunci-jawaban-text { display: none !important; }
+            .print-guru .kunci-jawaban-text { display: block !important; }
+            .solution-text { display: none !important; }
+            .print-guru .solution-text { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <div>
+            <div class="toolbar-title"><i class="fa-solid fa-file-lines"></i> Lembar Ujian Siap Cetak</div>
+            <div class="toolbar-info">Mode: ${pdfMode === 'guru' ? 'Guru (dengan kunci)' : 'Siswa'} • Ukuran: A4 (210×297 mm)</div>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <button class="toolbar-btn-secondary" onclick="window.close()">
+                <i class="fa-solid fa-xmark"></i> Tutup
+            </button>
+            <button class="toolbar-btn" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> Cetak / Save as PDF
+            </button>
+        </div>
+    </div>
+    
+    <div class="print-info">
+        💡 <b>Cara simpan sebagai PDF:</b> Klik tombol <b>Cetak / Save as PDF</b> di atas (atau tekan <b>Ctrl+P</b>), lalu di dialog print pilih <b>Destination: Save as PDF</b>, ukuran kertas <b>A4</b>, dan <b>Margins: None</b>.
+    </div>
+
+    <div class="a4-page">
+        ${headerHTML}
+        ${contentHTML}
+        ${footerHTML}
+    </div>
+</body>
+</html>`;
+
+            const newTab = window.open("", "_blank");
+            if (!newTab) {
+                showToast("Popup diblokir! Izinkan popup untuk situs ini.", "error");
+                return;
+            }
+            
+            newTab.document.open();
+            newTab.document.write(newTabHTML);
+            newTab.document.close();
+            
+            closePDFSettings();
+            showToast("Tab baru dibuka! Klik 'Cetak / Save as PDF' di tab tersebut.", "success");
+        }
+
+        // ===================== CETAK LANGSUNG (window.print) =====================
+        function printDirect() {
+            const element = document.getElementById("paperPreview");
+            if (!element || generatedQuestions.length === 0) {
+                showToast("Tidak ada pertanyaan untuk dicetak", "error");
+                return;
+            }
+
+            if (isEditMode) saveEditsFromPreview();
 
             const useHeaderFooter = document.getElementById("toggleHeaderFooter").checked;
+            const marginTop    = Number(document.getElementById("pdfMarginTop").value)    || 20;
+            const marginBottom = Number(document.getElementById("pdfMarginBottom").value) || 15;
+            const marginLeft   = Number(document.getElementById("pdfMarginLeft").value)   || 20;
+            const marginRight  = Number(document.getElementById("pdfMarginRight").value)  || 20;
 
             const headerTitle  = document.getElementById("pdfHeaderTitle").value  || "SOAL UJIAN SEKOLAH DASAR";
             const headerSub    = document.getElementById("pdfHeaderSub").value    || "SD NEGERI 3 NGANTRU - KABUPATEN MALANG";
             const headerYear   = document.getElementById("pdfHeaderYear").value   || "TAHUN AJARAN 2025/2026";
             const footerLeft   = document.getElementById("pdfFooterLeft").value   || "Dinas Pendidikan Kabupaten Malang";
             const footerRight  = document.getElementById("pdfFooterRight").value  || "Selamat Mengerjakan! - Jaga Kejujuran";
-            const pageNumberStyle = document.getElementById("pdfPageNumber").value;
 
             closePDFSettings();
 
-            // ===== 2. SIMPAN STATE ASLI =====
             const originalClassName = element.className;
             const originalStyleCSS = element.getAttribute("style") || "";
 
-            // ===== 3. SET CLASS SESUAI MODE =====
             element.classList.remove("print-siswa", "print-guru", "edit-mode");
             element.classList.add(pdfMode === 'guru' ? "print-guru" : "print-siswa");
 
-            // ===== 4. SET STYLE A4 PRESISI UNTUK PRINT =====
             element.style.width = "210mm";
             element.style.minHeight = "297mm";
             element.style.padding = useHeaderFooter
@@ -1699,7 +1801,6 @@
             element.style.background = "white";
             element.style.boxSizing = "border-box";
 
-            // ===== 5. HEADER & FOOTER SEMENTARA =====
             let tempHeader = null;
             let tempFooter = null;
 
@@ -1707,22 +1808,12 @@
                 tempHeader = document.createElement("div");
                 tempHeader.setAttribute("data-temp-header", "true");
                 tempHeader.innerHTML = `
-                    <div style="text-align:center; font-weight:bold; font-size:14pt; text-transform:uppercase; letter-spacing:0.5px;">
-                        ${headerTitle}
-                    </div>
-                    <div style="text-align:center; font-size:11pt; font-weight:600; color:#1e293b; margin-top:2px;">
-                        ${headerSub}
-                    </div>
-                    <div style="text-align:center; font-size:10pt; color:#475569; margin-top:1px;">
-                        ${headerYear}
-                    </div>
+                    <div style="text-align:center; font-weight:bold; font-size:14pt; text-transform:uppercase;">${headerTitle}</div>
+                    <div style="text-align:center; font-size:11pt; font-weight:600; color:#1e293b; margin-top:2px;">${headerSub}</div>
+                    <div style="text-align:center; font-size:10pt; color:#475569; margin-top:1px;">${headerYear}</div>
                     <hr style="border:none; border-top:2px solid #000; margin:8px 0 12px 0;">
                 `;
                 element.prepend(tempHeader);
-
-                let pageText = "";
-                if (pageNumberStyle === "bottom-center") pageText = "Halaman {page} dari {total}";
-                else if (pageNumberStyle === "bottom-right") pageText = "Halaman {page}";
 
                 tempFooter = document.createElement("div");
                 tempFooter.setAttribute("data-temp-footer", "true");
@@ -1732,50 +1823,70 @@
                         <span>${footerLeft}</span>
                         <span>${footerRight}</span>
                     </div>
-                    ${pageText ? `<div style="text-align:${pageNumberStyle === 'bottom-right' ? 'right' : 'center'}; font-size:9pt; color:#94a3b8; margin-top:4px;">${pageText}</div>` : ''}
                 `;
                 element.appendChild(tempFooter);
             }
 
-            // ===== 6. TRIGGER PRINT =====
-            showToast("Pilih 'Save as PDF' di dialog print untuk menyimpan sebagai PDF.", "info");
+            // Style untuk print langsung (sembunyikan semua kecuali paperPreview)
+            const styleEl = document.createElement("style");
+            styleEl.id = "temp-print-style";
+            styleEl.innerHTML = `
+                @media print {
+                    @page { size: A4 portrait; margin: 0; }
+                    body * { visibility: hidden !important; }
+                    #paperPreview, #paperPreview * { visibility: visible !important; }
+                    #paperPreview {
+                        position: absolute !important;
+                        left: 0 !important;
+                        top: 0 !important;
+                        width: 210mm !important;
+                        min-height: 297mm !important;
+                        margin: 0 !important;
+                        padding: ${useHeaderFooter ? `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm` : '15mm'} !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                        background: white !important;
+                        box-sizing: border-box !important;
+                    }
+                    .question-item { page-break-inside: avoid !important; }
+                    .kunci-jawaban-text { display: none !important; }
+                    .print-guru .kunci-jawaban-text { display: block !important; }
+                    .solution-text { display: none !important; }
+                    .print-guru .solution-text { display: block !important; }
+                    .no-print { display: none !important; }
+                }
+            `;
+            document.head.appendChild(styleEl);
+
+            showToast("Pilih 'Save as PDF' di dialog print.", "info");
 
             setTimeout(() => {
                 window.print();
 
-                // ===== 7. RESTORE STATE =====
                 const restoreState = () => {
                     if (tempHeader && tempHeader.parentNode) tempHeader.parentNode.removeChild(tempHeader);
                     if (tempFooter && tempFooter.parentNode) tempFooter.parentNode.removeChild(tempFooter);
+                    if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
 
                     element.className = originalClassName;
-                    if (originalStyleCSS) {
-                        element.setAttribute("style", originalStyleCSS);
-                    } else {
-                        element.removeAttribute("style");
-                    }
+                    if (originalStyleCSS) element.setAttribute("style", originalStyleCSS);
+                    else element.removeAttribute("style");
 
                     window.removeEventListener("afterprint", restoreState);
                 };
 
                 window.addEventListener("afterprint", restoreState);
-
-                // Fallback kalau afterprint tidak jalan
-                setTimeout(() => {
-                    if (tempHeader && tempHeader.parentNode) restoreState();
-                }, 2000);
+                setTimeout(() => { if (tempHeader && tempHeader.parentNode) restoreState(); }, 2000);
             }, 300);
         }
 
-        // ===================== DOWNLOAD DOC =====================
+        // ===================== UNDUH .DOC =====================
         function downloadExamDOC() {
-            if (isEditMode) {
-                saveEditsFromPreview();
-            }
+            if (isEditMode) saveEditsFromPreview();
 
             const element = document.getElementById("paperPreview");
             if (!element || element.innerHTML.trim() === "") {
-                showToast("Belum ada pratinjau soal untuk diunduh!", "error");
+                showToast("Belum ada pratinjau soal!", "error");
                 return;
             }
             const mapel = document.getElementById("subjectInput").value;
@@ -1785,18 +1896,6 @@
             const clone = element.cloneNode(true);
             clone.classList.remove('edit-mode');
             tempDiv.innerHTML = clone.innerHTML;
-            
-            const leftImg = tempDiv.querySelector('#logo-kop-kiri-img');
-            const rightImg = tempDiv.querySelector('#logo-kop-kanan-img');
-            const originalKiri = document.getElementById('logo-kop-kiri-img');
-            const originalKanan = document.getElementById('logo-kop-kanan-img');
-
-            if (leftImg) {
-                leftImg.src = getBase64FromImage(originalKiri, fallbackLogoKiriSVG);
-            }
-            if (rightImg) {
-                rightImg.src = getBase64FromImage(originalKanan, fallbackLogoKananSVG);
-            }
 
             let htmlContent = tempDiv.innerHTML;
             
@@ -1823,9 +1922,7 @@
             const footer = "</div></body></html>";
             
             const sourceHTML = header + htmlContent + footer;
-            const blob = new Blob(['\ufeff' + sourceHTML], {
-                type: 'application/msword'
-            });
+            const blob = new Blob(['\ufeff' + sourceHTML], { type: 'application/msword' });
             
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
@@ -1836,11 +1933,7 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            showToast("Berkas .doc (MS Word) berhasil diunduh!", "success");
-        }
-
-        function downloadExamPDF(mode) {
-            openPDFSettings();
+            showToast("Berkas .doc berhasil diunduh!", "success");
         }
     </script>
 </body>
