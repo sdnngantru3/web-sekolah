@@ -400,7 +400,7 @@
                     <i class="fa-solid fa-lightbulb text-sky-600 mt-0.5 text-sm"></i>
                     <div>
                         <h4 class="text-xs font-bold text-sky-900">Cara Terbaik Simpan PDF</h4>
-                        <p class="text-[10px] text-sky-700/90 mt-0.5">Klik <b>Cetak di Tab Baru</b> → tab baru terbuka dengan lembar ujian yang sudah jadi gambar → klik <b>Cetak / Save as PDF</b> atau tekan <b>Ctrl+P</b> → pilih <b>Save as PDF</b>, ukuran <b>A4</b>, margins <b>None</b>.</p>
+                        <p class="text-[10px] text-sky-700/90 mt-0.5">Klik <b>Cetak di Tab Baru</b> → tab baru terbuka dengan lembar ujian yang sudah jadi gambar → atur margin jika perlu → klik <b>Cetak / Save as PDF</b> → pilih <b>Save as PDF</b>, ukuran <b>A4</b>, margins <b>None</b>.</p>
                     </div>
                 </div>
 
@@ -414,7 +414,7 @@
                             </div>
                             <div class="flex-grow">
                                 <div class="text-xs font-bold text-emerald-900">🖨️ Cetak di Tab Baru (Rekomendasi)</div>
-                                <div class="text-[10px] text-emerald-700 mt-0.5">Tab baru terbuka, halaman di-render jadi gambar JPG A4.</div>
+                                <div class="text-[10px] text-emerald-700 mt-0.5">Tab baru dengan setting margin + render ulang JPG.</div>
                             </div>
                             <i class="fa-solid fa-chevron-right text-emerald-600"></i>
                         </button>
@@ -456,7 +456,7 @@
                 </div>
 
                 <div class="border-t border-slate-100 pt-3">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Margin Halaman (mm)</label>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Margin Halaman Awal (mm)</label>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[10px] text-slate-500 mb-0.5">Atas</label>
@@ -475,6 +475,7 @@
                             <input type="number" id="pdfMarginRight" value="20" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
                         </div>
                     </div>
+                    <p class="text-[10px] text-slate-400 mt-1.5">💡 Margin bisa diubah lagi di tab baru lewat toolbar.</p>
                 </div>
 
                 <div class="pt-2 border-t border-slate-100">
@@ -1346,7 +1347,7 @@
             });
         }
 
-        // ===================== CETAK VIA TAB BARU - RENDER JADI JPG =====================
+        // ===================== CETAK VIA TAB BARU - RENDER JPG + TOOLBAR MARGIN =====================
         function printViaNewTab() {
             const element = document.getElementById("paperPreview");
             if (!element || generatedQuestions.length === 0) { showToast("Tidak ada pertanyaan", "error"); return; }
@@ -1392,15 +1393,86 @@
             top: 0; left: 0; right: 0;
             background: #064e3b;
             color: white;
-            padding: 12px 20px;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 999;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .toolbar-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
         .toolbar-title { font-weight: bold; font-size: 14px; }
-        .toolbar-info { font-size: 11px; opacity: 0.9; margin-top: 2px; }
+        .toolbar-info { font-size: 11px; opacity: 0.9; }
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .margin-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.1);
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .margin-label {
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-right: 2px;
+        }
+        .margin-input-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            background: white;
+            border-radius: 5px;
+            padding: 2px 5px;
+            font-size: 11px;
+        }
+        .margin-input-wrap span {
+            color: #064e3b;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .margin-input-wrap input {
+            width: 36px;
+            border: none;
+            outline: none;
+            font-size: 12px;
+            font-weight: bold;
+            color: #064e3b;
+            text-align: center;
+            background: transparent;
+        }
+        .toolbar-btn-mini {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 4px;
+            transition: background 0.2s;
+        }
+        .toolbar-btn-mini:hover { background: #059669; }
+        .toolbar-btn-mini:disabled { background: #64748b; cursor: not-allowed; }
+        
         .toolbar-btn {
             background: #10b981;
             color: white;
@@ -1424,7 +1496,6 @@
             font-weight: 600;
             cursor: pointer;
             font-size: 12px;
-            margin-right: 8px;
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -1535,7 +1606,6 @@
             }
             .toolbar, .print-info, .loading-overlay { display: none !important; }
             
-            /* Print IMG dengan tinggi exact A4 */
             .a4-page-img {
                 width: 210mm !important;
                 height: 297mm !important;
@@ -1553,12 +1623,10 @@
                 break-after: auto !important;
             }
             
-            /* Fallback kalau render gagal, pakai HTML */
             .a4-page {
                 width: 210mm !important;
                 min-height: 297mm !important;
                 margin: 0 !important;
-                padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
                 box-shadow: none !important;
                 background: white !important;
                 box-sizing: border-box !important;
@@ -1583,11 +1651,21 @@
 <body>
 
     <div class="toolbar">
-        <div>
+        <div class="toolbar-left">
             <div class="toolbar-title"><i class="fa-solid fa-file-lines"></i> Lembar Ujian Siap Cetak</div>
-            <div class="toolbar-info">Mode: ${pdfMode === 'guru' ? 'Guru (dengan kunci)' : 'Siswa'} • Ukuran: A4 (210×297 mm) • ${pageElements.length} halaman</div>
+            <div class="toolbar-info">Mode: ${pdfMode === 'guru' ? 'Guru (dengan kunci)' : 'Siswa'} • A4 (210×297 mm) • ${pageElements.length} halaman</div>
         </div>
-        <div style="display: flex; align-items: center;">
+        <div class="toolbar-right">
+            <div class="margin-controls">
+                <span class="margin-label">Margin (mm):</span>
+                <label class="margin-input-wrap"><span>↑</span><input type="number" id="marginTopNewTab" value="${marginTop}" min="0" max="50" step="1"></label>
+                <label class="margin-input-wrap"><span>↓</span><input type="number" id="marginBottomNewTab" value="${marginBottom}" min="0" max="50" step="1"></label>
+                <label class="margin-input-wrap"><span>←</span><input type="number" id="marginLeftNewTab" value="${marginLeft}" min="0" max="50" step="1"></label>
+                <label class="margin-input-wrap"><span>→</span><input type="number" id="marginRightNewTab" value="${marginRight}" min="0" max="50" step="1"></label>
+                <button class="toolbar-btn-mini" id="btnRerender" onclick="rerenderJpg()">
+                    <i class="fa-solid fa-rotate"></i> Render Ulang
+                </button>
+            </div>
             <button class="toolbar-btn-secondary" onclick="window.close()">
                 <i class="fa-solid fa-xmark"></i> Tutup
             </button>
@@ -1598,29 +1676,60 @@
     </div>
     
     <div class="print-info">
-        💡 <b>Cara simpan sebagai PDF:</b> Klik tombol <b>Cetak / Save as PDF</b> di atas (atau tekan <b>Ctrl+P</b>), lalu di dialog print pilih <b>Destination: Save as PDF</b>, ukuran kertas <b>A4</b>, dan <b>Margins: None</b>.
+        💡 <b>Cara pakai:</b> 1) Atur margin di toolbar jika perlu → 2) Klik <b>Render Ulang</b> → 3) Klik <b>Cetak / Save as PDF</b> → 4) Pilih <b>Save as PDF</b>, ukuran <b>A4</b>, margins <b>None</b>.
     </div>
 
-    <!-- Loading overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <div class="loading-text">Sedang menyiapkan lembar ujian...</div>
         <div class="loading-subtext">Halaman sedang di-render menjadi gambar agar hasil cetak 100% sama dengan preview</div>
     </div>
 
-    ${contentHTML}
+    <div id="pagesContainer">
+        ${contentHTML}
+    </div>
 
     <script>
-        // Render tiap halaman jadi JPG A4 presisi
-        window.addEventListener('load', async function() {
-            await new Promise(r => setTimeout(r, 800));
+        // Simpan HTML asli tiap halaman (untuk re-render)
+        let originalPagesHTML = [];
+        let renderInProgress = false;
+
+        // Ambil margin dari toolbar
+        function getMargins() {
+            return {
+                top: document.getElementById('marginTopNewTab').value || 0,
+                bottom: document.getElementById('marginBottomNewTab').value || 0,
+                left: document.getElementById('marginLeftNewTab').value || 0,
+                right: document.getElementById('marginRightNewTab').value || 0
+            };
+        }
+
+        // Render semua halaman jadi JPG
+        async function renderAllPages() {
+            if (renderInProgress) return;
+            renderInProgress = true;
+            
+            const btn = document.getElementById('btnRerender');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Rendering...';
+            }
             
             try {
                 const pages = document.querySelectorAll('.a4-page');
                 
                 if (pages.length === 0) {
                     document.getElementById('loadingOverlay').classList.add('hidden');
+                    renderInProgress = false;
+                    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Render Ulang'; }
                     return;
+                }
+                
+                // Simpan HTML asli (sekali saja, sebelum di-render)
+                if (originalPagesHTML.length === 0) {
+                    document.querySelectorAll('.a4-page').forEach(el => {
+                        originalPagesHTML.push(el.outerHTML);
+                    });
                 }
                 
                 for (let i = 0; i < pages.length; i++) {
@@ -1652,7 +1761,47 @@
             } catch (err) {
                 console.error('Render error:', err);
                 document.getElementById('loadingOverlay').classList.add('hidden');
+            } finally {
+                renderInProgress = false;
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Render Ulang'; }
             }
+        }
+
+        // Re-render: kembalikan HTML asli, terapkan margin baru, render ulang
+        async function rerenderJpg() {
+            if (renderInProgress) return;
+            
+            const container = document.getElementById('pagesContainer');
+            const margins = getMargins();
+            const newPadding = margins.top + 'mm ' + margins.right + 'mm ' + margins.bottom + 'mm ' + margins.left + 'mm';
+            
+            // Hapus semua img yang ada
+            document.querySelectorAll('.a4-page-img').forEach(el => el.remove());
+            
+            // Kembalikan HTML asli dengan margin baru
+            container.innerHTML = '';
+            originalPagesHTML.forEach(html => {
+                const temp = document.createElement('div');
+                temp.innerHTML = html;
+                const el = temp.firstElementChild;
+                el.style.padding = newPadding;
+                container.appendChild(el);
+            });
+            
+            // Tampilkan loading
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            
+            // Tunggu layout settle
+            await new Promise(r => setTimeout(r, 200));
+            
+            // Render ulang
+            await renderAllPages();
+        }
+
+        // Initial render
+        window.addEventListener('load', async function() {
+            await new Promise(r => setTimeout(r, 800));
+            await renderAllPages();
         });
     <\/script>
 </body>
@@ -1666,7 +1815,7 @@
             newTab.document.close();
             
             closePDFSettings();
-            showToast("Tab baru dibuka! Tunggu loading selesai, lalu klik 'Cetak / Save as PDF'.", "success");
+            showToast("Tab baru dibuka! Atur margin di toolbar, klik 'Render Ulang' jika perlu.", "success");
         }
 
         function printDirect() {
