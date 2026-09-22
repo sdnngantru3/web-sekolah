@@ -1076,7 +1076,8 @@
             const PADDING_TOP_MM = 20;
             const PADDING_BOTTOM_MM = 15;
             const PAGE_HEIGHT_MM = 297;
-            const CONTENT_HEIGHT_PX = (PAGE_HEIGHT_MM - PADDING_TOP_MM - PADDING_BOTTOM_MM) * MM_TO_PX;
+            // Margin keamanan 5% supaya tidak overflow saat print
+            const CONTENT_HEIGHT_PX = (PAGE_HEIGHT_MM - PADDING_TOP_MM - PADDING_BOTTOM_MM) * MM_TO_PX * 0.95;
 
             function buildFullHeader() {
                 return `
@@ -1211,7 +1212,6 @@
                 uraianList.forEach(q => allItems.push({ type: 'question', data: q, no: globalNo++ }));
             }
 
-            // ===== RENDER OFFSCREEN UNTUK UKUR =====
             const measureContainer = document.createElement('div');
             measureContainer.style.position = 'absolute';
             measureContainer.style.left = '-9999px';
@@ -1348,7 +1348,10 @@
         }
 
         // ===================== CETAK VIA TAB BARU =====================
-        // FIX: Load Tailwind CDN di tab baru supaya layout PERSIS SAMA dengan preview
+        // FIX FINAL:
+        // - Load Tailwind CDN di tab baru → layout PERSIS SAMA dengan preview
+        // - Pakai min-height (bukan height exact) → tidak kepotong
+        // - page-break-after: always → pasti pindah halaman
         function printViaNewTab() {
             const element = document.getElementById("paperPreview");
             if (!element || generatedQuestions.length === 0) { showToast("Tidak ada pertanyaan", "error"); return; }
@@ -1432,18 +1435,18 @@
         }
         .toolbar-btn-secondary:hover { background: rgba(255,255,255,0.25); }
         
+        /* PENTING: Pakai min-height (bukan height exact) supaya konten tidak kepotong.
+           page-break-after: always → pasti pindah halaman setelah setiap .a4-page */
         .a4-page {
             width: 210mm;
-            height: 297mm;
+            min-height: 297mm;
             margin: 90px auto 20px auto;
             padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm;
             background: white;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             box-sizing: border-box;
-            overflow: hidden;
             position: relative;
             page-break-after: always;
-            page-break-inside: avoid;
         }
         .a4-page:last-child { page-break-after: avoid; margin-bottom: 20px; }
         
@@ -1500,21 +1503,18 @@
             }
             .toolbar, .print-info { display: none !important; }
             
+            /* PENTING: min-height (bukan height exact) supaya tidak kepotong.
+               page-break-after: always → pasti pindah halaman. */
             .a4-page {
                 width: 210mm !important;
-                height: 297mm !important;
                 min-height: 297mm !important;
-                max-height: 297mm !important;
                 margin: 0 !important;
                 padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
                 box-shadow: none !important;
                 background: white !important;
                 box-sizing: border-box !important;
-                overflow: hidden !important;
                 page-break-after: always !important;
-                page-break-inside: avoid !important;
                 break-after: page !important;
-                break-inside: avoid !important;
                 position: relative !important;
             }
             .a4-page:last-child { 
@@ -1557,7 +1557,6 @@
     ${contentHTML}
 
     <script>
-        // Fade-in setelah Tailwind selesai load
         window.addEventListener('load', function() {
             setTimeout(function() {
                 document.body.style.opacity = '1';
@@ -1601,19 +1600,16 @@
                     .a4-page-wrapper { margin-bottom: 0 !important; }
                     .a4-preview-sheet {
                         width: 210mm !important;
-                        height: 297mm !important;
                         min-height: 297mm !important;
-                        max-height: 297mm !important;
                         margin: 0 !important;
                         padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
                         box-shadow: none !important;
                         border: none !important;
-                        overflow: hidden !important;
                         page-break-after: always !important;
-                        page-break-inside: avoid !important;
+                        break-after: page !important;
                         box-sizing: border-box !important;
                     }
-                    .a4-preview-sheet:last-child { page-break-after: avoid !important; }
+                    .a4-preview-sheet:last-child { page-break-after: avoid !important; break-after: auto !important; }
                     .a4-page-label { display: none !important; }
                     .question-item { page-break-inside: avoid !important; }
                     .kunci-jawaban-text { display: none !important; }
