@@ -1347,8 +1347,6 @@
         }
 
         // ===================== CETAK VIA TAB BARU - RENDER JADI JPG =====================
-        // FIX FINAL: Tab baru render setiap halaman jadi JPG A4 presisi (html2canvas).
-        // Setelah jadi gambar, print = print gambar → 100% IDENTIK dengan preview.
         function printViaNewTab() {
             const element = document.getElementById("paperPreview");
             if (!element || generatedQuestions.length === 0) { showToast("Tidak ada pertanyaan", "error"); return; }
@@ -1387,7 +1385,7 @@
             color: #1e293b;
         }
         
-        body { padding: 20px 0; }
+        body { padding: 0; }
         
         .toolbar {
             position: fixed;
@@ -1437,7 +1435,7 @@
         .a4-page {
             width: 210mm;
             min-height: 297mm;
-            margin: 90px auto 20px auto;
+            margin: 80px auto 10px auto;
             padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm;
             background: white;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
@@ -1450,7 +1448,7 @@
             width: 210mm;
             height: auto;
             display: block;
-            margin: 90px auto 20px auto;
+            margin: 80px auto 10px auto;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             background: white;
             page-break-after: always;
@@ -1514,7 +1512,7 @@
         
         .print-info {
             max-width: 210mm;
-            margin: 0 auto 20px auto;
+            margin: 80px auto 10px auto;
             background: #fef3c7;
             border-left: 4px solid #f59e0b;
             padding: 12px 16px;
@@ -1614,21 +1612,17 @@
 
     <script>
         // Render tiap halaman jadi JPG A4 presisi
-        // Setelah jadi gambar, print = print gambar → 100% identik dengan preview
         window.addEventListener('load', async function() {
-            // Tunggu Tailwind & font selesai load
             await new Promise(r => setTimeout(r, 800));
             
             try {
                 const pages = document.querySelectorAll('.a4-page');
-                const totalPages = pages.length;
                 
-                if (totalPages === 0) {
+                if (pages.length === 0) {
                     document.getElementById('loadingOverlay').classList.add('hidden');
                     return;
                 }
                 
-                // Render tiap halaman jadi JPG
                 for (let i = 0; i < pages.length; i++) {
                     const pageEl = pages[i];
                     
@@ -1654,7 +1648,6 @@
                     pageEl.parentNode.replaceChild(img, pageEl);
                 }
                 
-                // Sembunyikan loading overlay
                 document.getElementById('loadingOverlay').classList.add('hidden');
             } catch (err) {
                 console.error('Render error:', err);
