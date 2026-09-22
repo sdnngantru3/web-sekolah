@@ -517,23 +517,15 @@
         const DEFAULT_LOGO_KIRI = "logo kabupaten.png";
         const DEFAULT_LOGO_KANAN = "logo sekolah.png";
 
-        // ===================== DAFTAR MODEL GEMINI (DIPERLUAS) =====================
-        // Daftar ini mencakup model-model terbaru & cadangan supaya lebih tahan banting
+        // ===================== MODEL GEMINI - BERDASARKAN FILE YANG BERHASIL =====================
+        // gemini-3-flash-preview terbukti aktif dari file pembuat_soal.html
         const GEMINI_MODELS = [
-            // Model terbaru (Gemini 3 series) — paling direkomendasikan
+            "gemini-3-flash-preview",   // ⭐ utama - terbukti berhasil
             "gemini-3.6-flash",
             "gemini-3.5-flash",
             "gemini-3.5-flash-lite",
             "gemini-3.0-flash",
-            // Model Gemini 2.x (cadangan)
-            "gemini-2.5-flash",
-            "gemini-2.5-pro",
-            "gemini-2.0-flash",
-            "gemini-2.5-flash-lite",
-            "gemini-2.0-flash-lite",
-            // Model "latest" (auto-track ke versi terbaru)
-            "gemini-flash-latest",
-            "gemini-pro-latest"
+            "gemini-flash-latest"
         ];
 
         window.onload = function() {
@@ -897,7 +889,7 @@
             showToast("Templat Excel diunduh", "success");
         }
 
-        // ===================== GEMINI API - DIPERLUAS =====================
+        // ===================== GEMINI API - VERSI FILE BERHASIL =====================
         async function fetchGeminiWithRetry(prompt, systemPrompt, customKey) {
             const targetKey = customKey;
             if (!targetKey) throw new Error("API Key kosong. Silakan isi API Key Anda di panel kiri.");
@@ -956,14 +948,17 @@
                             return await response.json();
                         }
 
+                        // API Key tidak valid → stop total
                         if (response.status === 401) {
                             throw new Error("API Key tidak valid (401). Silakan cek kembali di Google AI Studio.");
                         }
 
+                        // Region tidak didukung
                         if (response.status === 403) {
                             throw new Error("API Key diblokir / region tidak didukung (403). Cek akun Google Anda.");
                         }
 
+                        // Model tidak didukung (404) → coba model berikutnya
                         if (response.status === 404) {
                             console.warn(`⚠️ Model ${modelName} tidak didukung, coba model berikutnya...`);
                             lastError = new Error(`Model ${modelName} tidak didukung.`);
@@ -971,6 +966,7 @@
                             break; // lanjut ke model berikutnya
                         }
 
+                        // Rate limit / server error → retry
                         if (response.status === 429 || response.status >= 500) {
                             console.warn(`Model ${modelName} error ${response.status}, retry dalam ${delay}ms...`);
                             await new Promise(resolve => setTimeout(resolve, delay));
@@ -990,8 +986,9 @@
                 }
             }
 
+            // Semua model gagal
             if (lastErrorStatus === 404) {
-                throw new Error(`Semua model Gemini tidak didukung. Cek model terbaru di https://ai.google.dev/gemini-api/docs/models`);
+                throw new Error(`Semua model Gemini tidak didukung (${triedModels.join(", ")}). Cek model terbaru di https://ai.google.dev/gemini-api/docs/models`);
             }
             throw lastError || new Error("Gagal menghubungi API setelah mencoba semua model cadangan.");
         }
@@ -1427,7 +1424,7 @@
             });
         }
 
-        // ===================== CETAK VIA TAB BARU =====================
+        // ===================== CETAK VIA TAB BARU - RENDER JPG + TOOLBAR MARGIN =====================
         function printViaNewTab() {
             const element = document.getElementById("paperPreview");
             if (!element || generatedQuestions.length === 0) { showToast("Tidak ada pertanyaan", "error"); return; }
