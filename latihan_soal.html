@@ -400,7 +400,7 @@
                     <i class="fa-solid fa-lightbulb text-sky-600 mt-0.5 text-sm"></i>
                     <div>
                         <h4 class="text-xs font-bold text-sky-900">Cara Terbaik Simpan PDF</h4>
-                        <p class="text-[10px] text-sky-700/90 mt-0.5">Klik <b>Cetak di Tab Baru</b> → tab baru terbuka dengan lembar ujian → klik <b>Cetak / Save as PDF</b> atau tekan <b>Ctrl+P</b> → pilih <b>Save as PDF</b>, ukuran <b>A4</b>, margins <b>None</b>.</p>
+                        <p class="text-[10px] text-sky-700/90 mt-0.5">Klik <b>Cetak di Tab Baru</b> → tab baru terbuka dengan lembar ujian yang sudah jadi gambar → klik <b>Cetak / Save as PDF</b> atau tekan <b>Ctrl+P</b> → pilih <b>Save as PDF</b>, ukuran <b>A4</b>, margins <b>None</b>.</p>
                     </div>
                 </div>
 
@@ -414,7 +414,7 @@
                             </div>
                             <div class="flex-grow">
                                 <div class="text-xs font-bold text-emerald-900">🖨️ Cetak di Tab Baru (Rekomendasi)</div>
-                                <div class="text-[10px] text-emerald-700 mt-0.5">Tab baru terbuka dengan lembar ujian siap cetak.</div>
+                                <div class="text-[10px] text-emerald-700 mt-0.5">Tab baru terbuka, halaman di-render jadi gambar JPG A4.</div>
                             </div>
                             <i class="fa-solid fa-chevron-right text-emerald-600"></i>
                         </button>
@@ -1076,7 +1076,6 @@
             const PADDING_TOP_MM = 20;
             const PADDING_BOTTOM_MM = 15;
             const PAGE_HEIGHT_MM = 297;
-            // Margin keamanan 5% supaya tidak overflow saat print
             const CONTENT_HEIGHT_PX = (PAGE_HEIGHT_MM - PADDING_TOP_MM - PADDING_BOTTOM_MM) * MM_TO_PX * 0.95;
 
             function buildFullHeader() {
@@ -1347,11 +1346,9 @@
             });
         }
 
-        // ===================== CETAK VIA TAB BARU =====================
-        // FIX FINAL:
-        // - Load Tailwind CDN di tab baru → layout PERSIS SAMA dengan preview
-        // - Pakai min-height (bukan height exact) → tidak kepotong
-        // - page-break-after: always → pasti pindah halaman
+        // ===================== CETAK VIA TAB BARU - RENDER JADI JPG =====================
+        // FIX FINAL: Tab baru render setiap halaman jadi JPG A4 presisi (html2canvas).
+        // Setelah jadi gambar, print = print gambar → 100% IDENTIK dengan preview.
         function printViaNewTab() {
             const element = document.getElementById("paperPreview");
             if (!element || generatedQuestions.length === 0) { showToast("Tidak ada pertanyaan", "error"); return; }
@@ -1380,6 +1377,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"><\/script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
@@ -1435,8 +1433,7 @@
         }
         .toolbar-btn-secondary:hover { background: rgba(255,255,255,0.25); }
         
-        /* PENTING: Pakai min-height (bukan height exact) supaya konten tidak kepotong.
-           page-break-after: always → pasti pindah halaman setelah setiap .a4-page */
+        /* Halaman HTML (sebelum render) */
         .a4-page {
             width: 210mm;
             min-height: 297mm;
@@ -1446,9 +1443,46 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             box-sizing: border-box;
             position: relative;
+        }
+        
+        /* IMG pengganti setelah render JPG */
+        .a4-page-img {
+            width: 210mm;
+            height: auto;
+            display: block;
+            margin: 90px auto 20px auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            background: white;
             page-break-after: always;
         }
-        .a4-page:last-child { page-break-after: avoid; margin-bottom: 20px; }
+        .a4-page-img:last-child { page-break-after: avoid; margin-bottom: 20px; }
+        
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(6, 78, 59, 0.95);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            gap: 16px;
+            transition: opacity 0.3s;
+        }
+        .loading-overlay.hidden { display: none; }
+        .loading-spinner {
+            width: 56px;
+            height: 56px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { font-size: 14px; font-weight: bold; }
+        .loading-subtext { font-size: 12px; opacity: 0.8; }
         
         .question-item {
             page-break-inside: avoid;
@@ -1501,10 +1535,27 @@
                 padding: 0 !important;
                 margin: 0 !important;
             }
-            .toolbar, .print-info { display: none !important; }
+            .toolbar, .print-info, .loading-overlay { display: none !important; }
             
-            /* PENTING: min-height (bukan height exact) supaya tidak kepotong.
-               page-break-after: always → pasti pindah halaman. */
+            /* Print IMG dengan tinggi exact A4 */
+            .a4-page-img {
+                width: 210mm !important;
+                height: 297mm !important;
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                background: white !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                object-fit: contain !important;
+            }
+            .a4-page-img:last-child {
+                page-break-after: avoid !important;
+                break-after: auto !important;
+            }
+            
+            /* Fallback kalau render gagal, pakai HTML */
             .a4-page {
                 width: 210mm !important;
                 min-height: 297mm !important;
@@ -1515,13 +1566,11 @@
                 box-sizing: border-box !important;
                 page-break-after: always !important;
                 break-after: page !important;
-                position: relative !important;
             }
             .a4-page:last-child { 
                 page-break-after: avoid !important; 
                 break-after: auto !important;
             }
-            
             .question-item {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
@@ -1533,7 +1582,7 @@
         }
     </style>
 </head>
-<body style="opacity: 0; transition: opacity 0.3s;">
+<body>
 
     <div class="toolbar">
         <div>
@@ -1554,13 +1603,63 @@
         💡 <b>Cara simpan sebagai PDF:</b> Klik tombol <b>Cetak / Save as PDF</b> di atas (atau tekan <b>Ctrl+P</b>), lalu di dialog print pilih <b>Destination: Save as PDF</b>, ukuran kertas <b>A4</b>, dan <b>Margins: None</b>.
     </div>
 
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Sedang menyiapkan lembar ujian...</div>
+        <div class="loading-subtext">Halaman sedang di-render menjadi gambar agar hasil cetak 100% sama dengan preview</div>
+    </div>
+
     ${contentHTML}
 
     <script>
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.body.style.opacity = '1';
-            }, 200);
+        // Render tiap halaman jadi JPG A4 presisi
+        // Setelah jadi gambar, print = print gambar → 100% identik dengan preview
+        window.addEventListener('load', async function() {
+            // Tunggu Tailwind & font selesai load
+            await new Promise(r => setTimeout(r, 800));
+            
+            try {
+                const pages = document.querySelectorAll('.a4-page');
+                const totalPages = pages.length;
+                
+                if (totalPages === 0) {
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                    return;
+                }
+                
+                // Render tiap halaman jadi JPG
+                for (let i = 0; i < pages.length; i++) {
+                    const pageEl = pages[i];
+                    
+                    const canvas = await html2canvas(pageEl, {
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        logging: false,
+                        backgroundColor: '#ffffff',
+                        width: pageEl.offsetWidth,
+                        height: pageEl.offsetHeight,
+                        windowWidth: pageEl.offsetWidth,
+                        windowHeight: pageEl.offsetHeight
+                    });
+                    
+                    const jpgDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                    
+                    const img = document.createElement('img');
+                    img.src = jpgDataUrl;
+                    img.className = 'a4-page-img';
+                    img.alt = 'Halaman ' + (i + 1);
+                    
+                    pageEl.parentNode.replaceChild(img, pageEl);
+                }
+                
+                // Sembunyikan loading overlay
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            } catch (err) {
+                console.error('Render error:', err);
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }
         });
     <\/script>
 </body>
@@ -1574,7 +1673,7 @@
             newTab.document.close();
             
             closePDFSettings();
-            showToast("Tab baru dibuka! Klik 'Cetak / Save as PDF' di tab tersebut.", "success");
+            showToast("Tab baru dibuka! Tunggu loading selesai, lalu klik 'Cetak / Save as PDF'.", "success");
         }
 
         function printDirect() {
