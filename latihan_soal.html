@@ -1059,7 +1059,7 @@
             console.warn(`⚠️ Logo ${side} gagal dimuat: ${imgElement.src}`);
         }
 
-        // ===================== RENDER EXAM PAPER - AUTO-FIT =====================
+        // ===================== RENDER EXAM PAPER - SMART PACKING =====================
         async function renderExamPaper() {
             const container = document.getElementById("paperPreview");
 
@@ -1077,7 +1077,9 @@
             const PADDING_TOP_MM = 20;
             const PADDING_BOTTOM_MM = 15;
             const PAGE_HEIGHT_MM = 297;
-            const CONTENT_HEIGHT_PX = (PAGE_HEIGHT_MM - PADDING_TOP_MM - PADDING_BOTTOM_MM) * MM_TO_PX * 0.95;
+            const CONTENT_HEIGHT_PX = (PAGE_HEIGHT_MM - PADDING_TOP_MM - PADDING_BOTTOM_MM) * MM_TO_PX;
+            // Keamanan 1% (karena print = JPG, tidak ada perbedaan rendering)
+            const SAFE_MARGIN_PX = CONTENT_HEIGHT_PX * 0.99;
 
             function buildFullHeader() {
                 return `
@@ -1212,6 +1214,7 @@
                 uraianList.forEach(q => allItems.push({ type: 'question', data: q, no: globalNo++ }));
             }
 
+            // ===== LANGKAH 1: UKUR TINGGI AKTUAL =====
             const measureContainer = document.createElement('div');
             measureContainer.style.position = 'absolute';
             measureContainer.style.left = '-9999px';
@@ -1238,7 +1241,7 @@
             if (document.fonts && document.fonts.ready) {
                 try { await document.fonts.ready; } catch(e) {}
             }
-            await new Promise(resolve => setTimeout(resolve, 150));
+            await new Promise(resolve => setTimeout(resolve, 200));
 
             const headerWrapper = measureContainer.querySelector('.flex.items-center.justify-between');
             const infoWrapper = measureContainer.querySelector('.grid.grid-cols-2');
@@ -1255,18 +1258,20 @@
             allRendered.forEach((el, idx) => {
                 measuredItems.push({
                     element: allItems[idx],
-                    height: el.offsetHeight + 10
+                    height: el.offsetHeight + 10,
+                    index: idx
                 });
             });
 
             document.body.removeChild(measureContainer);
 
-            const pages = [];
+            // ===== LANGKAH 2: DISTRIBUSI AWAL (GREEDY) =====
+            let pages = [];
             let currentPage = [];
             let currentHeight = headerHeight;
 
             measuredItems.forEach(item => {
-                if (currentHeight + item.height > CONTENT_HEIGHT_PX && currentPage.length > 0) {
+                if (currentHeight + item.height > SAFE_MARGIN_PX && currentPage.length > 0) {
                     pages.push(currentPage);
                     currentPage = [];
                     currentHeight = 0;
@@ -1277,8 +1282,46 @@
             if (currentPage.length > 0) pages.push(currentPage);
             if (pages.length === 0) pages = [[]];
 
-            const totalPages = pages.length;
+            // ===== LANGKAH 3: LOOP OPTIMASI =====
+            // Pindahkan soal dari halaman N+1 ke halaman N kalau masih muat
+            let changed = true;
+            let iteration = 0;
+            const MAX_ITERATIONS = 100;
 
+            while (changed && iteration < MAX_ITERATIONS) {
+                changed = false;
+                iteration++;
+
+                for (let p = 0; p < pages.length - 1; p++) {
+                    const curPage = pages[p];
+                    const nextPage = pages[p + 1];
+                    if (nextPage.length === 0) continue;
+
+                    // Hitung tinggi halaman p
+                    let curHeight;
+                    if (p === 0) {
+                        curHeight = headerHeight + curPage.reduce((sum, item) => sum + item.height, 0);
+                    } else {
+                        curHeight = curPage.reduce((sum, item) => sum + item.height, 0);
+                    }
+
+                    // Cek apakah item pertama halaman berikutnya muat di halaman ini
+                    const firstNextItem = nextPage[0];
+                    if (curHeight + firstNextItem.height <= SAFE_MARGIN_PX) {
+                        // Pindahkan!
+                        curPage.push(firstNextItem);
+                        nextPage.shift();
+                        changed = true;
+                    }
+                }
+
+                // Hapus halaman kosong
+                pages = pages.filter(p => p.length > 0);
+                if (pages.length === 0) pages = [[]];
+            }
+
+            // ===== LANGKAH 4: RENDER FINAL =====
+            const totalPages = pages.length;
             let finalHTML = '';
 
             pages.forEach((pageItems, pageIdx) => {
@@ -1502,16 +1545,22 @@
         }
         .toolbar-btn-secondary:hover { background: rgba(255,255,255,0.25); }
         
-        /* Halaman HTML (sebelum render) */
+        /* Halaman HTML (sebelum render) - halaman pertama dapat margin 80px dari toolbar */
         .a4-page {
             width: 210mm;
             min-height: 297mm;
-            margin: 80px auto 10px auto;
-            padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm;
             background: white;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             box-sizing: border-box;
             position: relative;
+        }
+        .a4-page:first-child {
+            margin: 80px auto 10px auto;
+            padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm;
+        }
+        .a4-page:not(:first-child) {
+            margin: 10px auto 10px auto;
+            padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm;
         }
         
         /* IMG pengganti setelah render JPG */
@@ -1519,12 +1568,16 @@
             width: 210mm;
             height: auto;
             display: block;
-            margin: 80px auto 10px auto;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             background: white;
-            page-break-after: always;
         }
-        .a4-page-img:last-child { page-break-after: avoid; margin-bottom: 20px; }
+        .a4-page-img:first-child {
+            margin: 80px auto 10px auto;
+        }
+        .a4-page-img:not(:first-child) {
+            margin: 10px auto 10px auto;
+        }
+        .a4-page-img:last-child { margin-bottom: 20px; }
         
         /* Loading overlay */
         .loading-overlay {
@@ -1690,11 +1743,9 @@
     </div>
 
     <script>
-        // Simpan HTML asli tiap halaman (untuk re-render)
         let originalPagesHTML = [];
         let renderInProgress = false;
 
-        // Ambil margin dari toolbar
         function getMargins() {
             return {
                 top: document.getElementById('marginTopNewTab').value || 0,
@@ -1704,7 +1755,6 @@
             };
         }
 
-        // Render semua halaman jadi JPG
         async function renderAllPages() {
             if (renderInProgress) return;
             renderInProgress = true;
@@ -1725,7 +1775,7 @@
                     return;
                 }
                 
-                // Simpan HTML asli (sekali saja, sebelum di-render)
+                // Simpan HTML asli sekali saja
                 if (originalPagesHTML.length === 0) {
                     document.querySelectorAll('.a4-page').forEach(el => {
                         originalPagesHTML.push(el.outerHTML);
@@ -1767,7 +1817,6 @@
             }
         }
 
-        // Re-render: kembalikan HTML asli, terapkan margin baru, render ulang
         async function rerenderJpg() {
             if (renderInProgress) return;
             
@@ -1775,30 +1824,30 @@
             const margins = getMargins();
             const newPadding = margins.top + 'mm ' + margins.right + 'mm ' + margins.bottom + 'mm ' + margins.left + 'mm';
             
-            // Hapus semua img yang ada
+            // Hapus semua img
             document.querySelectorAll('.a4-page-img').forEach(el => el.remove());
             
             // Kembalikan HTML asli dengan margin baru
             container.innerHTML = '';
-            originalPagesHTML.forEach(html => {
+            originalPagesHTML.forEach((html, idx) => {
                 const temp = document.createElement('div');
                 temp.innerHTML = html;
                 const el = temp.firstElementChild;
                 el.style.padding = newPadding;
+                // Halaman pertama dapat margin top 80px, sisanya 10px
+                if (idx === 0) {
+                    el.style.margin = '80px auto 10px auto';
+                } else {
+                    el.style.margin = '10px auto 10px auto';
+                }
                 container.appendChild(el);
             });
             
-            // Tampilkan loading
             document.getElementById('loadingOverlay').classList.remove('hidden');
-            
-            // Tunggu layout settle
             await new Promise(r => setTimeout(r, 200));
-            
-            // Render ulang
             await renderAllPages();
         }
 
-        // Initial render
         window.addEventListener('load', async function() {
             await new Promise(r => setTimeout(r, 800));
             await renderAllPages();
@@ -1815,7 +1864,7 @@
             newTab.document.close();
             
             closePDFSettings();
-            showToast("Tab baru dibuka! Atur margin di toolbar, klik 'Render Ulang' jika perlu.", "success");
+            showToast("Tab baru dibuka! Tunggu loading selesai.", "success");
         }
 
         function printDirect() {
