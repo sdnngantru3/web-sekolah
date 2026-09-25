@@ -75,19 +75,161 @@
         .edit-input {
             display: none;
             width: 100%;
-            padding: 4px 8px;
+            min-height: 54px;
+            padding: 8px 10px;
             border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.5;
             background: white;
-            margin-top: 4px;
+            margin-top: 6px;
+            resize: vertical;
+            box-sizing: border-box;
         }
+        .edit-mode .edit-question-input { min-height: 96px; font-size: 13px; }
+        .edit-mode .edit-option-input { min-height: 58px; }
+        .question-edit-tools { display: none; }
+        .edit-mode .question-edit-tools { display: flex; }
+        .question-image { max-width: 100%; height: auto; object-fit: contain; border: 1px solid #e2e8f0; border-radius: 8px; display: block; }
+        .edit-image-preview { max-width: 180px; max-height: 120px; object-fit: contain; border: 1px solid #d1d5db; border-radius: 8px; background: white; }
         .edit-mode .edit-input { display: block; }
         .edit-mode .view-text { display: none; }
         .view-text { display: block; }
         
         .kunci-jawaban-text { display: none !important; }
         .print-guru .kunci-jawaban-text { display: block !important; }
+
+        /* ====== GAYA FOTO SOAL - 4 POSISI ====== */
+        .question-image-wrapper {
+            display: flex;
+            margin: 0;
+        }
+        .question-image-wrapper.pos-atas {
+            justify-content: flex-start;
+            margin: 8px 0 8px 16px;
+        }
+        .question-image-wrapper.pos-bawah {
+            justify-content: flex-start;
+            margin: 8px 0 4px 16px;
+        }
+        .question-image-wrapper.pos-kiri,
+        .question-image-wrapper.pos-kanan {
+            justify-content: flex-start;
+            margin: 0;
+            width: 100%;
+        }
+
+        /* ====== LAYOUT FOTO KIRI: gambar kiri | soal kanan ====== */
+        /* Grid dengan kolom kiri fixed proporsional (35%), kolom kanan sisa (65%) */
+        .question-content-with-image-left {
+            display: grid;
+            grid-template-columns: minmax(0, 35%) minmax(0, 65%);
+            gap: 12px;
+            align-items: start;
+            width: 100%;
+        }
+
+        /* ====== LAYOUT FOTO KANAN: soal kiri | gambar kanan ====== */
+        /* Grid dengan kolom kiri soal (65%), kolom kanan gambar (35%) */
+        .question-content-with-image-right {
+            display: grid;
+            grid-template-columns: minmax(0, 65%) minmax(0, 35%);
+            gap: 12px;
+            align-items: start;
+            width: 100%;
+        }
+
+        /* Pastikan teks soal tidak patah aneh */
+        .question-content-with-image-left > div,
+        .question-content-with-image-right > div {
+            min-width: 0;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: normal;
+            hyphens: none;
+        }
+
+        /* Gambar dalam grid foto kiri/kanan: fill container, jangan melebihi */
+        .question-content-with-image-left .question-image-wrapper,
+        .question-content-with-image-right .question-image-wrapper {
+            width: 100%;
+            max-width: 100%;
+        }
+        .question-content-with-image-left .question-image,
+        .question-content-with-image-right .question-image {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: auto;
+        }
+
+        /* Tombol posisi foto */
+        .pos-btn {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .pos-btn:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+        .pos-btn.active {
+            background: #10b981;
+            color: white;
+            border-color: #059669;
+            box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Area tool foto di dalam box edit soal */
+        .question-image-tools {
+            background: #fffbeb;
+            border-radius: 8px;
+            padding: 8px;
+            margin-top: 6px;
+            display: none;
+        }
+        .edit-mode .question-image-tools {
+            display: block;
+        }
+
+        /* Slider ukuran gambar */
+        .size-slider-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 6px 10px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .size-slider-wrap label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #475569;
+            white-space: nowrap;
+        }
+        .size-slider-wrap input[type="range"] {
+            flex-grow: 1;
+            height: 4px;
+            accent-color: #10b981;
+            cursor: pointer;
+        }
+        .size-slider-value {
+            font-size: 10px;
+            font-weight: 700;
+            color: #059669;
+            min-width: 42px;
+            text-align: right;
+        }
 
         .modal-overlay {
             background: rgba(0, 0, 0, 0.5);
@@ -204,11 +346,28 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Tahun Pelajaran</label>
-                        <input type="text" id="academicYearInput" value="2025/2026" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <input type="text" id="academicYearInput" value="2026/2027" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Waktu Pengerjaan (Menit)</label>
                         <input type="number" id="durationInput" value="90" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div class="border-t border-slate-100 pt-3 space-y-3">
+                        <span class="block text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
+                            <i class="fa-solid fa-school text-emerald-600"></i> Identitas Sekolah
+                        </span>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Sekolah</label>
+                            <input type="text" id="schoolNameInput" value="SD NEGERI 3 NGANTRU" onchange="if(generatedQuestions.length) renderExamPaper();" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Alamat Sekolah</label>
+                            <textarea id="schoolAddressInput" rows="2" onchange="if(generatedQuestions.length) renderExamPaper();" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-y">Jalan Sawahan No 1 Desa Ngantru Kecamatan Ngantang Kabupaten Malang</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Email Sekolah</label>
+                            <input type="email" id="schoolEmailInput" value="sdn3ngantru.ngantang@gmail.com" onchange="if(generatedQuestions.length) renderExamPaper();" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
                     </div>
                     
                     <div class="border-t border-slate-100 pt-3 space-y-3">
@@ -517,10 +676,8 @@
         const DEFAULT_LOGO_KIRI = "logo kabupaten.png";
         const DEFAULT_LOGO_KANAN = "logo sekolah.png";
 
-        // ===================== MODEL GEMINI - BERDASARKAN FILE YANG BERHASIL =====================
-        // gemini-3-flash-preview terbukti aktif dari file pembuat_soal.html
         const GEMINI_MODELS = [
-            "gemini-3-flash-preview",   // ⭐ utama - terbukti berhasil
+            "gemini-3-flash-preview",
             "gemini-3.6-flash",
             "gemini-3.5-flash",
             "gemini-3.5-flash-lite",
@@ -575,19 +732,19 @@
 
         function saveEditsFromPreview() {
             const questionItems = document.querySelectorAll('#paperPreview .question-item');
-            questionItems.forEach((item, idx) => {
-                if (idx >= generatedQuestions.length) return;
+            questionItems.forEach((item) => {
+                const questionIndex = Number(item.dataset.questionIndex);
+                if (!Number.isInteger(questionIndex) || !generatedQuestions[questionIndex]) return;
                 const qInput = item.querySelector('.edit-question-input');
                 if (qInput) {
                     let newText = qInput.value.trim().replace(/^\d+\.\s*/, '');
-                    if (newText) generatedQuestions[idx].pertanyaan = newText;
+                    if (newText) generatedQuestions[questionIndex].pertanyaan = newText;
                 }
                 const optionInputs = item.querySelectorAll('.edit-option-input');
-                if (optionInputs.length > 0 && generatedQuestions[idx].pilihan) {
+                if (optionInputs.length > 0 && generatedQuestions[questionIndex].pilihan) {
                     optionInputs.forEach((input, optIdx) => {
-                        if (optIdx < generatedQuestions[idx].pilihan.length) {
-                            const newOpt = input.value.trim();
-                            if (newOpt) generatedQuestions[idx].pilihan[optIdx] = newOpt;
+                        if (optIdx < generatedQuestions[questionIndex].pilihan.length) {
+                            generatedQuestions[questionIndex].pilihan[optIdx] = input.value.trim();
                         }
                     });
                 }
@@ -614,6 +771,51 @@
                 showToast(`Logo ${side} berhasil diunggah!`, "success");
             };
             reader.readAsDataURL(file);
+        }
+
+        function handleQuestionImageUpload(event, questionIndex) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                showToast("File harus berupa gambar.", "error");
+                event.target.value = "";
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (!generatedQuestions[questionIndex]) return;
+                generatedQuestions[questionIndex].gambar = e.target.result;
+                renderExamPaper();
+                if (isEditMode) document.querySelectorAll('.a4-preview-sheet').forEach(p => p.classList.add("edit-mode"));
+                showToast(`Gambar soal nomor ${questionIndex + 1} berhasil ditambahkan.`, "success");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearQuestionImage(questionIndex) {
+            if (!generatedQuestions[questionIndex]) return;
+            generatedQuestions[questionIndex].gambar = "";
+            renderExamPaper();
+            if (isEditMode) document.querySelectorAll('.a4-preview-sheet').forEach(p => p.classList.add("edit-mode"));
+            showToast(`Gambar soal nomor ${questionIndex + 1} dihapus.`, "info");
+        }
+
+        function updateQuestionImagePosition(questionIndex, position) {
+            if (!generatedQuestions[questionIndex]) return;
+            const allowed = ['atas', 'bawah', 'kiri', 'kanan'];
+            generatedQuestions[questionIndex].gambarPosisi = allowed.includes(position) ? position : 'atas';
+            renderExamPaper();
+            if (isEditMode) document.querySelectorAll('.a4-preview-sheet').forEach(p => p.classList.add("edit-mode"));
+            showToast(`Posisi foto soal nomor ${questionIndex + 1} diubah ke ${position}.`, "info");
+        }
+
+        function updateQuestionImageSize(questionIndex, size) {
+            if (!generatedQuestions[questionIndex]) return;
+            const sizeNum = Number(size);
+            if (!Number.isFinite(sizeNum)) return;
+            generatedQuestions[questionIndex].gambarUkuran = Math.min(100, Math.max(15, sizeNum));
+            renderExamPaper();
+            if (isEditMode) document.querySelectorAll('.a4-preview-sheet').forEach(p => p.classList.add("edit-mode"));
         }
 
         function clearLogo(side) {
@@ -889,7 +1091,6 @@
             showToast("Templat Excel diunduh", "success");
         }
 
-        // ===================== GEMINI API - VERSI FILE BERHASIL =====================
         async function fetchGeminiWithRetry(prompt, systemPrompt, customKey) {
             const targetKey = customKey;
             if (!targetKey) throw new Error("API Key kosong. Silakan isi API Key Anda di panel kiri.");
@@ -948,25 +1149,21 @@
                             return await response.json();
                         }
 
-                        // API Key tidak valid → stop total
                         if (response.status === 401) {
                             throw new Error("API Key tidak valid (401). Silakan cek kembali di Google AI Studio.");
                         }
 
-                        // Region tidak didukung
                         if (response.status === 403) {
                             throw new Error("API Key diblokir / region tidak didukung (403). Cek akun Google Anda.");
                         }
 
-                        // Model tidak didukung (404) → coba model berikutnya
                         if (response.status === 404) {
                             console.warn(`⚠️ Model ${modelName} tidak didukung, coba model berikutnya...`);
                             lastError = new Error(`Model ${modelName} tidak didukung.`);
                             lastErrorStatus = 404;
-                            break; // lanjut ke model berikutnya
+                            break;
                         }
 
-                        // Rate limit / server error → retry
                         if (response.status === 429 || response.status >= 500) {
                             console.warn(`Model ${modelName} error ${response.status}, retry dalam ${delay}ms...`);
                             await new Promise(resolve => setTimeout(resolve, delay));
@@ -986,7 +1183,6 @@
                 }
             }
 
-            // Semua model gagal
             if (lastErrorStatus === 404) {
                 throw new Error(`Semua model Gemini tidak didukung (${triedModels.join(", ")}). Cek model terbaru di https://ai.google.dev/gemini-api/docs/models`);
             }
@@ -1057,6 +1253,8 @@
                         if (rawQ) {
                             generatedQuestions.push({
                                 ...rawQ,
+                                gambarPosisi: rawQ.gambarPosisi || 'atas',
+                                gambarUkuran: rawQ.gambarUkuran || 30,
                                 no_soal: generatedQuestions.length + 1,
                                 skor: indicator.skor || 10,
                                 bentuk: indicator.bentuk || "Pilihan Ganda",
@@ -1072,6 +1270,8 @@
                     const rawQ = parsedData.questions[mappedIndex];
                     generatedQuestions.push({
                         ...rawQ,
+                        gambarPosisi: rawQ.gambarPosisi || 'atas',
+                        gambarUkuran: rawQ.gambarUkuran || 30,
                         no_soal: generatedQuestions.length + 1,
                         skor: 10,
                         bentuk: "Pilihan Ganda",
@@ -1103,7 +1303,7 @@
             console.warn(`⚠️ Logo ${side} gagal dimuat: ${imgElement.src}`);
         }
 
-        // ===================== RENDER EXAM PAPER - SMART PACKING =====================
+        // ===================== RENDER EXAM PAPER =====================
         async function renderExamPaper() {
             const container = document.getElementById("paperPreview");
 
@@ -1113,6 +1313,9 @@
             const semester = document.getElementById("semesterInput").value;
             const tahunAjaran = document.getElementById("academicYearInput").value;
             const durasi = document.getElementById("durationInput").value;
+            const namaSekolah = document.getElementById("schoolNameInput")?.value.trim() || "SD NEGERI 3 NGANTRU";
+            const alamatSekolah = document.getElementById("schoolAddressInput")?.value.trim() || "Jalan Sawahan No 1 Desa Ngantru Kecamatan Ngantang Kabupaten Malang";
+            const emailSekolah = document.getElementById("schoolEmailInput")?.value.trim() || "sdn3ngantru.ngantang@gmail.com";
 
             const finalLogoKiriPath = logoKiriData || DEFAULT_LOGO_KIRI;
             const finalLogoKananPath = logoKananData || DEFAULT_LOGO_KANAN;
@@ -1133,8 +1336,9 @@
                         <div class="text-center flex-grow">
                             <h2 class="text-xs md:text-sm font-bold tracking-wide uppercase">PEMERINTAH KABUPATEN MALANG</h2>
                             <h2 class="text-xs md:text-sm font-bold tracking-wide uppercase">DINAS PENDIDIKAN</h2>
-                            <h1 class="text-base md:text-lg font-extrabold tracking-wider uppercase mt-0.5">SD NEGERI 3 NGANTRU</h1>
-                            <p class="text-[9px] md:text-[10px] italic text-slate-500 mt-1">Alamat: Kecamatan Ngantang, Kabupaten Malang, Jawa Timur</p>
+                            <h1 class="text-base md:text-lg font-extrabold tracking-wider uppercase mt-0.5">${namaSekolah}</h1>
+                            <p class="text-[9px] md:text-[10px] italic text-slate-500 mt-1">Alamat: ${alamatSekolah}</p>
+                            <p class="text-[9px] md:text-[10px] italic text-slate-500">Pos-el: ${emailSekolah}</p>
                         </div>
                         <div class="w-16 h-16 flex items-center justify-center flex-shrink-0">
                             <img src="${finalLogoKananPath}" onerror="handleInlineLogoError(this, 'kanan')" class="max-h-16 max-w-full object-contain" alt="Logo Sekolah">
@@ -1169,15 +1373,40 @@
                 const pilihan = q.pilihan || [];
                 let optionsHTML = '';
 
-                if (pilihan.length > 0) {
+                if (q.bentuk === "Mencocokkan") {
+                    const pairs = pilihan.map((pil) => {
+                        const parts = String(pil).split('|');
+                        return { left: (parts[0] || '').trim(), right: (parts.slice(1).join('|') || '').trim() };
+                    });
                     optionsHTML = `
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-1.5 ml-4">
+                        <div class="ml-4 space-y-1.5">
+                            ${pairs.map((pair, idx) => {
+                                const code = String.fromCharCode(65 + idx);
+                                return `
+                                    <div class="flex items-start gap-2">
+                                        <span class="view-text shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full border border-slate-500 text-[10px] font-bold">${code}</span>
+                                        <div class="flex-1">
+                                            <span class="view-text">${sanitizeOption(pair.left)}${pair.right ? ` &nbsp;—&nbsp; ${sanitizeOption(pair.right)}` : ''}</span>
+                                            <textarea class="edit-input edit-option-input" placeholder="Pasangan ${code}...">${sanitizeOption(pilihan[idx])}</textarea>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                } else if (pilihan.length > 0) {
+                    const isPGKompleks = q.bentuk === "Pilihan Ganda Kompleks";
+                    optionsHTML = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 ml-4">
                             ${pilihan.map((pil, idx) => {
                                 const code = String.fromCharCode(65 + idx);
                                 return `
-                                    <div>
-                                        <span class="view-text">${code}. ${sanitizeOption(pil)}</span>
-                                        <input class="edit-input edit-option-input" type="text" value="${sanitizeOption(pil)}" placeholder="Opsi ${code}...">
+                                    <div class="flex items-start gap-2">
+                                        <span class="view-text shrink-0 inline-flex items-center justify-center ${isPGKompleks ? 'w-5 h-5 rounded-sm border border-slate-500' : 'w-5 h-5'} text-[10px] font-bold">${code}</span>
+                                        <div class="flex-1">
+                                            <span class="view-text">${sanitizeOption(pil)}</span>
+                                            <textarea class="edit-input edit-option-input" placeholder="Opsi ${code}...">${sanitizeOption(pil)}</textarea>
+                                        </div>
                                     </div>
                                 `;
                             }).join('')}
@@ -1193,22 +1422,139 @@
                     `;
                 }
 
-                const keyHTML = `
-                    <div class="kunci-jawaban-text mt-1.5">
-                        <span class="key-badge"><i class="fa-solid fa-key"></i> Kunci Jawaban: ${q.kunci_jawaban || '-'}</span>
+                // ====== BAGIAN FOTO ======
+                const imagePosition = q.gambarPosisi || 'atas';
+                const imageSize = Number(q.gambarUkuran) || 30; // dalam persen
+                
+                // Untuk posisi atas/bawah: ukuran gambar langsung dalam persen dari lebar container
+                // Untuk posisi kiri/kanan: gambar mengisi 100% dari kolom grid-nya
+                let imageStyle;
+                if (imagePosition === 'kiri' || imagePosition === 'kanan') {
+                    // Grid foto kiri/kanan: kolom gambar sudah ditentukan oleh grid-template-columns
+                    // Tapi kita masih bisa atur ukuran gambar via max-width di dalam kolom
+                    imageStyle = `width: 100%; max-width: 100%; height: auto;`;
+                } else {
+                    // Atas/bawah: pakai persen dari container
+                    imageStyle = `width: ${imageSize}%; max-width: 100%; height: auto;`;
+                }
+                
+                const imageHTML = q.gambar ? `
+                    <div class="question-image-wrapper pos-${imagePosition}">
+                        <img src="${q.gambar}" class="question-image" style="${imageStyle}" alt="Gambar pendukung soal ${no}">
+                    </div>` : '';
+
+                const editImageHTML = `
+                    <div class="question-edit-tools question-image-tools mt-2 pt-2 border-t border-amber-200">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <input type="file" id="questionImageInput_${q.no_soal || no}" accept="image/*" class="hidden" onchange="handleQuestionImageUpload(event, ${q.__index})">
+                            <button type="button" onclick="document.getElementById('questionImageInput_${q.no_soal || no}').click()" class="px-2.5 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-[10px] font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-image"></i> ${q.gambar ? 'Ganti Foto' : 'Upload Foto'}
+                            </button>
+                            ${q.gambar ? `<button type="button" onclick="clearQuestionImage(${q.__index})" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-[10px] font-bold flex items-center gap-1"><i class="fa-solid fa-trash-can"></i> Hapus</button>` : ''}
+                        </div>
+                        ${q.gambar ? `
+                        <div class="mt-2 flex flex-wrap items-center gap-3">
+                            <div class="flex items-center gap-1 bg-white border border-slate-200 rounded-lg p-1">
+                                <span class="text-[10px] text-slate-500 font-semibold px-1">Posisi:</span>
+                                <button type="button" onclick="updateQuestionImagePosition(${q.__index}, 'atas')" class="pos-btn ${imagePosition === 'atas' ? 'active' : ''}" title="Atas">
+                                    <i class="fa-solid fa-arrow-up"></i> Atas
+                                </button>
+                                <button type="button" onclick="updateQuestionImagePosition(${q.__index}, 'bawah')" class="pos-btn ${imagePosition === 'bawah' ? 'active' : ''}" title="Bawah">
+                                    <i class="fa-solid fa-arrow-down"></i> Bawah
+                                </button>
+                                <button type="button" onclick="updateQuestionImagePosition(${q.__index}, 'kiri')" class="pos-btn ${imagePosition === 'kiri' ? 'active' : ''}" title="Kiri">
+                                    <i class="fa-solid fa-arrow-left"></i> Kiri
+                                </button>
+                                <button type="button" onclick="updateQuestionImagePosition(${q.__index}, 'kanan')" class="pos-btn ${imagePosition === 'kanan' ? 'active' : ''}" title="Kanan">
+                                    <i class="fa-solid fa-arrow-right"></i> Kanan
+                                </button>
+                            </div>
+                            <img src="${q.gambar}" class="edit-image-preview" alt="Pratinjau foto soal ${no}">
+                        </div>
+                        <div class="size-slider-wrap">
+                            <label><i class="fa-solid fa-up-right-and-down-left-from-center"></i> Ukuran:</label>
+                            <input type="range" min="15" max="100" step="5" value="${imageSize}" oninput="updateQuestionImageSize(${q.__index}, this.value)" onchange="updateQuestionImageSize(${q.__index}, this.value)">
+                            <span class="size-slider-value">${imageSize}%</span>
+                        </div>` : '<span class="text-[10px] text-slate-400 italic mt-1 block">Foto bersifat opsional. Klik Upload Foto untuk menambahkan.</span>'}
                     </div>
                 `;
 
-                return `
-                    <div class="question-item pl-2 border-l-2 border-emerald-500/20">
-                        <div class="font-medium mb-1.5 flex justify-between items-start">
-                            <span>
-                                <span class="view-text">${no}. ${q.pertanyaan}</span>
-                                <input class="edit-input edit-question-input" type="text" value="${no}. ${q.pertanyaan}" placeholder="Tulis pertanyaan...">
-                            </span>
-                            <span class="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-100 ml-2 whitespace-nowrap">Skor: ${q.skor}</span>
+                const keyHTML = `
+                    <div class="kunci-jawaban-text mt-1.5">
+                        <span class="key-badge"><i class="fa-solid fa-key"></i> Kunci Jawaban: ${q.kunci_jawaban || '-'} </span>
+                    </div>
+                `;
+
+                const questionHeaderHTML = `
+                    <div class="font-medium mb-1.5 flex justify-between items-start">
+                        <span class="flex-1">
+                            <span class="view-text">${no}. ${q.pertanyaan}</span>
+                            <textarea class="edit-input edit-question-input" placeholder="Tulis pertanyaan...">${no}. ${q.pertanyaan}</textarea>
+                        </span>
+                        <span class="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-100 ml-2 whitespace-nowrap">Skor: ${q.skor}</span>
+                    </div>
+                `;
+
+                let questionBodyHTML = '';
+
+                if (!q.gambar || imagePosition === 'atas') {
+                    questionBodyHTML = `
+                        ${questionHeaderHTML}
+                        ${q.gambar ? imageHTML : ''}
+                        ${optionsHTML}
+                    `;
+                } else if (imagePosition === 'bawah') {
+                    questionBodyHTML = `
+                        ${questionHeaderHTML}
+                        ${optionsHTML}
+                        ${q.gambar ? imageHTML : ''}
+                    `;
+                } else if (imagePosition === 'kiri') {
+                    // Gambar kiri | Soal kanan, opsi di bawah full width
+                    questionBodyHTML = `
+                        <div class="question-content-with-image-left">
+                            <div>
+                                ${imageHTML}
+                            </div>
+                            <div>
+                                <span class="view-text font-medium">${no}. ${q.pertanyaan}</span>
+                                <textarea class="edit-input edit-question-input" placeholder="Tulis pertanyaan...">${no}. ${q.pertanyaan}</textarea>
+                            </div>
                         </div>
                         ${optionsHTML}
+                    `;
+                } else if (imagePosition === 'kanan') {
+                    // Soal kiri | Gambar kanan, opsi di bawah full width
+                    questionBodyHTML = `
+                        <div class="question-content-with-image-right">
+                            <div>
+                                <span class="view-text font-medium">${no}. ${q.pertanyaan}</span>
+                                <textarea class="edit-input edit-question-input" placeholder="Tulis pertanyaan...">${no}. ${q.pertanyaan}</textarea>
+                            </div>
+                            <div>
+                                ${imageHTML}
+                            </div>
+                        </div>
+                        ${optionsHTML}
+                    `;
+                }
+
+                // Header skor khusus untuk posisi kiri/kanan
+                let headerForSide = '';
+                if (q.gambar && (imagePosition === 'kiri' || imagePosition === 'kanan')) {
+                    headerForSide = `
+                        <div class="font-medium mb-1.5 flex justify-between items-start">
+                            <span class="flex-1"></span>
+                            <span class="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-100 ml-2 whitespace-nowrap">Skor: ${q.skor}</span>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="question-item pl-2 border-l-2 border-emerald-500/20" data-question-index="${q.__index}">
+                        ${headerForSide}
+                        ${questionBodyHTML}
+                        ${editImageHTML}
                         ${keyHTML}
                         <div class="solution-text hidden mt-2.5 ml-4 p-2 bg-emerald-50/50 border-l-2 border-emerald-500 rounded-r-lg text-[10px]">
                             <span class="font-bold text-emerald-800">Kunci Jawaban: ${q.kunci_jawaban}</span>
@@ -1374,7 +1720,10 @@
 
                 pageItems.forEach(item => {
                     if (item.element.type === 'section') finalHTML += item.element.html;
-                    else finalHTML += generateQuestionHTML(item.element.no, item.element.data);
+                    else {
+                        item.element.data.__index = generatedQuestions.indexOf(item.element.data);
+                        finalHTML += generateQuestionHTML(item.element.no, item.element.data);
+                    }
                 });
 
                 finalHTML += `
@@ -1424,7 +1773,7 @@
             });
         }
 
-        // ===================== CETAK VIA TAB BARU - RENDER JPG + TOOLBAR MARGIN =====================
+        // ===================== CETAK VIA TAB BARU =====================
         function printViaNewTab() {
             const element = document.getElementById("paperPreview");
             if (!element || generatedQuestions.length === 0) { showToast("Tidak ada pertanyaan", "error"); return; }
@@ -1658,8 +2007,49 @@
             display: inline-block;
         }
         
-        .edit-input, .edit-controls { display: none !important; }
+        .edit-input, .edit-controls, .question-edit-tools { display: none !important; }
         .view-text { display: block !important; }
+        .question-image { max-width: 100%; height: auto; object-fit: contain; border: 1px solid #e2e8f0; border-radius: 8px; display: block; }
+        
+        .question-image-wrapper { display: flex; margin: 0; }
+        .question-image-wrapper.pos-atas { justify-content: flex-start; margin: 8px 0 8px 16px; }
+        .question-image-wrapper.pos-bawah { justify-content: flex-start; margin: 8px 0 4px 16px; }
+        .question-image-wrapper.pos-kiri,
+        .question-image-wrapper.pos-kanan { justify-content: flex-start; margin: 0; width: 100%; }
+
+        .question-content-with-image-left {
+            display: grid;
+            grid-template-columns: minmax(0, 35%) minmax(0, 65%);
+            gap: 12px;
+            align-items: start;
+            width: 100%;
+        }
+        .question-content-with-image-right {
+            display: grid;
+            grid-template-columns: minmax(0, 65%) minmax(0, 35%);
+            gap: 12px;
+            align-items: start;
+            width: 100%;
+        }
+        .question-content-with-image-left > div,
+        .question-content-with-image-right > div {
+            min-width: 0;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: normal;
+            hyphens: none;
+        }
+        .question-content-with-image-left .question-image-wrapper,
+        .question-content-with-image-right .question-image-wrapper {
+            width: 100%;
+            max-width: 100%;
+        }
+        .question-content-with-image-left .question-image,
+        .question-content-with-image-right .question-image {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: auto;
+        }
         
         .print-info {
             max-width: 210mm;
@@ -1947,7 +2337,6 @@
             }, 300);
         }
 
-        // ===================== UNDUH .DOC =====================
         function downloadExamDOC() {
             if (isEditMode) saveEditsFromPreview();
 
