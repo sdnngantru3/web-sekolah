@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Generator RPM / RPP Deep Learning Minimal 15 Halaman A4 & TPACK AI</title>
+    <!-- Tailwind CSS untuk tata letak modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons untuk ikon visual -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- html2canvas untuk Ekspor Presisi ke Gambar JPG (A4) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- jsPDF untuk konversi otomatis gambar JPG A4 menjadi file PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&family=Inter:wght=300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .heading-font {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* Tampilan Visual Lembar Kertas A4 Presisi */
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 1.5cm 1.8cm 1.8cm 1.8cm;
+            background: #ffffff;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            margin: 0 auto 2rem auto;
+            position: relative;
+            box-sizing: border-box;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Cover halaman 1 mengisi penuh A4 tanpa padding luar */
+        #a4-page-1 {
+            padding: 0 !important;
+            overflow: hidden;
+        }
+
+        #a4-page-1 > #default-cover-wrapper {
+            padding: 1.5cm 1.8cm 1.2cm 1.8cm;
+            min-height: 297mm;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 1024px) {
+            .a4-page {
+                width: 100%;
+                min-height: auto;
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            #a4-page-1 > #default-cover-wrapper {
+                min-height: 500px;
+                padding: 1.2rem;
+            }
+        }
+
+        /* Aturan Cetak (Print Styles) */
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-family: "Times New Roman", Times, serif !important;
+                font-size: 10.5pt !important;
+            }
+            
+            header, footer, .no-print, #panel-settings, #tab-btn-settings, #tab-btn-preview, #empty-state, #loading-state, .edit-indicator, .page-badge {
+                display: none !important;
+            }
+            
+            .a4-page {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 1.2cm !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                background-color: #ffffff !important;
+                page-break-after: always;
+                break-after: page;
+            }
+
+            #a4-page-1 {
+                padding: 0 !important;
+            }
+
+            #a4-page-1 > #default-cover-wrapper {
+                min-height: 100vh;
+                padding: 1.5cm 1.8cm 1.2cm 1.8cm;
+            }
+
+            #panel-preview {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            @page {
+                size: A4;
+                margin: 0;
+            }
+        }
+
+        .editable-active [contenteditable="true"] {
+            outline: 1.5px dashed #6366f1;
+            background-color: rgba(238, 242, 255, 0.4);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        /* Styling tabel RPP Presisi */
+        .rpp-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-top: 6px;
+            margin-bottom: 8px;
+        }
+        .rpp-table th, .rpp-table td {
+            border: 1px solid #334155;
+            padding: 5px 7px;
+            vertical-align: top;
+        }
+        .rpp-table th {
+            background-color: #f1f5f9;
+            font-weight: 700;
+            text-align: center;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col antialiased">
+
+    <header class="bg-white border-b border-slate-200 py-3 px-4 sm:px-6 sticky top-0 z-20 no-print shadow-sm">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-indigo-600 text-white rounded-2xl shadow-md shadow-indigo-100 shrink-0">
+                    <i data-lucide="cpu" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-lg sm:text-xl font-extrabold heading-font text-slate-900 leading-tight">EduPrint AI</h1>
+                        <span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">RPM Minimal 15 Hal A4</span>
+                    </div>
+                    <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Generator RPM / RPP Deep Learning & TPACK Interaktif</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-2 text-xs bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full font-medium border border-emerald-100">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Gemini AI Ready
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigasi Tab khusus Layar HP -->
+    <div class="lg:hidden flex bg-white border-b border-slate-200 sticky top-[65px] z-10 no-print shadow-sm">
+        <button id="tab-btn-settings" onclick="switchMobileTab('settings')" class="flex-1 py-3 text-center text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 flex items-center justify-center gap-1.5 transition-all">
+            <i data-lucide="sliders" class="w-4 h-4"></i>
+            Parameter Modul
+        </button>
+        <button id="tab-btn-preview" onclick="switchMobileTab('preview')" class="flex-1 py-3 text-center text-sm font-semibold border-b-2 border-transparent text-slate-500 flex items-center justify-center gap-1.5 transition-all">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            Pratinjau Halaman
+        </button>
+    </div>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 flex flex-col lg:flex-row gap-4 lg:gap-8">
+        
+        <section id="panel-settings" class="w-full lg:w-[420px] shrink-0 space-y-4 sm:space-y-6 no-print block">
+            
+            <!-- Notifikasi Status -->
+            <div id="status-banner" class="hidden p-4 rounded-xl text-sm border flex items-start gap-3 shadow-sm transition-all">
+                <i id="status-icon" class="w-5 h-5 shrink-0 mt-0.5"></i>
+                <div class="flex-1">
+                    <p id="status-text" class="font-medium"></p>
+                </div>
+            </div>
+
+            <!-- Form Isi Modul -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm space-y-4 sm:space-y-5">
+                <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+                    <h2 class="text-base sm:text-lg font-bold heading-font text-slate-900 flex items-center gap-2">
+                        <i data-lucide="sliders" class="w-5 h-5 text-indigo-600"></i>
+                        Parameter RPM A4
+                    </h2>
+                    <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-mono font-bold">v5.0</span>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- API KEY -->
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1 flex items-center justify-between">
+                            <span>Gemini API Key</span>
+                            <a href="https://aistudio.google.com/" target="_blank" class="text-xs text-indigo-600 hover:underline flex items-center gap-0.5">
+                                Dapatkan Key <i data-lucide="external-link" class="w-3 h-3"></i>
+                            </a>
+                        </label>
+                        <input type="password" id="input-api-key" 
+                            class="w-full px-3 sm:px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm transition-all"
+                            placeholder="Masukkan AIzaSy...">
+                    </div>
+
+                    <!-- LOGO SEKOLAH UPLOAD -->
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                        <label class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                            <i data-lucide="image" class="w-4 h-4 text-indigo-600"></i>
+                            Upload Logo Sekolah (Opsional untuk Cover)
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <div id="logo-preview-container" class="w-12 h-12 bg-white border border-slate-300 rounded-lg flex items-center justify-center text-slate-400 shrink-0 overflow-hidden">
+                                <i data-lucide="building" class="w-6 h-6" id="logo-placeholder-icon"></i>
+                                <img id="logo-preview-img" class="hidden w-full h-full object-contain p-1" alt="Logo Sekolah">
+                            </div>
+                            <div class="flex-1 space-y-1">
+                                <input type="file" id="input-logo-file" accept="image/*" class="text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" onchange="handleLogoUpload(event)">
+                                <button type="button" id="btn-remove-logo" onclick="removeLogo()" class="hidden text-[11px] text-rose-600 hover:underline font-medium">Hapus Logo</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UPLOAD COVER MANUAL JPG PRESISI A4 -->
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                        <label class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                            <i data-lucide="file-image" class="w-4 h-4 text-indigo-600"></i>
+                            Upload Cover Manual (.jpg) - Presisi A4
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <div id="cover-preview-container" class="w-12 h-16 bg-white border border-slate-300 rounded-lg flex items-center justify-center text-slate-400 shrink-0 overflow-hidden">
+                                <i data-lucide="file-text" class="w-6 h-6" id="cover-placeholder-icon"></i>
+                                <img id="cover-preview-img" class="hidden w-full h-full object-cover" alt="Preview Cover">
+                            </div>
+                            <div class="flex-1 space-y-1">
+                                <input type="file" id="input-cover-file" accept="image/jpeg,image/jpg,image/png" class="text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" onchange="handleCoverUpload(event)">
+                                <p class="text-[10px] text-slate-500">Cover buatan sendiri (.jpg) presisi A4.</p>
+                                <button type="button" id="btn-remove-cover" onclick="removeCoverManual()" class="hidden text-[11px] text-rose-600 hover:underline font-medium">Hapus Cover Manual</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DATA SEKOLAH & MAPEL -->
+                    <div class="grid grid-cols-1 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Satuan Pendidikan</label>
+                            <input type="text" id="input-school" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-indigo-500" placeholder="Nama Sekolah" value="SD NEGERI 3 NGANTRU">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Mata Pelajaran</label>
+                            <input type="text" id="input-subject" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: Koding dan Kecerdasan Artifisial / IPAS" value="Koding dan Kecerdasan Artifisial">
+                        </div>
+                    </div>
+
+                    <!-- IDENTITAS GURU DEFAULT: Aburrizal Hamdani Lubis, S.Pd -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Nama Guru (Penyusun)</label>
+                            <input type="text" id="input-guru-name" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-indigo-900 bg-indigo-50/50" placeholder="Nama Anda" value="Aburrizal Hamdani Lubis, S.Pd">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">NIP Guru</label>
+                            <input type="text" id="input-guru-nip" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" placeholder="NIP Guru" value="199008122023211005">
+                        </div>
+                    </div>
+
+                    <!-- IDENTITAS KEPALA SEKOLAH DEFAULT: Lilik Supriati, S.Pd -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Nama Kepsek</label>
+                            <input type="text" id="input-kepsek-name" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-indigo-900 bg-indigo-50/50" placeholder="Nama Kepala Sekolah" value="Lilik Supriati, S.Pd">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">NIP Kepsek</label>
+                            <input type="text" id="input-kepsek-nip" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" placeholder="NIP Kepala Sekolah" value="197205141998032001">
+                        </div>
+                    </div>
+
+                    <!-- PARAMETER RPP -->
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1">Materi Pokok / Topik Pembelajaran</label>
+                        <input type="text" id="input-topic" 
+                            class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm transition-all font-semibold"
+                            placeholder="Contoh: Keamanan Informasi Pribadi" value="Keamanan Informasi Pribadi">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Tingkat Kelas</label>
+                            <select id="input-level" class="w-full px-2 py-2 border border-slate-300 rounded-xl text-xs bg-white" onchange="autoFillFase()">
+                                <option value="Kelas 1 SD">Kelas 1 SD</option>
+                                <option value="Kelas 2 SD">Kelas 2 SD</option>
+                                <option value="Kelas 3 SD">Kelas 3 SD</option>
+                                <option value="Kelas 4 SD">Kelas 4 SD</option>
+                                <option value="Kelas 5 SD" selected>Kelas 5 SD</option>
+                                <option value="Kelas 6 SD">Kelas 6 SD</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Fase / Semester</label>
+                            <input type="text" id="input-fase" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs bg-slate-50 font-bold text-indigo-700" value="Fase C / Ganjil" readonly>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Alokasi Waktu</label>
+                            <select id="input-duration" class="w-full px-2 py-2 border border-slate-300 rounded-xl text-xs bg-white">
+                                <option value="4 x 35 menit (2 Pertemuan)" selected>4 x 35 menit (2 Pertemuan)</option>
+                                <option value="2 x 35 menit (1 Pertemuan)">2 x 35 menit (1 Pertemuan)</option>
+                                <option value="6 x 35 menit (3 Pertemuan)">6 x 35 menit (3 Pertemuan)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Model Pembelajaran</label>
+                            <select id="input-model" class="w-full px-2 py-2 border border-slate-300 rounded-xl text-xs bg-white">
+                                <option value="Inquiry Learning (Inkuiri) & Deep Learning" selected>Inquiry & Deep Learning</option>
+                                <option value="Problem Based Learning (PBL)">Problem Based Learning (PBL)</option>
+                                <option value="Project Based Learning (PjBL)">Project Based Learning (PjBL)</option>
+                                <option value="Discovery Learning">Discovery Learning</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- OPSIONAL INTEGRASI DEEP LEARNING & TPACK -->
+                    <div class="bg-indigo-50/70 rounded-xl p-3 border border-indigo-100 space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="check-tpack" checked class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+                            <span class="text-xs font-bold text-indigo-950">Integrasikan Deep Learning & TPACK Lengkap</span>
+                        </label>
+                        <p class="text-[10px] text-slate-600 leading-tight pl-6">Mengintegrasikan Technological Pedagogical Content Knowledge (TPACK) serta prinsip Mindful, Meaningful, & Joyful Learning.</p>
+                    </div>
+
+                    <!-- BENTUK SOAL LKPD -->
+                    <div class="bg-emerald-50/70 rounded-xl p-3 border border-emerald-100 space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="check-include-lkpd" checked class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
+                            <span class="text-xs font-bold text-emerald-950">Sertakan LKPD & Bahan Ajar Komplit</span>
+                        </label>
+                        <p class="text-[10px] text-emerald-800 italic pl-6">*Mencakup RPP, Bahan Ajar, LKPD 5 Tipe Soal, Rubrik, dan Kunci Jawaban Lengkap.</p>
+                    </div>
+
+                    <!-- JUMLAH SOAL LKPD PER JENIS -->
+                    <div class="bg-emerald-50/70 rounded-xl p-3 border border-emerald-100 space-y-2">
+                        <label class="block text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                            <i data-lucide="list-checks" class="w-4 h-4 text-emerald-600"></i>
+                            Jumlah Soal LKPD per Jenis
+                        </label>
+                        <div class="grid grid-cols-2 gap-2 text-[11px]">
+                            <div>
+                                <label class="block text-slate-600 mb-0.5 font-medium">Pilihan Ganda</label>
+                                <input type="number" id="input-jml-pg" min="1" max="20" value="5"
+                                    class="w-full px-2 py-1.5 border border-emerald-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 mb-0.5 font-medium">PG Kompleks</label>
+                                <input type="number" id="input-jml-pgk" min="1" max="10" value="3"
+                                    class="w-full px-2 py-1.5 border border-emerald-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 mb-0.5 font-medium">Menjodohkan</label>
+                                <input type="number" id="input-jml-jodoh" min="1" max="10" value="5"
+                                    class="w-full px-2 py-1.5 border border-emerald-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 mb-0.5 font-medium">Isian Singkat</label>
+                                <input type="number" id="input-jml-isian" min="1" max="15" value="5"
+                                    class="w-full px-2 py-1.5 border border-emerald-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-slate-600 mb-0.5 font-medium">Uraian / Studi Kasus</label>
+                                <input type="number" id="input-jml-uraian" min="1" max="10" value="3"
+                                    class="w-full px-2 py-1.5 border border-emerald-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-emerald-700 italic">*Semakin banyak soal, semakin banyak halaman LKPD yang dihasilkan.</p>
+                    </div>
+
+                    <!-- TARGET MINIMAL JUMLAH HALAMAN -->
+                    <div class="bg-indigo-50/70 rounded-xl p-3 border border-indigo-100 space-y-2">
+                        <label class="block text-xs font-bold text-indigo-950 flex items-center gap-1.5">
+                            <i data-lucide="files" class="w-4 h-4 text-indigo-600"></i>
+                            Target Minimal Jumlah Halaman A4
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="number" id="input-page-count" min="15" max="30" value="15" step="1"
+                                class="w-20 px-2 py-1.5 border border-indigo-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 text-center font-bold"
+                                oninput="document.getElementById('page-count-label').innerText = 'Minimal ' + this.value + ' Halaman'">
+                            <span id="page-count-label" class="text-xs font-bold text-indigo-700 bg-white px-2.5 py-1 rounded-lg border border-indigo-200 flex-1 text-center">Minimal 15 Halaman</span>
+                        </div>
+                        <p class="text-[10px] text-slate-600 leading-tight">AI akan menghasilkan minimal sejumlah ini. Jika konten lebih banyak, halaman otomatis bertambah.</p>
+                    </div>
+                </div>
+
+                <!-- Tombol Buat Modul -->
+                <button type="button" id="btn-generate" onclick="generateModul()" 
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-2 text-sm">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    Buat RPM Minimal 15 Halaman A4 (AI)
+                </button>
+            </div>
+        </section>
+
+        <section id="panel-preview" class="flex-1 flex-col gap-4 hidden lg:flex">
+            
+            <!-- Bilah Kontrol Dokumen -->
+            <div id="preview-controls" class="hidden bg-white border border-slate-200 rounded-2xl p-3 sm:p-4 shadow-sm flex flex-wrap items-center justify-between gap-3 no-print animate-fade-in">
+                <div class="flex items-center gap-3">
+                    <span class="flex h-2.5 w-2.5 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <div>
+                        <p class="text-xs text-slate-800 font-bold">Pratinjau Kertas A4 Presisi</p>
+                        <p class="text-[11px] text-slate-500" id="total-page-count-text">Total: 15 Halaman A4 Siap Cetak</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button onclick="toggleEditMode()" id="btn-edit-mode" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                        Mode Edit Teks
+                    </button>
+                    <button onclick="exportToJPGPages()" class="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
+                        <i data-lucide="image" class="w-3.5 h-3.5"></i>
+                        Unduh JPG
+                    </button>
+                    <button onclick="generatePDFViaJPG()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-indigo-100">
+                        <i data-lucide="file-check" class="w-3.5 h-3.5"></i>
+                        Simpan PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lembar Cetak A4 Simulasi -->
+            <div id="print-paper-container" class="relative min-h-[500px] flex flex-col items-center">
+                
+                <!-- Tampilan Awal Kosong -->
+                <div id="empty-state" class="w-full bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
+                    <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-3 mx-auto border border-indigo-100 shadow-sm">
+                        <i data-lucide="file-spreadsheet" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-800 heading-font">Dokumen RPP / RPM Belum Disusun</h3>
+                    <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">Masukkan API Key Anda, sesuaikan detail mata pelajaran & materi pokok, lalu klik <span class="font-semibold text-indigo-600">"Buat RPM Minimal 15 Halaman A4 (AI)"</span> untuk menghasilkan lembar kertas A4 presisi.</p>
+                </div>
+
+                <!-- Tampilan Efek Loading -->
+                <div id="loading-state" class="hidden w-full bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
+                    <div class="w-14 h-14 relative flex items-center justify-center mb-4 mx-auto">
+                        <div class="absolute inset-0 rounded-full border-4 border-indigo-100"></div>
+                        <div class="absolute inset-0 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
+                        <i data-lucide="cpu" class="w-6 h-6 text-indigo-600 animate-pulse"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900 heading-font" id="loading-title">Menyusun RPM Halaman A4 Presisi...</h3>
+                    <p class="text-xs text-slate-500 max-w-md mx-auto mt-1 animate-pulse" id="loading-subtitle">Memproses matriks TPACK, sintaks 2 pertemuan, bahan ajar, LKPD 5 tipe soal, serta kunci jawaban...</p>
+                </div>
+
+                <!-- Konten Utama Dokumen A4 Presisi -->
+                <div id="modul-content" class="hidden space-y-6 w-full text-slate-900 text-xs sm:text-sm">
+                    
+                    <!-- HALAMAN 1: COVER RESMI -->
+                    <div class="a4-page relative overflow-hidden" id="a4-page-1">
+                        <div id="default-cover-wrapper" class="w-full h-full flex flex-col justify-between relative z-10">
+                            <div class="absolute -top-12 -right-12 w-48 h-48 bg-gradient-to-br from-indigo-500/15 to-purple-500/20 rounded-full blur-2xl pointer-events-none"></div>
+                            <div class="absolute top-1/3 -left-16 w-52 h-52 bg-gradient-to-tr from-blue-500/15 to-emerald-500/15 rounded-full blur-2xl pointer-events-none"></div>
+                            <div class="absolute bottom-20 -right-10 w-44 h-44 bg-gradient-to-tl from-amber-500/15 to-indigo-500/15 rounded-full blur-2xl pointer-events-none"></div>
+
+                            <div>
+                                <div class="w-full h-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-500 rounded-full mb-6 shadow-sm"></div>
+
+                                <div class="text-center pt-2 space-y-4">
+                                    <h4 class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-indigo-900 bg-indigo-100/80 py-1.5 px-4 rounded-full inline-block border border-indigo-200/80 shadow-sm">
+                                        RENCANA PELAKSANAAN PEMBELAJARAN MENDALAM (RPM) BERBASIS TPACK
+                                    </h4>
+                                    <div class="space-y-2 py-2">
+                                        <h1 class="text-2xl sm:text-3xl font-black uppercase tracking-tight heading-font text-slate-900 leading-tight" id="display-cover-subject">MATA PELAJARAN</h1>
+                                        <h2 class="text-base sm:text-xl font-extrabold text-indigo-700 uppercase tracking-wide" id="display-cover-topic">MATERI POKOK</h2>
+                                    </div>
+                                    <div class="w-24 h-1.5 bg-gradient-to-r from-indigo-600 via-indigo-400 to-emerald-500 mx-auto rounded-full"></div>
+                                </div>
+
+                                <div class="flex flex-col items-center justify-center my-6">
+                                    <div id="cover-logo-display" class="p-5 border-2 border-indigo-200/90 rounded-3xl opacity-95 max-w-[160px] max-h-[160px] flex items-center justify-center bg-white shadow-md relative group">
+                                        <div class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500 opacity-20 blur-sm"></div>
+                                        <i data-lucide="award" class="w-20 h-20 text-indigo-600 relative z-10" id="cover-default-icon"></i>
+                                        <img id="cover-uploaded-logo" class="hidden max-w-full max-h-[120px] object-contain relative z-10" alt="Logo Sekolah">
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2 max-w-md mx-auto text-center font-medium bg-gradient-to-b from-slate-50 to-indigo-50/40 p-5 rounded-2xl border border-indigo-100/90 shadow-sm relative">
+                                    <div class="grid grid-cols-2 text-left gap-y-2.5 text-xs text-slate-800">
+                                        <span class="font-bold text-slate-700">Fase / Kelas</span>
+                                        <span id="display-cover-level" class="font-semibold text-slate-900">: Kelas 5 / Fase C</span>
+                                        
+                                        <span class="font-bold text-slate-700">Model Pembelajaran</span>
+                                        <span id="display-cover-model" class="font-semibold text-slate-900">: Inquiry & Deep Learning</span>
+
+                                        <span class="font-bold text-slate-700">Alokasi Waktu</span>
+                                        <span id="display-cover-duration" class="font-semibold text-slate-900">: 4 x 35 menit (2 Pertemuan)</span>
+                                        
+                                        <span class="font-bold text-slate-700">Penyusun / Guru</span>
+                                        <span id="display-cover-guru" class="font-semibold text-indigo-900">: Aburrizal Hamdani Lubis, S.Pd</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center pt-8 pb-2 border-t-2 border-indigo-100/80 relative">
+                                <h3 class="text-sm sm:text-base font-black uppercase text-slate-900 tracking-wider" id="display-cover-school">SD NEGERI 3 NGANTRU</h3>
+                                <p class="text-xs text-indigo-700 font-bold mt-1" id="display-cover-ta">Tahun Pelajaran 2026/2027</p>
+                                <span class="page-badge absolute right-0 bottom-0 text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-mono">Halaman 1</span>
+                            </div>
+                        </div>
+
+                        <div id="custom-cover-wrapper" class="hidden absolute inset-0 w-full h-full bg-white z-10 flex flex-col justify-between">
+                            <img id="custom-cover-image" class="w-full h-full object-fill block" alt="Cover Manual Presisi A4">
+                            <span class="page-badge no-print absolute right-3 bottom-3 text-[10px] bg-slate-900/80 text-white px-2.5 py-1 rounded-md font-mono backdrop-blur-sm z-20">Halaman 1 (Cover Custom)</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 2: IDENTITAS RPP & CAPAIAN PEMBELAJARAN (CP) -->
+                    <div class="a4-page" id="a4-page-2">
+                        <div class="space-y-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
+                                <span>1. IDENTITAS RENCANA PELAKSANAAN PEMBELAJARAN</span>
+                                <span class="text-[10px] text-slate-500 font-normal">Kurikulum Merdeka</span>
+                            </h2>
+                            
+                            <table class="rpp-table">
+                                <tr>
+                                    <td class="font-bold w-1/3 bg-slate-50">Satuan Pendidikan</td>
+                                    <td id="display-info-school" contenteditable="true">SD Negeri 3 Ngantru</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold bg-slate-50">Nama Guru / Penyusun</td>
+                                    <td id="display-info-guru" class="font-bold text-indigo-950" contenteditable="true">Aburrizal Hamdani Lubis, S.Pd</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold bg-slate-50">Fase / Kelas / Semester</td>
+                                    <td id="display-info-level" contenteditable="true">Fase C / Kelas 5 / Ganjil</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold bg-slate-50">Mata Pelajaran</td>
+                                    <td id="display-info-subject" contenteditable="true">Koding dan Kecerdasan Artifisial</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold bg-slate-50">Materi Pokok</td>
+                                    <td id="display-info-topic" contenteditable="true">Keamanan Informasi Pribadi</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold bg-slate-50">Alokasi Waktu</td>
+                                    <td id="display-info-duration" contenteditable="true">4 x 35 menit (2 Pertemuan)</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold bg-slate-50">Tahun Pelajaran</td>
+                                    <td contenteditable="true">2026/2027</td>
+                                </tr>
+                            </table>
+
+                            <div class="space-y-3 pt-2">
+                                <div>
+                                    <h3 class="font-bold text-slate-900 text-xs uppercase border-b border-slate-200 pb-1 mb-1.5 flex items-center gap-1.5">
+                                        <i data-lucide="book-open" class="w-4 h-4 text-indigo-600"></i>
+                                        <span>2. CAPAIAN PEMBELAJARAN (CP) ELEMEN UTAMA</span>
+                                    </h3>
+                                    <p class="text-slate-700 leading-relaxed text-justify text-xs p-3 bg-slate-50 rounded-lg border border-slate-200" id="display-cp" contenteditable="true">
+                                        Peserta didik memahami permasalahan sederhana dalam kehidupan sehari-hari, menerapkan pemecahan masalah secara sistematis, serta menuliskan instruksi logis dan terstruktur menggunakan sekumpulan kosakata atau simbol untuk menjaga keamanan informasi pribadi dan data digital secara bijak.
+                                    </p>
+                                </div>
+
+                                <div class="pt-2">
+                                    <h3 class="font-bold text-slate-900 text-xs uppercase border-b border-slate-200 pb-1 mb-1.5 flex items-center gap-1.5">
+                                        <i data-lucide="compass" class="w-4 h-4 text-indigo-600"></i>
+                                        <span>DESKRIPSI PENDEKATAN DEEP LEARNING (MINDFUL, MEANINGFUL, JOYFUL)</span>
+                                    </h3>
+                                    <div class="grid grid-cols-3 gap-2 text-xs">
+                                        <div class="p-2.5 bg-indigo-50/70 border border-indigo-100 rounded-lg">
+                                            <p class="font-bold text-indigo-950 mb-1">Mindful Learning</p>
+                                            <p class="text-[11px] text-slate-600" id="display-dl-mindful" contenteditable="true">Siswa menyadari pentingnya melindungi password dan data pribadi dari potensi kejahatan cyber sejak dini.</p>
+                                        </div>
+                                        <div class="p-2.5 bg-purple-50/70 border border-purple-100 rounded-lg">
+                                            <p class="font-bold text-purple-950 mb-1">Meaningful Learning</p>
+                                            <p class="text-[11px] text-slate-600" id="display-dl-meaningful" contenteditable="true">Siswa menghubungkan konsep koding dan enkripsi sederhana dengan kehidupan nyata di media sosial & aplikasi chat.</p>
+                                        </div>
+                                        <div class="p-2.5 bg-emerald-50/70 border border-emerald-100 rounded-lg">
+                                            <p class="font-bold text-emerald-950 mb-1">Joyful Learning</p>
+                                            <p class="text-[11px] text-slate-600" id="display-dl-joyful" contenteditable="true">Siswa bermain peran sebagai "Detektif Cyber" dan melakukan simulasi proteksi data melalui game interaktif.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 2</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 3: TUJUAN PEMBELAJARAN (TP) & MATRIKS KKTP FORMULASI ABCD -->
+                    <div class="a4-page" id="a4-page-3">
+                        <div class="space-y-4">
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-xs uppercase border-b-2 border-slate-900 pb-1 mb-2">3. TUJUAN PEMBELAJARAN (TP) RINCI</h3>
+                                <ol class="list-decimal pl-5 space-y-1.5 text-slate-800 text-xs" id="display-tp">
+                                    <!-- Dimuat dinamis -->
+                                </ol>
+                            </div>
+
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-xs uppercase border-b-2 border-slate-900 pb-1 mb-2">4. KRITERIA KETUNTASAN TUJUAN PEMBELAJARAN (KKTP) MATRIKS ABCD</h3>
+                                <p class="text-[11px] text-slate-600 mb-1.5">Diuraikan secara sistematis berdasarkan Audience (Peserta Didik), Behavior (Kemampuan), Condition (Kondisi), dan Degree (Tingkat Pencapaian):</p>
+                                <div id="container-kktp">
+                                    <!-- Tabel KKTP Dimuat dinamis -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 3</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 4: PROFIL PELAJAR PANCASILA & MATRIKS KERANGKA TPACK -->
+                    <div class="a4-page" id="a4-page-4">
+                        <div class="space-y-4">
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-xs uppercase border-b-2 border-slate-900 pb-1 mb-2">5. PROFIL PELAJAR PANCASILA / PROFIL LULUSAN</h3>
+                                <div id="container-dimensi">
+                                    <!-- Dimuat dinamis -->
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-xs uppercase border-b-2 border-slate-900 pb-1 mb-2">INTEGRASI KERANGKA WORK TPACK (TECHNOLOGICAL PEDAGOGICAL CONTENT KNOWLEDGE)</h3>
+                                <div id="container-tpack">
+                                    <!-- Dimuat dinamis -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 4</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 5: LANGKAH PEMBELAJARAN PERTEMUAN 1 (PENDAHULUAN & INTI BAGIAN 1) -->
+                    <div class="a4-page" id="a4-page-5">
+                        <div class="space-y-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
+                                <span>6. LANGKAH-LANGKAH PEMBELAJARAN (PERTEMUAN 1 - BAGIAN 1)</span>
+                                <span class="text-[10px] text-indigo-700 font-bold">2 x 35 Menit</span>
+                            </h2>
+
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-xs bg-slate-100 p-1.5 rounded border border-slate-200">A. Pendahuluan (10 Menit) - Orientation & Mindful Warm-up</h3>
+                                <table class="rpp-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-1/4">Tahap / Sintaks</th>
+                                            <th class="w-2/5">Aktivitas Guru (TPACK)</th>
+                                            <th class="w-2/5">Aktivitas Murid (Deep Learning)</th>
+                                            <th class="w-12">Waktu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody-p1-pendahuluan">
+                                        <!-- Dimuat Dinamis -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div>
+                                <h3 class="font-bold text-indigo-950 text-xs bg-indigo-50 p-1.5 rounded border border-indigo-200">B. Kegiatan Inti Tahap 1 & 2 (Inkuiri & Eksplorasi Digital)</h3>
+                                <table class="rpp-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-1/4">Tahap / Sintaks</th>
+                                            <th class="w-2/5">Aktivitas Guru (TPACK)</th>
+                                            <th class="w-2/5">Aktivitas Murid (Deep Learning)</th>
+                                            <th class="w-12">Waktu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody-p1-inti1">
+                                        <!-- Dimuat Dinamis -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 5</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 6: LANGKAH PEMBELAJARAN PERTEMUAN 1 (INTI BAGIAN 2 & PENUTUP) -->
+                    <div class="a4-page" id="a4-page-6">
+                        <div class="space-y-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
+                                <span>6. LANGKAH-LANGKAH PEMBELAJARAN (PERTEMUAN 1 - BAGIAN 2)</span>
+                                <span class="text-[10px] text-indigo-700 font-bold">2 x 35 Menit</span>
+                            </h2>
+
+                            <div>
+                                <h3 class="font-bold text-indigo-950 text-xs bg-indigo-50 p-1.5 rounded border border-indigo-200">B. Kegiatan Inti Tahap 3 & 4 (Eksperimen Koding & Pengujian)</h3>
+                                <table class="rpp-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-1/4">Tahap / Sintaks</th>
+                                            <th class="w-2/5">Aktivitas Guru (TPACK)</th>
+                                            <th class="w-2/5">Aktivitas Murid (Deep Learning)</th>
+                                            <th class="w-12">Waktu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody-p1-inti2">
+                                        <!-- Dimuat Dinamis -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-xs bg-slate-100 p-1.5 rounded border border-slate-200">C. Penutup Pertemuan 1 (Refleksi & Apresiasi)</h3>
+                                <table class="rpp-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-1/4">Tahap / Sintaks</th>
+                                            <th class="w-2/5">Aktivitas Guru</th>
+                                            <th class="w-2/5">Aktivitas Murid</th>
+                                            <th class="w-12">Waktu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody-p1-penutup">
+                                        <!-- Dimuat Dinamis -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 6</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 7: LANGKAH PEMBELAJARAN PERTEMUAN 2 (Aplikasi Proyek & Proteksi Cyber) -->
+                    <div class="a4-page" id="a4-page-7">
+                        <div class="space-y-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
+                                <span>6. LANGKAH-LANGKAH PEMBELAJARAN (PERTEMUAN 2 - SIMULASI PROYEK)</span>
+                                <span class="text-[10px] text-indigo-700 font-bold">2 x 35 Menit</span>
+                            </h2>
+
+                            <div>
+                                <h3 class="font-bold text-purple-950 text-xs bg-purple-50 p-1.5 rounded border border-purple-200">A. Apersepsi & Tantangan Proyek "Detektif Keamanan Data"</h3>
+                                <table class="rpp-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-1/4">Tahap / Sintaks</th>
+                                            <th class="w-2/5">Aktivitas Guru (TPACK)</th>
+                                            <th class="w-2/5">Aktivitas Murid (Deep Learning)</th>
+                                            <th class="w-12">Waktu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody-p2-pendahuluan">
+                                        <!-- Dimuat Dinamis -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div>
+                                <h3 class="font-bold text-purple-950 text-xs bg-purple-50 p-1.5 rounded border border-purple-200">B. Kegiatan Inti Pertemuan 2 (Penyelesaian Masalah Sistematis & Presentasi)</h3>
+                                <table class="rpp-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-1/4">Tahap / Sintaks</th>
+                                            <th class="w-2/5">Aktivitas Guru (TPACK)</th>
+                                            <th class="w-2/5">Aktivitas Murid (Deep Learning)</th>
+                                            <th class="w-12">Waktu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody-p2-inti">
+                                        <!-- Dimuat Dinamis -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 7</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 8: INSTRUMEN ASESMEN DIAGNOSTIK & FORMATIF AWAL -->
+                    <div class="a4-page" id="a4-page-8">
+                        <div class="space-y-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
+                                <span>7. INSTRUMEN ASESMEN PROSES & PEMBELAJARAN</span>
+                                <span class="text-[10px] text-slate-500 font-normal">Diagnostik & Formatif</span>
+                            </h2>
+
+                            <div id="container-asesmen-diagnostik">
+                                <!-- Dimuat Dinamis -->
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 8</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 9: RUBRIK PENILAIAN SIKAP, KETERAMPILAN, & KINERJA -->
+                    <div class="a4-page" id="a4-page-9">
+                        <div class="space-y-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
+                                <span>7. RUBRIK PENILAIAN KINERJA & PROSES</span>
+                                <span class="text-[10px] text-indigo-700 font-bold">Skala 1 - 4</span>
+                            </h2>
+
+                            <div id="container-rubrik-proses">
+                                <!-- Dimuat Dinamis -->
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 9</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 10: BAHAN AJAR RINGKASAN MATERI BAGIAN 1 -->
+                    <div class="a4-page" id="a4-page-10">
+                        <div class="space-y-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
+                                <span>8. BAHAN AJAR KUNCI UNTUK SISWA (BAGIAN 1)</span>
+                                <span class="text-[10px] text-slate-500 font-normal">Panduan Literasi Digital</span>
+                            </h2>
+
+                            <div id="container-bahan-ajar-1" class="space-y-3 text-xs leading-relaxed">
+                                <!-- Dimuat Dinamis -->
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 10</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 11: BAHAN AJAR RINGKASAN MATERI BAGIAN 2 -->
+                    <div class="a4-page" id="a4-page-11">
+                        <div class="space-y-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
+                                <span>8. BAHAN AJAR KUNCI UNTUK SISWA (BAGIAN 2)</span>
+                                <span class="text-[10px] text-indigo-700 font-bold">Algoritma & Proteksi Data</span>
+                            </h2>
+
+                            <div id="container-bahan-ajar-2" class="space-y-3 text-xs leading-relaxed">
+                                <!-- Dimuat Dinamis -->
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 11</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 12: LKPD SISWA - BAGIAN A (PG) & BAGIAN B (PGK) -->
+                    <div class="a4-page" id="a4-page-12">
+                        <div class="space-y-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
+                                <span>9. LEMBAR KERJA PESERTA DIDIK (LKPD) - BAGIAN I</span>
+                                <span class="text-[10px] text-slate-500 font-normal">Lembar Siswa</span>
+                            </h2>
+
+                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-2 gap-2 text-xs">
+                                <div><span class="font-bold">Nama Siswa:</span> ______________________</div>
+                                <div><span class="font-bold">Kelas / Absen:</span> ______________________</div>
+                                <div><span class="font-bold">Kelompok:</span> ______________________</div>
+                                <div><span class="font-bold">Tanggal:</span> ______________________</div>
+                            </div>
+
+                            <div id="container-lkpd-part1" class="space-y-3">
+                                <!-- Dimuat Dinamis -->
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 12</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 13: LKPD SISWA - BAGIAN C (MENJODOHKAN) & BAGIAN D (ISIAN) -->
+                    <div class="a4-page" id="a4-page-13">
+                        <div class="space-y-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
+                                <span>9. LEMBAR KERJA PESERTA DIDIK (LKPD) - BAGIAN II</span>
+                                <span class="text-[10px] text-slate-500 font-normal">Menjodohkan & Isian</span>
+                            </h2>
+
+                            <div id="container-lkpd-part2" class="space-y-3">
+                                <!-- Dimuat Dinamis -->
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 13</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 14: LKPD SISWA - BAGIAN E (URAIAN/PROYEK) & LEMBAR REFLEKSI SISWA -->
+                    <div class="a4-page" id="a4-page-14">
+                        <div class="space-y-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
+                                <span>9. LKPD BAGIAN III & LEMBAR REFLEKSI SISWA</span>
+                                <span class="text-[10px] text-indigo-700 font-bold">Uraian & Refleksi Mandiri</span>
+                            </h2>
+
+                            <div id="container-lkpd-part3" class="space-y-3">
+                                <!-- Dimuat Dinamis -->
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 14</span>
+                        </div>
+                    </div>
+
+                    <!-- HALAMAN 15: KUNCI JAWABAN, SKORING, REMEDIAL, & PENGESAHAN DOKUMEN -->
+                    <div class="a4-page" id="a4-page-15">
+                        <div class="space-y-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
+                                <span>10. KUNCI JAWABAN, REMEDIAL & LEMBAR PENGESAHAN</span>
+                                <span class="text-[10px] text-indigo-700 font-bold">Pegangan Guru</span>
+                            </h2>
+
+                            <div id="container-kunci-jawaban" class="space-y-3 text-xs">
+                                <!-- Dimuat Dinamis -->
+                            </div>
+
+                            <div id="container-remedial" class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
+                                <p class="font-bold text-slate-900">PROGRAM REMEDIAL & PENGAYAAN</p>
+                                <p class="text-slate-700"><b>Remedial:</b> Bimbingan perorangan pada penyusunan password kuat & pengenalan simbol keamanan data bagi siswa yang belum mencapai KKTP.</p>
+                                <p class="text-slate-700"><b>Pengayaan:</b> Pembelajaran mandiri membuat skema enkripsi sederhana (Caesar Cipher) bagi siswa yang melampaui kriteria ketuntasan.</p>
+                            </div>
+
+                            <!-- Area Tanda Tangan Formal -->
+                            <div class="pt-4 mt-6 border-t border-slate-300 text-xs text-slate-900">
+                                <div class="flex justify-between items-start">
+                                    <div class="text-center w-1/2">
+                                        <p>Mengetahui,</p>
+                                        <p class="font-bold">Kepala Sekolah</p>
+                                        <div class="h-16"></div>
+                                        <p class="font-bold underline" id="display-kepsek-name" contenteditable="true">Lilik Supriati, S.Pd</p>
+                                        <p class="text-[10px] text-slate-600">NIP. <span id="display-kepsek-nip" contenteditable="true">197205141998032001</span></p>
+                                    </div>
+                                    <div class="text-center w-1/2">
+                                        <p id="display-ttd-date">Ngantru, 25 September 2026</p>
+                                        <p class="font-bold">Guru Mata Pelajaran</p>
+                                        <div class="h-16"></div>
+                                        <p class="font-bold underline text-indigo-950" id="display-guru-name" contenteditable="true">Aburrizal Hamdani Lubis, S.Pd</p>
+                                        <p class="text-[10px] text-slate-600">NIP. <span id="display-guru-nip" contenteditable="true">199008122023211005</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+                            <span>EduPrint AI - RPM Kurikulum Merdeka</span>
+                            <span class="page-badge">Halaman 15</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-4 px-6 text-center text-xs text-slate-500 no-print">
+        <p>&copy; 2026 EduPrint AI - Rencana Pelaksanaan Pembelajaran Mendalam (RPM) A4 Presisi</p>
+    </footer>
+
+    <script>
+        const modelName = "gemini-2.5-flash"; 
+        let isEditMode = false;
+
+        function setSafeText(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = value || "";
+        }
+
+        function setSafeHTML(id, html) {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = html || "";
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('gemini_api_key');
+            if (savedKey) {
+                const keyInput = document.getElementById('input-api-key');
+                if (keyInput) keyInput.value = savedKey;
+            }
+        });
+
+        async function renderA4PagesToJPG() {
+            const pageElements = document.querySelectorAll('.a4-page');
+            const jpgImages = [];
+
+            for (let i = 0; i < pageElements.length; i++) {
+                const el = pageElements[i];
+                const canvas = await html2canvas(el, {
+                    scale: 2, 
+                    useCORS: true,
+                    backgroundColor: "#ffffff",
+                    logging: false
+                });
+                jpgImages.push(canvas.toDataURL("image/jpeg", 0.95));
+            }
+            return jpgImages;
+        }
+
+        async function exportToJPGPages() {
+            showStatus("Mengonversi halaman A4 ke gambar JPG high-res...", "info");
+            try {
+                const images = await renderA4PagesToJPG();
+                const topicName = document.getElementById('input-topic')?.value || "RPM_Modul_Ajar";
+
+                images.forEach((imgData, index) => {
+                    const link = document.createElement("a");
+                    link.download = `${topicName.replace(/\s+/g, '_')}_Halaman_${index + 1}.jpg`;
+                    link.href = imgData;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+
+                showStatus(`Berhasil mengunduh ${images.length} gambar JPG presisi A4!`, "success");
+            } catch (err) {
+                console.error(err);
+                showStatus("Gagal merender lembar JPG: " + err.message, "error");
+            }
+        }
+
+        async function generatePDFViaJPG() {
+            const btn = document.querySelector('button[onclick="generatePDFViaJPG()"]');
+            const originalText = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent mr-1"></span> Merender Halaman A4...`;
+            }
+
+            try {
+                showStatus("Membuat lembar gambar .JPG presisi tinggi A4...", "info");
+                const jpgImages = await renderA4PagesToJPG();
+
+                const topicName = document.getElementById('input-topic')?.value || "RPM_Modul_Ajar";
+                const newWin = window.open('', '_blank');
+
+                let imgTagsHtml = '';
+                jpgImages.forEach((imgSrc, idx) => {
+                    imgTagsHtml += `
+                        <div class="jpg-page-container">
+                            <div class="page-header-info font-sans">Halaman ${idx + 1} dari ${jpgImages.length} (Format .JPG 300DPI)</div>
+                            <img src="${imgSrc}" class="jpg-page-img" alt="Halaman ${idx + 1}" />
+                        </div>
+                    `;
+                });
+
+                newWin.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="id">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Hasil Pratinjau JPG A4 - ${topicName}</title>
+                        <script src="https://cdn.tailwindcss.com"><\/script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>
+                        <style>
+                            body { background-color: #334155; margin: 0; padding: 20px; font-family: sans-serif; }
+                            .jpg-page-container { margin: 0 auto 30px auto; max-width: 210mm; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-radius: 4px; overflow: hidden; }
+                            .jpg-page-img { width: 100%; height: auto; display: block; }
+                            .page-header-info { background: #f8fafc; color: #64748b; font-size: 11px; padding: 6px 12px; border-b: 1px solid #e2e8f0; font-weight: 600; text-align: right; }
+                            @media print {
+                                body { background: white; padding: 0; }
+                                .jpg-page-container { box-shadow: none; margin: 0; max-width: 100%; border-radius: 0; page-break-after: always; }
+                                .page-header-info, .no-print-bar { display: none !important; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="no-print-bar max-w-[210mm] mx-auto bg-white rounded-xl p-4 mb-6 shadow-lg flex items-center justify-between">
+                            <div>
+                                <h1 class="text-base font-bold text-slate-900">Pratinjau Kertas Halaman A4 Presisi (.JPG)</h1>
+                                <p class="text-xs text-slate-500">Tampilan persis presisi 100% tanpa risiko tata letak bergeser.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="downloadAsPDF()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-xs shadow flex items-center gap-1.5">
+                                    Simpan Sebagai PDF
+                                </button>
+                                <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg text-xs shadow flex items-center gap-1.5">
+                                    Cetak Dokumen
+                                </button>
+                            </div>
+                        </div>
+
+                        ${imgTagsHtml}
+
+                        <script>
+                            const pageImages = ${JSON.stringify(jpgImages)};
+                            function downloadAsPDF() {
+                                const { jsPDF } = window.jspdf;
+                                const doc = new jsPDF('p', 'mm', 'a4');
+                                const pageWidth = 210;
+                                const pageHeight = 297;
+
+                                pageImages.forEach((imgData, index) => {
+                                    if (index > 0) doc.addPage();
+                                    doc.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+                                });
+
+                                doc.save("${topicName.replace(/\s+/g, '_')}_Halaman_A4.pdf");
+                            }
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                newWin.document.close();
+
+                showStatus("Dokumen berhasil dirender ke JPG A4 & dibuka di tab baru!", "success");
+
+            } catch (error) {
+                console.error(error);
+                showStatus("Gagal memproses PDF via JPG: " + error.message, "error");
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+                if (window.lucide) lucide.createIcons();
+            }
+        }
+
+        function showStatus(message, type = "info") {
+            const banner = document.getElementById('status-banner');
+            const text = document.getElementById('status-text');
+            const icon = document.getElementById('status-icon');
+
+            if (!banner || !text || !icon) return;
+
+            text.innerText = message;
+            banner.className = 'p-4 rounded-xl text-sm border flex items-start gap-3 shadow-sm transition-all';
+
+            if (type === "success") {
+                banner.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-800');
+                icon.setAttribute('data-lucide', 'check-circle-2');
+                icon.className = 'w-5 h-5 shrink-0 mt-0.5 text-emerald-600';
+            } else if (type === "error") {
+                banner.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-800');
+                icon.setAttribute('data-lucide', 'alert-circle');
+                icon.className = 'w-5 h-5 shrink-0 mt-0.5 text-rose-600';
+            } else {
+                banner.classList.add('bg-indigo-50', 'border-indigo-200', 'text-indigo-800');
+                icon.setAttribute('data-lucide', 'info');
+                icon.className = 'w-5 h-5 shrink-0 mt-0.5 text-indigo-600';
+            }
+
+            banner.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+
+            if (type !== "error") {
+                setTimeout(() => { banner.classList.add('hidden'); }, 6000);
+            }
+        }
+
+        function switchMobileTab(tab) {
+            const settingsPanel = document.getElementById('panel-settings');
+            const previewPanel = document.getElementById('panel-preview');
+            const btnSettings = document.getElementById('tab-btn-settings');
+            const btnPreview = document.getElementById('tab-btn-preview');
+
+            if (!settingsPanel || !previewPanel) return;
+
+            if (tab === 'settings') {
+                settingsPanel.classList.remove('hidden');
+                previewPanel.classList.add('hidden');
+                previewPanel.classList.remove('flex');
+                if (btnSettings) btnSettings.className = "flex-1 py-3 text-center text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 flex items-center justify-center gap-1.5 transition-all";
+                if (btnPreview) btnPreview.className = "flex-1 py-3 text-center text-sm font-semibold border-b-2 border-transparent text-slate-500 flex items-center justify-center gap-1.5 transition-all";
+            } else {
+                settingsPanel.classList.add('hidden');
+                previewPanel.classList.remove('hidden');
+                previewPanel.classList.add('flex');
+                if (btnPreview) btnPreview.className = "flex-1 py-3 text-center text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 flex items-center justify-center gap-1.5 transition-all";
+                if (btnSettings) btnSettings.className = "flex-1 py-3 text-center text-sm font-semibold border-b-2 border-transparent text-slate-500 flex items-center justify-center gap-1.5 transition-all";
+            }
+        }
+
+        function autoFillFase() {
+            const level = document.getElementById('input-level')?.value || '';
+            const faseInput = document.getElementById('input-fase');
+            if (!faseInput) return;
+            
+            if (level.includes('1') || level.includes('2')) {
+                faseInput.value = 'Fase A / Ganjil';
+            } else if (level.includes('3') || level.includes('4')) {
+                faseInput.value = 'Fase B / Ganjil';
+            } else {
+                faseInput.value = 'Fase C / Ganjil';
+            }
+        }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const dataUrl = e.target.result;
+                    document.getElementById('logo-placeholder-icon')?.classList.add('hidden');
+                    const previewImg = document.getElementById('logo-preview-img');
+                    if (previewImg) {
+                        previewImg.src = dataUrl;
+                        previewImg.classList.remove('hidden');
+                    }
+                    document.getElementById('btn-remove-logo')?.classList.remove('hidden');
+
+                    document.getElementById('cover-default-icon')?.classList.add('hidden');
+                    const coverImg = document.getElementById('cover-uploaded-logo');
+                    if (coverImg) {
+                        coverImg.src = dataUrl;
+                        coverImg.classList.remove('hidden');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeLogo() {
+            const inputLogo = document.getElementById('input-logo-file');
+            if (inputLogo) inputLogo.value = '';
+            document.getElementById('logo-placeholder-icon')?.classList.remove('hidden');
+            const previewImg = document.getElementById('logo-preview-img');
+            if (previewImg) {
+                previewImg.classList.add('hidden');
+                previewImg.src = '';
+            }
+            document.getElementById('btn-remove-logo')?.classList.add('hidden');
+
+            document.getElementById('cover-default-icon')?.classList.remove('hidden');
+            const coverImg = document.getElementById('cover-uploaded-logo');
+            if (coverImg) {
+                coverImg.classList.add('hidden');
+                coverImg.src = '';
+            }
+        }
+
+        function handleCoverUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const dataUrl = e.target.result;
+                    
+                    document.getElementById('cover-placeholder-icon')?.classList.add('hidden');
+                    const previewImg = document.getElementById('cover-preview-img');
+                    if (previewImg) {
+                        previewImg.src = dataUrl;
+                        previewImg.classList.remove('hidden');
+                    }
+                    document.getElementById('btn-remove-cover')?.classList.remove('hidden');
+
+                    const customCoverImg = document.getElementById('custom-cover-image');
+                    if (customCoverImg) customCoverImg.src = dataUrl;
+                    
+                    document.getElementById('custom-cover-wrapper')?.classList.remove('hidden');
+                    document.getElementById('default-cover-wrapper')?.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeCoverManual() {
+            const inputCover = document.getElementById('input-cover-file');
+            if (inputCover) inputCover.value = '';
+            document.getElementById('cover-placeholder-icon')?.classList.remove('hidden');
+            const previewImg = document.getElementById('cover-preview-img');
+            if (previewImg) {
+                previewImg.classList.add('hidden');
+                previewImg.src = '';
+            }
+            document.getElementById('btn-remove-cover')?.classList.add('hidden');
+
+            document.getElementById('custom-cover-wrapper')?.classList.add('hidden');
+            document.getElementById('default-cover-wrapper')?.classList.remove('hidden');
+            const customCoverImg = document.getElementById('custom-cover-image');
+            if (customCoverImg) customCoverImg.src = '';
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('btn-edit-mode');
+            const modulContent = document.getElementById('modul-content');
+
+            if (!btn || !modulContent) return;
+
+            if (isEditMode) {
+                modulContent.classList.add('editable-active');
+                btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> Selesai Edit`;
+                btn.className = "px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm";
+                showStatus("Mode Edit Aktif: Klik teks langsung pada lembar RPP untuk mengubahnya.", "info");
+            } else {
+                modulContent.classList.remove('editable-active');
+                btn.innerHTML = `<i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Mode Edit Teks`;
+                btn.className = "px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5";
+                showStatus("Mode Edit Dinonaktifkan.", "info");
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        async function fetchGeminiWithBackoff(apiKey, prompt, systemPrompt, maxRetries = 5) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            capaianPembelajaran: { type: "STRING" },
+                            deepLearning: {
+                                type: "OBJECT",
+                                properties: {
+                                    mindful: { type: "STRING" },
+                                    meaningful: { type: "STRING" },
+                                    joyful: { type: "STRING" }
+                                },
+                                required: ["mindful", "meaningful", "joyful"]
+                            },
+                            tujuanPembelajaran: {
+                                type: "ARRAY",
+                                items: { type: "STRING" }
+                            },
+                            kktp: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        no: { type: "INTEGER" },
+                                        tujuanRingkas: { type: "STRING" },
+                                        audience: { type: "STRING" },
+                                        behavior: { type: "STRING" },
+                                        condition: { type: "STRING" },
+                                        degree: { type: "STRING" }
+                                    },
+                                    required: ["no", "tujuanRingkas", "audience", "behavior", "condition", "degree"]
+                                }
+                            },
+                            dimensiProfilLulusan: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        dimensi: { type: "STRING" },
+                                        deskripsi: { type: "STRING" },
+                                        keterkaitan: { type: "STRING" }
+                                    },
+                                    required: ["dimensi", "deskripsi", "keterkaitan"]
+                                }
+                            },
+                            tpack: {
+                                type: "OBJECT",
+                                properties: {
+                                    praktikPedagogis: { type: "STRING" },
+                                    kemitraanPembelajaran: { type: "STRING" },
+                                    lingkunganPembelajaran: { type: "STRING" },
+                                    pemanfaatanDigital: { type: "STRING" }
+                                },
+                                required: ["praktikPedagogis", "kemitraanPembelajaran", "lingkunganPembelajaran", "pemanfaatanDigital"]
+                            },
+                            p1Pendahuluan: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: { sintaks: { type: "STRING" }, aktivitasGuru: { type: "STRING" }, aktivitasMurid: { type: "STRING" }, waktu: { type: "STRING" } },
+                                    required: ["sintaks", "aktivitasGuru", "aktivitasMurid", "waktu"]
+                                }
+                            },
+                            p1Inti1: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: { sintaks: { type: "STRING" }, aktivitasGuru: { type: "STRING" }, aktivitasMurid: { type: "STRING" }, waktu: { type: "STRING" } },
+                                    required: ["sintaks", "aktivitasGuru", "aktivitasMurid", "waktu"]
+                                }
+                            },
+                            p1Inti2: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: { sintaks: { type: "STRING" }, aktivitasGuru: { type: "STRING" }, aktivitasMurid: { type: "STRING" }, waktu: { type: "STRING" } },
+                                    required: ["sintaks", "aktivitasGuru", "aktivitasMurid", "waktu"]
+                                }
+                            },
+                            p1Penutup: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: { sintaks: { type: "STRING" }, aktivitasGuru: { type: "STRING" }, aktivitasMurid: { type: "STRING" }, waktu: { type: "STRING" } },
+                                    required: ["sintaks", "aktivitasGuru", "aktivitasMurid", "waktu"]
+                                }
+                            },
+                            p2Pendahuluan: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: { sintaks: { type: "STRING" }, aktivitasGuru: { type: "STRING" }, aktivitasMurid: { type: "STRING" }, waktu: { type: "STRING" } },
+                                    required: ["sintaks", "aktivitasGuru", "aktivitasMurid", "waktu"]
+                                }
+                            },
+                            p2Inti: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: { sintaks: { type: "STRING" }, aktivitasGuru: { type: "STRING" }, aktivitasMurid: { type: "STRING" }, waktu: { type: "STRING" } },
+                                    required: ["sintaks", "aktivitasGuru", "aktivitasMurid", "waktu"]
+                                }
+                            },
+                            asesmenDiagnostik: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: { pertanyaan: { type: "STRING" }, tujuan: { type: "STRING" } },
+                                    required: ["pertanyaan", "tujuan"]
+                                }
+                            },
+                            rubrikFormatif: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: { kriteria: { type: "STRING" }, skor4: { type: "STRING" }, skor3: { type: "STRING" }, skor2: { type: "STRING" }, skor1: { type: "STRING" } },
+                                    required: ["kriteria", "skor4", "skor3", "skor2", "skor1"]
+                                }
+                            },
+                            bahanAjar1: { type: "STRING" },
+                            bahanAjar2: { type: "STRING" },
+                            lkpd: {
+                                type: "OBJECT",
+                                properties: {
+                                    instruksi: { type: "STRING" },
+                                    soalPG: {
+                                        type: "ARRAY",
+                                        items: {
+                                            type: "OBJECT",
+                                            properties: { no: { type: "INTEGER" }, pertanyaan: { type: "STRING" }, opsi: { type: "ARRAY", items: { type: "STRING" } }, kunci: { type: "STRING" } },
+                                            required: ["no", "pertanyaan", "opsi", "kunci"]
+                                        }
+                                    },
+                                    soalPGK: {
+                                        type: "ARRAY",
+                                        items: {
+                                            type: "OBJECT",
+                                            properties: { no: { type: "INTEGER" }, pertanyaan: { type: "STRING" }, opsi: { type: "ARRAY", items: { type: "STRING" } }, kunci: { type: "STRING" } },
+                                            required: ["no", "pertanyaan", "opsi", "kunci"]
+                                        }
+                                    },
+                                    soalJodoh: {
+                                        type: "ARRAY",
+                                        items: {
+                                            type: "OBJECT",
+                                            properties: { no: { type: "INTEGER" }, pernyataanA: { type: "STRING" }, pasanganB: { type: "STRING" }, kunci: { type: "STRING" } },
+                                            required: ["no", "pernyataanA", "pasanganB", "kunci"]
+                                        }
+                                    },
+                                    soalIsian: {
+                                        type: "ARRAY",
+                                        items: {
+                                            type: "OBJECT",
+                                            properties: { no: { type: "INTEGER" }, pertanyaan: { type: "STRING" }, kunci: { type: "STRING" } },
+                                            required: ["no", "pertanyaan", "kunci"]
+                                        }
+                                    },
+                                    soalUraian: {
+                                        type: "ARRAY",
+                                        items: {
+                                            type: "OBJECT",
+                                            properties: { no: { type: "INTEGER" }, pertanyaan: { type: "STRING" }, kunci: { type: "STRING" }, rubrik: { type: "STRING" } },
+                                            required: ["no", "pertanyaan", "kunci", "rubrik"]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        required: ["capaianPembelajaran", "deepLearning", "tujuanPembelajaran", "kktp", "dimensiProfilLulusan", "tpack", "p1Pendahuluan", "p1Inti1", "p1Inti2", "p1Penutup", "p2Pendahuluan", "p2Inti", "asesmenDiagnostik", "rubrikFormatif", "bahanAjar1", "bahanAjar2", "lkpd"]
+                    }
+                }
+            };
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) return await response.json();
+
+                    if (response.status === 429 || response.status >= 500) {
+                        const delay = Math.pow(2, i) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    }
+
+                    const errorText = await response.text();
+                    throw new Error(`API Error: ${response.status} - ${errorText}`);
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error;
+                    const delay = Math.pow(2, i) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
+        async function generateModul() {
+            const apiKey = document.getElementById('input-api-key')?.value.trim();
+            const school = document.getElementById('input-school')?.value.trim() || "SD NEGERI 3 NGANTRU";
+            const subject = document.getElementById('input-subject')?.value.trim() || "Koding dan Kecerdasan Artifisial";
+            const guruName = document.getElementById('input-guru-name')?.value.trim() || "Aburrizal Hamdani Lubis, S.Pd";
+            const guruNip = document.getElementById('input-guru-nip')?.value.trim() || "199008122023211005";
+            const kepsekName = document.getElementById('input-kepsek-name')?.value.trim() || "Lilik Supriati, S.Pd";
+            const kepsekNip = document.getElementById('input-kepsek-nip')?.value.trim() || "197205141998032001";
+            const topic = document.getElementById('input-topic')?.value.trim() || "Keamanan Informasi Pribadi";
+            const level = document.getElementById('input-level')?.value;
+            const fase = document.getElementById('input-fase')?.value;
+            const duration = document.getElementById('input-duration')?.value;
+            const model = document.getElementById('input-model')?.value;
+
+            // Ambil jumlah soal LKPD
+            const jmlPG     = parseInt(document.getElementById('input-jml-pg')?.value) || 5;
+            const jmlPGK    = parseInt(document.getElementById('input-jml-pgk')?.value) || 3;
+            const jmlJodoh  = parseInt(document.getElementById('input-jml-jodoh')?.value) || 5;
+            const jmlIsian  = parseInt(document.getElementById('input-jml-isian')?.value) || 5;
+            const jmlUraian = parseInt(document.getElementById('input-jml-uraian')?.value) || 3;
+            const targetPages = parseInt(document.getElementById('input-page-count')?.value) || 15;
+
+            const btn = document.getElementById('btn-generate');
+
+            if (!apiKey) {
+                showStatus("Silakan masukkan Gemini API Key Anda terlebih dahulu!", "error");
+                return;
+            }
+
+            localStorage.setItem('gemini_api_key', apiKey);
+
+            if (window.innerWidth < 1024) {
+                switchMobileTab('preview');
+            }
+
+            document.getElementById('empty-state')?.classList.add('hidden');
+            document.getElementById('loading-state')?.classList.remove('hidden');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></span> Menyusun RPM AI...`;
+            }
+
+            const systemPrompt = `Anda adalah pakar kurikulum SD terbaik di Indonesia.
+PENTING:
+1. Nama Guru/Penyusun HARUS SAMA PERSIS: "${guruName}".
+2. Nama Kepala Sekolah HARUS SAMA PERSIS: "${kepsekName}".
+3. Susun materi secara mendalam (Deep Learning & TPACK).
+4. Jumlah soal LKPD WAJIB mengikuti ketentuan:
+   - Pilihan Ganda: TEPAT ${jmlPG} soal
+   - PG Kompleks: TEPAT ${jmlPGK} soal
+   - Menjodohkan: TEPAT ${jmlJodoh} pasangan
+   - Isian Singkat: TEPAT ${jmlIsian} soal
+   - Uraian: TEPAT ${jmlUraian} soal
+5. Target dokumen minimal ${targetPages} halaman A4. Jika konten lebih banyak, tidak masalah — yang penting minimal terpenuhi.`;
+
+            const prompt = `Buatkan Rencana Pelaksanaan Pembelajaran Mendalam (RPM) lengkap:
+- Sekolah: ${school}
+- Mata Pelajaran: ${subject}
+- Materi Pokok: ${topic}
+- Fase/Kelas: ${fase} / ${level}
+- Durasi: ${duration}
+- Model: ${model}
+- Penyusun: ${guruName}
+- Kepsek: ${kepsekName}
+
+JUMLAH SOAL LKPD YANG HARUS DIBUAT:
+- Pilihan Ganda: ${jmlPG} soal (soalPG)
+- PG Kompleks: ${jmlPGK} soal (soalPGK)
+- Menjodohkan: ${jmlJodoh} pasangan (soalJodoh)
+- Isian Singkat: ${jmlIsian} soal (soalIsian)
+- Uraian: ${jmlUraian} soal (soalUraian)
+
+Target total halaman minimal: ${targetPages} halaman A4.
+
+Hasilkan JSON lengkap sesuai skema.`;
+
+            try {
+                const responseData = await fetchGeminiWithBackoff(apiKey, prompt, systemPrompt);
+                const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!rawText) throw new Error("Gagal memperoleh respon dari AI.");
+
+                const data = JSON.parse(rawText);
+
+                // Page 1 - Cover
+                setSafeText('display-cover-subject', subject);
+                setSafeText('display-cover-topic', topic);
+                setSafeText('display-cover-level', `: ${level} (${fase})`);
+                setSafeText('display-cover-model', `: ${model}`);
+                setSafeText('display-cover-duration', `: ${duration}`);
+                setSafeText('display-cover-guru', `: ${guruName}`);
+                setSafeText('display-cover-school', school);
+
+                // Page 2 - Identitas & CP
+                setSafeText('display-info-school', school);
+                setSafeText('display-info-guru', guruName);
+                setSafeText('display-info-level', `${fase} / ${level}`);
+                setSafeText('display-info-subject', subject);
+                setSafeText('display-info-topic', topic);
+                setSafeText('display-info-duration', duration);
+                setSafeText('display-cp', data.capaianPembelajaran);
+
+                if (data.deepLearning) {
+                    setSafeText('display-dl-mindful', data.deepLearning.mindful);
+                    setSafeText('display-dl-meaningful', data.deepLearning.meaningful);
+                    setSafeText('display-dl-joyful', data.deepLearning.joyful);
+                }
+
+                // Page 3 - TP & KKTP
+                setSafeHTML('display-tp', data.tujuanPembelajaran.map(tp => `<li contenteditable="true" class="mb-1">${tp}</li>`).join(''));
+                setSafeHTML('container-kktp', `
+                    <table class="rpp-table">
+                        <thead>
+                            <tr>
+                                <th class="w-8">No</th>
+                                <th>Tujuan Pembelajaran</th>
+                                <th>Audience</th>
+                                <th>Behavior</th>
+                                <th>Condition</th>
+                                <th>Degree</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.kktp.map(k => `
+                                <tr>
+                                    <td class="text-center font-bold">${k.no}</td>
+                                    <td contenteditable="true">${k.tujuanRingkas}</td>
+                                    <td contenteditable="true">${k.audience}</td>
+                                    <td contenteditable="true">${k.behavior}</td>
+                                    <td contenteditable="true">${k.condition}</td>
+                                    <td contenteditable="true">${k.degree}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `);
+
+                // Page 4 - Profil & TPACK
+                setSafeHTML('container-dimensi', `
+                    <table class="rpp-table">
+                        <thead>
+                            <tr>
+                                <th class="w-1/4">Dimensi Profil</th>
+                                <th class="w-2/4">Elemen & Deskripsi</th>
+                                <th class="w-1/4">Implementasi Pembelajaran</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.dimensiProfilLulusan.map(d => `
+                                <tr>
+                                    <td class="font-bold" contenteditable="true">${d.dimensi}</td>
+                                    <td contenteditable="true">${d.deskripsi}</td>
+                                    <td contenteditable="true">${d.keterkaitan}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `);
+
+                setSafeHTML('container-tpack', `
+                    <table class="rpp-table">
+                        <tr><td class="font-bold bg-slate-50 w-1/4">Praktik Pedagogis</td><td contenteditable="true">${data.tpack.praktikPedagogis}</td></tr>
+                        <tr><td class="font-bold bg-slate-50">Kemitraan Pembelajaran</td><td contenteditable="true">${data.tpack.kemitraanPembelajaran}</td></tr>
+                        <tr><td class="font-bold bg-slate-50">Lingkungan Belajar</td><td contenteditable="true">${data.tpack.lingkunganPembelajaran}</td></tr>
+                        <tr><td class="font-bold bg-slate-50">Pemanfaatan Digital (TPACK)</td><td contenteditable="true">${data.tpack.pemanfaatanDigital}</td></tr>
+                    </table>
+                `);
+
+                // Page 5 & 6 - Pertemuan 1 Syntax
+                const renderTbody = (items) => (items || []).map(item => `
+                    <tr>
+                        <td class="font-semibold text-slate-900 bg-slate-50/50" contenteditable="true">${item.sintaks}</td>
+                        <td contenteditable="true">${item.aktivitasGuru}</td>
+                        <td contenteditable="true">${item.aktivitasMurid}</td>
+                        <td class="text-center font-bold" contenteditable="true">${item.waktu}</td>
+                    </tr>
+                `).join('');
+
+                setSafeHTML('tbody-p1-pendahuluan', renderTbody(data.p1Pendahuluan));
+                setSafeHTML('tbody-p1-inti1', renderTbody(data.p1Inti1));
+                setSafeHTML('tbody-p1-inti2', renderTbody(data.p1Inti2));
+                setSafeHTML('tbody-p1-penutup', renderTbody(data.p1Penutup));
+
+                // Page 7 - Pertemuan 2 Syntax
+                setSafeHTML('tbody-p2-pendahuluan', renderTbody(data.p2Pendahuluan));
+                setSafeHTML('tbody-p2-inti', renderTbody(data.p2Inti));
+
+                // Page 8 & 9 - Asesmen Diagnostik & Rubrik
+                setSafeHTML('container-asesmen-diagnostik', `
+                    <div class="mb-4">
+                        <h4 class="font-bold text-slate-900 text-xs mb-1.5">7.1 Asesmen Formatif Awal (Diagnostik Kognitif & Non-Kognitif)</h4>
+                        <table class="rpp-table">
+                            <thead>
+                                <tr>
+                                    <th class="w-1/2">Pertanyaan Pemantik</th>
+                                    <th class="w-1/2">Tujuan Penggalian Informasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${(data.asesmenDiagnostik || []).map(a => `
+                                    <tr>
+                                        <td contenteditable="true">${a.pertanyaan}</td>
+                                        <td contenteditable="true">${a.tujuan}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `);
+
+                setSafeHTML('container-rubrik-proses', `
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-xs mb-1.5">7.2 Rubrik Penilaian Observasi Kinerja & Kerja Kelompok</h4>
+                        <table class="rpp-table">
+                            <thead>
+                                <tr>
+                                    <th>Kriteria Penilaian</th>
+                                    <th>Sangat Baik (4)</th>
+                                    <th>Baik (3)</th>
+                                    <th>Cukup (2)</th>
+                                    <th>Perlu Bimbingan (1)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${(data.rubrikFormatif || []).map(r => `
+                                    <tr>
+                                        <td class="font-bold bg-slate-50" contenteditable="true">${r.kriteria}</td>
+                                        <td contenteditable="true">${r.skor4}</td>
+                                        <td contenteditable="true">${r.skor3}</td>
+                                        <td contenteditable="true">${r.skor2}</td>
+                                        <td contenteditable="true">${r.skor1}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `);
+
+                // Page 10 & 11 - Bahan Ajar
+                setSafeHTML('container-bahan-ajar-1', `
+                    <div class="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 space-y-2">
+                        <h3 class="font-bold text-indigo-950 text-sm">A. Konsep Dasar & Pentingnya Keamanan Data Digital</h3>
+                        <p contenteditable="true">${data.bahanAjar1 || 'Dalam dunia koding dan teknologi modern, data pribadi adalah aset berharga yang harus dilindungi.'}</p>
+                    </div>
+                `);
+
+                setSafeHTML('container-bahan-ajar-2', `
+                    <div class="p-4 bg-purple-50/50 rounded-xl border border-purple-100 space-y-2">
+                        <h3 class="font-bold text-purple-950 text-sm">B. Algoritma Proteksi Data & Etika Koding</h3>
+                        <p contenteditable="true">${data.bahanAjar2 || 'Algoritma proteksi data menggunakan langkah logis untuk menyandikan informasi.'}</p>
+                    </div>
+                `);
+
+                // Page 12, 13, 14 - LKPD Parts (dengan jumlah soal)
+                if (data.lkpd) {
+                    let pgHtml = `<div class="space-y-2 mb-3">
+                        <h3 class="font-bold text-slate-900 text-xs bg-slate-100 p-1.5 rounded border border-slate-200">
+                            Bagian A: Pilihan Ganda (${(data.lkpd.soalPG || []).length} Soal)
+                        </h3>`;
+                    (data.lkpd.soalPG || []).forEach(pg => {
+                        pgHtml += `
+                            <div class="text-xs space-y-1 pl-2 mb-2">
+                                <p class="font-semibold text-slate-900" contenteditable="true">${pg.no}. ${pg.pertanyaan}</p>
+                                <div class="grid grid-cols-2 gap-1 pl-4 text-slate-700">
+                                    ${(pg.opsi || []).map((o, idx) => `<span contenteditable="true">${String.fromCharCode(65 + idx)}. ${o}</span>`).join('')}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    pgHtml += `</div>`;
+
+                    let pgkHtml = `<div class="space-y-2 mb-3">
+                        <h3 class="font-bold text-slate-900 text-xs bg-slate-100 p-1.5 rounded border border-slate-200">
+                            Bagian B: Pilihan Ganda Kompleks (${(data.lkpd.soalPGK || []).length} Soal)
+                        </h3>`;
+                    (data.lkpd.soalPGK || []).forEach(pgk => {
+                        pgkHtml += `
+                            <div class="text-xs space-y-1 pl-2 mb-2">
+                                <p class="font-semibold text-slate-900" contenteditable="true">${pgk.no}. ${pgk.pertanyaan}</p>
+                                <div class="grid grid-cols-2 gap-1 pl-4 text-slate-700">
+                                    ${(pgk.opsi || []).map((o, idx) => `<span contenteditable="true">[ &nbsp; ] ${String.fromCharCode(65 + idx)}. ${o}</span>`).join('')}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    pgkHtml += `</div>`;
+
+                    setSafeHTML('container-lkpd-part1', pgHtml + pgkHtml);
+
+                    let jodohHtml = `<div class="space-y-2 mb-3">
+                        <h3 class="font-bold text-slate-900 text-xs bg-slate-100 p-1.5 rounded border border-slate-200">
+                            Bagian C: Menjodohkan (${(data.lkpd.soalJodoh || []).length} Pasangan)
+                        </h3>
+                        <table class="rpp-table">
+                            <thead><tr><th class="w-10">No</th><th>Pernyataan A</th><th>Pasangan B</th></tr></thead>
+                            <tbody>
+                                ${(data.lkpd.soalJodoh || []).map(j => `<tr><td class="text-center font-bold">${j.no}</td><td contenteditable="true">${j.pernyataanA}</td><td contenteditable="true">${j.pasanganB}</td></tr>`).join('')}
+                            </tbody>
+                        </table></div>`;
+
+                    let isianHtml = `<div class="space-y-2 mb-3">
+                        <h3 class="font-bold text-slate-900 text-xs bg-slate-100 p-1.5 rounded border border-slate-200">
+                            Bagian D: Isian Singkat (${(data.lkpd.soalIsian || []).length} Soal)
+                        </h3>`;
+                    (data.lkpd.soalIsian || []).forEach(is => {
+                        isianHtml += `<div class="text-xs pl-2 mb-2"><p class="font-semibold" contenteditable="true">${is.no}. ${is.pertanyaan}</p><div class="border-b border-dashed border-slate-400 h-5 w-3/4 my-1"></div></div>`;
+                    });
+                    isianHtml += `</div>`;
+
+                    setSafeHTML('container-lkpd-part2', jodohHtml + isianHtml);
+
+                    let uraianHtml = `<div class="space-y-2 mb-3">
+                        <h3 class="font-bold text-slate-900 text-xs bg-slate-100 p-1.5 rounded border border-slate-200">
+                            Bagian E: Uraian & Studi Kasus (${(data.lkpd.soalUraian || []).length} Soal)
+                        </h3>`;
+                    (data.lkpd.soalUraian || []).forEach(ur => {
+                        uraianHtml += `<div class="text-xs pl-2 mb-2"><p class="font-semibold" contenteditable="true">${ur.no}. ${ur.pertanyaan}</p><div class="border border-slate-300 rounded p-2 bg-slate-50/50 h-16 my-1"></div></div>`;
+                    });
+                    uraianHtml += `</div>`;
+
+                    let refleksiHtml = `
+                        <div class="p-3 bg-indigo-50/60 rounded-xl border border-indigo-100 space-y-2 mt-4 text-xs">
+                            <p class="font-bold text-indigo-950">LEMBAR REFLEKSI DIRI MURID</p>
+                            <p>1. Apa hal paling berharga yang kamu pelajari tentang menjaga data pribadi hari ini?</p>
+                            <div class="border-b border-dashed border-slate-300 h-5"></div>
+                            <p>2. Bagaimana kamu akan menerapkan kebiasaan aman di dunia internet setelah pembelajaran ini?</p>
+                            <div class="border-b border-dashed border-slate-300 h-5"></div>
+                        </div>
+                    `;
+
+                    setSafeHTML('container-lkpd-part3', uraianHtml + refleksiHtml);
+
+                    // Page 15 - Kunci Jawaban
+                    let kunciHtml = `<div class="p-3 bg-amber-50 rounded-xl border border-amber-200 mb-2"><p class="font-bold text-amber-950">KUNCI JAWABAN & PEDOMAN PENSKORAN LKPD</p></div>`;
+                    if (data.lkpd.soalPG) kunciHtml += `<p><b>Kunci PG (${data.lkpd.soalPG.length} soal):</b> ${data.lkpd.soalPG.map(p => `${p.no}.${p.kunci}`).join(', ')}</p>`;
+                    if (data.lkpd.soalPGK) kunciHtml += `<p class="mt-1"><b>Kunci PGK (${data.lkpd.soalPGK.length} soal):</b> ${data.lkpd.soalPGK.map(p => `${p.no}.${p.kunci}`).join(' | ')}</p>`;
+                    if (data.lkpd.soalJodoh) kunciHtml += `<p class="mt-1"><b>Kunci Menjodohkan (${data.lkpd.soalJodoh.length} pasangan):</b> ${data.lkpd.soalJodoh.map(p => `${p.no}.${p.kunci}`).join(' | ')}</p>`;
+                    if (data.lkpd.soalIsian) kunciHtml += `<p class="mt-1"><b>Kunci Isian (${data.lkpd.soalIsian.length} soal):</b> ${data.lkpd.soalIsian.map(p => `${p.no}.${p.kunci}`).join(' | ')}</p>`;
+                    if (data.lkpd.soalUraian) kunciHtml += `<div class="mt-1"><p><b>Rubrik Uraian (${data.lkpd.soalUraian.length} soal):</b></p>${data.lkpd.soalUraian.map(p => `<p>${p.no}. ${p.kunci} (${p.rubrik || 'Max 10 Point'})</p>`).join('')}</div>`;
+
+                    setSafeHTML('container-kunci-jawaban', kunciHtml);
+                }
+
+                // Page 15 - Signatures
+                setSafeText('display-ttd-date', `Ngantru, ${new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}`);
+                setSafeText('display-kepsek-name', kepsekName);
+                setSafeText('display-kepsek-nip', kepsekNip);
+                setSafeText('display-guru-name', guruName);
+                setSafeText('display-guru-nip', guruNip);
+
+                document.getElementById('modul-content')?.classList.remove('hidden');
+                document.getElementById('preview-controls')?.classList.remove('hidden');
+
+                // Update label jumlah halaman secara dinamis
+                const totalPages = document.querySelectorAll('.a4-page').length;
+                const totalText = document.getElementById('total-page-count-text');
+                if (totalText) totalText.innerText = `Total: ${totalPages} Halaman A4 Siap Cetak`;
+
+                document.querySelectorAll('.a4-page .page-badge').forEach((badge, idx) => {
+                    const isCoverCustom = badge.textContent.includes('Cover Custom');
+                    if (isCoverCustom) {
+                        badge.textContent = `Halaman ${idx + 1} dari ${totalPages} (Cover Custom)`;
+                    } else {
+                        badge.textContent = `Halaman ${idx + 1} dari ${totalPages}`;
+                    }
+                });
+
+                showStatus(`RPM ${totalPages} Halaman A4 Presisi Berhasil Disusun Lengkap!`, "success");
+
+            } catch (error) {
+                console.error(error);
+                showStatus(`Gagal merancang modul: ${error.message}`, "error");
+                document.getElementById('empty-state')?.classList.remove('hidden');
+                if (window.innerWidth < 1024) switchMobileTab('settings');
+            } finally {
+                document.getElementById('loading-state')?.classList.add('hidden');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4"></i> Buat RPM Minimal 15 Halaman A4 (AI)`;
+                }
+                if (window.lucide) lucide.createIcons();
+            }
+        }
+    </script>
+</body>
+</html>
