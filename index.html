@@ -972,33 +972,79 @@ function playWelcomeVoice() {
     return;
   }
 
-  // Cek apakah sudah pernah login sebelumnya (hanya muncul SEKALI)
-  if (localStorage.getItem('sdn3_welcome_played') === 'true') {
+  // Cegah dobel di sesi yang sama (pakai sessionStorage)
+  if (sessionStorage.getItem('sdn3_welcome_played') === 'true') {
+    console.log('ℹ️ Suara sudah diputar di sesi ini');
     return;
   }
 
   const text = 'Selamat datang di layanan portal online Sekolah Dasar Negeri 3 Ngantru';
 
+  // ✅ Pola sama seperti speakFeedback() di VoiceGrade Pro
+  window.speechSynthesis.cancel();
+
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'id-ID';
-  utterance.rate = 0.9;
+  utterance.rate = 1.0;
   utterance.pitch = 1.0;
   utterance.volume = 1.0;
 
+  // ✅ Prefer voice Indonesia, fallback ke voice default
   const voices = window.speechSynthesis.getVoices();
-  const idVoice = voices.find(v => v.lang === 'id-ID' || v.lang.startsWith('id'));
-  if (idVoice) utterance.voice = idVoice;
+  console.log('🔊 Total voices:', voices.length);
 
+  const idVoice = voices.find(v => v.lang === 'id-ID' || v.lang.startsWith('id'));
+  if (idVoice) {
+    utterance.voice = idVoice;
+    console.log('🇮🇩 Pakai voice Indonesia:', idVoice.name);
+  } else if (voices.length > 0) {
+    utterance.voice = voices[0];
+    console.log('🌐 Fallback voice:', voices[0].name, voices[0].lang);
+  }
+
+  utterance.onstart = () => console.log('▶️ Suara mulai berbunyi');
+  utterance.onend = () => console.log('⏹️ Suara selesai');
   utterance.onerror = (e) => {
-    console.warn('⚠️ Suara gagal:', e.error);
-    localStorage.removeItem('sdn3_welcome_played');
+    console.error('❌ Suara error:', e.error);
+    sessionStorage.removeItem('sdn3_welcome_played');
   };
 
-  localStorage.setItem('sdn3_welcome_played', 'true');
-  window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utterance);
+  sessionStorage.setItem('sdn3_welcome_played', 'true');
+}
 
-  console.log('🔊 Suara sambutan diputar');
+// ============================================================
+// TRIGGER SUARA SAMBUTAN — dipanggil pada interaksi pertama
+// ============================================================
+function setupWelcomeVoiceTrigger() {
+  if (sessionStorage.getItem('sdn3_welcome_played') === 'true') {
+    console.log('ℹ️ Suara sudah pernah diputar di sesi ini');
+    return;
+  }
+
+  console.log('🎧 Menunggu klik user untuk memutar suara sambutan...');
+
+  let triggered = false;
+
+  function triggerOnce() {
+    if (triggered) return;
+    triggered = true;
+
+    // Delay kecil untuk pastikan browser proses user gesture
+    setTimeout(() => {
+      playWelcomeVoice();
+    }, 100);
+
+    // Hapus listener supaya tidak dobel
+    document.removeEventListener('click', triggerOnce);
+    document.removeEventListener('touchstart', triggerOnce);
+    document.removeEventListener('keydown', triggerOnce);
+  }
+
+  // ✅ Hanya event yang DIJAMIN valid sebagai user gesture
+  document.addEventListener('click', triggerOnce);
+  document.addEventListener('touchstart', triggerOnce);
+  document.addEventListener('keydown', triggerOnce);
 }
 
 // Pre-load voices (Chrome kadang butuh ini)
@@ -1081,7 +1127,6 @@ async function handleLogin() {
     closeModal('loginModal');
     showToast('✅ Selamat datang, ' + (currentProfile.full_name || currentProfile.email));
     document.getElementById('loginPassword').value = '';
-    playWelcomeVoice();
 
     if (currentProfile.role === 'guru') await ensureTeacherFolder();
     await loadMenus();
@@ -2510,6 +2555,8 @@ window.addEventListener('load', async () => {
   loadMenus();
   loadBlocks();
   loadYoutubeSections();
+  
+  setupWelcomeVoiceTrigger();
 });
 </script>
 </body>
