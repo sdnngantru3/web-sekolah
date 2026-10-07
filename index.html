@@ -964,6 +964,51 @@ function escapeHtml(str) {
 }
 
 // ============================================================
+// SUARA SAMBUTAN OTOMATIS (Text-to-Speech)
+// ============================================================
+function playWelcomeVoice() {
+  if (!('speechSynthesis' in window)) {
+    console.warn('⚠️ Browser tidak mendukung Text-to-Speech');
+    return;
+  }
+
+  // Cek apakah sudah pernah login sebelumnya (hanya muncul SEKALI)
+  if (localStorage.getItem('sdn3_welcome_played') === 'true') {
+    return;
+  }
+
+  const text = 'Selamat datang di layanan portal online Sekolah Dasar Negeri 3 Ngantru';
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'id-ID';
+  utterance.rate = 0.9;
+  utterance.pitch = 1.0;
+  utterance.volume = 1.0;
+
+  const voices = window.speechSynthesis.getVoices();
+  const idVoice = voices.find(v => v.lang === 'id-ID' || v.lang.startsWith('id'));
+  if (idVoice) utterance.voice = idVoice;
+
+  utterance.onerror = (e) => {
+    console.warn('⚠️ Suara gagal:', e.error);
+    localStorage.removeItem('sdn3_welcome_played');
+  };
+
+  localStorage.setItem('sdn3_welcome_played', 'true');
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+
+  console.log('🔊 Suara sambutan diputar');
+}
+
+// Pre-load voices (Chrome kadang butuh ini)
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+  };
+}
+
+// ============================================================
 // PAGE LOADER
 // ============================================================
 window.addEventListener('DOMContentLoaded', () => {
@@ -1036,6 +1081,7 @@ async function handleLogin() {
     closeModal('loginModal');
     showToast('✅ Selamat datang, ' + (currentProfile.full_name || currentProfile.email));
     document.getElementById('loginPassword').value = '';
+    playWelcomeVoice();
 
     if (currentProfile.role === 'guru') await ensureTeacherFolder();
     await loadMenus();
