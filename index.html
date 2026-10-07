@@ -61,7 +61,6 @@ img { display: block; max-width: 100%; }
 .eyebrow--light::before { background: #fbbf24; }
 
 /* Admin Bar */
-/* ADMIN SIDEBAR */
 .admin-bar {
   position: fixed;
   left: 0;
@@ -81,77 +80,19 @@ img { display: block; max-width: 100%; }
   transition: width 0.3s ease;
 }
 .admin-bar-active { display: flex; }
-
-/* Sembunyikan header admin text */
-.admin-bar > div:first-child {
-  display: none;
-}
-
-/* Tombol icon besar */
-.admin-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  width: 100%;
-}
-
-.btn-admin-action {
-  width: 52px;
-  height: 52px;
-  padding: 0;
-  border-radius: var(--radius-control);
-  display: grid;
-  place-items: center;
-  font-size: 1.15rem;
-  position: relative;
-  background: var(--accent);
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-admin-action:hover {
-  background: var(--accent-hover);
-  transform: translateY(-2px);
-}
-
-/* Tooltip saat hover */
-.btn-admin-action::after {
-  content: attr(data-label);
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%) translateX(8px);
-  background: rgba(0,0,0,0.9);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
-  z-index: 1000;
-}
-
-.btn-admin-action:hover::after {
-  opacity: 1;
-}
-
-/* Ikon khusus di sidebar */
+.admin-bar > div:first-child { display: none; }
+.admin-actions { display: flex; flex-direction: column; gap: 8px; align-items: center; width: 100%; }
+.btn-admin-action { width: 52px; height: 52px; padding: 0; border-radius: var(--radius-control); display: grid; place-items: center; font-size: 1.15rem; position: relative; background: var(--accent); color: white; border: none; cursor: pointer; transition: all 0.2s; }
+.btn-admin-action:hover { background: var(--accent-hover); transform: translateY(-2px); }
+.btn-admin-action::after { content: attr(data-label); position: absolute; left: 100%; top: 50%; transform: translateY(-50%) translateX(8px); background: rgba(0,0,0,0.9); color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 1000; }
+.btn-admin-action:hover::after { opacity: 1; }
 .btn-admin-logo { background: #d97706; }
 .btn-admin-logo:hover { background: #b45309; }
 .btn-admin-blue { background: #2563eb; }
 .btn-admin-blue:hover { background: #1d4ed8; }
 .btn-admin-danger { background: #ef4444; }
 .btn-admin-danger:hover { background: #dc2626; }
-
-/* Geser konten ke kanan saat sidebar aktif */
-body:has(.admin-bar-active) {
-  padding-left: 80px;
-}
+body:has(.admin-bar-active) { padding-left: 80px; }
 #header.is-ready { opacity: 1; transform: translateY(0); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.25rem; flex-wrap: wrap; }
 .header-logo { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
@@ -177,45 +118,43 @@ body:has(.admin-bar-active) {
 .suggestion-item:hover { background: var(--surface-2); color: var(--accent); }
 
 /* ============================================================
-   HERO — PERBAIKAN: Gambar Cloudinary tampil 100% jelas
+   HERO — PERBAIKAN TOTAL:
+   - Tidak ada overlay gradient
+   - Tidak ada background gelap
+   - Canvas transparan
+   - Gambar before & after tampil 100% jelas
    ============================================================ */
-#home { 
-  position: relative; 
-  isolation: isolate; 
-  overflow: hidden; 
-  border-radius: 0 0 var(--radius-card) var(--radius-card); 
-  /* PERBAIKAN: background gelap netral, bukan putih/hijau muda */
-  background: #0a1f18;
-  min-height: 100vh; 
-  display: flex; 
-  flex-direction: column; 
+#home {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  background: #d8ece2; /* fallback terang, tidak menutupi gambar */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
-#home .hero-liquid-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-#home .hero-liquid-bg .liquid-base, #home .hero-liquid-bg canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-/* PERBAIKAN: gambar before tampil 100% opaque */
-#home .hero-liquid-bg .liquid-base { opacity: 1; }
-#home .hero-liquid-bg canvas { cursor: crosshair; touch-action: none; }
-/* PERBAIKAN: overlay hanya di area teks kiri, sisi kanan gambar 100% jelas */
-#home .hero-overlay { 
-  position: absolute; 
-  inset: 0; 
-  z-index: 1; 
-  pointer-events: none; 
-  background: linear-gradient(90deg, 
-    rgba(255,255,255,0.92) 0%, 
-    rgba(255,255,255,0.78) 25%, 
-    rgba(255,255,255,0.35) 45%, 
-    rgba(255,255,255,0) 60%, 
-    rgba(255,255,255,0) 100%);
+#home .hero-liquid-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: #d8ece2; }
+#home .hero-liquid-bg .liquid-base,
+#home .hero-liquid-bg canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
 }
+#home .hero-liquid-bg .liquid-base { opacity: 1; z-index: 0; }
+#home .hero-liquid-bg canvas { z-index: 1; background: transparent !important; cursor: crosshair; touch-action: none; }
+
+/* Overlay DIHAPUS TOTAL — tidak ada gradient yang menutupi gambar */
+#home .hero-overlay { display: none !important; }
+
 #home .liquid-badge { position: absolute; top: 6rem; padding: 0.5rem 1.25rem; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; z-index: 3; backdrop-filter: blur(8px); pointer-events: none; }
 #home .liquid-badge--before { left: 1.5rem; background: rgba(7,30,23,0.8); color: #fff; }
 #home .liquid-badge--after { right: 1.5rem; background: rgba(15,107,82,0.9); color: #fff; }
 @media (min-width: 1024px) { #home .liquid-badge { top: 7rem; } #home .liquid-badge--before { left: 2rem; } #home .liquid-badge--after { right: 2rem; } }
 #home .liquid-hint { position: absolute; bottom: 5rem; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: #fff; padding: 0.5rem 1.1rem; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 600; z-index: 3; pointer-events: none; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; backdrop-filter: blur(8px); }
 @media (max-width: 640px) { #home .liquid-hint { display: none; } }
-.hero-watermark { pointer-events: none; position: absolute; inset-inline: 0; bottom: 4rem; z-index: 2; text-align: center; user-select: none; font-weight: 800; line-height: 1; font-size: var(--text-watermark); color: rgba(15,107,82,0.06); letter-spacing: -0.04em; opacity: 0; transition: all 0.8s; }
-.hero-watermark.is-ready { opacity: 1; }
+
+/* Watermark disembunyikan total untuk menghindari efek gradient */
+.hero-watermark { display: none; }
+
 .hero-content { position: relative; z-index: 20; display: flex; flex-direction: column; gap: 2.5rem; padding: 8rem 1.25rem 4rem; flex: 1; }
 @media (min-width: 1024px) { .hero-content { display: grid; min-height: 92vh; grid-template-columns: repeat(12, 1fr); gap: 2.5rem; padding: 9.5rem 2rem 5rem; align-content: center; } }
 .hero-left { display: flex; flex-direction: column; gap: 1.75rem; position: relative; z-index: 2; }
@@ -295,11 +234,7 @@ body:has(.admin-bar-active) {
   pointer-events: none;
   border-radius: var(--radius-card);
 }
-
-.stats-panel > * {
-  position: relative;
-  z-index: 1;
-}
+.stats-panel > * { position: relative; z-index: 1; }
 .stats-panel::before { content: ''; position: absolute; top: -50%; right: -20%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(15,107,82,0.35), transparent 70%); }
 .stats-header-row { display: flex; flex-direction: column; gap: 1.5rem; justify-content: space-between; }
 @media (min-width: 1024px) { .stats-header-row { flex-direction: row; align-items: flex-end; } }
@@ -575,11 +510,9 @@ body:has(.admin-bar-active) {
       <img class="liquid-base" id="imgBefore" src="https://res.cloudinary.com/j6sfv399/image/upload/v1788762440/cc0e57fe-60d6-4918-b4e5-f4bca15dd579.jpg" alt="Sebelum" crossorigin="anonymous">
       <canvas id="liquidCanvas"></canvas>
     </div>
-    <div class="hero-overlay"></div>
-    <div class="hero-watermark" id="heroWatermark">SDN 3 NGANTRU</div>
     <span class="liquid-badge liquid-badge--before" id="baLabelBefore" style="display:none;"></span>
-<span class="liquid-badge liquid-badge--after" id="baLabelAfter" style="display:none;"></span>
-<div class="liquid-hint" style="display:none;"></div>
+    <span class="liquid-badge liquid-badge--after" id="baLabelAfter" style="display:none;"></span>
+    <div class="liquid-hint" style="display:none;"></div>
     <div class="shell">
       <div class="hero-content">
         <div class="hero-left">
@@ -695,12 +628,9 @@ body:has(.admin-bar-active) {
     </div>
   </section>
 
-  <!-- ============ YOUTUBE SECTION (BARU) ============ -->
   <section class="yt-section" id="youtubeSection" style="display: none;">
     <div class="shell">
-      <div id="ytSectionsContainer">
-        <!-- Konten video di-render oleh JS -->
-      </div>
+      <div id="ytSectionsContainer"></div>
     </div>
   </section>
 
@@ -940,7 +870,6 @@ body:has(.admin-bar-active) {
   </div>
 </div>
 
-<!-- ============ MODAL YOUTUBE (BARU) ============ -->
 <div id="manageYoutubeModal" class="modal">
   <div class="modal-content" style="max-width: 720px;">
     <h3 id="ytModalTitle"><i class="fab fa-youtube" style="color: #dc2626;"></i> Kelola Video YouTube</h3>
@@ -1051,7 +980,6 @@ window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         document.getElementById('pageLoader').style.transform = 'translateY(-100%)';
         document.getElementById('header').classList.add('is-ready');
-        document.getElementById('heroWatermark').classList.add('is-ready');
         document.querySelectorAll('.line-inner, .reveal-item').forEach(el => el.classList.add('is-revealed'));
       }, 300);
     }
@@ -2131,8 +2059,6 @@ async function loadBlocks() {
     const { data, error } = await supabaseClient.from('page_blocks').select('*').eq('is_visible', true).order('display_order').order('created_at');
     if (error) { list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:2rem;">⚠️ ${error.message}</div>`; return; }
 
-    // HANYA tampilkan block tipe image_text di section ini
-    // (youtube_playlist punya section sendiri)
     allBlocks = (data || []).filter(b => b.block_type === 'image_text');
 
     if (allBlocks.length === 0) { list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:2rem;font-style:italic;">Belum ada blok.</div>`; return; }
@@ -2326,7 +2252,7 @@ async function saveStats() {
 }
 
 // ============================================================
-// LIQUID EFFECT
+// LIQUID EFFECT — Canvas transparan, no gradient overlay
 // ============================================================
 const liquidImageAfter = new Image();
 let liquidAfterUrl = DEFAULT_AFTER_IMAGE;
@@ -2336,6 +2262,7 @@ function loadLiquidImage(url) {
   if (!url) url = DEFAULT_AFTER_IMAGE;
   liquidAfterUrl = url;
   console.log('🖼️ [LIQUID] Loading:', url);
+  liquidImageAfter.crossOrigin = 'anonymous';
   liquidImageAfter.onload = () => { console.log('✅ [LIQUID] Loaded'); initLiquid(); };
   liquidImageAfter.onerror = () => { console.error('❌ [LIQUID] Failed:', url); };
   liquidImageAfter.src = url;
@@ -2344,27 +2271,23 @@ function loadLiquidImage(url) {
 function initLiquid() {
   const wrapper = document.getElementById('liquidWrapper');
   const canvas = document.getElementById('liquidCanvas');
-  if (!wrapper || !canvas) { console.warn('Liquid container tidak ditemukan'); return; }
+  if (!wrapper || !canvas) return;
   if (!liquidImageAfter.complete || !liquidImageAfter.naturalWidth) { setTimeout(initLiquid, 500); return; }
   if (liquidInitialized) { console.log('ℹ️ Liquid sudah init'); return; }
 
   console.log('🎨 [LIQUID] Init:', liquidImageAfter.naturalWidth, 'x', liquidImageAfter.naturalHeight);
 
-  // ============================================================
-  // PERBAIKAN: canvas dibuat OPAQUE (alpha: false)
-  // agar gambar after tidak tercampur dengan transparansi
-  // ============================================================
-  const ctx = canvas.getContext('2d', { alpha: false });
+  // ✅ Canvas TRANSPARAN (default alpha: true) — supaya gambar before terlihat
+  const ctx = canvas.getContext('2d');
+  const coverCanvas = document.createElement('canvas');
+  const coverCtx = coverCanvas.getContext('2d');  // ✅ transparan
+  const brushCanvas = document.createElement('canvas');
+  const brushCtx = brushCanvas.getContext('2d');
 
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
   let width = 0, height = 0;
   const brushRadius = 120;
   const decay = 0.016;
-
-  const coverCanvas = document.createElement('canvas');
-  const coverCtx = coverCanvas.getContext('2d', { alpha: false });
-  const brushCanvas = document.createElement('canvas');
-  const brushCtx = brushCanvas.getContext('2d');
 
   function resize() {
     const rect = wrapper.getBoundingClientRect();
@@ -2384,12 +2307,8 @@ function initLiquid() {
     let rW, rH, oX, oY;
     if (cRatio > imgRatio) { rW = cW; rH = cW / imgRatio; oX = 0; oY = (cH - rH) / 2; }
     else { rH = cH; rW = cH * imgRatio; oX = (cW - rW) / 2; oY = 0; }
-    // ============================================================
-    // PERBAIKAN: isi background hitam dulu (bukan clearRect),
-    // agar tidak ada area transparan
-    // ============================================================
-    coverCtx.fillStyle = '#000';
-    coverCtx.fillRect(0, 0, cW, cH);
+    // ✅ CLEAR (transparan), bukan FILL HITAM
+    coverCtx.clearRect(0, 0, cW, cH);
     coverCtx.drawImage(liquidImageAfter, oX, oY, rW, rH);
   }
 
@@ -2440,10 +2359,7 @@ function initLiquid() {
     const c = d / 2;
     brushCtx.clearRect(0, 0, d, d);
     brushCtx.globalCompositeOperation = 'source-over';
-    // ============================================================
-    // PERBAIKAN: gradien lebih pekat (0.95 di tengah) supaya
-    // gambar after terlihat 100% jelas, hanya tepi yang fade
-    // ============================================================
+    // ✅ Gradien pekat (0.95) supaya gambar after 100% jelas
     const grad = brushCtx.createRadialGradient(c, c, 0, c, c, r);
     grad.addColorStop(0, 'rgba(255,255,255,1)');
     grad.addColorStop(0.7, 'rgba(255,255,255,0.95)');
