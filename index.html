@@ -97,13 +97,13 @@ img { display: block; max-width: 100%; }
 }
 
 .btn-admin-action {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   padding: 0;
   border-radius: var(--radius-control);
   display: grid;
   place-items: center;
-  font-size: 1rem;
+  font-size: 1.15rem;
   position: relative;
   background: var(--accent);
   color: white;
@@ -150,7 +150,7 @@ img { display: block; max-width: 100%; }
 
 /* Geser konten ke kanan saat sidebar aktif */
 body:has(.admin-bar-active) {
-  padding-left: 60px;
+  padding-left: 80px;
 }
 #header.is-ready { opacity: 1; transform: translateY(0); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.25rem; flex-wrap: wrap; }
@@ -446,6 +446,46 @@ body:has(.admin-bar-active) {
 
 .custom-toast { position: fixed; bottom: 30px; right: 30px; background: var(--ink); color: white; padding: 14px 24px; border-radius: var(--radius-pill); font-size: 0.875rem; font-weight: 600; box-shadow: 0 12px 30px rgba(0,0,0,0.25); z-index: 5000; display: none; align-items: center; gap: 10px; max-width: 360px; }
 .custom-toast.show { display: flex; }
+
+/* ============================================
+   YOUTUBE PLAYLIST BLOCK
+   ============================================ */
+.yt-section { padding-block: 4rem; background: linear-gradient(180deg, #f8faf9 0%, #edf2f0 100%); }
+.yt-header { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2.5rem; align-items: center; text-align: center; }
+.yt-title { font-size: 2.25rem; font-weight: 800; color: var(--ink); }
+.yt-subtitle { color: var(--muted); font-size: 0.95rem; max-width: 60ch; }
+
+.yt-player-wrap { max-width: 900px; margin: 0 auto 2rem; border-radius: var(--radius-card-sm); overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.15); background: #000; aspect-ratio: 16/9; position: relative; }
+.yt-player-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+.yt-player-empty { display: grid; place-items: center; width: 100%; height: 100%; color: #fff; text-align: center; padding: 2rem; }
+.yt-player-empty i { font-size: 4rem; opacity: 0.3; margin-bottom: 1rem; display: block; }
+
+.yt-thumb-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; max-width: 900px; margin: 0 auto; }
+@media (min-width: 640px) { .yt-thumb-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1024px) { .yt-thumb-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.yt-thumb { position: relative; border-radius: var(--radius-control); overflow: hidden; cursor: pointer; background: #000; aspect-ratio: 16/9; transition: all 0.3s; border: 2px solid transparent; }
+.yt-thumb:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+.yt-thumb.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15,107,82,0.2); }
+.yt-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.yt-thumb__play { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(0,0,0,0.3); transition: background 0.3s; }
+.yt-thumb:hover .yt-thumb__play { background: rgba(0,0,0,0.5); }
+.yt-thumb__play i { font-size: 2.5rem; color: #fff; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)); transition: transform 0.3s; }
+.yt-thumb:hover .yt-thumb__play i { transform: scale(1.15); }
+.yt-thumb__title { position: absolute; bottom: 0; left: 0; right: 0; padding: 8px 10px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); color: #fff; font-size: 0.75rem; font-weight: 600; line-height: 1.3; word-break: break-word; max-height: 3.2rem; overflow: hidden; }
+
+.yt-manage-item { display: flex; gap: 10px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; background: #fff; }
+.yt-manage-item img { width: 80px; height: 45px; object-fit: cover; border-radius: 6px; flex-shrink: 0; background: #000; }
+.yt-manage-item__info { flex: 1; min-width: 0; font-size: 0.85rem; }
+.yt-manage-item__info strong { display: block; color: var(--ink); margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.yt-manage-item__info span { color: var(--muted); font-size: 0.7rem; word-break: break-all; }
+.yt-manage-item button { background: #fee2e2; color: #991b1b; border: none; padding: 6px 12px; border-radius: 9999px; font-weight: 600; cursor: pointer; font-size: 0.75rem; flex-shrink: 0; }
+
+.yt-input-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.yt-input-row input { flex: 1; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius-control); font-size: 0.9rem; font-family: inherit; outline: none; background: var(--surface); }
+.yt-input-row input:focus { border-color: var(--accent); background: #fff; }
+.yt-input-row button { background: var(--accent); color: #fff; border: none; padding: 10px 16px; border-radius: var(--radius-control); font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+.yt-input-row button:hover { background: var(--accent-hover); }
 </style>
 </head>
 <body>
@@ -469,6 +509,7 @@ body:has(.admin-bar-active) {
     <button class="btn-admin-action btn-admin-blue" data-admin-only onclick="openAddMenuModal()"><i class="fas fa-th"></i> Menu Baru</button>
     <button class="btn-admin-action" onclick="openManageGallery()"><i class="fas fa-images"></i> Galeri</button>
     <button class="btn-admin-action btn-admin-blue" data-admin-only onclick="openManageMenuModal()"><i class="fas fa-list"></i> Kelola Menu</button>
+    <button class="btn-admin-action" style="background:#dc2626;" data-admin-only onclick="openYoutubeModal()"><i class="fab fa-youtube"></i> Video YouTube</button>
     <button class="btn-admin-action" data-admin-only onclick="openEditBeforeAfterModal()"><i class="fas fa-wand-magic-sparkles"></i> Before/After</button>
     <button class="btn-admin-action" data-admin-only onclick="openEditStatsModal()"><i class="fas fa-edit"></i> Statistik</button>
     <button class="btn-admin-action btn-admin-danger" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -625,6 +666,15 @@ body:has(.admin-bar-active) {
       </div>
       <div class="app-grid" id="appGrid">
         <div style="grid-column: 1/-1; text-align: center; color: var(--muted); padding: 2rem;">Memuat menu...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ YOUTUBE SECTION (BARU) ============ -->
+  <section class="yt-section" id="youtubeSection" style="display: none;">
+    <div class="shell">
+      <div id="ytSectionsContainer">
+        <!-- Konten video di-render oleh JS -->
       </div>
     </div>
   </section>
@@ -850,6 +900,7 @@ body:has(.admin-bar-active) {
     <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('manageGalleryModal')">Tutup</button>
   </div>
 </div>
+
 <div id="manageMenuModal" class="modal">
   <div class="modal-content" style="max-width: 720px;">
     <h3><i class="fas fa-list"></i> Kelola Menu</h3>
@@ -863,6 +914,51 @@ body:has(.admin-bar-active) {
     <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('manageMenuModal')">Tutup</button>
   </div>
 </div>
+
+<!-- ============ MODAL YOUTUBE (BARU) ============ -->
+<div id="manageYoutubeModal" class="modal">
+  <div class="modal-content" style="max-width: 720px;">
+    <h3 id="ytModalTitle"><i class="fab fa-youtube" style="color: #dc2626;"></i> Kelola Video YouTube</h3>
+    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Paste URL YouTube, video akan diputar langsung di portal</p>
+
+    <div class="form-group">
+      <label>Judul Blok Video</label>
+      <input type="text" id="ytBlockTitle" placeholder="Contoh: Video Pembelajaran Kelas 6">
+    </div>
+
+    <div class="form-group">
+      <label>Deskripsi (opsional)</label>
+      <input type="text" id="ytBlockDesc" placeholder="Keterangan singkat">
+    </div>
+
+    <div class="form-group">
+      <label>Tambah Video</label>
+      <div class="yt-input-row">
+        <input type="text" id="ytVideoUrl" placeholder="https://www.youtube.com/watch?v=... atau https://youtu.be/...">
+      </div>
+      <div class="yt-input-row">
+        <input type="text" id="ytVideoTitle" placeholder="Judul video (opsional)">
+      </div>
+      <button type="button" onclick="addYoutubeVideoLocal()" style="width: 100%; padding: 10px; background: #2563eb; color: #fff; border: none; border-radius: var(--radius-control); font-weight: 600; cursor: pointer; font-size: 0.9rem;">
+        <i class="fas fa-plus"></i> Tambah ke Daftar
+      </button>
+    </div>
+
+    <div class="form-group" style="margin-top: 1rem;">
+      <label>Daftar Video (<span id="ytVideoCount">0</span>)</label>
+      <div id="ytVideoList" style="max-height: 250px; overflow-y: auto; padding: 4px;">
+        <p style="text-align: center; color: var(--muted); font-size: 0.85rem; padding: 1rem;">Belum ada video. Tambah di atas.</p>
+      </div>
+    </div>
+
+    <input type="hidden" id="ytBlockId">
+    <button class="btn-submit" onclick="saveYoutubeBlock()" style="margin-top: 1rem;">
+      <i class="fas fa-save"></i> Simpan Blok Video
+    </button>
+    <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('manageYoutubeModal')">Batal</button>
+  </div>
+</div>
+
 <div id="previewOverlay" class="preview-overlay">
   <div class="preview-box">
     <div class="preview-header">
@@ -991,6 +1087,7 @@ async function handleLogin() {
     if (currentProfile.role === 'guru') await ensureTeacherFolder();
     await loadMenus();
     await loadBlocks();
+    await loadYoutubeSections();
   } catch (err) {
     showToast('❌ ' + err.message);
   } finally {
@@ -1005,6 +1102,7 @@ async function logoutAdmin() {
   showToast('👋 Logout');
   await loadMenus();
   await loadBlocks();
+  await loadYoutubeSections();
 }
 
 async function checkSession() {
@@ -1754,6 +1852,252 @@ async function toggleMenuVisibility(id, currentVisible) {
 }
 
 // ============================================================
+// YOUTUBE PLAYLIST (BARU)
+// ============================================================
+let ytDraftVideos = [];
+
+function extractYoutubeId(url) {
+  if (!url) return null;
+  url = url.trim();
+  let m = url.match(/youtu\.be\/([a-zA-Z0-9_-]{6,})/);
+  if (m) return m[1];
+  m = url.match(/[?&]v=([a-zA-Z0-9_-]{6,})/);
+  if (m) return m[1];
+  m = url.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{6,})/);
+  if (m) return m[1];
+  m = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{6,})/);
+  if (m) return m[1];
+  return null;
+}
+
+function openYoutubeModal() {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin'); return; }
+  document.getElementById('ytModalTitle').innerHTML = '<i class="fab fa-youtube" style="color: #dc2626;"></i> Tambah Blok Video YouTube';
+  document.getElementById('ytBlockId').value = '';
+  document.getElementById('ytBlockTitle').value = '';
+  document.getElementById('ytBlockDesc').value = '';
+  document.getElementById('ytVideoUrl').value = '';
+  document.getElementById('ytVideoTitle').value = '';
+  ytDraftVideos = [];
+  renderYtDraftList();
+  openModal('manageYoutubeModal');
+}
+
+async function editYoutubeBlock(blockId) {
+  if (!isAdmin()) return;
+  const block = allBlocks.find(b => b.id === blockId);
+  if (!block) return;
+
+  document.getElementById('ytModalTitle').innerHTML = '<i class="fab fa-youtube" style="color: #dc2626;"></i> Edit Blok Video';
+  document.getElementById('ytBlockId').value = blockId;
+  document.getElementById('ytBlockTitle').value = block.title || '';
+  document.getElementById('ytBlockDesc').value = block.description || '';
+
+  const { data, error } = await supabaseClient
+    .from('youtube_videos')
+    .select('*')
+    .eq('block_id', blockId)
+    .order('display_order');
+
+  ytDraftVideos = (data || []).map(v => ({
+    id: v.id,
+    url: v.video_url,
+    title: v.video_title || ''
+  }));
+  renderYtDraftList();
+  openModal('manageYoutubeModal');
+}
+
+function addYoutubeVideoLocal() {
+  const url = document.getElementById('ytVideoUrl').value.trim();
+  const title = document.getElementById('ytVideoTitle').value.trim();
+  if (!url) { showToast('⚠️ Paste URL YouTube dulu'); return; }
+
+  const vid = extractYoutubeId(url);
+  if (!vid) { showToast('❌ URL YouTube tidak valid'); return; }
+
+  ytDraftVideos.push({ url, title: title || 'Video ' + (ytDraftVideos.length + 1) });
+  document.getElementById('ytVideoUrl').value = '';
+  document.getElementById('ytVideoTitle').value = '';
+  renderYtDraftList();
+  showToast('✅ Video ditambahkan');
+}
+
+function removeYoutubeVideoLocal(idx) {
+  ytDraftVideos.splice(idx, 1);
+  renderYtDraftList();
+}
+
+function renderYtDraftList() {
+  const list = document.getElementById('ytVideoList');
+  const count = document.getElementById('ytVideoCount');
+  count.innerText = ytDraftVideos.length;
+
+  if (ytDraftVideos.length === 0) {
+    list.innerHTML = '<p style="text-align: center; color: var(--muted); font-size: 0.85rem; padding: 1rem;">Belum ada video. Tambah di atas.</p>';
+    return;
+  }
+
+  list.innerHTML = ytDraftVideos.map((v, i) => {
+    const vid = extractYoutubeId(v.url);
+    const thumb = vid ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg` : '';
+    return `
+      <div class="yt-manage-item">
+        ${thumb ? `<img src="${thumb}" alt="">` : '<div style="width:80px;height:45px;background:#eee;border-radius:6px;"></div>'}
+        <div class="yt-manage-item__info">
+          <strong>${escapeHtml(v.title)}</strong>
+          <span>${escapeHtml(v.url)}</span>
+        </div>
+        <button onclick="removeYoutubeVideoLocal(${i})"><i class="fas fa-trash"></i> Hapus</button>
+      </div>
+    `;
+  }).join('');
+}
+
+async function saveYoutubeBlock() {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin'); return; }
+  const blockId = document.getElementById('ytBlockId').value;
+  const title = document.getElementById('ytBlockTitle').value.trim();
+  const desc = document.getElementById('ytBlockDesc').value.trim();
+
+  if (!title) { showToast('⚠️ Isi judul blok'); return; }
+  if (ytDraftVideos.length === 0) { showToast('⚠️ Tambah minimal 1 video'); return; }
+
+  try {
+    let realBlockId = blockId;
+
+    if (blockId) {
+      const { error } = await supabaseClient.from('page_blocks').update({
+        title, description: desc, block_type: 'youtube_playlist'
+      }).eq('id', blockId);
+      if (error) throw error;
+    } else {
+      const { data, error } = await supabaseClient.from('page_blocks').insert([{
+        title, description: desc, block_type: 'youtube_playlist',
+        is_visible: true, created_by: currentUser.id
+      }]).select().single();
+      if (error) throw error;
+      realBlockId = data.id;
+    }
+
+    await supabaseClient.from('youtube_videos').delete().eq('block_id', realBlockId);
+
+    const rows = ytDraftVideos.map((v, i) => ({
+      block_id: realBlockId,
+      video_url: v.url,
+      video_title: v.title,
+      display_order: i
+    }));
+    const { error: errIns } = await supabaseClient.from('youtube_videos').insert(rows);
+    if (errIns) throw errIns;
+
+    showToast('✅ Blok video disimpan!');
+    closeModal('manageYoutubeModal');
+    await loadBlocks();
+    await loadYoutubeSections();
+  } catch (err) {
+    showToast('❌ ' + err.message);
+  }
+}
+
+async function deleteYoutubeBlock(blockId) {
+  if (!isAdmin()) return;
+  if (!confirm('Hapus blok video ini? Semua video di dalamnya akan hilang.')) return;
+  const { error } = await supabaseClient.from('page_blocks').delete().eq('id', blockId);
+  if (error) { showToast('❌ ' + error.message); return; }
+  showToast('✅ Blok video dihapus');
+  await loadBlocks();
+  await loadYoutubeSections();
+}
+
+async function loadYoutubeSections() {
+  const section = document.getElementById('youtubeSection');
+  const container = document.getElementById('ytSectionsContainer');
+  if (!section || !container) return;
+
+  try {
+    const { data: blocks } = await supabaseClient
+      .from('page_blocks')
+      .select('*')
+      .eq('block_type', 'youtube_playlist')
+      .eq('is_visible', true)
+      .order('display_order');
+
+    if (!blocks || blocks.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = '';
+
+    let html = '';
+    for (const block of blocks) {
+      const { data: videos } = await supabaseClient
+        .from('youtube_videos')
+        .select('*')
+        .eq('block_id', block.id)
+        .order('display_order');
+
+      if (!videos || videos.length === 0) continue;
+
+      const firstVidId = extractYoutubeId(videos[0].video_url);
+
+      html += `
+        <div class="yt-shell" style="margin-bottom: 4rem;" data-block-id="${block.id}">
+          <div class="yt-header">
+            <div class="eyebrow eyebrow--dark">Video</div>
+            <h2 class="yt-title">${escapeHtml(block.title)}</h2>
+            ${block.description ? `<p class="yt-subtitle">${escapeHtml(block.description)}</p>` : ''}
+          </div>
+
+          <div class="yt-player-wrap" id="ytPlayer-${block.id}">
+            ${firstVidId
+              ? `<iframe src="https://www.youtube.com/embed/${firstVidId}?rel=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`
+              : '<div class="yt-player-empty"><div><i class="fab fa-youtube"></i><p>Belum ada video</p></div></div>'
+            }
+          </div>
+
+          <div class="yt-thumb-grid">
+            ${videos.map((v, i) => {
+              const vidId = extractYoutubeId(v.video_url);
+              if (!vidId) return '';
+              return `
+                <div class="yt-thumb ${i === 0 ? 'active' : ''}" onclick="playYoutubeVideo('${block.id}', '${vidId}', this)" data-vid="${vidId}">
+                  <img src="https://img.youtube.com/vi/${vidId}/mqdefault.jpg" alt="${escapeHtml(v.video_title || '')}" loading="lazy">
+                  <div class="yt-thumb__play"><i class="fas fa-play-circle"></i></div>
+                  <div class="yt-thumb__title">${escapeHtml(v.video_title || 'Video ' + (i+1))}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          ${isAdmin() ? `
+            <div style="text-align: center; margin-top: 1.5rem;">
+              <button onclick="editYoutubeBlock('${block.id}')" class="btn-admin-action" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px;"><i class="fas fa-pencil"></i> Edit Blok Ini</button>
+              <button onclick="deleteYoutubeBlock('${block.id}')" class="btn-admin-action btn-admin-danger" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; margin-left: 8px;"><i class="fas fa-trash"></i> Hapus Blok</button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    container.innerHTML = html || `<p style="text-align: center; color: var(--muted); padding: 2rem;">Belum ada video.</p>`;
+  } catch (err) {
+    console.error('loadYoutubeSections error:', err);
+  }
+}
+
+function playYoutubeVideo(blockId, videoId, thumbEl) {
+  const player = document.getElementById('ytPlayer-' + blockId);
+  if (player) {
+    player.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+  }
+  const parent = thumbEl.parentElement;
+  parent.querySelectorAll('.yt-thumb').forEach(t => t.classList.remove('active'));
+  thumbEl.classList.add('active');
+}
+
+// ============================================================
 // PAGE BLOCKS
 // ============================================================
 async function loadBlocks() {
@@ -1761,7 +2105,11 @@ async function loadBlocks() {
   try {
     const { data, error } = await supabaseClient.from('page_blocks').select('*').eq('is_visible', true).order('display_order').order('created_at');
     if (error) { list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:2rem;">⚠️ ${error.message}</div>`; return; }
-    allBlocks = data || [];
+
+    // HANYA tampilkan block tipe image_text di section ini
+    // (youtube_playlist punya section sendiri)
+    allBlocks = (data || []).filter(b => b.block_type === 'image_text');
+
     if (allBlocks.length === 0) { list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:2rem;font-style:italic;">Belum ada blok.</div>`; return; }
 
     list.innerHTML = allBlocks.map((b, idx) => {
@@ -1953,7 +2301,7 @@ async function saveStats() {
 }
 
 // ============================================================
-// LIQUID EFFECT — VERSI BERSIH
+// LIQUID EFFECT
 // ============================================================
 const liquidImageAfter = new Image();
 let liquidAfterUrl = DEFAULT_AFTER_IMAGE;
@@ -2160,6 +2508,7 @@ window.addEventListener('load', async () => {
   loadPublicFiles();
   loadMenus();
   loadBlocks();
+  loadYoutubeSections();
 });
 </script>
 </body>
