@@ -180,7 +180,28 @@ body:has(.admin-bar-active) #header {
 
 /* Stats */
 .stats-shell { padding: 3rem 1.25rem; }
-.stats-panel { border-radius: var(--radius-card); background: var(--ink); padding: 3.5rem 1.5rem; color: #fff; position: relative; overflow: hidden; }
+.stats-panel {
+  border-radius: var(--radius-card);
+  background: url('background.jpg') center/cover no-repeat;
+  padding: 3.5rem 1.5rem;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.stats-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(7,30,23,0.85) 0%, rgba(15,107,82,0.75) 100%);
+  z-index: 0;
+  pointer-events: none;
+  border-radius: var(--radius-card);
+}
+
+.stats-panel > * {
+  position: relative;
+  z-index: 1;
+}
 .stats-panel::before { content: ''; position: absolute; top: -50%; right: -20%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(15,107,82,0.35), transparent 70%); }
 .stats-header-row { display: flex; flex-direction: column; gap: 1.5rem; justify-content: space-between; }
 @media (min-width: 1024px) { .stats-header-row { flex-direction: row; align-items: flex-end; } }
