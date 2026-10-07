@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnglishSpark - Aplikasi Belajar Bahasa Inggris Interaktif</title>
+
+    <!-- === KONFIGURASI SUPABASE === -->
+    <script>
+        window.SUPABASE_URL = 'https://enaypzbhcuytweuuwecv.supabase.co';
+        window.SUPABASE_KEY = 'sb_publishable_8Fe0by2jDKLflGXOKldhcg_ZlCaFNx9';
+        window.SISWA_ID   = localStorage.getItem('englishspark_siswa_id')   || '';
+        window.SISWA_NAMA = localStorage.getItem('englishspark_siswa_nama') || '';
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4', 100: '#dcfce7', 400: '#4ade80',
+                            500: '#22c55e', 600: '#16a34a', 700: '#15803d',
+                        },
+                        accent: { 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' },
+                        purple: { 500: '#8b5cf6', 600: '#7c3aed' }
+                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; user-select: text; }
+        .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .tab-content.active { display: block; opacity: 1; }
+        .clickable-word {
+            display: inline-block; padding: 2px 4px; margin: 1px; border-radius: 6px;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .clickable-word:hover {
+            background-color: #fef08a; color: #854d0e;
+            transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .dark .clickable-word:hover { background-color: #854d0e; color: #fef08a; }
+        .speaking-word {
+            background-color: #4ade80 !important; color: #052e16 !important;
+            font-weight: 700; border-radius: 4px;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
+        @keyframes audioPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .audio-active { animation: audioPulse 1.5s infinite; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/30">
+                        <i class="fa-solid fa-graduation-cap text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold bg-gradient-to-r from-brand-600 to-teal-500 bg-clip-text text-transparent">EnglishSpark</span>
+                        <span class="hidden sm:inline-block text-xs font-semibold px-2 py-0.5 ml-2 bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300 rounded-full">Pro v3.0</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 sm:space-x-5">
+                    <div class="flex items-center space-x-1.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 px-3 py-1.5 rounded-xl" title="Daily Streak">
+                        <i class="fa-solid fa-fire text-amber-500 animate-bounce"></i>
+                        <span id="streak-count" class="font-extrabold text-amber-600 dark:text-amber-400 text-sm">1</span>
+                        <span class="text-xs font-medium text-amber-700 dark:text-amber-300 hidden md:inline">Hari</span>
+                    </div>
+                    <div class="flex items-center space-x-1.5 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/50 px-3 py-1.5 rounded-xl" title="Total XP Points">
+                        <i class="fa-solid fa-bolt text-purple-500"></i>
+                        <span id="user-xp" class="font-extrabold text-purple-600 dark:text-purple-400 text-sm">0</span>
+                        <span class="text-xs font-medium text-purple-700 dark:text-purple-300 hidden md:inline">XP</span>
+                    </div>
+                    <button id="theme-toggle" onclick="toggleTheme()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all focus:outline-none" title="Toggle Theme">
+                        <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5">
+            <div id="overall-progress" class="bg-gradient-to-r from-brand-500 to-teal-400 h-1.5 w-0 transition-all duration-500 rounded-r-full"></div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- Tab Navigation -->
+        <nav class="flex space-x-2 sm:space-x-3 overflow-x-auto pb-3 mb-6 no-scrollbar border-b border-slate-200 dark:border-slate-800">
+            <button onclick="switchTab('reading')" id="tab-btn-reading" class="tab-btn active inline-flex items-center px-4 py-2.5 rounded-xl font-bold text-sm whitespace-nowrap transition-all duration-200 bg-brand-500 text-white shadow-md shadow-brand-500/20">
+                <i class="fa-solid fa-book-open mr-2"></i> Reading (Membaca)
+            </button>
+            <button onclick="switchTab('listening')" id="tab-btn-listening" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 whitespace-nowrap transition-all duration-200">
+                <i class="fa-solid fa-headphones mr-2"></i> Listening (Mendengar)
+            </button>
+            <button onclick="switchTab('dictionary')" id="tab-btn-dictionary" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 whitespace-nowrap transition-all duration-200">
+                <i class="fa-solid fa-book-bookmark mr-2"></i> Kamus (Dictionary)
+            </button>
+            <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 whitespace-nowrap transition-all duration-200">
+                <i class="fa-solid fa-gamepad mr-2"></i> Kuis & Latihan
+            </button>
+            <button onclick="switchTab('saved')" id="tab-btn-saved" class="tab-btn inline-flex items-center px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 whitespace-nowrap transition-all duration-200">
+                <i class="fa-solid fa-star text-amber-500 mr-2"></i> Kata Favorit
+            </button>
+        </nav>
+
+        <!-- TAB 1: READING -->
+        <section id="tab-reading" class="tab-content active space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 space-y-4">
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <h2 class="text-lg font-bold flex items-center text-slate-900 dark:text-slate-100">
+                                <i class="fa-solid fa-list-check text-brand-500 mr-2"></i> Pilih Bacaan
+                            </h2>
+                            <span class="text-xs bg-brand-100 text-brand-700 dark:bg-brand-900/60 dark:text-brand-300 font-bold px-2 py-0.5 rounded-full" id="story-count-badge">0 Story</span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Setiap bacaan dirancang 3-4 paragraf interaktif untuk melatih pemahaman.</p>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <button onclick="openCustomStoryModal()" class="w-full py-2 px-3 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1 shadow-sm">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Teks Sendiri</span>
+                            </button>
+                            <button onclick="fetchRandomOnlineStory()" id="btn-fetch-api" class="w-full py-2 px-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1 shadow-sm">
+                                <i class="fa-solid fa-arrows-rotate" id="api-spin-icon"></i>
+                                <span>Auto Fetch API</span>
+                            </button>
+                        </div>
+                        <div id="story-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
+                    </div>
+                    <div class="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 p-4 rounded-2xl text-amber-900 dark:text-amber-200">
+                        <div class="flex items-start space-x-3">
+                            <i class="fa-solid fa-lightbulb text-amber-500 text-xl mt-0.5"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">Tips Belajar Interaktif</h4>
+                                <p class="text-xs mt-1 leading-relaxed">Klik pada kata mana saja untuk lihat arti & pengucapannya!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700 gap-4">
+                            <div>
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span id="story-level" class="inline-block px-2.5 py-1 text-xs font-bold rounded-lg bg-brand-100 text-brand-700 dark:bg-brand-900/60 dark:text-brand-300">Pemula</span>
+                                    <span id="story-paragraph-count" class="inline-block px-2.5 py-1 text-xs font-bold rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300">3 Paragraf</span>
+                                </div>
+                                <h1 id="story-title" class="text-2xl font-extrabold text-slate-900 dark:text-slate-100">Loading Story...</h1>
+                            </div>
+                            <div class="flex items-center space-x-2 bg-slate-100 dark:bg-slate-700/60 p-2 rounded-xl self-start sm:self-auto">
+                                <button id="btn-play-story" onclick="togglePlayStory()" class="flex items-center space-x-2 bg-brand-500 hover:bg-brand-600 active:scale-95 text-white px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-md shadow-brand-500/20">
+                                    <i id="story-play-icon" class="fa-solid fa-play"></i>
+                                    <span id="story-play-text">Putar</span>
+                                </button>
+                                <button id="btn-stop-story" onclick="stopStoryAudio()" class="p-2 text-slate-500 hover:text-red-500 dark:text-slate-400 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-all" title="Stop">
+                                    <i class="fa-solid fa-square"></i>
+                                </button>
+                                <select id="audio-speed" onchange="changeAudioSpeed()" class="bg-white dark:bg-slate-800 text-xs font-bold border border-slate-300 dark:border-slate-600 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                    <option value="0.8">0.8x</option>
+                                    <option value="1" selected>1.0x</option>
+                                    <option value="1.2">1.2x</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="prose dark:prose-invert max-w-none">
+                            <div id="story-content" class="text-lg sm:text-xl leading-relaxed sm:leading-loose text-slate-700 dark:text-slate-200 tracking-wide space-y-5">
+                                <p class="text-slate-400 italic">Memuat cerita...</p>
+                            </div>
+                        </div>
+
+                        <!-- Tombol Mulai Kuis -->
+                        <div class="pt-4 border-t border-slate-100 dark:border-slate-700">
+                            <button onclick="showQuizModal(currentStory)" 
+                                class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-brain"></i>
+                                <span>Mulai Kuis Pemahaman</span>
+                            </button>
+                        </div>
+
+                        <!-- Full Translation Toggle -->
+                        <div class="pt-4 border-t border-slate-100 dark:border-slate-700">
+                            <button onclick="toggleStoryTranslation()" class="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline flex items-center space-x-1">
+                                <i class="fa-solid fa-language text-sm"></i>
+                                <span id="toggle-trans-btn-text">Tampilkan Terjemahan Keseluruhan</span>
+                            </button>
+                            <div id="story-full-translation" class="hidden mt-3 p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl text-sm leading-relaxed text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 space-y-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: LISTENING -->
+        <section id="tab-listening" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 space-y-4">
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <h2 class="text-lg font-bold mb-3 flex items-center text-slate-900 dark:text-slate-100">
+                            <i class="fa-solid fa-comments text-brand-500 mr-2"></i> Percakapan Audio
+                        </h2>
+                        <div id="listening-list" class="space-y-2.5"></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-6 rounded-2xl shadow-xl relative overflow-hidden">
+                        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-brand-500/20 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3 py-1 bg-brand-500/30 text-brand-300 border border-brand-500/40 rounded-full text-xs font-bold">Practice Listening</span>
+                            <span id="listening-topic-tag" class="text-xs text-slate-400">-</span>
+                        </div>
+                        <h2 id="listening-title" class="text-2xl font-bold mb-6">-</h2>
+                        <div class="flex items-center justify-center space-x-1.5 h-12 mb-6">
+                            <div class="w-1.5 h-4 bg-brand-400 rounded-full"></div>
+                            <div class="w-1.5 h-8 bg-brand-400 rounded-full"></div>
+                            <div class="w-1.5 h-12 bg-brand-400 rounded-full"></div>
+                            <div class="w-1.5 h-6 bg-brand-400 rounded-full"></div>
+                            <div class="w-1.5 h-10 bg-brand-400 rounded-full"></div>
+                        </div>
+                        <div class="flex items-center justify-center space-x-4">
+                            <button onclick="playListeningAudio()" class="w-14 h-14 bg-brand-500 hover:bg-brand-400 active:scale-90 text-white rounded-full flex items-center justify-center text-xl shadow-lg shadow-brand-500/40 transition-all">
+                                <i id="listening-play-icon" class="fa-solid fa-play ml-1"></i>
+                            </button>
+                            <button onclick="stopListeningAudio()" class="w-10 h-10 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-full flex items-center justify-center transition-all">
+                                <i class="fa-solid fa-stop"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-slate-900 dark:text-slate-100 flex items-center">
+                                <i class="fa-solid fa-scroll text-amber-500 mr-2"></i> Transkrip Percakapan
+                            </h3>
+                            <button onclick="toggleTranscript()" class="text-xs font-semibold px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-all">
+                                <span id="transcript-btn-text">Sembunyikan</span>
+                            </button>
+                        </div>
+                        <div id="transcript-container" class="space-y-3 pt-2"></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+                        <h3 class="font-bold text-slate-900 dark:text-slate-100 flex items-center">
+                            <i class="fa-solid fa-pen-to-square text-brand-500 mr-2"></i> Latihan Listening
+                        </h3>
+                        <div id="fill-blank-container" class="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl space-y-3"></div>
+                        <div class="flex justify-end">
+                            <button onclick="checkListeningAnswers()" class="bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-md transition-all">Periksa Jawaban</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: DICTIONARY -->
+        <section id="tab-dictionary" class="tab-content space-y-6">
+            <div class="max-w-3xl mx-auto space-y-6">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-slate-100 flex items-center">
+                        <i class="fa-solid fa-magnifying-glass text-brand-500 mr-2.5"></i> Kamus Inggris ➔ Indonesia
+                    </h2>
+                    <form onsubmit="handleDictionarySearch(event)" class="flex flex-col sm:flex-row gap-2">
+                        <div class="relative flex-grow">
+                            <input type="text" id="dict-input" placeholder="Ketik kata (cth: adventure, happy)" class="w-full pl-4 pr-10 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 font-medium focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <button type="button" onclick="clearDictInput()" class="absolute right-3 top-3.5 text-slate-400 hover:text-slate-600">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <button type="submit" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-6 py-3.5 rounded-xl transition-all flex items-center justify-center space-x-2 shadow-md shadow-brand-500/20">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Cari</span>
+                        </button>
+                    </form>
+                    <div id="search-history-container" class="flex flex-wrap items-center gap-2 pt-2"></div>
+                </div>
+                <div id="dict-result-card" class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hidden space-y-6">
+                    <div class="flex items-start justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
+                        <div>
+                            <div class="flex items-center space-x-3">
+                                <h1 id="dict-word" class="text-3xl font-black text-slate-900 dark:text-slate-100">-</h1>
+                                <span id="dict-pos" class="px-2.5 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-md text-xs font-bold uppercase">-</span>
+                            </div>
+                            <p id="dict-phonetic" class="text-brand-600 dark:text-brand-400 font-medium text-sm mt-1">-</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button id="dict-audio-btn" onclick="speakCurrentDictWord()" class="w-12 h-12 bg-brand-100 dark:bg-brand-900/50 hover:bg-brand-200 text-brand-600 dark:text-brand-300 rounded-xl flex items-center justify-center text-lg transition-all">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                            <button id="dict-fav-btn" onclick="toggleFavoriteDictWord()" class="w-12 h-12 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 text-amber-500 rounded-xl flex items-center justify-center text-lg transition-all">
+                                <i class="fa-regular fa-star" id="dict-fav-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-brand-50 to-emerald-50 dark:from-brand-950/30 dark:to-emerald-950/30 p-4 rounded-xl border border-brand-200/60 dark:border-brand-800/40">
+                        <span class="text-xs font-bold uppercase tracking-wider text-brand-700 dark:text-brand-300 block mb-1">Arti Bahasa Indonesia</span>
+                        <p id="dict-translation" class="text-xl font-bold text-slate-800 dark:text-slate-100">-</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Definisi Bahasa Inggris</h4>
+                            <p id="dict-definition" class="text-slate-700 dark:text-slate-300 leading-relaxed font-medium">-</p>
+                        </div>
+                        <div id="dict-example-box" class="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border-l-4 border-brand-500">
+                            <h4 class="text-xs font-bold text-brand-600 dark:text-brand-400 mb-1">Contoh Kalimat:</h4>
+                            <p id="dict-example" class="italic text-slate-600 dark:text-slate-300 text-sm">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: QUIZ -->
+        <section id="tab-quiz" class="tab-content space-y-6">
+            <div class="max-w-2xl mx-auto space-y-6">
+                <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-6 relative overflow-hidden">
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Soal <span id="quiz-current-num">1</span> dari <span id="quiz-total-num">5</span></span>
+                            <h3 class="text-lg font-extrabold text-slate-900 dark:text-slate-100">Uji Pemahaman Bahasa Inggris</h3>
+                        </div>
+                        <div class="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center space-x-1.5">
+                            <i class="fa-solid fa-trophy"></i>
+                            <span>Skor: <span id="quiz-score">0</span></span>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <span id="quiz-type-badge" class="px-2.5 py-1 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-xs font-bold rounded-lg">Pilihan Ganda</span>
+                        <h2 id="quiz-question" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 pt-2">Loading...</h2>
+                    </div>
+                    <div id="quiz-options" class="grid grid-cols-1 gap-3 pt-2"></div>
+                    <div id="quiz-feedback" class="hidden p-4 rounded-xl text-sm font-bold flex items-center space-x-3 transition-all">
+                        <i id="quiz-feedback-icon" class="text-xl"></i>
+                        <span id="quiz-feedback-text">-</span>
+                    </div>
+                    <div class="flex justify-end pt-2">
+                        <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden bg-brand-500 hover:bg-brand-600 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-md shadow-brand-500/20">
+                            Soal Berikutnya <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="quiz-summary" class="hidden bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 text-center space-y-6">
+                    <div class="w-20 h-20 bg-amber-100 dark:bg-amber-900/50 text-amber-500 rounded-full flex items-center justify-center text-4xl mx-auto shadow-inner">
+                        <i class="fa-solid fa-crown animate-bounce"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900 dark:text-slate-100">Kuis Selesai! 🎉</h2>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl inline-block w-full max-w-xs border border-slate-200 dark:border-slate-700">
+                        <span class="text-xs text-slate-400 font-bold uppercase">Skor Akhir Anda</span>
+                        <div class="text-4xl font-black text-brand-600 dark:text-brand-400 mt-1" id="quiz-final-score">100</div>
+                        <span class="text-xs text-purple-600 dark:text-purple-400 font-bold mt-1 inline-block" id="quiz-xp-gained">+50 XP!</span>
+                    </div>
+                    <div>
+                        <button onclick="resetQuiz()" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-brand-500/30 transition-all">
+                            Coba Lagi <i class="fa-solid fa-rotate-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: SAVED -->
+        <section id="tab-saved" class="tab-content space-y-6">
+            <div class="max-w-4xl mx-auto bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-slate-100 flex items-center">
+                            <i class="fa-solid fa-star text-amber-500 mr-2.5"></i> Kata Favorit Tersimpan
+                        </h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Daftar kata yang Anda tandai untuk dipelajari ulang.</p>
+                    </div>
+                    <span id="saved-count-badge" class="px-3 py-1 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 font-bold text-xs rounded-full">0 Kata</span>
+                </div>
+                <div id="saved-words-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                <div id="saved-empty-state" class="text-center py-12 space-y-3">
+                    <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 text-slate-400 rounded-full flex items-center justify-center text-2xl mx-auto">
+                        <i class="fa-regular fa-bookmark"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-700 dark:text-slate-300">Belum ada kata favorit</h3>
+                    <p class="text-xs text-slate-400 max-w-sm mx-auto">Klik tombol bintang ⭐ pada kata di modul Reading atau Kamus untuk menyimpannya.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL WORD DETAIL -->
+    <div id="word-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 max-w-sm w-full p-6 space-y-5">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h2 id="modal-word-title" class="text-2xl font-black text-slate-900 dark:text-slate-100">-</h2>
+                    <span id="modal-word-pos" class="text-xs font-bold px-2 py-0.5 bg-brand-100 text-brand-700 dark:bg-brand-900/60 dark:text-brand-300 rounded">-</span>
+                </div>
+                <button onclick="closeWordModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="p-4 bg-brand-50 dark:bg-brand-950/40 rounded-xl border border-brand-200 dark:border-brand-800">
+                <span class="text-xs font-bold uppercase text-brand-700 dark:text-brand-300 block mb-1">Arti Kata</span>
+                <p id="modal-word-meaning" class="text-lg font-bold text-slate-800 dark:text-slate-100">-</p>
+            </div>
+            <div class="flex items-center space-x-2 pt-2">
+                <button onclick="speakModalWord()" class="flex-1 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl flex items-center justify-center space-x-2 shadow-sm">
+                    <i class="fa-solid fa-volume-high"></i>
+                    <span>Dengarkan</span>
+                </button>
+                <button onclick="toggleFavoriteModalWord()" class="p-2.5 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 text-amber-500 border border-amber-200 dark:border-amber-800 rounded-xl transition-all">
+                    <i id="modal-fav-icon" class="fa-regular fa-star text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CUSTOM STORY -->
+    <div id="custom-story-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 max-w-lg w-full p-6 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center">
+                    <i class="fa-solid fa-pen-nib text-brand-500 mr-2"></i> Tambah Bacaan Sendiri
+                </h3>
+                <button onclick="closeCustomStoryModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="saveCustomStory(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Judul Bacaan</label>
+                    <input type="text" id="custom-title" required placeholder="Contoh: My Summer Holiday" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tingkat</label>
+                        <select id="custom-level" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium">
+                            <option value="Pemula">Pemula</option>
+                            <option value="Menengah" selected>Menengah</option>
+                            <option value="Mahir">Mahir</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Sumber</label>
+                        <input type="text" id="custom-source" placeholder="cth: Cerita Sendiri" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Teks Bahasa Inggris</label>
+                    <textarea id="custom-text" rows="5" required placeholder="Tekan Enter 2x untuk pisah paragraf..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Terjemahan (Opsional)</label>
+                    <textarea id="custom-translation" rows="3" placeholder="Terjemahan per paragraf..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                </div>
+                <div class="pt-2 flex justify-end space-x-2">
+                    <button type="button" onclick="closeCustomStoryModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FLOATING DICTIONARY -->
+    <div id="floating-dict-container" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <div id="floating-dict-panel" class="hidden mb-3 w-80 sm:w-96 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-4 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-book-bookmark text-brand-500"></i>
+                    <h3 class="font-extrabold text-sm text-slate-900 dark:text-slate-100">Kamus Cepat</h3>
+                </div>
+                <button onclick="toggleFloatingDict()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="handleQuickDictSearch(event)" class="flex gap-2">
+                <input type="text" id="quick-dict-input" placeholder="Ketik kata..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <button type="submit" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-3.5 py-2 rounded-xl text-xs flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+            <div id="quick-dict-result" class="hidden space-y-2 pt-1 text-xs">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span id="quick-word" class="font-black text-base text-slate-900 dark:text-slate-100">-</span>
+                        <span id="quick-pos" class="ml-1 text-[10px] font-bold px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded uppercase">-</span>
+                    </div>
+                    <button onclick="speakQuickWord()" class="p-1.5 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/50 rounded-lg transition-all">
+                        <i class="fa-solid fa-volume-high text-sm"></i>
+                    </button>
+                </div>
+                <div class="p-2.5 bg-brand-50 dark:bg-brand-950/40 rounded-xl border border-brand-200 dark:border-brand-800 text-slate-800 dark:text-slate-100 font-bold" id="quick-meaning">-</div>
+                <p id="quick-def" class="text-slate-500 dark:text-slate-400 italic text-[11px] leading-relaxed">-</p>
+            </div>
+        </div>
+        <button id="floating-dict-btn" onclick="toggleFloatingDict()" class="w-14 h-14 bg-gradient-to-tr from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white rounded-full flex items-center justify-center shadow-2xl shadow-brand-500/50 hover:scale-105 active:scale-95 transition-all group" title="Kamus Melayang">
+            <i class="fa-solid fa-book-bookmark text-xl group-hover:rotate-12 transition-transform"></i>
+        </button>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- MODAL LOGIN SISWA -->
+    <div id="login-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 max-w-md w-full p-8 space-y-6 text-center">
+            <div class="w-20 h-20 bg-gradient-to-tr from-brand-500 to-emerald-400 rounded-full flex items-center justify-center text-white text-3xl mx-auto shadow-lg shadow-brand-500/30">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-black text-slate-900 dark:text-slate-100">Selamat Datang! 👋</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Masukkan nama kamu untuk mulai belajar</p>
+            </div>
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-3">
+                <input type="text" id="login-nama-input" required placeholder="Contoh: Budi Santoso" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 font-medium focus:outline-none focus:ring-2 focus:ring-brand-500 text-center" autocomplete="off">
+                <input type="text" id="login-kelas-input" placeholder="Kelas (opsional, cth: 6A)" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 font-medium focus:outline-none focus:ring-2 focus:ring-brand-500 text-center" autocomplete="off">
+                <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 active:scale-95 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-500/30 transition-all">
+                    <i class="fa-solid fa-play mr-2"></i> Mulai Belajar
+                </button>
+            </form>
+            <p class="text-[11px] text-slate-400 leading-relaxed">Nama kamu hanya dipakai untuk mencatat aktivitas belajar di kelas.</p>
+        </div>
+    </div>
+
+    <script>
+    /* ==========================================================================
+       SUPABASE HELPER
+       ========================================================================== */
+
+    async function sbFetch(path, method = 'GET', body = null) {
+        const url = `${window.SUPABASE_URL}/rest/v1/${path}`;
+        const headers = {
+            'apikey': window.SUPABASE_KEY,
+            'Authorization': `Bearer ${window.SUPABASE_KEY}`,
+            'Content-Type': 'application/json'
+        };
+        if (method === 'POST' || method === 'PATCH') {
+            headers['Prefer'] = 'return=representation,resolution=merge-duplicates';
+        }
+        if (method === 'DELETE') {
+            headers['Prefer'] = 'return=minimal';
+        }
+        try {
+            const res = await fetch(url, { method, headers, body: body ? JSON.stringify(body) : null });
+            if (!res.ok) {
+                const errText = await res.text();
+                console.error(`[sbFetch] ${method} ${path} → ${res.status}:`, errText);
+                throw new Error(`HTTP ${res.status}`);
+            }
+            if (method === 'DELETE' || res.status === 204) return null;
+            return await res.json().catch(() => null);
+        } catch (err) {
+            console.error(`[sbFetch] Gagal ${method} ${path}:`, err);
+            throw err;
+        }
+    }
+
+    function generateSiswaId(nama) {
+        const clean = nama.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        return 'siswa-' + clean + '-' + Date.now().toString(36).slice(-4);
+    }
+
+    function showLoginModalIfNeeded() {
+        if (!window.SISWA_NAMA) {
+            const modal = document.getElementById('login-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    const inp = document.getElementById('login-nama-input');
+                    if (inp) inp.focus();
+                }, 100);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    function handleLoginSubmit(e) {
+        e.preventDefault();
+        const nama = document.getElementById('login-nama-input').value.trim();
+        const kelas = document.getElementById('login-kelas-input').value.trim();
+        if (!nama) { showToast('Nama tidak boleh kosong!', 'error'); return; }
+        window.SISWA_NAMA = nama;
+        window.SISWA_ID = generateSiswaId(nama);
+        localStorage.setItem('englishspark_siswa_nama', nama);
+        localStorage.setItem('englishspark_siswa_id', window.SISWA_ID);
+        if (kelas) localStorage.setItem('englishspark_siswa_kelas', kelas);
+        document.getElementById('login-modal').classList.add('hidden');
+        showToast(`Selamat datang, ${nama}! 🎉`, 'success');
+        logReadingActivity('login', null, { nama, kelas });
+    }
+
+    async function logReadingActivity(aksi, storyId = null, detail = {}) {
+        if (!window.SISWA_ID) return;
+        try {
+            await sbFetch('reading_activity', 'POST', {
+                siswa_id: window.SISWA_ID,
+                story_id: storyId,
+                aksi: aksi,
+                detail: detail || {}
+            });
+        } catch (err) { console.warn('[logActivity] Gagal:', err.message); }
+    }
+
+    async function loadStoriesFromDB() {
+        try {
+            const rows = await sbFetch('v_reading_story?select=*&order=created_at.asc');
+            if (!rows || rows.length === 0) {
+                console.warn('[loadStories] DB kosong, pakai built-in.');
+                return false;
+            }
+            const dbStories = rows.map(r => ({
+                id: r.id,
+                title: r.judul,
+                level: r.level || 'Pemula',
+                topik: r.topik,
+                text: r.body || '',
+                fullTranslation: r.translation || 'Terjemahan belum tersedia.',
+                vocabMap: r.vocab_map || {},
+                paragraphCount: r.paragraph_count || 1,
+                source: r.source || 'db',
+                fromDB: true
+            }));
+            const dbTitles = new Set(dbStories.map(s => s.title));
+            const builtInOnly = storiesData.filter(s => !dbTitles.has(s.title));
+            storiesData = [...dbStories, ...builtInOnly];
+            console.log(`[loadStories] ✅ Loaded ${dbStories.length} cerita dari DB.`);
+            return true;
+        } catch (err) {
+            console.error('[loadStories] Gagal:', err);
+            return false;
+        }
+    }
+
+    async function saveCustomStoryToDB(story) {
+        try {
+            const payload = {
+                mapel_kode: 'ING', kelas: 'ALL', jenis: 'reading',
+                pertanyaan: story.title, pilihan: [], jawaban: [],
+                pembahasan: story.fullTranslation || '',
+                tingkat: story.level || 'Pemula', topik: 'Custom', skor: 0,
+                media: {
+                    body: story.text,
+                    paragraph_count: (story.text.split(/\n\s*\n/) || []).length,
+                    source: 'custom',
+                    pembuat_id: window.SISWA_ID,
+                    vocab_map: story.vocabMap || {}
+                }
+            };
+            const result = await sbFetch('bank_soal', 'POST', payload);
+            if (result && result[0]) {
+                story.id = result[0].id;
+                story.fromDB = true;
+                console.log('[saveCustom] ✅ Tersimpan:', result[0].id);
+            }
+            return result;
+        } catch (err) { console.error('[saveCustom] Gagal:', err); return null; }
+    }
+
+    async function saveApiStoryToDB(story) {
+        try {
+            const payload = {
+                mapel_kode: 'ING', kelas: 'ALL', jenis: 'reading',
+                pertanyaan: story.title, pilihan: [], jawaban: [],
+                pembahasan: '(Artikel dari Wikipedia)',
+                tingkat: 'Auto-Fetched', topik: 'Wikipedia', skor: 0,
+                media: {
+                    body: story.text,
+                    paragraph_count: (story.text.split(/\n\s*\n/) || []).length,
+                    source: 'api',
+                    pembuat_id: window.SISWA_ID,
+                    vocab_map: {}
+                }
+            };
+            const result = await sbFetch('bank_soal', 'POST', payload);
+            if (result && result[0]) {
+                story.id = result[0].id;
+                story.fromDB = true;
+                console.log('[saveApi] ✅ Tersimpan:', result[0].id);
+            }
+            return result;
+        } catch (err) { console.error('[saveApi] Gagal:', err); return null; }
+    }
+
+    async function syncFavorite(word, meaning, pos) {
+        if (!window.SISWA_ID) return;
+        try {
+            await sbFetch('englishspark_favorites', 'POST', {
+                siswa_id: window.SISWA_ID,
+                word: word.toLowerCase(),
+                meaning: meaning,
+                pos: pos || 'word'
+            });
+            console.log('[syncFav] ✅:', word);
+        } catch (err) { console.warn('[syncFav] Gagal:', err.message); }
+    }
+
+    async function syncUnfavorite(word) {
+        if (!window.SISWA_ID) return;
+        try {
+            await sbFetch(
+                `englishspark_favorites?siswa_id=eq.${encodeURIComponent(window.SISWA_ID)}&word=eq.${encodeURIComponent(word.toLowerCase())}`,
+                'DELETE'
+            );
+            console.log('[syncUnfav] ✅:', word);
+        } catch (err) { console.warn('[syncUnfav] Gagal:', err.message); }
+    }
+
+    /* ==========================================================================
+       AUTO-GENERATE KUIS
+       ========================================================================== */
+
+    function generateQuizFromStory(story) {
+        const soal = [];
+        const vocab = story.vocabMap || {};
+        const vocabKeys = Object.keys(vocab);
+
+        if (vocabKeys.length >= 2) {
+            const shuffled = [...vocabKeys].sort(() => Math.random() - 0.5).slice(0, 2);
+            shuffled.forEach(kata => {
+                const kalimat = story.text.split(/[.!?]/).find(k =>
+                    new RegExp(`\\b${kata}\\b`, 'i').test(k)
+                );
+                if (!kalimat) return;
+                const regex = new RegExp(`\\b${kata}\\b`, 'i');
+                const soalText = kalimat.trim().replace(regex, '_____');
+                soal.push({
+                    tipe: 'cloze',
+                    pertanyaan: soalText + '...',
+                    jawaban: kata.toLowerCase(),
+                    hint: `Petunjuk: ${vocab[kata]}`
+                });
+            });
+        }
+
+        if (vocabKeys.length >= 4) {
+            const shuffled = [...vocabKeys].sort(() => Math.random() - 0.5).slice(0, 2);
+            shuffled.forEach(kata => {
+                const artiBenar = vocab[kata];
+                const pengecoh = vocabKeys.filter(k => k !== kata)
+                    .sort(() => Math.random() - 0.5).slice(0, 3)
+                    .map(k => vocab[k]);
+                const pilihan = [artiBenar, ...pengecoh].sort(() => Math.random() - 0.5);
+                soal.push({
+                    tipe: 'vocab',
+                    pertanyaan: `Apa arti kata "${kata}"?`,
+                    pilihan: pilihan,
+                    jawaban: artiBenar
+                });
+            });
+        }
+
+        const kalimatList = story.text.split(/[.!?]/).filter(s => s.trim().length > 30);
+        if (kalimatList.length > 0 && vocabKeys.length >= 2) {
+            const kal = kalimatList.sort(() => Math.random() - 0.5)[0].trim();
+            const buatSalah = Math.random() < 0.5;
+            if (buatSalah) {
+                const kataAsli = vocabKeys.find(k => new RegExp(`\\b${k}\\b`, 'i').test(kal));
+                if (kataAsli) {
+                    const kataPengganti = vocabKeys.filter(k => k !== kataAsli)
+                        .sort(() => Math.random() - 0.5)[0];
+                    const soalText = kal.replace(new RegExp(`\\b${kataAsli}\\b`, 'i'), kataPengganti);
+                    soal.push({
+                        tipe: 'truefalse',
+                        pertanyaan: soalText + '.',
+                        jawaban: 'false',
+                        penjelasan: `Seharusnya "${kataAsli}", bukan "${kataPengganti}".`
+                    });
+                    return soal.sort(() => Math.random() - 0.5);
+                }
+            }
+            soal.push({
+                tipe: 'truefalse',
+                pertanyaan: kal + '.',
+                jawaban: 'true',
+                penjelasan: 'Kalimat sesuai dengan cerita.'
+            });
+        }
+
+        return soal.sort(() => Math.random() - 0.5);
+    }
+
+    let currentQuiz = { soal: [], index: 0, benar: 0, storyId: null };
+
+    function showQuizModal(story) {
+        if (!story) { showToast('Pilih cerita dulu!', 'error'); return; }
+        const soal = generateQuizFromStory(story);
+        if (soal.length === 0) {
+            showToast('Cerita ini belum cukup vocab untuk kuis.', 'info');
+            return;
+        }
+        currentQuiz = { soal, index: 0, benar: 0, storyId: story.id };
+        let modal = document.getElementById('quiz-auto-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'quiz-auto-modal';
+            modal.className = 'fixed inset-0 z-[55] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md hidden';
+            document.body.appendChild(modal);
+        }
+        renderQuizQuestion(modal);
+        modal.classList.remove('hidden');
+    }
+
+    function renderQuizQuestion(modal) {
+        const q = currentQuiz.soal[currentQuiz.index];
+        if (!q) return closeQuizModal();
+        const total = currentQuiz.soal.length;
+        const num = currentQuiz.index + 1;
+
+        let optionsHtml = '';
+        if (q.tipe === 'vocab') {
+            optionsHtml = q.pilihan.map(p => `
+                <button onclick="answerQuiz('${p.replace(/'/g, "\\'")}')" 
+                    class="w-full text-left p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 hover:bg-brand-50 hover:border-brand-500 font-semibold text-sm transition-all">
+                    ${p}
+                </button>
+            `).join('');
+        } else if (q.tipe === 'truefalse') {
+            optionsHtml = `
+                <button onclick="answerQuiz('true')" class="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-green-50 hover:bg-green-100 font-bold">✅ TRUE (Benar)</button>
+                <button onclick="answerQuiz('false')" class="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-red-50 hover:bg-red-100 font-bold">❌ FALSE (Salah)</button>
+            `;
+        } else {
+            optionsHtml = `
+                <input type="text" id="quiz-cloze-input" placeholder="Ketik jawaban..." 
+                    class="w-full px-4 py-3 border-2 border-slate-300 dark:border-slate-700 rounded-xl text-center font-bold text-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <button onclick="answerQuiz(document.getElementById('quiz-cloze-input').value)" 
+                    class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 rounded-xl">Jawab</button>
+            `;
+        }
+
+        modal.innerHTML = `
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 max-w-lg w-full p-6 space-y-5">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400">Soal ${num} dari ${total}</span>
+                        <h3 class="font-black text-lg text-slate-900 dark:text-slate-100">📝 Kuis Pemahaman</h3>
+                    </div>
+                    <button onclick="closeQuizModal()" class="text-slate-400 hover:text-red-500 p-2">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+                <div>
+                    <span class="text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 font-bold rounded">${q.tipe.toUpperCase()}</span>
+                    <p class="text-lg font-bold text-slate-800 dark:text-slate-100 mt-3">${q.pertanyaan}</p>
+                    ${q.hint ? `<p class="text-xs text-slate-500 mt-2">${q.hint}</p>` : ''}
+                </div>
+                <div id="quiz-options-area" class="space-y-2">${optionsHtml}</div>
+                <div id="quiz-feedback" class="hidden p-3 rounded-xl text-sm font-bold"></div>
+            </div>
+        `;
+    }
+
+    async function answerQuiz(jawabanUser) {
+        const q = currentQuiz.soal[currentQuiz.index];
+        const feedback = document.getElementById('quiz-feedback');
+        const jawabanBenar = String(q.jawaban).toLowerCase();
+        const userVal = String(jawabanUser).trim().toLowerCase();
+        const isBenar = userVal === jawabanBenar;
+        if (isBenar) currentQuiz.benar++;
+
+        try {
+            await sbFetch('jawaban_siswa', 'POST', {
+                siswa_id: window.SISWA_ID,
+                soal_id: null,
+                jawaban: { user: jawabanUser, correct: jawabanBenar, tipe: q.tipe },
+                benar: isBenar,
+                skor_didapat: isBenar ? 20 : 0
+            });
+        } catch (err) { console.warn('Gagal simpan jawaban:', err); }
+
+        feedback.className = isBenar 
+            ? 'p-3 rounded-xl text-sm font-bold bg-green-100 text-green-800 border border-green-300'
+            : 'p-3 rounded-xl text-sm font-bold bg-red-100 text-red-800 border border-red-300';
+        feedback.textContent = isBenar 
+            ? `✅ Benar! ${q.penjelasan || ''}` 
+            : `❌ Salah. Jawaban: "${q.jawaban}". ${q.penjelasan || ''}`;
+        feedback.classList.remove('hidden');
+
+        setTimeout(() => {
+            currentQuiz.index++;
+            if (currentQuiz.index < currentQuiz.soal.length) {
+                renderQuizQuestion(document.getElementById('quiz-auto-modal'));
+            } else {
+                showQuizResult();
+            }
+        }, 1500);
+    }
+
+    function showQuizResult() {
+        const modal = document.getElementById('quiz-auto-modal');
+        const total = currentQuiz.soal.length;
+        const nilai = Math.round((currentQuiz.benar / total) * 100);
+
+        modal.innerHTML = `
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 max-w-md w-full p-8 text-center space-y-5">
+                <div class="w-20 h-20 ${nilai >= 70 ? 'bg-amber-100 text-amber-500' : 'bg-slate-100 text-slate-400'} rounded-full flex items-center justify-center text-4xl mx-auto">
+                    <i class="fa-solid ${nilai >= 70 ? 'fa-crown animate-bounce' : 'fa-face-smile'}"></i>
+                </div>
+                <h2 class="text-2xl font-black">Kuis Selesai! 🎉</h2>
+                <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Nilai Kamu</span>
+                    <div class="text-5xl font-black text-brand-600 mt-1">${nilai}</div>
+                    <p class="text-xs text-slate-500 mt-1">${currentQuiz.benar} dari ${total} soal benar</p>
+                </div>
+                <button onclick="closeQuizModal()" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 rounded-xl">Tutup</button>
+            </div>
+        `;
+
+        addXP(Math.round(nilai / 2));
+        showToast(`Nilai: ${nilai} — +${Math.round(nilai/2)} XP`, nilai >= 70 ? 'success' : 'info');
+    }
+
+    function closeQuizModal() {
+        const modal = document.getElementById('quiz-auto-modal');
+        if (modal) modal.classList.add('hidden');
+        currentQuiz = { soal: [], index: 0, benar: 0, storyId: null };
+    }
+
+    /* ==========================================================================
+       DATASETS & STATE
+       ========================================================================== */
+
+    const dictionaryDatabase = {
+        "hello": { pos: "interjection", meaning: "Halo / Salam", phonetic: "/həˈloʊ/", example: "Hello! How are you doing today?" },
+        "world": { pos: "noun", meaning: "Dunia", phonetic: "/wɜːrld/", example: "We live in a beautiful world." },
+        "coffee": { pos: "noun", meaning: "Kopi", phonetic: "/ˈkɔːfi/", example: "I drink a cup of coffee every morning." },
+        "story": { pos: "noun", meaning: "Cerita / Kisah", phonetic: "/ˈstɔːri/", example: "She loves reading short stories." },
+        "learn": { pos: "verb", meaning: "Belajar", phonetic: "/lɜːrn/", example: "It is never too late to learn English." },
+        "happy": { pos: "adjective", meaning: "Bahagia / Senang", phonetic: "/ˈhæpi/", example: "They lived a very happy life." },
+        "curious": { pos: "adjective", meaning: "Penasaran", phonetic: "/ˈkjʊriəs/", example: "Children are naturally curious about everything." },
+        "adventure": { pos: "noun", meaning: "Petualangan", phonetic: "/ədˈventʃər/", example: "They went on an exciting adventure." },
+        "journey": { pos: "noun", meaning: "Perjalanan", phonetic: "/ˈdʒɜːrni/", example: "Life is a long and wonderful journey." },
+        "friend": { pos: "noun", meaning: "Teman / Sahabat", phonetic: "/frend/", example: "A true friend is always there for you." },
+        "success": { pos: "noun", meaning: "Keberhasilan", phonetic: "/səkˈses/", example: "Hard work leads to big success." },
+        "practice": { pos: "verb / noun", meaning: "Latihan", phonetic: "/ˈpræktɪs/", example: "Practice makes perfect." },
+        "beautiful": { pos: "adjective", meaning: "Indah / Cantik", phonetic: "/ˈbjuːtɪfəl/", example: "What a beautiful morning!" },
+        "future": { pos: "noun", meaning: "Masa depan", phonetic: "/ˈfjuːtʃər/", example: "Invest in your education for a bright future." },
+        "knowledge": { pos: "noun", meaning: "Pengetahuan", phonetic: "/ˈnɑːlɪdʒ/", example: "Knowledge is power." }
+    };
+
+    let storiesData = [];
+
+    const listeningData = [
+        {
+            id: "list-1",
+            title: "Ordering Coffee in London",
+            topic: "Percakapan Kedai Kopi",
+            transcript: [
+                { speaker: "Barista", text: "Good morning! What can I get for you today?" },
+                { speaker: "Customer", text: "Hi! I would like a small hot cappuccino with oat milk, please." },
+                { speaker: "Barista", text: "Sure thing! Would you like any pastries or cookies with that?" },
+                { speaker: "Customer", text: "No thanks, just the coffee for now." }
+            ],
+            fillBlanks: [
+                { fullText: "I would like a small hot ___ with oat milk.", answer: "cappuccino", hint: "Jenis minuman kopi berbusa" },
+                { fullText: "Would you like any ___ or cookies with that?", answer: "pastries", hint: "Kue-kue kering" }
+            ]
+        },
+        {
+            id: "list-2",
+            title: "Asking for Directions",
+            topic: "Di Jalan / Menanyakan Arah",
+            transcript: [
+                { speaker: "Tourist", text: "Excuse me, where is the nearest museum?" },
+                { speaker: "Local", text: "Walk straight down this road for two blocks, then turn left." },
+                { speaker: "Tourist", text: "Is it far from here?" },
+                { speaker: "Local", text: "No, it only takes about five minutes on foot." }
+            ],
+            fillBlanks: [
+                { fullText: "Walk straight down this road for two blocks, then turn ___.", answer: "left", hint: "Lawan kata kanan" },
+                { fullText: "No, it only takes about five minutes on ___.", answer: "foot", hint: "Berjalan ..." }
+            ]
+        }
+    ];
+
+    const quizQuestions = [
+        { type: "Pilihan Ganda", question: "Apakah arti dari kata 'Curious'?", options: ["Bahagia", "Penasaran / Penuh rasa ingin tahu", "Sedih", "Cepat"], correctIndex: 1 },
+        { type: "Pilihan Ganda", question: "Pilih terjemahan yang tepat untuk 'Adventure':", options: ["Petualangan", "Pekerjaan", "Pelajaran", "Pengalaman"], correctIndex: 0 },
+        { type: "Terjemahan Kalimat", question: "Apa arti dari: 'Knowledge is power'?", options: ["Waktu adalah uang", "Membaca adalah jendela dunia", "Pengetahuan adalah kekuatan", "Belajar tidak ada batasnya"], correctIndex: 2 },
+        { type: "Tata Bahasa", question: "Lengkapi: 'She ___ reading a new book right now.'", options: ["is", "are", "were", "be"], correctIndex: 0 },
+        { type: "Vocabulary", question: "Manakah yang bermakna 'Perjalanan'?", options: ["Journey", "Schedule", "Station", "Traffic"], correctIndex: 0 }
+    ];
+
+    let appState = {
+        xp: 0, streak: 1, favorites: [], searchHistory: [],
+        completedStories: [], currentStoryId: null,
+        currentListeningId: "list-1", darkMode: false
+    };
+
+    let currentStory = null;
+    let isPlayingStory = false;
+    let currentAudioSpeed = 1.0;
+    let activeModalWordData = null;
+    let currentSpeechUtterance = null;
+    let currentListening = listeningData[0];
+    let isPlayingListening = false;
+    let currentDictWordData = null;
+    let quizIndex = 0;
+    let quizScore = 0;
+    let quizAnswered = false;
+    let currentQuickWord = null;
+
+    /* ==========================================================================
+       CORE UTILITY
+       ========================================================================== */
+
+    function speakText(text, rate = 1.0, wordCallback = null, onEndCallback = null) {
+        stopAllSpeech();
+        if (!('speechSynthesis' in window)) {
+            showToast("Browser tidak mendukung Text-to-Speech", "error");
+            return;
+        }
+        currentSpeechUtterance = new SpeechSynthesisUtterance(text);
+        currentSpeechUtterance.lang = 'en-US';
+        currentSpeechUtterance.rate = rate;
+        currentSpeechUtterance.onend = () => { if (onEndCallback) onEndCallback(); };
+        currentSpeechUtterance.onerror = () => { if (onEndCallback) onEndCallback(); };
+        window.speechSynthesis.speak(currentSpeechUtterance);
+    }
+
+    function stopAllSpeech() {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+
+    function switchTab(tabId) {
+        stopAllSpeech();
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('bg-brand-500', 'text-white', 'shadow-md', 'shadow-brand-500/20');
+            btn.classList.add('text-slate-600', 'dark:text-slate-400', 'hover:bg-slate-200', 'dark:hover:bg-slate-800');
+        });
+        const targetContent = document.getElementById(`tab-${tabId}`);
+        if (targetContent) targetContent.classList.add('active');
+        const targetBtn = document.getElementById(`tab-btn-${tabId}`);
+        if (targetBtn) {
+            targetBtn.classList.remove('text-slate-600', 'dark:text-slate-400', 'hover:bg-slate-200', 'dark:hover:bg-slate-800');
+            targetBtn.classList.add('bg-brand-500', 'text-white', 'shadow-md', 'shadow-brand-500/20');
+        }
+    }
+
+    function applyTheme(isDark) {
+        appState.darkMode = !!isDark;
+        const htmlEl = document.documentElement;
+        const themeIcon = document.getElementById('theme-icon');
+        if (appState.darkMode) {
+            htmlEl.classList.add('dark'); htmlEl.classList.remove('light');
+            if (themeIcon) themeIcon.className = "fa-solid fa-sun text-lg text-amber-400";
+        } else {
+            htmlEl.classList.remove('dark'); htmlEl.classList.add('light');
+            if (themeIcon) themeIcon.className = "fa-solid fa-moon text-lg";
+        }
+    }
+
+    function toggleTheme() { applyTheme(!appState.darkMode); saveAppState(); }
+
+    function updateHeaderStats() {
+        const streakEl = document.getElementById('streak-count');
+        const xpEl = document.getElementById('user-xp');
+        const progressEl = document.getElementById('overall-progress');
+        if (streakEl) streakEl.textContent = appState.streak || 1;
+        if (xpEl) xpEl.textContent = appState.xp || 0;
+        if (progressEl) {
+            const pct = Math.min(100, Math.round(((appState.xp || 0) / 500) * 100));
+            progressEl.style.width = `${pct}%`;
+        }
+    }
+
+    function addXP(amount) {
+        appState.xp = (appState.xp || 0) + amount;
+        saveAppState();
+        showToast(`+${amount} XP! ⚡`, 'success');
+    }
+
+    /* ==========================================================================
+       READING MODULE
+       ========================================================================== */
+
+    function selectStory(id) {
+        stopAllSpeech();
+        const found = storiesData.find(s => s.id === id);
+        if (found) {
+            currentStory = found;
+            renderStoryList();
+            loadStoryContent();
+            logReadingActivity('open', found.id || null, { title: found.title });
+        }
+    }
+
+    function loadStoryContent() {
+        if (!currentStory) {
+            document.getElementById('story-content').innerHTML = '<p class="text-slate-400 italic">Pilih cerita dari daftar di kiri.</p>';
+            return;
+        }
+        document.getElementById('story-title').textContent = currentStory.title;
+        document.getElementById('story-level').textContent = currentStory.level;
+
+        const rawParagraphs = (currentStory.text || '').split(/\n\s*\n/);
+        document.getElementById('story-paragraph-count').textContent = `${rawParagraphs.length} Paragraf`;
+
+        const contentEl = document.getElementById('story-content');
+        contentEl.innerHTML = rawParagraphs.map(paragraphText => {
+            const words = paragraphText.split(/(\s+)/);
+            const wordHtml = words.map(w => {
+                const cleanWord = w.replace(/[^a-zA-Z]/g, '');
+                if (cleanWord.length > 0) {
+                    return `<span class="clickable-word" onclick="handleWordClick('${cleanWord.replace(/'/g, "\\'")}')">${w}</span>`;
+                }
+                return w;
+            }).join('');
+            return `<p class="mb-4 text-justify sm:text-left leading-relaxed sm:leading-loose">${wordHtml}</p>`;
+        }).join('');
+
+        const transEl = document.getElementById('story-full-translation');
+        const transParagraphs = (currentStory.fullTranslation || "Terjemahan belum tersedia.").split(/\n\s*\n/);
+        transEl.innerHTML = transParagraphs.map(p => `<p class="mb-2 leading-relaxed">${p}</p>`).join('');
+        transEl.classList.add('hidden');
+        document.getElementById('toggle-trans-btn-text').textContent = "Tampilkan Terjemahan Keseluruhan";
+    }
+
+    function togglePlayStory() {
+        if (isPlayingStory) { stopStoryAudio(); return; }
+        isPlayingStory = true;
+        logReadingActivity('play_audio', currentStory?.id || null);
+        document.getElementById('story-play-icon').className = "fa-solid fa-pause";
+        document.getElementById('story-play-text').textContent = "Jeda";
+        speakText(currentStory.text, currentAudioSpeed, null, () => { stopStoryAudio(); });
+    }
+
+    function stopStoryAudio() {
+        stopAllSpeech();
+        isPlayingStory = false;
+        const playIcon = document.getElementById('story-play-icon');
+        const playText = document.getElementById('story-play-text');
+        if (playIcon) playIcon.className = "fa-solid fa-play";
+        if (playText) playText.textContent = "Putar";
+    }
+
+    function changeAudioSpeed() {
+        const sel = document.getElementById('audio-speed');
+        if (sel) {
+            currentAudioSpeed = parseFloat(sel.value) || 1.0;
+            if (isPlayingStory) { togglePlayStory(); togglePlayStory(); }
+        }
+    }
+
+    function toggleStoryTranslation() {
+        const transEl = document.getElementById('story-full-translation');
+        const btnText = document.getElementById('toggle-trans-btn-text');
+        if (transEl.classList.contains('hidden')) {
+            transEl.classList.remove('hidden');
+            btnText.textContent = "Sembunyikan Terjemahan Keseluruhan";
+            logReadingActivity('show_translation', currentStory?.id || null);
+        } else {
+            transEl.classList.add('hidden');
+            btnText.textContent = "Tampilkan Terjemahan Keseluruhan";
+        }
+    }
+
+    function loadAppState() {
+        const saved = localStorage.getItem('englishspark_state');
+        if (saved) {
+            try { appState = { ...appState, ...JSON.parse(saved) }; }
+            catch(e) { console.error("Parse state gagal", e); }
+        }
+        updateHeaderStats();
+        renderSearchHistory();
+        renderSavedWordsGrid();
+        applyTheme(appState.darkMode);
+    }
+
+    function saveAppState() {
+        localStorage.setItem('englishspark_state', JSON.stringify(appState));
+        updateHeaderStats();
+    }
+
+    function openCustomStoryModal() { document.getElementById('custom-story-modal').classList.remove('hidden'); }
+    function closeCustomStoryModal() { document.getElementById('custom-story-modal').classList.add('hidden'); }
+
+    function saveCustomStory(e) {
+        e.preventDefault();
+        const title = document.getElementById('custom-title').value.trim();
+        const level = document.getElementById('custom-level').value;
+        const text = document.getElementById('custom-text').value.trim();
+        const fullTranslation = document.getElementById('custom-translation').value.trim() || "Terjemahan belum ditambahkan.";
+
+        if (!title || !text) { showToast("Judul & teks wajib diisi!", "error"); return; }
+
+        const newStory = {
+            id: "custom-" + Date.now(),
+            title, level, text, fullTranslation, vocabMap: {}
+        };
+
+        storiesData.push(newStory);
+        saveCustomStoryToDB(newStory).then(() => {
+            // refresh tampilan kalau ID berubah
+            if (currentStory && currentStory.id === newStory.id) {
+                currentStory = newStory;
+            }
+        });
+        renderStoryList();
+        selectStory(newStory.id);
+        closeCustomStoryModal();
+        document.getElementById('custom-title').value = '';
+        document.getElementById('custom-text').value = '';
+        document.getElementById('custom-translation').value = '';
+        showToast("Bacaan baru ditambahkan! 🎉", "success");
+    }
+
+    async function fetchRandomOnlineStory() {
+        const spinIcon = document.getElementById('api-spin-icon');
+        spinIcon.classList.add('fa-spin');
+        showToast("Mengambil artikel dari Wikipedia...", "info");
+        try {
+            const res = await fetch('https://en.wikipedia.org/api/rest_v1/page/random/summary');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.extract && data.extract.length > 50) {
+                    const sentences = data.extract.match(/[^.!?]+[.!?]+/g) || [data.extract];
+                    let formattedText = "";
+                    for (let i = 0; i < sentences.length; i++) {
+                        formattedText += sentences[i] + " ";
+                        if ((i + 1) % 2 === 0 && i < sentences.length - 1) formattedText += "\n\n";
+                    }
+                    const newStory = {
+                        id: "custom-api-" + Date.now(),
+                        title: data.title || "Online Article",
+                        level: "Auto-Fetched",
+                        text: formattedText.trim(),
+                        fullTranslation: "(Artikel dari Wikipedia Bahasa Inggris)",
+                        vocabMap: {}
+                    };
+                    storiesData.unshift(newStory);
+                    renderStoryList();
+                    selectStory(newStory.id);
+                    saveApiStoryToDB(newStory);
+                    showToast(`Berhasil memuat: "${data.title}"`, "success");
+                } else {
+                    fetchRandomOnlineStory();
+                }
+            } else {
+                showToast("Gagal terhubung ke Wikipedia.", "error");
+            }
+        } catch (err) {
+            showToast("Gagal memuat API.", "error");
+        } finally {
+            spinIcon.classList.remove('fa-spin');
+        }
+    }
+
+    function renderStoryList() {
+        const container = document.getElementById('story-list');
+        document.getElementById('story-count-badge').textContent = `${storiesData.length} Story`;
+        if (storiesData.length === 0) {
+            container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-4">Belum ada cerita.</p>';
+            return;
+        }
+        container.innerHTML = storiesData.map(s => {
+            const pCount = (s.text.split(/\n\s*\n/) || []).length;
+            const active = currentStory && s.id === currentStory.id;
+            return `
+                <button onclick="selectStory('${s.id}')" class="w-full text-left p-3.5 rounded-xl border transition-all ${active ? 'bg-brand-50 dark:bg-brand-950/40 border-brand-500 text-brand-900 dark:text-brand-100 font-bold' : 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-700 hover:bg-slate-100'} flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-0.5">
+                            <span class="text-xs text-brand-600 dark:text-brand-400 font-bold">${s.level}</span>
+                            <span class="text-[10px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold px-1.5 rounded">${pCount}P</span>
+                        </div>
+                        <div class="text-sm font-bold text-slate-800 dark:text-slate-100">${s.title}</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                </button>
+            `;
+        }).join('');
+    }
+
+    async function handleWordClick(word) {
+        const clean = word.trim();
+        if (!clean) return;
+        logReadingActivity('click_word', currentStory?.id || null, { word: clean });
+
+        let meaning = null;
+        let pos = "Kata";
+        if (currentStory && currentStory.vocabMap) meaning = currentStory.vocabMap[clean];
+        if (!meaning && dictionaryDatabase[clean.toLowerCase()]) {
+            meaning = dictionaryDatabase[clean.toLowerCase()].meaning;
+            pos = dictionaryDatabase[clean.toLowerCase()].pos;
+        }
+        if (!meaning) {
+            try {
+                const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${clean.toLowerCase()}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    pos = data[0]?.meanings[0]?.partOfSpeech || "word";
+                    const def = data[0]?.meanings[0]?.definitions[0]?.definition;
+                    meaning = def ? `[EN] ${def}` : "Arti belum tersedia.";
+                } else {
+                    meaning = "Kata tidak ditemukan.";
+                }
+            } catch(e) { meaning = "Gunakan modul Kamus."; }
+        }
+        activeModalWordData = { word: clean, meaning, pos };
+        document.getElementById('modal-word-title').textContent = clean;
+        document.getElementById('modal-word-pos').textContent = pos;
+        document.getElementById('modal-word-meaning').textContent = meaning;
+        updateModalFavIcon();
+        document.getElementById('word-modal').classList.remove('hidden');
+    }
+
+    function closeWordModal() { document.getElementById('word-modal').classList.add('hidden'); }
+    function speakModalWord() { if (activeModalWordData) speakText(activeModalWordData.word); }
+
+    function toggleFavoriteModalWord() {
+        if (!activeModalWordData) return;
+        const idx = appState.favorites.findIndex(f => f.word.toLowerCase() === activeModalWordData.word.toLowerCase());
+        if (idx >= 0) {
+            appState.favorites.splice(idx, 1);
+            syncUnfavorite(activeModalWordData.word);
+            showToast(`'${activeModalWordData.word}' dihapus`, 'info');
+        } else {
+            appState.favorites.push({ word: activeModalWordData.word, meaning: activeModalWordData.meaning, pos: activeModalWordData.pos });
+            syncFavorite(activeModalWordData.word, activeModalWordData.meaning, activeModalWordData.pos);
+            showToast(`'${activeModalWordData.word}' disimpan ⭐`, 'success');
+        }
+        saveAppState();
+        updateModalFavIcon();
+        renderSavedWordsGrid();
+    }
+
+    function updateModalFavIcon() {
+        if (!activeModalWordData) return;
+        const isFav = appState.favorites.some(f => f.word.toLowerCase() === activeModalWordData.word.toLowerCase());
+        const icon = document.getElementById('modal-fav-icon');
+        if (icon) icon.className = isFav ? "fa-solid fa-star text-amber-500 text-lg" : "fa-regular fa-star text-slate-400 text-lg";
+    }
+
+    /* ==========================================================================
+       LISTENING MODULE
+       ========================================================================== */
+
+    function renderListeningList() {
+        const container = document.getElementById('listening-list');
+        container.innerHTML = listeningData.map(l => {
+            const active = l.id === currentListening.id;
+            return `
+                <button onclick="selectListening('${l.id}')" class="w-full text-left p-3.5 rounded-xl border transition-all ${active ? 'bg-brand-50 dark:bg-brand-950/40 border-brand-500 font-bold' : 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-700 hover:bg-slate-100'} flex items-center justify-between">
+                    <div>
+                        <div class="text-xs text-brand-600 dark:text-brand-400 font-bold mb-0.5">${l.topic}</div>
+                        <div class="text-sm font-bold text-slate-800 dark:text-slate-100">${l.title}</div>
+                    </div>
+                    <i class="fa-solid fa-headphones text-xs text-slate-400"></i>
+                </button>
+            `;
+        }).join('');
+    }
+
+    function selectListening(id) {
+        stopAllSpeech();
+        const found = listeningData.find(l => l.id === id);
+        if (found) { currentListening = found; renderListeningList(); loadListeningContent(); }
+    }
+
+    function loadListeningContent() {
+        document.getElementById('listening-title').textContent = currentListening.title;
+        document.getElementById('listening-topic-tag').textContent = currentListening.topic;
+
+        const tc = document.getElementById('transcript-container');
+        tc.innerHTML = currentListening.transcript.map(line => `
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-700/60 flex items-start space-x-3">
+                <span class="px-2 py-1 bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300 rounded font-bold text-xs uppercase">${line.speaker}</span>
+                <p class="text-sm text-slate-700 dark:text-slate-200 font-medium leading-relaxed">${line.text}</p>
+            </div>
+        `).join('');
+
+        const fc = document.getElementById('fill-blank-container');
+        fc.innerHTML = currentListening.fillBlanks.map((q, idx) => {
+            const parts = q.fullText.split('___');
+            return `
+                <div class="space-y-1.5">
+                    <label class="text-sm font-semibold block">
+                        ${idx + 1}. ${parts[0]}
+                        <input type="text" id="blank-input-${idx}" data-answer="${q.answer}" placeholder="ketik..." class="inline-block px-3 py-1 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-brand-600 dark:text-brand-400 font-bold focus:outline-none focus:ring-2 focus:ring-brand-500 w-36 mx-1">
+                        ${parts[1]}
+                    </label>
+                    <p class="text-xs text-slate-400">Petunjuk: ${q.hint}</p>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function playListeningAudio() {
+        if (isPlayingListening) { stopListeningAudio(); return; }
+        isPlayingListening = true;
+        document.getElementById('listening-play-icon').className = "fa-solid fa-pause";
+        const fullText = currentListening.transcript.map(t => `${t.speaker} says: ${t.text}`).join('. ');
+        speakText(fullText, 0.95, null, () => { stopListeningAudio(); });
+    }
+
+    function stopListeningAudio() {
+        stopAllSpeech();
+        isPlayingListening = false;
+        document.getElementById('listening-play-icon').className = "fa-solid fa-play ml-1";
+    }
+
+    function toggleTranscript() {
+        const container = document.getElementById('transcript-container');
+        const btnText = document.getElementById('transcript-btn-text');
+        if (container.classList.contains('hidden')) {
+            container.classList.remove('hidden');
+            btnText.textContent = "Sembunyikan";
+        } else {
+            container.classList.add('hidden');
+            btnText.textContent = "Tampilkan";
+        }
+    }
+
+    function checkListeningAnswers() {
+        let correct = 0;
+        currentListening.fillBlanks.forEach((q, idx) => {
+            const input = document.getElementById(`blank-input-${idx}`);
+            if (input) {
+                const userVal = input.value.trim().toLowerCase();
+                if (userVal === q.answer.toLowerCase()) {
+                    input.className = "inline-block px-3 py-1 text-sm bg-green-100 dark:bg-green-900/60 border border-green-500 rounded-lg text-green-700 dark:text-green-300 font-bold w-36 mx-1";
+                    correct++;
+                } else {
+                    input.className = "inline-block px-3 py-1 text-sm bg-red-100 dark:bg-red-900/60 border border-red-500 rounded-lg text-red-700 dark:text-red-300 font-bold w-36 mx-1";
+                }
+            }
+        });
+        if (correct === currentListening.fillBlanks.length) {
+            addXP(15);
+            showToast("Sempurna! 🎉", "success");
+        } else {
+            showToast(`${correct} dari ${currentListening.fillBlanks.length} benar.`, "info");
+        }
+    }
+
+    /* ==========================================================================
+       DICTIONARY MODULE
+       ========================================================================== */
+
+    async function handleDictionarySearch(e) {
+        if (e) e.preventDefault();
+        const query = document.getElementById('dict-input').value.trim().toLowerCase();
+        if (!query) return;
+        if (!appState.searchHistory.includes(query)) {
+            appState.searchHistory.unshift(query);
+            if (appState.searchHistory.length > 8) appState.searchHistory.pop();
+            saveAppState();
+            renderSearchHistory();
+        }
+        if (dictionaryDatabase[query]) {
+            const item = dictionaryDatabase[query];
+            displayDictResult(query, item.pos, item.phonetic, item.meaning, "Definition available via dictionary lookup.", item.example);
+            return;
+        }
+        try {
+            showToast("Mencari...", "info");
+            const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${query}`);
+            if (res.ok) {
+                const data = await res.json();
+                const entry = data[0];
+                const pos = entry.meanings[0]?.partOfSpeech || "noun";
+                const phonetic = entry.phonetic || entry.phonetics[0]?.text || "/ ... /";
+                const def = entry.meanings[0]?.definitions[0]?.definition || "Tidak ada definisi.";
+                const ex = entry.meanings[0]?.definitions[0]?.example || "Tidak ada contoh.";
+                displayDictResult(query, pos, phonetic, `[Terjemahan API]: ${query}`, def, ex);
+            } else {
+                displayDictResult(query, "noun", "/ - /", "Kata tidak ditemukan.", "Periksa ejaan.", "-");
+            }
+        } catch(err) {
+            displayDictResult(query, "noun", "/ - /", "Offline / tidak ditemukan", "Coba: coffee, learn, happy.", "-");
+        }
+    }
+
+    function displayDictResult(word, pos, phonetic, translation, definition, example) {
+        currentDictWordData = { word, pos, phonetic, translation, definition, example };
+        document.getElementById('dict-word').textContent = word;
+        document.getElementById('dict-pos').textContent = pos;
+        document.getElementById('dict-phonetic').textContent = phonetic;
+        document.getElementById('dict-translation').textContent = translation;
+        document.getElementById('dict-definition').textContent = definition;
+        document.getElementById('dict-example').textContent = `"${example}"`;
+        document.getElementById('dict-result-card').classList.remove('hidden');
+        updateDictFavIcon();
+    }
+
+    function clearDictInput() { document.getElementById('dict-input').value = ""; }
+    function speakCurrentDictWord() { if (currentDictWordData) speakText(currentDictWordData.word); }
+
+    function toggleFavoriteDictWord() {
+        if (!currentDictWordData) return;
+        const idx = appState.favorites.findIndex(f => f.word.toLowerCase() === currentDictWordData.word.toLowerCase());
+        if (idx >= 0) {
+            appState.favorites.splice(idx, 1);
+            syncUnfavorite(currentDictWordData.word);
+            showToast(`'${currentDictWordData.word}' dihapus`, 'info');
+        } else {
+            appState.favorites.push({ word: currentDictWordData.word, meaning: currentDictWordData.translation, pos: currentDictWordData.pos });
+            syncFavorite(currentDictWordData.word, currentDictWordData.translation, currentDictWordData.pos);
+            showToast(`'${currentDictWordData.word}' disimpan ⭐`, 'success');
+        }
+        saveAppState();
+        updateDictFavIcon();
+        renderSavedWordsGrid();
+    }
+
+    function updateDictFavIcon() {
+        if (!currentDictWordData) return;
+        const isFav = appState.favorites.some(f => f.word.toLowerCase() === currentDictWordData.word.toLowerCase());
+        const icon = document.getElementById('dict-fav-icon');
+        if (icon) icon.className = isFav ? "fa-solid fa-star text-amber-500" : "fa-regular fa-star";
+    }
+
+    function renderSearchHistory() {
+        const container = document.getElementById('search-history-container');
+        if (!appState.searchHistory || appState.searchHistory.length === 0) {
+            container.innerHTML = '<span class="text-xs text-slate-400">Belum ada riwayat.</span>';
+            return;
+        }
+        container.innerHTML = `<span class="text-xs text-slate-400 font-medium mr-1">Riwayat:</span>` +
+            appState.searchHistory.map(h => `
+                <button onclick="searchFromHistory('${h}')" class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-xs font-semibold rounded-lg transition-all">${h}</button>
+            `).join('');
+    }
+
+    function searchFromHistory(word) {
+        document.getElementById('dict-input').value = word;
+        handleDictionarySearch();
+    }
+
+    /* ==========================================================================
+       QUIZ MODULE (Latihan statis)
+       ========================================================================== */
+
+    function loadQuizQuestion() {
+        quizAnswered = false;
+        document.getElementById('quiz-feedback').classList.add('hidden');
+        document.getElementById('quiz-next-btn').classList.add('hidden');
+        const q = quizQuestions[quizIndex];
+        document.getElementById('quiz-current-num').textContent = quizIndex + 1;
+        document.getElementById('quiz-total-num').textContent = quizQuestions.length;
+        document.getElementById('quiz-type-badge').textContent = q.type;
+        document.getElementById('quiz-question').textContent = q.question;
+        const optionsContainer = document.getElementById('quiz-options');
+        optionsContainer.innerHTML = q.options.map((opt, i) => `
+            <button onclick="submitQuizAnswer(${i})" id="quiz-opt-${i}" class="w-full text-left p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-700 font-bold text-sm transition-all flex items-center justify-between">
+                <span>${opt}</span>
+                <i class="fa-regular fa-circle text-slate-300"></i>
+            </button>
+        `).join('');
+    }
+
+    function submitQuizAnswer(selectedIndex) {
+        if (quizAnswered) return;
+        quizAnswered = true;
+        const q = quizQuestions[quizIndex];
+        const feedbackEl = document.getElementById('quiz-feedback');
+        const feedbackText = document.getElementById('quiz-feedback-text');
+        const feedbackIcon = document.getElementById('quiz-feedback-icon');
+        if (selectedIndex === q.correctIndex) {
+            quizScore += 20;
+            document.getElementById('quiz-score').textContent = quizScore;
+            const btn = document.getElementById(`quiz-opt-${selectedIndex}`);
+            btn.className = "w-full text-left p-4 rounded-xl border-2 border-green-500 bg-green-50 dark:bg-green-950/40 font-bold text-sm flex items-center justify-between";
+            btn.querySelector('i').className = "fa-solid fa-circle-check text-green-500 text-lg";
+            feedbackEl.className = "p-4 rounded-xl text-sm font-bold flex items-center space-x-3 bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-200 border border-green-300";
+            feedbackText.textContent = "Benar! +20 Poin";
+            feedbackIcon.className = "fa-solid fa-circle-check text-green-500 text-xl";
+        } else {
+            const btn = document.getElementById(`quiz-opt-${selectedIndex}`);
+            btn.className = "w-full text-left p-4 rounded-xl border-2 border-red-500 bg-red-50 dark:bg-red-950/40 font-bold text-sm flex items-center justify-between";
+            btn.querySelector('i').className = "fa-solid fa-circle-xmark text-red-500 text-lg";
+            const correctBtn = document.getElementById(`quiz-opt-${q.correctIndex}`);
+            correctBtn.className = "w-full text-left p-4 rounded-xl border-2 border-green-500 bg-green-50 dark:bg-green-950/40 font-bold text-sm flex items-center justify-between";
+            feedbackEl.className = "p-4 rounded-xl text-sm font-bold flex items-center space-x-3 bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-200 border border-red-300";
+            feedbackText.textContent = `Salah. Jawaban: ${q.options[q.correctIndex]}`;
+            feedbackIcon.className = "fa-solid fa-circle-xmark text-red-500 text-xl";
+        }
+        feedbackEl.classList.remove('hidden');
+        document.getElementById('quiz-next-btn').classList.remove('hidden');
+    }
+
+    function nextQuizQuestion() {
+        quizIndex++;
+        if (quizIndex < quizQuestions.length) loadQuizQuestion();
+        else showQuizSummary();
+    }
+
+    function showQuizSummary() {
+        document.getElementById('quiz-final-score').textContent = quizScore;
+        document.getElementById('quiz-xp-gained').textContent = `+${quizScore / 2} XP!`;
+        addXP(quizScore / 2);
+        document.querySelector('#tab-quiz .max-w-2xl > div:first-child').classList.add('hidden');
+        document.getElementById('quiz-summary').classList.remove('hidden');
+    }
+
+    function resetQuiz() {
+        quizIndex = 0;
+        quizScore = 0;
+        document.getElementById('quiz-score').textContent = 0;
+        document.getElementById('quiz-summary').classList.add('hidden');
+        document.querySelector('#tab-quiz .max-w-2xl > div:first-child').classList.remove('hidden');
+        loadQuizQuestion();
+    }
+
+    function renderSavedWordsGrid() {
+        const container = document.getElementById('saved-words-grid');
+        const emptyState = document.getElementById('saved-empty-state');
+        const badge = document.getElementById('saved-count-badge');
+        if (!appState.favorites || appState.favorites.length === 0) {
+            container.innerHTML = "";
+            emptyState.classList.remove('hidden');
+            badge.textContent = "0 Kata";
+            return;
+        }
+        emptyState.classList.add('hidden');
+        badge.textContent = `${appState.favorites.length} Kata`;
+        container.innerHTML = appState.favorites.map(f => `
+            <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 flex items-start justify-between">
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h4 class="font-bold text-slate-900 dark:text-slate-100 text-lg">${f.word}</h4>
+                        <span class="text-xs font-semibold px-2 py-0.5 bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300 rounded">${f.pos || 'word'}</span>
+                    </div>
+                    <p class="text-sm font-semibold text-brand-600 dark:text-brand-400 mt-1">${f.meaning}</p>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <button onclick="speakText('${f.word}')" class="p-2 text-slate-400 hover:text-brand-500 rounded-lg transition-all" title="Dengarkan">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <button onclick="removeFavoriteWord('${f.word}')" class="p-2 text-amber-500 hover:text-red-500 rounded-lg transition-all" title="Hapus">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function removeFavoriteWord(word) {
+        appState.favorites = appState.favorites.filter(f => f.word.toLowerCase() !== word.toLowerCase());
+        syncUnfavorite(word);
+        saveAppState();
+        renderSavedWordsGrid();
+        showToast(`Kata '${word}' dihapus`, 'info');
+    }
+
+    /* ==========================================================================
+       FLOATING DICTIONARY
+       ========================================================================== */
+
+    function toggleFloatingDict() {
+        const panel = document.getElementById('floating-dict-panel');
+        if (panel.classList.contains('hidden')) {
+            panel.classList.remove('hidden');
+            document.getElementById('quick-dict-input').focus();
+        } else {
+            panel.classList.add('hidden');
+        }
+    }
+
+    async function handleQuickDictSearch(e) {
+        if (e) e.preventDefault();
+        const query = document.getElementById('quick-dict-input').value.trim().toLowerCase();
+        if (!query) return;
+        let meaning = null, pos = "word", def = "";
+        if (dictionaryDatabase[query]) {
+            const item = dictionaryDatabase[query];
+            meaning = item.meaning;
+            pos = item.pos;
+            def = item.example ? `Contoh: "${item.example}"` : "";
+        } else {
+            try {
+                const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${query}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    pos = data[0]?.meanings[0]?.partOfSpeech || "word";
+                    def = data[0]?.meanings[0]?.definitions[0]?.definition || "";
+                    meaning = `[Terjemahan API]: ${query}`;
+                } else meaning = "Kata tidak ditemukan.";
+            } catch(err) { meaning = "Offline / tidak dapat memuat."; }
+        }
+        currentQuickWord = query;
+        document.getElementById('quick-word').textContent = query;
+        document.getElementById('quick-pos').textContent = pos;
+        document.getElementById('quick-meaning').textContent = meaning;
+        document.getElementById('quick-def').textContent = def || "Definisi tidak tersedia.";
+        document.getElementById('quick-dict-result').classList.remove('hidden');
+    }
+
+    function speakQuickWord() { if (currentQuickWord) speakText(currentQuickWord); }
+
+    /* ==========================================================================
+       TOAST
+       ========================================================================== */
+
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        let bgClass = "bg-slate-800 text-white";
+        if (type === 'success') bgClass = "bg-brand-600 text-white shadow-brand-500/30";
+        if (type === 'error') bgClass = "bg-red-600 text-white shadow-red-500/30";
+        toast.className = `px-4 py-3 rounded-xl shadow-lg font-bold text-sm flex items-center space-x-2 transition-all transform translate-y-4 opacity-0 pointer-events-auto ${bgClass}`;
+        toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-info'}"></i><span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.remove('translate-y-4', 'opacity-0'), 10);
+        setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-4'); setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    /* ==========================================================================
+       ONLOAD
+       ========================================================================== */
+
+    window.onload = async function() {
+        loadAppState();
+        showLoginModalIfNeeded();
+        await loadStoriesFromDB();
+        renderStoryList();
+        if (storiesData.length > 0) {
+            currentStory = storiesData[0];
+            loadStoryContent();
+        }
+        renderListeningList();
+        loadListeningContent();
+        loadQuizQuestion();
+        console.log('[EnglishSpark] ✅ Aplikasi siap.');
+    };
+    </script>
+</body>
+</html>
