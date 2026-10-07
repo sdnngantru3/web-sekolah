@@ -468,6 +468,7 @@ body:has(.admin-bar-active) {
     <button class="btn-admin-action btn-admin-blue" data-admin-only onclick="openAddBlockModal()"><i class="fas fa-plus"></i> Blok Baru</button>
     <button class="btn-admin-action btn-admin-blue" data-admin-only onclick="openAddMenuModal()"><i class="fas fa-th"></i> Menu Baru</button>
     <button class="btn-admin-action" onclick="openManageGallery()"><i class="fas fa-images"></i> Galeri</button>
+    <button class="btn-admin-action btn-admin-blue" data-admin-only onclick="openManageMenuModal()"><i class="fas fa-list"></i> Kelola Menu</button>
     <button class="btn-admin-action" data-admin-only onclick="openEditBeforeAfterModal()"><i class="fas fa-wand-magic-sparkles"></i> Before/After</button>
     <button class="btn-admin-action" data-admin-only onclick="openEditStatsModal()"><i class="fas fa-edit"></i> Statistik</button>
     <button class="btn-admin-action btn-admin-danger" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -849,7 +850,19 @@ body:has(.admin-bar-active) {
     <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('manageGalleryModal')">Tutup</button>
   </div>
 </div>
-
+<div id="manageMenuModal" class="modal">
+  <div class="modal-content" style="max-width: 720px;">
+    <h3><i class="fas fa-list"></i> Kelola Menu</h3>
+    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Kelola menu: edit, sembunyikan, atau hapus</p>
+    <div id="manageMenuList" style="margin-top: 1rem; text-align: left; max-height: 60vh; overflow-y: auto;">
+      Memuat...
+    </div>
+    <button class="btn-submit" onclick="closeModal('manageMenuModal'); openAddMenuModal();" style="margin-top: 1rem; background: #2563eb;">
+      <i class="fas fa-plus"></i> Tambah Menu Baru
+    </button>
+    <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('manageMenuModal')">Tutup</button>
+  </div>
+</div>
 <div id="previewOverlay" class="preview-overlay">
   <div class="preview-box">
     <div class="preview-header">
@@ -1648,6 +1661,96 @@ async function deleteMenu(id) {
   if (error) { showToast('❌ ' + error.message); return; }
   showToast('✅ Menu dihapus');
   await loadMenus();
+}
+
+// ============================================================
+// KELOLA MENU (Modal)
+// ============================================================
+function openManageMenuModal() {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin'); return; }
+  openModal('manageMenuModal');
+  loadManageMenu();
+}
+
+async function loadManageMenu() {
+  const list = document.getElementById('manageMenuList');
+  list.innerHTML = '⏳ Memuat...';
+
+  const { data, error } = await supabaseClient
+    .from('page_menus')
+    .select('*')
+    .order('display_order')
+    .order('created_at');
+
+  if (error) { list.innerHTML = '⚠️ ' + error.message; return; }
+  if (!data || data.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);">Belum ada menu. Klik tombol di bawah untuk menambah.</div>';
+    return;
+  }
+
+  const parents = data.filter(m => !m.parent_id);
+
+  list.innerHTML = parents.map(m => {
+    const icon = m.menu_icon || 'fa-folder';
+    const color = m.menu_color || '#0f6b52';
+    const subs = data.filter(s => s.parent_id === m.id);
+
+    let info = '';
+    if (m.menu_mode === 'link_html') info = '🔗 Link HTML';
+    else if (m.menu_mode === 'link_external') info = '🌐 Link Eksternal';
+    else if (m.menu_mode === 'file') info = '📄 File';
+    else if (m.menu_mode === 'folder') info = `📁 Folder (${subs.length} file)`;
+
+    const badges = [];
+    if (m.show_in_header) badges.push('<span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:9999px;font-size:0.65rem;font-weight:700;">HEADER</span>');
+    if (m.show_in_launcher) badges.push('<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:9999px;font-size:0.65rem;font-weight:700;">LAUNCHER</span>');
+    if (!m.is_visible) badges.push('<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:9999px;font-size:0.65rem;font-weight:700;">HIDDEN</span>');
+    if (m.is_teacher_folder) badges.push('<span style="background:#ede9fe;color:#6d28d9;padding:2px 8px;border-radius:9999px;font-size:0.65rem;font-weight:700;">FOLDER GURU</span>');
+
+    return `
+      <div style="display:flex;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;align-items:center;background:#fff;">
+        <div style="width:44px;height:44px;display:grid;place-items:center;background:${color};color:#fff;border-radius:10px;flex-shrink:0;">
+          <i class="fas ${icon}"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:0.9rem;color:var(--ink);margin-bottom:4px;">${escapeHtml(m.menu_label)}</div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:6px;">${info}</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">${badges.join('')}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button onclick="closeModal('manageMenuModal'); editMenu('${m.id}');" style="background:#dbeafe;color:#1e40af;border:none;padding:8px 12px;border-radius:9999px;font-weight:600;cursor:pointer;font-size:0.75rem;" title="Edit">
+            <i class="fas fa-pencil"></i>
+          </button>
+          <button onclick="toggleMenuVisibility('${m.id}', ${m.is_visible})" style="background:#fef3c7;color:#92400e;border:none;padding:8px 12px;border-radius:9999px;font-weight:600;cursor:pointer;font-size:0.75rem;" title="${m.is_visible ? 'Sembunyikan' : 'Tampilkan'}">
+            <i class="fas fa-${m.is_visible ? 'eye-slash' : 'eye'}"></i>
+          </button>
+          <button onclick="deleteMenuFromManage('${m.id}', '${escapeHtml(m.menu_label)}')" style="background:#fee2e2;color:#991b1b;border:none;padding:8px 12px;border-radius:9999px;font-weight:600;cursor:pointer;font-size:0.75rem;" title="Hapus">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function deleteMenuFromManage(id, label) {
+  if (!confirm(`Yakin hapus menu "${label}"?\n\nFile di dalamnya (kalau folder) akan ikut terhapus.`)) return;
+  const { error } = await supabaseClient.from('page_menus').delete().eq('id', id);
+  if (error) { showToast('❌ ' + error.message); return; }
+  showToast('✅ Menu dihapus');
+  await loadMenus();
+  await loadManageMenu();
+}
+
+async function toggleMenuVisibility(id, currentVisible) {
+  const { error } = await supabaseClient
+    .from('page_menus')
+    .update({ is_visible: !currentVisible })
+    .eq('id', id);
+  if (error) { showToast('❌ ' + error.message); return; }
+  showToast(currentVisible ? '👁️ Menu disembunyikan' : '✅ Menu ditampilkan');
+  await loadMenus();
+  await loadManageMenu();
 }
 
 // ============================================================
