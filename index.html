@@ -75,9 +75,9 @@ img { display: block; max-width: 100%; }
 
 /* Header */
 #header { position: absolute; inset-inline: 0; top: 0; z-index: 100; opacity: 0; transform: translateY(-14px); transition: all 0.7s; }
-/* Saat admin bar aktif, geser header ke bawah */
+/* Sembunyikan header saat admin bar aktif */
 body:has(.admin-bar-active) #header {
-  top: 56px;
+  display: none !important;
 }
 #header.is-ready { opacity: 1; transform: translateY(0); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.25rem; flex-wrap: wrap; }
