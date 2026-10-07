@@ -1,1047 +1,1965 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>SD Negeri 3 Ngantru - Kec. Ngantang - Kab. Malang</title>
-    <!-- Google Fonts & Font Awesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f0f4f8;
-            color: #1e293b;
-            line-height: 1.5;
-        }
-
-        /* Container Utama */
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        /* ===== HEADER & NAVIGASI ===== */
-        .top-header {
-            background: linear-gradient(135deg, #0b3b2f 0%, #1a5d4a 100%);
-            color: white;
-            padding: 12px 0;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .school-logo {
-            width: 80px;
-            height: 80px;
-            background-image: url('logo sekolah.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            border-radius: 20px;
-            animation: logoBounce 2s ease-in-out infinite, logoGlow 1.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes logoBounce {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-8px) rotate(3deg); }
-        }
-
-        @keyframes logoGlow {
-            0% { box-shadow: 0 0 0px rgba(255,255,255,0.3); }
-            100% { box-shadow: 0 0 20px rgba(255,215,0,0.6); }
-        }
-
-        .logo-text h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            animation: textPulse 1.2s ease-in-out infinite, textGlow 1.8s ease-in-out infinite alternate;
-        }
-
-        @keyframes textPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-        }
-
-        @keyframes textGlow {
-            0% { text-shadow: 0 0 0px rgba(255,215,0,0); }
-            100% { text-shadow: 0 0 12px rgba(255,215,0,0.8); }
-        }
-
-        .logo-text p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        /* Search Area */
-        .search-area {
-            display: flex;
-            gap: 8px;
-            background: rgba(255,255,255,0.15);
-            padding: 6px 15px;
-            border-radius: 50px;
-            backdrop-filter: blur(4px);
-            flex-wrap: wrap;
-        }
-
-        .search-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-area input {
-            background: transparent;
-            border: none;
-            padding: 10px 12px;
-            color: white;
-            outline: none;
-            font-size: 0.9rem;
-            width: 220px;
-        }
-
-        .search-area input::placeholder {
-            color: rgba(255,255,255,0.7);
-            transition: all 0.3s;
-        }
-
-        .search-area button {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 1rem;
-            padding: 8px 14px;
-            border-radius: 40px;
-            transition: all 0.2s;
-            animation: iconBlink 1s ease-in-out infinite;
-        }
-
-        .search-area button:hover {
-            background: rgba(255,255,255,0.35);
-            transform: scale(1.02);
-        }
-
-        /* Dropdown suggestions */
-        .search-suggestions {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            z-index: 200;
-            max-height: 300px;
-            overflow-y: auto;
-            display: none;
-            margin-top: 5px;
-        }
-
-        .search-suggestions.show {
-            display: block;
-        }
-
-        .suggestion-item {
-            padding: 10px 16px;
-            cursor: pointer;
-            color: #1e293b;
-            font-size: 0.85rem;
-            border-bottom: 1px solid #e2e8f0;
-            transition: background 0.2s;
-        }
-
-        .suggestion-item:hover {
-            background: #e6f7f0;
-            color: #0f6b52;
-        }
-
-        .suggestion-item i {
-            margin-right: 10px;
-            width: 20px;
-            color: #0f6b52;
-        }
-
-        /* Highlight pencarian */
-        .search-highlight {
-            background-color: #fbbf24;
-            color: #1e293b;
-            padding: 0 2px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        /* Navigasi Utama */
-        .nav-menu {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            list-style: none;
-            padding: 12px 0;
-        }
-
-        .nav-menu li a {
-            display: inline-block;
-            padding: 10px 20px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #1e293b;
-            border-radius: 40px;
-            transition: all 0.2s;
-        }
-
-        .nav-menu li a:hover {
-            background: #e6f7f0;
-            color: #0b5e42;
-        }
-        
-        .nav-menu li a i {
-            animation: iconBlinkNav 1s ease-in-out infinite;
-            display: inline-block;
-        }
-        
-        @keyframes iconBlinkNav {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.1); }
-        }
-
-        /* Hero Section */
-        .hero {
-            border-radius: 32px;
-            margin: 30px 0;
-            padding: 60px 32px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            background-image: url('background.jpg');
-            background-size: cover;
-            background-position: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.55);
-            z-index: 1;
-        }
-
-        .hero > * {
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero h2 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 8px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .hero h2 span {
-            background: #fbbf24;
-            padding: 0 8px;
-            border-radius: 20px;
-            color: #1e293b;
-            font-size: 1.8rem;
-            animation: spanPulse 1s ease-in-out infinite;
-        }
-        
-        @keyframes spanPulse {
-            0%, 100% { transform: scale(1); background: #fbbf24; }
-            50% { transform: scale(1.02); background: #ffd966; }
-        }
-
-        .hero p {
-            color: #f0fdf9;
-            font-weight: 500;
-            margin-bottom: 24px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .badge-item {
-            background: rgba(255,255,255,0.9);
-            border-radius: 60px;
-            padding: 8px 24px;
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            color: #1e293b;
-            animation: badgeShake 2s ease-in-out infinite;
-        }
-        
-        @keyframes badgeShake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-3px); }
-            75% { transform: translateX(3px); }
-        }
-
-        /* Statistik Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 24px;
-            margin: 40px 0;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 28px;
-            padding: 28px 20px;
-            text-align: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-            border: 1px solid #e2e8f0;
-            animation: cardFade 3s ease-in-out infinite;
-        }
-        
-        @keyframes cardFade {
-            0%, 100% { opacity: 1; transform: translateY(0); }
-            50% { opacity: 0.95; transform: translateY(-3px); }
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-number {
-            font-size: 2.8rem;
-            font-weight: 800;
-            color: #0f6b52;
-            line-height: 1;
-            animation: numberPop 1.5s ease-in-out infinite;
-        }
-        
-        @keyframes numberPop {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); color: #0f8b6a; }
-        }
-
-        .stat-label {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #475569;
-            margin-top: 8px;
-        }
-
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin: 40px 0 24px 0;
-            position: relative;
-            display: inline-block;
-        }
-        .section-title:after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 60%;
-            height: 4px;
-            background: #0f6b52;
-            border-radius: 4px;
-        }
-
-        /* Grid Berita */
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 28px;
-            margin-bottom: 40px;
-        }
-
-        .news-card {
-            background: white;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
-            transition: 0.2s;
-            animation: newsFade 3s ease-in-out infinite;
-        }
-        
-        @keyframes newsFade {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        
-        .news-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-        }
-
-        .card-img {
-            width: 100%;
-            height: 180px;
-            background-image: url('background.jpg');
-            background-size: cover;
-            background-position: center;
-            background-color: #7f9f90;
-        }
-
-        .card-content {
-            padding: 20px;
-        }
-
-        .card-content h3 {
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-        }
-
-        .card-content p {
-            color: #4a5568;
-            font-size: 0.9rem;
-            margin-bottom: 16px;
-        }
-
-        .btn-read {
-            background: none;
-            border: none;
-            color: #0f6b52;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-            text-decoration: none;
-            animation: btnBlink 1s ease-in-out infinite;
-        }
-        
-        @keyframes btnBlink {
-            0%, 100% { opacity: 1; letter-spacing: normal; }
-            50% { opacity: 0.7; letter-spacing: 1px; }
-        }
-
-        /* Digital Banner */
-        .digital-banner {
-            border-radius: 28px;
-            padding: 24px 32px;
-            margin: 20px 0 32px;
-            text-align: center;
-            font-weight: bold;
-            color: #1e4620;
-            background-image: url('background.jpg');
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-
-        .digital-banner > * {
-            position: relative;
-            z-index: 2;
-            animation: iconBlink 0.8s ease-in-out infinite;
-        }
-        
-        @keyframes iconBlink {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.05); }
-        }
-
-        .digital-banner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(233, 242, 239, 0.88);
-            border-radius: 28px;
-            z-index: 1;
-        }
-
-        /* Footer */
-        .footer {
-            background: #0b2c23;
-            color: #ccdcd5;
-            padding: 40px 0 20px;
-            margin-top: 60px;
-        }
-
-        .footer-content {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 30px;
-        }
-
-        .footer-col h4 {
-            color: white;
-            margin-bottom: 16px;
-        }
-
-        .footer-col p, .footer-col ul {
-            font-size: 0.85rem;
-            opacity: 0.85;
-        }
-
-        .footer-col ul {
-            list-style: none;
-        }
-
-        .footer-col ul li {
-            margin-bottom: 8px;
-        }
-
-        .footer-col a {
-            color: #bbdfd0;
-            text-decoration: none;
-            animation: linkFade 2s ease-in-out infinite;
-        }
-        
-        @keyframes linkFade {
-            0%, 100% { opacity: 0.85; }
-            50% { opacity: 1; }
-        }
-
-        .copyright {
-            text-align: center;
-            padding-top: 30px;
-            margin-top: 30px;
-            border-top: 1px solid #2a5546;
-            font-size: 0.75rem;
-        }
-
-        /* ===== MODAL/POPUP STYLE ===== */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 24px;
-            padding: 32px 48px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
-            animation: fadeInUp 0.3s ease;
-        }
-
-        .modal-content h3 {
-            font-size: 1.8rem;
-            color: #0f6b52;
-            margin-bottom: 16px;
-        }
-
-        .modal-content p {
-            font-size: 1.2rem;
-            color: #1e293b;
-            margin-bottom: 24px;
-            font-weight: 500;
-        }
-
-        .close-modal {
-            background: #0f6b52;
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s;
-            animation: btnGlow 1s ease-in-out infinite;
-        }
-        
-        @keyframes btnGlow {
-            0%, 100% { box-shadow: 0 0 0px rgba(15,107,82,0.5); }
-            50% { box-shadow: 0 0 15px rgba(15,107,82,0.8); }
-        }
-
-        .close-modal:hover {
-            background: #0a4d3a;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Notification Toast */
-        .search-toast {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            background: #0f6b52;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            z-index: 1000;
-            animation: fadeInUp 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        /* ===== ICON ANAK SD BERGERAK ===== */
-        .kid-float {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 999;
-            cursor: pointer;
-            animation: kidWalk 2s ease-in-out infinite, kidBounce 1s ease-in-out infinite alternate;
-            background: linear-gradient(135deg, #ffd89b, #c7e9fb);
-            border-radius: 50%;
-            padding: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            transition: all 0.3s;
-        }
-        
-        .kid-float:hover {
-            transform: scale(1.1);
-        }
-        
-        @keyframes kidWalk {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-6px); }
-            75% { transform: translateX(6px); }
-        }
-        
-        @keyframes kidBounce {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-10px); }
-        }
-        
-        .kid-float i {
-            font-size: 45px;
-            color: #4a2c0f;
-            animation: kidWave 1.5s ease-in-out infinite;
-            display: block;
-        }
-        
-        @keyframes kidWave {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-15deg); }
-            75% { transform: rotate(15deg); }
-        }
-        
-        .kid-tooltip {
-            position: absolute;
-            bottom: 70px;
-            right: 0;
-            background: #0f6b52;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            white-space: nowrap;
-            animation: tooltipPulse 1s ease-in-out infinite;
-            font-weight: bold;
-        }
-        
-        @keyframes tooltipPulse {
-            0%, 100% { opacity: 0.7; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
-        }
-
-        /* Popular Keywords - Diubah menjadi LINK */
-        .popular-keywords {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
-            justify-content: flex-end;
-        }
-        
-        .keyword-chip {
-            background: rgba(255,255,255,0.2);
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-            color: white;
-            display: inline-block;
-        }
-        
-        .keyword-chip:hover {
-            background: rgba(255,255,255,0.4);
-            transform: scale(1.05);
-        }
-
-        /* responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 16px;
-            }
-            .hero h2 {
-                font-size: 1.5rem;
-            }
-            .nav-menu li a {
-                padding: 6px 14px;
-                font-size: 0.8rem;
-            }
-            .hero {
-                padding: 40px 20px;
-            }
-            .logo-area {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .school-logo {
-                width: 60px;
-                height: 60px;
-            }
-            .logo-text h1 {
-                font-size: 1.4rem;
-            }
-            .kid-float i {
-                font-size: 35px;
-            }
-            .kid-float {
-                padding: 8px;
-            }
-            .search-area {
-                width: 100%;
-                justify-content: space-between;
-            }
-            .search-area input {
-                width: 100%;
-            }
-            .popular-keywords {
-                justify-content: flex-start;
-                margin-top: 8px;
-            }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SD Negeri 3 Ngantru — Kec. Ngantang, Kab. Malang</title>
+<meta name="description" content="Official Portal SD Negeri 3 Ngantru - Go Digital Sekolahku." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+  --background: #ffffff; --foreground: #0f172a; --ink: #071e17;
+  --muted: #64748b; --line: #e2e8f0; --surface: #f8faf9;
+  --surface-2: #edf2f0; --accent: #0f6b52; --accent-hover: #0b503d;
+  --radius-pill: 9999px; --radius-card: 2rem; --radius-card-sm: 1.25rem;
+  --radius-control: 0.875rem; --text-watermark: 11rem; --container-shell: 88rem;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body { background: var(--background); color: var(--foreground); font-family: 'Onest', 'Inter', sans-serif; overflow-x: hidden; line-height: 1.5; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+ul { list-style: none; }
+img { display: block; max-width: 100%; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.shell { max-width: var(--container-shell); margin-inline: auto; padding-inline: 1.25rem; }
+@media (min-width: 640px) { .shell { padding-inline: 2rem; } }
+.hidden { display: none !important; }
+
+/* Page Loader */
+#pageLoader { position: fixed; inset: 0; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; background: var(--ink); color: #fff; border-radius: 0 0 var(--radius-card) var(--radius-card); transition: transform 0.7s cubic-bezier(.22,1,.36,1); }
+.loader-logo { width: 70px; height: 70px; background-image: url('logo sekolah.png'); background-size: contain; background-repeat: no-repeat; background-position: center; filter: drop-shadow(0 0 12px rgba(255,215,0,0.5)); }
+.loader-title { font-size: 1.5rem; font-weight: 700; }
+.loader-subtitle { max-width: 28ch; font-size: 0.875rem; color: rgba(255,255,255,0.6); text-align: center; }
+.loader-progress { width: min(20rem, 72vw); display: flex; flex-direction: column; gap: 0.75rem; }
+.loader-track { height: 2px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; }
+.loader-fill { height: 100%; background: #fbbf24; width: 0%; transition: width 0.1s; }
+.loader-status { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.5); }
+
+/* Buttons */
+.pill-btn { display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-pill); font-size: 0.875rem; font-weight: 600; transition: all 0.35s; cursor: pointer; white-space: nowrap; }
+.pill-btn:hover { transform: translateY(-2px) scale(1.02); }
+.pill-btn--dark { background: var(--ink); color: #fff; }
+.pill-btn--accent { background: var(--accent); color: #fff; }
+.pill-btn--accent:hover { background: var(--accent-hover); }
+.pill-btn--outline { border: 1px solid var(--line); background: rgba(255,255,255,0.9); color: var(--foreground); backdrop-filter: blur(8px); }
+.pill-btn--has-arrow { padding: 0.375rem 0.375rem 0.375rem 1.25rem; gap: 0.75rem; }
+.pill-btn--no-arrow { padding: 0.75rem 1.5rem; }
+.pill-btn__badge { width: 2.25rem; height: 2.25rem; display: grid; place-items: center; border-radius: var(--radius-pill); font-size: 0.875rem; }
+.pill-btn--accent .pill-btn__badge { background: #fff; color: var(--accent); }
+.pill-btn--outline .pill-btn__badge { background: var(--ink); color: #fff; }
+
+.eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.eyebrow::before { content: ''; display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: var(--radius-pill); background: var(--accent); }
+.eyebrow--dark { color: rgba(15,23,42,0.7); }
+.eyebrow--light { color: rgba(255,255,255,0.8); }
+.eyebrow--light::before { background: #fbbf24; }
+
+/* Admin Bar */
+.admin-bar { background: var(--ink); color: white; padding: 10px 24px; display: none; justify-content: space-between; align-items: center; font-size: 0.85rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.2); flex-wrap: wrap; gap: 10px; }
+.admin-bar-active { display: flex; }
+.admin-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.btn-admin-action { background: var(--accent); color: white; border: none; padding: 6px 14px; border-radius: var(--radius-pill); font-weight: 600; cursor: pointer; font-size: 0.8rem; }
+.btn-admin-action:hover { background: var(--accent-hover); }
+.btn-admin-danger { background: #ef4444; }
+.btn-admin-danger:hover { background: #dc2626; }
+.btn-admin-logo { background: #d97706; }
+.btn-admin-logo:hover { background: #b45309; }
+.btn-admin-blue { background: #2563eb; }
+.btn-admin-blue:hover { background: #1d4ed8; }
+
+/* Header */
+#header { position: absolute; inset-inline: 0; top: 0; z-index: 100; opacity: 0; transform: translateY(-14px); transition: all 0.7s; }
+#header.is-ready { opacity: 1; transform: translateY(0); }
+.header-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.25rem; flex-wrap: wrap; }
+.header-logo { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+.school-logo-img { width: 50px; height: 50px; background-image: url('logo sekolah.png'); background-size: contain; background-repeat: no-repeat; background-position: center; }
+.logo-text-wrap h1 { font-size: 1.15rem; font-weight: 800; color: var(--ink); line-height: 1.1; }
+.logo-text-wrap p { font-size: 0.75rem; color: var(--muted); }
+.header-nav { display: none; }
+@media (min-width: 1024px) {
+  .header-nav { display: flex; flex: 1; justify-content: center; }
+  .header-nav ul { display: flex; gap: 0.2rem; font-size: 0.78rem; font-weight: 600; flex-wrap: wrap; justify-content: center; }
+  .header-nav a { display: inline-flex; align-items: center; gap: 0.3rem; opacity: 0.85; padding: 0.35rem 0.6rem; border-radius: var(--radius-pill); white-space: nowrap; }
+  .header-nav a:hover { opacity: 1; background: rgba(15,107,82,0.08); color: var(--accent); }
+}
+.header-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.search-wrapper { position: relative; }
+.search-box { display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.85); border: 1px solid var(--line); border-radius: var(--radius-pill); padding: 0.35rem 0.5rem 0.35rem 1rem; }
+.search-box input { border: none; background: transparent; outline: none; font-size: 0.85rem; width: 120px; }
+@media (min-width: 768px) { .search-box input { width: 160px; } }
+.search-btn-icon { width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: var(--radius-pill); background: var(--accent); color: white; }
+.search-suggestions { position: absolute; top: calc(100% + 8px); right: 0; min-width: 260px; background: white; border-radius: var(--radius-card-sm); box-shadow: 0 12px 30px rgba(0,0,0,0.15); z-index: 500; max-height: 280px; overflow-y: auto; display: none; padding: 0.5rem; border: 1px solid var(--line); }
+.search-suggestions.show { display: block; }
+.suggestion-item { padding: 0.6rem 1rem; cursor: pointer; font-size: 0.85rem; font-weight: 500; border-radius: 0.5rem; }
+.suggestion-item:hover { background: var(--surface-2); color: var(--accent); }
+
+/* HERO */
+#home { position: relative; isolation: isolate; overflow: hidden; border-radius: 0 0 var(--radius-card) var(--radius-card); background: linear-gradient(180deg, #f0f8f4 0%, #d8ece2 100%); min-height: 100vh; display: flex; flex-direction: column; }
+#home .hero-liquid-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+#home .hero-liquid-bg .liquid-base, #home .hero-liquid-bg canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+#home .hero-liquid-bg .liquid-base { opacity: 0.4; }
+#home .hero-liquid-bg canvas { cursor: crosshair; touch-action: none; }
+#home .hero-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(120deg, rgba(255,255,255,0.72) 0%, rgba(240,248,244,0.42) 40%, rgba(240,248,244,0.15) 70%, rgba(240,248,244,0.05) 100%); }
+#home .liquid-badge { position: absolute; top: 6rem; padding: 0.5rem 1.25rem; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; z-index: 3; backdrop-filter: blur(8px); pointer-events: none; }
+#home .liquid-badge--before { left: 1.5rem; background: rgba(7,30,23,0.8); color: #fff; }
+#home .liquid-badge--after { right: 1.5rem; background: rgba(15,107,82,0.9); color: #fff; }
+@media (min-width: 1024px) { #home .liquid-badge { top: 7rem; } #home .liquid-badge--before { left: 2rem; } #home .liquid-badge--after { right: 2rem; } }
+#home .liquid-hint { position: absolute; bottom: 5rem; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: #fff; padding: 0.5rem 1.1rem; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 600; z-index: 3; pointer-events: none; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; backdrop-filter: blur(8px); }
+@media (max-width: 640px) { #home .liquid-hint { display: none; } }
+.hero-watermark { pointer-events: none; position: absolute; inset-inline: 0; bottom: 4rem; z-index: 2; text-align: center; user-select: none; font-weight: 800; line-height: 1; font-size: var(--text-watermark); color: rgba(15,107,82,0.06); letter-spacing: -0.04em; opacity: 0; transition: all 0.8s; }
+.hero-watermark.is-ready { opacity: 1; }
+.hero-content { position: relative; z-index: 20; display: flex; flex-direction: column; gap: 2.5rem; padding: 8rem 1.25rem 4rem; flex: 1; }
+@media (min-width: 1024px) { .hero-content { display: grid; min-height: 92vh; grid-template-columns: repeat(12, 1fr); gap: 2.5rem; padding: 9.5rem 2rem 5rem; align-content: center; } }
+.hero-left { display: flex; flex-direction: column; gap: 1.75rem; position: relative; z-index: 2; }
+@media (min-width: 1024px) { .hero-left { grid-column: span 7; } }
+.hero-h1 { max-width: 18ch; font-size: 2.5rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: var(--ink); text-shadow: 0 1px 3px rgba(255,255,255,0.7); }
+@media (min-width: 640px) { .hero-h1 { font-size: 3.25rem; } }
+@media (min-width: 768px) { .hero-h1 { font-size: 3.85rem; } }
+.hero-h1 span { color: var(--accent); -webkit-text-fill-color: var(--accent); background: none; filter: none; }
+.line-mask { overflow: hidden; display: block; }
+.line-inner { display: block; transform: translateY(100%); opacity: 0; transition: all 0.9s; }
+.line-inner.is-revealed { transform: translateY(0%); opacity: 1; }
+.reveal-item { opacity: 0; transform: translateY(16px); transition: all 0.7s; }
+.reveal-item.is-revealed { opacity: 1; transform: translateY(0); }
+.hero-rating { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.stars { color: #f59e0b; display: flex; gap: 2px; }
+.rating-badge { background: rgba(255,255,255,0.95); padding: 0.35rem 0.85rem; border-radius: var(--radius-pill); font-size: 0.8rem; font-weight: 600; backdrop-filter: blur(8px); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 0.85rem; }
+.popular-keywords { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.keyword-chip { background: rgba(255,255,255,0.92); border: 1px solid rgba(15,107,82,0.15); padding: 0.35rem 0.85rem; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 600; color: var(--accent); display: inline-flex; align-items: center; gap: 0.25rem; backdrop-filter: blur(8px); }
+.keyword-chip:hover { background: var(--accent); color: white; }
+
+/* Hero Right */
+.hero-right { display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; position: relative; z-index: 2; }
+@media (min-width: 1024px) { .hero-right { grid-column: span 5; align-items: flex-end; } }
+.hero-card { width: 100%; max-width: 24rem; border-radius: var(--radius-card-sm); background: rgba(255,255,255,0.9); padding: 0.6rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.9); backdrop-filter: blur(12px); }
+@media (min-width: 1024px) { .hero-card { width: 20rem; } }
+.hero-card__inner { display: flex; gap: 0.75rem; }
+.hero-card__left { aspect-ratio: 1; width: 6.5rem; display: grid; place-items: center; border-radius: var(--radius-control); background: var(--ink); font-size: 2rem; color: #fbbf24; }
+.hero-card__right { flex: 1; border-radius: var(--radius-control); background: var(--surface); padding: 0.75rem; display: flex; flex-direction: column; justify-content: space-between; }
+.hero-card__caption { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); }
+.hero-card__title { font-size: 0.85rem; font-weight: 700; margin-top: 0.2rem; color: var(--foreground); }
+.hero-card__bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem; }
+.hero-card__dashes { display: flex; gap: 0.25rem; }
+.dash { height: 0.25rem; border-radius: var(--radius-pill); background: rgba(15,23,42,0.2); width: 0.375rem; transition: all 0.3s; }
+.dash.is-active { width: 1.25rem; background: var(--accent); }
+.hero-card__nav { display: flex; gap: 0.25rem; }
+.card-nav-btn { width: 1.75rem; height: 1.75rem; display: grid; place-items: center; border-radius: var(--radius-pill); background: #fff; border: 1px solid var(--line); font-size: 0.75rem; }
+.card-nav-btn:hover { background: var(--accent); color: white; }
+
+/* LOGIN GLASS CARD */
+.login-glass-card { width: 100%; max-width: 24rem; padding: 1.5rem; border-radius: var(--radius-card-sm); background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 8px 32px rgba(15, 107, 82, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.7); position: relative; overflow: hidden; }
+.login-glass-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), transparent 60%); pointer-events: none; z-index: 0; }
+.login-glass-card > * { position: relative; z-index: 1; }
+@media (min-width: 1024px) { .login-glass-card { width: 20rem; } }
+.login-glass-card__header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; }
+.login-glass-card__icon { width: 2.75rem; height: 2.75rem; display: grid; place-items: center; border-radius: var(--radius-pill); background: linear-gradient(135deg, #0f6b52, #1b8a6b); color: #fff; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(15,107,82,0.3); }
+.login-glass-card__title { font-size: 1rem; font-weight: 800; color: var(--ink); letter-spacing: -0.01em; }
+.login-glass-card__subtitle { font-size: 0.75rem; color: var(--muted); font-weight: 500; margin-top: 2px; }
+.login-glass-card__btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.25rem; border-radius: var(--radius-pill); background: linear-gradient(135deg, #0f6b52, #1b8a6b); color: #fff; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; transition: all 0.35s; box-shadow: 0 6px 20px rgba(15,107,82,0.35); }
+.login-glass-card__btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(15,107,82,0.5); }
+.login-glass-card__arrow { margin-left: auto; transition: transform 0.35s; }
+.login-glass-card__btn:hover .login-glass-card__arrow { transform: translateX(4px); }
+.login-glass-card__user { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.75rem; background: rgba(255,255,255,0.6); border-radius: var(--radius-control); border: 1px solid rgba(255,255,255,0.8); }
+.login-glass-card__user-info { display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0; }
+.login-glass-card__avatar { width: 2.5rem; height: 2.5rem; display: grid; place-items: center; border-radius: var(--radius-pill); background: linear-gradient(135deg, #fbbf24, #f59e0b); color: var(--ink); font-weight: 800; font-size: 1rem; flex-shrink: 0; }
+.login-glass-card__user-name { font-size: 0.85rem; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.login-glass-card__user-role { font-size: 0.7rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
+.login-glass-card__logout { width: 2.25rem; height: 2.25rem; display: grid; place-items: center; border-radius: var(--radius-pill); background: rgba(239,68,68,0.15); color: #dc2626; cursor: pointer; border: none; transition: all 0.2s; flex-shrink: 0; }
+.login-glass-card__logout:hover { background: #dc2626; color: #fff; }
+
+/* Stats */
+.stats-shell { padding: 3rem 1.25rem; }
+.stats-panel { border-radius: var(--radius-card); background: var(--ink); padding: 3.5rem 1.5rem; color: #fff; position: relative; overflow: hidden; }
+.stats-panel::before { content: ''; position: absolute; top: -50%; right: -20%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(15,107,82,0.35), transparent 70%); }
+.stats-header-row { display: flex; flex-direction: column; gap: 1.5rem; justify-content: space-between; }
+@media (min-width: 1024px) { .stats-header-row { flex-direction: row; align-items: flex-end; } }
+.stats-title { max-width: 22ch; font-size: 1.85rem; font-weight: 700; }
+.stats-grid { margin-top: 3.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5rem; }
+@media (min-width: 1024px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+.stat-num { font-size: 3.25rem; font-weight: 800; color: #34d399; line-height: 1; }
+.stat-label { margin-top: 0.75rem; font-size: 0.9rem; font-weight: 600; color: rgba(255,255,255,0.7); }
+
+/* APP LAUNCHER */
+.app-launcher { padding-block: 4rem; background: #fff; }
+.app-launcher__header { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2.5rem; align-items: center; text-align: center; }
+.app-launcher__title { font-size: 2.25rem; font-weight: 800; color: var(--ink); }
+.app-launcher__subtitle { color: var(--muted); font-size: 0.95rem; max-width: 60ch; }
+.app-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+@media (min-width: 640px) { .app-grid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+@media (min-width: 1024px) { .app-grid { grid-template-columns: repeat(4, 1fr); } }
+.app-card { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; padding: 1.5rem 1rem; text-align: center; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-card-sm); transition: all 0.35s; cursor: pointer; min-height: 9rem; }
+.app-card:hover { transform: translateY(-6px); box-shadow: 0 16px 32px rgba(0,0,0,0.08); border-color: var(--accent); }
+.app-card__icon { width: 3.5rem; height: 3.5rem; display: grid; place-items: center; border-radius: var(--radius-control); font-size: 1.5rem; color: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.12); flex-shrink: 0; }
+.app-card__label { font-size: 0.875rem; font-weight: 700; color: var(--ink); line-height: 1.3; word-break: break-word; }
+.app-card__badge { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; padding: 2px 8px; border-radius: 9999px; background: var(--surface-2); color: var(--muted); letter-spacing: 0.05em; }
+.app-card__badge--file { background: #fef3c7; color: #92400e; }
+.app-card__badge--link { background: #dbeafe; color: #1e40af; }
+.app-card__badge--folder { background: #ede9fe; color: #6d28d9; }
+.app-card__admin-actions { position: absolute; top: 0.5rem; left: 0.5rem; display: none; gap: 4px; }
+.app-card:hover .app-card__admin-actions { display: flex; }
+.app-card__admin-btn { width: 1.75rem; height: 1.75rem; display: grid; place-items: center; border-radius: 9999px; background: rgba(255,255,255,0.95); border: 1px solid var(--line); font-size: 0.7rem; cursor: pointer; transition: all 0.2s; }
+.app-card__admin-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.app-card__admin-btn--danger:hover { background: #dc2626; border-color: #dc2626; }
+
+/* PAGE BLOCKS */
+.blocks-section { padding-block: 4rem; background: var(--surface-2); }
+.blocks-header { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2.5rem; align-items: center; text-align: center; }
+.blocks-title { font-size: 2.25rem; font-weight: 800; color: var(--ink); }
+.block-list { display: flex; flex-direction: column; gap: 2rem; }
+.block-item { background: #fff; border-radius: var(--radius-card); overflow: hidden; border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: all 0.35s; position: relative; }
+.block-item:hover { box-shadow: 0 12px 32px rgba(0,0,0,0.08); }
+.block-item__grid { display: grid; grid-template-columns: 1fr; gap: 0; }
+@media (min-width: 768px) {
+  .block-item__grid { grid-template-columns: 1fr 1fr; }
+  .block-item--reverse .block-item__grid { direction: rtl; }
+  .block-item--reverse .block-item__grid > * { direction: ltr; }
+}
+.block-item__media { min-height: 18rem; background: var(--surface-2); display: grid; place-items: center; overflow: hidden; }
+@media (min-width: 768px) { .block-item__media { min-height: 24rem; } }
+.block-item__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.block-item__media .placeholder { font-size: 4rem; color: var(--accent); opacity: 0.5; }
+.block-item__content { padding: 2rem; display: flex; flex-direction: column; justify-content: center; gap: 1rem; }
+@media (min-width: 768px) { .block-item__content { padding: 2.5rem; } }
+.block-item__title { font-size: 1.5rem; font-weight: 800; color: var(--ink); line-height: 1.2; }
+@media (min-width: 640px) { .block-item__title { font-size: 1.875rem; } }
+.block-item__desc { color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
+.block-item__link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); font-weight: 700; font-size: 0.9rem; margin-top: 0.5rem; width: fit-content; }
+.block-item__link:hover { gap: 0.75rem; }
+.block-item__admin-actions { position: absolute; top: 1rem; right: 1rem; z-index: 5; display: none; gap: 6px; }
+.block-item:hover .block-item__admin-actions { display: flex; }
+.block-item__admin-btn { width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: 9999px; background: #fff; border: 1px solid var(--line); font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+.block-item__admin-btn:hover { background: var(--accent); color: #fff; }
+.block-item__admin-btn--danger:hover { background: #dc2626; border-color: #dc2626; }
+
+/* Gallery */
+#gallery { padding-block: 4rem; background: #fff; }
+.file-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
+@media (min-width: 640px) { .file-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .file-grid { grid-template-columns: repeat(3, 1fr); } }
+.file-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-card-sm); overflow: hidden; transition: all 0.3s; }
+.file-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
+.file-card__preview { width: 100%; height: 200px; background: var(--surface-2); display: grid; place-items: center; overflow: hidden; }
+.file-card__preview img { width: 100%; height: 100%; object-fit: cover; }
+.file-card__body { padding: 1rem; }
+.file-card__title { font-weight: 700; font-size: 0.95rem; color: var(--ink); margin-bottom: 4px; word-break: break-word; }
+.file-card__meta { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
+.file-card__actions { display: flex; gap: 0.5rem; }
+.file-card__actions a, .file-card__actions button { flex: 1; padding: 8px 12px; border-radius: var(--radius-pill); font-size: 0.8rem; font-weight: 600; text-align: center; cursor: pointer; border: none; }
+.file-card__actions a { background: var(--accent); color: white; }
+.file-card__actions button { background: #fee2e2; color: #991b1b; }
+
+/* News */
+#works { background: var(--surface); }
+.portfolio-shell { padding-block: 4rem; }
+.portfolio-header { display: flex; flex-direction: column; gap: 1rem; }
+@media (min-width: 768px) { .portfolio-header { flex-direction: row; align-items: flex-end; justify-content: space-between; } }
+.portfolio-title { font-size: 2.25rem; font-weight: 800; color: var(--ink); }
+.portfolio-grid { display: grid; grid-template-columns: 1fr; gap: 1.75rem; margin-top: 2.5rem; }
+@media (min-width: 768px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .portfolio-grid { grid-template-columns: repeat(3, 1fr); } }
+.news-card { min-height: 24rem; overflow: hidden; border-radius: var(--radius-card-sm); background: white; border: 1px solid var(--line); display: flex; flex-direction: column; transition: all 0.35s; }
+.news-card:hover { transform: translateY(-6px); box-shadow: 0 16px 32px rgba(0,0,0,0.08); }
+.card-img { width: 100%; height: 200px; background-size: cover; background-position: center; background-color: #cbd5e1; }
+.card-content { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem; }
+.card-content h3 { font-size: 1.2rem; font-weight: 700; color: var(--ink); }
+.card-content p { color: var(--muted); font-size: 0.875rem; flex: 1; }
+
+/* Footer */
+#footer { position: relative; overflow: hidden; border-radius: var(--radius-card) var(--radius-card) 0 0; background: var(--ink); color: #fff; margin-top: 4rem; }
+.footer-shell { padding: 4rem 1.25rem 2.5rem; }
+.footer-cta { display: flex; flex-direction: column; gap: 2rem; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 3rem; }
+@media (min-width: 1024px) { .footer-cta { flex-direction: row; align-items: flex-end; justify-content: space-between; } }
+.footer-cta__title { max-width: 18ch; font-size: 2.25rem; font-weight: 800; line-height: 1.1; }
+.footer-cols { display: grid; grid-template-columns: 1fr; gap: 2.5rem; padding-block: 3.5rem; }
+@media (min-width: 768px) { .footer-cols { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .footer-cols { grid-template-columns: repeat(4, 1fr); } }
+.footer-col h4 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; }
+.footer-col p, .footer-col ul { font-size: 0.875rem; color: rgba(255,255,255,0.65); }
+.footer-col ul { display: flex; flex-direction: column; gap: 0.6rem; }
+.footer-col a { color: rgba(255,255,255,0.85); }
+.footer-col a:hover { color: #fbbf24; }
+.social-row { display: flex; gap: 0.6rem; margin-top: 1rem; }
+.social-chip { width: 2.5rem; height: 2.5rem; display: grid; place-items: center; border-radius: var(--radius-pill); background: rgba(255,255,255,0.1); color: #fff; }
+.social-chip:hover { background: var(--accent); transform: translateY(-3px); }
+.copyright { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; color: rgba(255,255,255,0.45); }
+
+/* Modals */
+.modal { display: none; position: fixed; z-index: 3000; inset: 0; background-color: rgba(7,30,23,0.7); backdrop-filter: blur(8px); justify-content: center; align-items: center; padding: 16px; }
+.modal.show { display: flex; }
+.modal-content { background: white; border-radius: var(--radius-card-sm); padding: 2.25rem; text-align: center; max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto; }
+.modal-content h3 { font-size: 1.5rem; font-weight: 800; color: var(--ink); margin-bottom: 12px; }
+.close-modal { background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: var(--radius-pill); font-weight: 600; cursor: pointer; margin-top: 1rem; width: 100%; }
+.close-modal:hover { background: var(--accent-hover); }
+.form-group { text-align: left; margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--ink); margin-bottom: 6px; text-transform: uppercase; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 16px; border: 1px solid var(--line); border-radius: var(--radius-control); font-size: 0.95rem; outline: none; font-family: inherit; background: var(--surface); }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); background: white; }
+.form-help { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+.icon-picker { display: grid; grid-template-columns: repeat(8, 1fr); gap: 0.4rem; margin-top: 0.5rem; max-height: 180px; overflow-y: auto; padding: 4px; }
+.icon-picker__item { aspect-ratio: 1; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; background: var(--surface); }
+.icon-picker__item:hover { border-color: var(--accent); background: #fff; }
+.icon-picker__item.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-submit { width: 100%; background: var(--accent); color: white; border: none; padding: 12px; border-radius: var(--radius-control); font-weight: 700; font-size: 1rem; cursor: pointer; }
+.btn-submit:hover { background: var(--accent-hover); }
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-secondary { background: var(--surface-2); color: var(--ink); }
+.btn-secondary:hover { background: var(--line); }
+.progress-bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin-top: 12px; display: none; }
+.progress-bar.show { display: block; }
+.progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.2s; }
+.preview-img { max-width: 100%; max-height: 200px; border-radius: 10px; margin-top: 10px; display: none; }
+.preview-img.show { display: block; }
+.file-drop { border: 2px dashed var(--line); border-radius: var(--radius-control); padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface); }
+.file-drop:hover { border-color: var(--accent); background: #fff; }
+.file-drop i { font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+.file-drop p { font-size: 0.85rem; color: var(--muted); }
+.file-drop.has-file { border-color: var(--accent); background: #ecfdf5; }
+
+/* PREVIEW MODAL */
+.preview-overlay { display: none; position: fixed; z-index: 4000; inset: 0; background: rgba(7,30,23,0.92); backdrop-filter: blur(12px); justify-content: center; align-items: center; padding: 20px; }
+.preview-overlay.show { display: flex; }
+.preview-box { background: #fff; border-radius: var(--radius-card); max-width: 1100px; width: 100%; max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; }
+.preview-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--line); background: var(--surface); }
+.preview-title { font-size: 1.1rem; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 0.6rem; }
+.preview-close { width: 2.25rem; height: 2.25rem; display: grid; place-items: center; border-radius: var(--radius-pill); background: #fff; border: 1px solid var(--line); cursor: pointer; font-size: 1rem; transition: all 0.2s; }
+.preview-close:hover { background: #dc2626; color: #fff; border-color: #dc2626; }
+.preview-body { flex: 1; overflow: auto; padding: 1.5rem; background: #f8fafc; display: grid; place-items: center; }
+.preview-body iframe { width: 100%; height: 70vh; border: none; border-radius: 12px; }
+.preview-body img { max-width: 100%; max-height: 70vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.preview-body video { max-width: 100%; max-height: 70vh; border-radius: 12px; }
+.preview-footer { padding: 1rem 1.75rem; border-top: 1px solid var(--line); background: #fff; display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap; }
+.preview-footer .btn-submit { width: auto; padding: 10px 24px; }
+
+.folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+.folder-item { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-card-sm); padding: 1.25rem; text-align: center; cursor: pointer; transition: all 0.25s; position: relative; }
+.folder-item:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); border-color: var(--accent); }
+.folder-item__icon { width: 3.5rem; height: 3.5rem; display: grid; place-items: center; border-radius: var(--radius-control); background: linear-gradient(135deg, #0f6b52, #1b8a6b); color: #fff; font-size: 1.5rem; margin: 0 auto 0.75rem; }
+.folder-item__label { font-weight: 700; font-size: 0.9rem; color: var(--ink); word-break: break-word; }
+.folder-item__meta { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+.folder-item__admin { position: absolute; top: 0.5rem; right: 0.5rem; display: none; }
+.folder-item:hover .folder-item__admin { display: block; }
+
+.custom-toast { position: fixed; bottom: 30px; right: 30px; background: var(--ink); color: white; padding: 14px 24px; border-radius: var(--radius-pill); font-size: 0.875rem; font-weight: 600; box-shadow: 0 12px 30px rgba(0,0,0,0.25); z-index: 5000; display: none; align-items: center; gap: 10px; max-width: 360px; }
+.custom-toast.show { display: flex; }
+</style>
 </head>
 <body>
 
-<!-- MODAL/POPUP VISI & MISI -->
-<div id="visiMisiModal" class="modal">
-    <div class="modal-content">
-        <h3><i class="fas fa-star" style="color: #fbbf24; animation: iconBlink 0.8s ease-in-out infinite;"></i> Visi & Misi</h3>
-        <p><strong>✨ Unggul dalam Prestasi, Berkarakter Mulia, dan Berwawasan Lingkungan ✨</strong></p>
-        <button class="close-modal" onclick="closeModal()">Tutup</button>
-    </div>
+<div id="pageLoader">
+  <div class="loader-logo"></div>
+  <div class="loader-title">SD Negeri 3 Ngantru</div>
+  <p class="loader-subtitle">Go Digital Sekolahku — Malang, Jawa Timur</p>
+  <div class="loader-progress">
+    <div class="loader-track"><div class="loader-fill" id="loaderFill"></div></div>
+    <div class="loader-status"><span>Memuat Portal</span><span id="loaderPercent">0%</span></div>
+  </div>
 </div>
 
-<!-- Header Atas Hijau -->
-<div class="top-header">
-    <div class="container">
-        <div class="header-content">
-            <div class="logo-area">
-                <div class="school-logo" style="background-image: url('logo sekolah.png');"></div>
-                <div class="logo-text">
-                    <h1>SD NEGERI 3 NGANTRU</h1>
-                    <p>Kecamatan Ngantang, Kabupaten Malang</p>
-                </div>
-            </div>
-            <div class="search-area">
-                <div class="search-wrapper" style="position: relative;">
-                    <input type="text" id="searchInput" placeholder="🔍 Cari: jadwal pelajaran" autocomplete="off">
-                    <div id="searchSuggestions" class="search-suggestions"></div>
-                </div>
-                <button id="searchBtn"><i class="fas fa-search"></i> Cari</button>
-                <button id="googleSearchBtn" style="background: rgba(255,255,255,0.25);"><i class="fab fa-google"></i> Google</button>
-            </div>
-        </div>
-        <div class="popular-keywords" id="popularKeywords">
-            <a href="jadwal-pelajaran.html" class="keyword-chip">jadwal pelajaran</a>
-            <a href="ppdb-2026.html" class="keyword-chip">PPDB 2027</a>
-            <a href="https://raporsd.page.gd" target="_blank" class="keyword-chip">rapor online</a>
-            <a href="ekskul.html" class="keyword-chip">ekstrakurikuler</a>
-            <a href="kalender-akademik.html" class="keyword-chip">kalender akademik</a>
-            <a href="prestasi.html" class="keyword-chip">prestasi sekolah</a>
-            <a href="buat_modul.html" class="keyword-chip">modul ajar</a>
-            <a href="pembuat_bacaan.html" class="keyword-chip">pembuat bacaan</a>
-            <a href="latihan_soal.html" class="keyword-chip">latihan soal</a>
-            <a href="game.html" class="keyword-chip">game</a>
-            <a href="seragam-sekolah.html" class="keyword-chip">seragam sekolah</a>
-            <a href="perpustakaan.html" class="keyword-chip">perpustakaan</a>
-            <a href="Atlas_Indonesia.html" class="keyword-chip">atlas Indonesia</a>
-            <a href="ulangan.html" class="keyword-chip">ulangan harian</a>
-            <a href="aksara_jawa.html" class="keyword-chip">sinau AKSARA JAWA</a>
-        </div>
-    </div>
+<div id="adminBar" class="admin-bar">
+  <div><i class="fas fa-user-shield" style="color:#fbbf24;"></i> <strong>Mode Admin</strong> (<span id="adminEmail">-</span>)</div>
+  <div class="admin-actions">
+    <button class="btn-admin-action btn-admin-logo" data-admin-only onclick="openUploadLogoModal()"><i class="fas fa-school"></i> Logo</button>
+    <button class="btn-admin-action" onclick="openUploadModal()"><i class="fas fa-camera"></i> Foto</button>
+    <button class="btn-admin-action btn-admin-blue" data-admin-only onclick="openAddBlockModal()"><i class="fas fa-plus"></i> Blok Baru</button>
+    <button class="btn-admin-action btn-admin-blue" data-admin-only onclick="openAddMenuModal()"><i class="fas fa-th"></i> Menu Baru</button>
+    <button class="btn-admin-action" onclick="openManageGallery()"><i class="fas fa-images"></i> Galeri</button>
+    <button class="btn-admin-action" data-admin-only onclick="openEditBeforeAfterModal()"><i class="fas fa-wand-magic-sparkles"></i> Before/After</button>
+    <button class="btn-admin-action" data-admin-only onclick="openEditStatsModal()"><i class="fas fa-edit"></i> Statistik</button>
+    <button class="btn-admin-action btn-admin-danger" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
 </div>
 
-<!-- Navigasi Menu -->
-<div class="nav-bar">
-    <div class="container">
-        <ul class="nav-menu">
-            <li><a href="#" id="visiMisiBtn">🏠 Home</a></li>
-            <li><a href="profil-sekolah.html">📋 Profil Sekolah</a></li>
-            <li><a href="administrasi.html">📁 Administrasi</a></li>
-            <li><a href="pembelajaran.html">📰 Pembelajaran</a></li>
-            <li><a href="lingkungan.html">⭐ Lingkungan</a></li>
-            <li><a href="https://drive.google.com/drive/folders/1q4y9LnUdVf2BuDlRawAKI7NRwYuarjmF?usp=drive_link" target="_blank">🎓 Pengembangan Diri</a></li>
-            <li><a href="https://drive.google.com/drive/folders/1fdfDI12lytoPK6rNv4neYNWUXLx3Y5nn?usp=drive_link" target="_blank">📚 Kurikulum</a></li>
-            <li><a href="https://raporsd.page.gd" target="_blank">🔐 Login Rapor Online</a></li>
-            <li><a href="kontak-kami.html">📞 Kontak</a></li>
+<header id="header">
+  <div class="shell">
+    <div class="header-inner">
+      <a href="#" class="header-logo">
+        <div class="school-logo-img"></div>
+        <div class="logo-text-wrap">
+          <h1>SDN 3 NGANTRU</h1>
+          <p>Kec. Ngantang, Kab. Malang</p>
+        </div>
+      </a>
+      <nav class="header-nav" id="headerNav">
+        <ul id="headerNavList">
+          <li><a href="#home"><i class="fas fa-house"></i> Home</a></li>
         </ul>
+      </nav>
+      <div class="header-right">
+        <div class="search-wrapper">
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Cari..." autocomplete="off">
+            <button class="search-btn-icon"><i class="fas fa-search"></i></button>
+          </div>
+          <div id="searchSuggestions" class="search-suggestions"></div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+</header>
 
-<main class="container">
-    <div class="hero" style="background-image: url('background.jpg');">
-        <h2>Selamat Datang di Website <span>SD Negeri 3 Ngantru</span></h2>
-        <p>Jln Sawahan, Bayanan, Ngantru, Kec. Ngantang Kab. Malang</p>
-        <div class="hero-badge">
-            <span class="badge-item"><i class="fas fa-map-marker-alt"></i> Kec. Ngantang</span>
-            <span class="badge-item"><i class="fas fa-building"></i> Kab. Malang</span>
-        </div>
+<main>
+  <section id="home">
+    <div class="hero-liquid-bg" id="liquidWrapper">
+      <img class="liquid-base" id="imgBefore" src="https://res.cloudinary.com/j6sfv399/image/upload/v1788762440/cc0e57fe-60d6-4918-b4e5-f4bca15dd579.jpg" alt="Sebelum" crossorigin="anonymous">
+      <canvas id="liquidCanvas"></canvas>
     </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-watermark" id="heroWatermark">SDN 3 NGANTRU</div>
+    <span class="liquid-badge liquid-badge--before" id="baLabelBefore" style="display:none;"></span>
+<span class="liquid-badge liquid-badge--after" id="baLabelAfter" style="display:none;"></span>
+<div class="liquid-hint" style="display:none;"></div>
+    <div class="shell">
+      <div class="hero-content">
+        <div class="hero-left">
+          <div class="eyebrow eyebrow--dark reveal-item"><span>Kabupaten Malang — Jawa Timur</span></div>
+          <h1 class="hero-h1">
+            <span class="line-mask"><span class="line-inner">Mewujudkan Generasi</span></span>
+            <span class="line-mask"><span class="line-inner"><span>Unggul & Berkarakter</span></span></span>
+            <span class="line-mask"><span class="line-inner">Go Digital Sekolahku.</span></span>
+          </h1>
+          <div class="hero-rating reveal-item">
+            <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+            <span class="rating-badge"><i class="fas fa-award" style="color:#d97706;"></i> Terakreditasi B — NPSN: 20518388</span>
+          </div>
+          <div class="hero-ctas reveal-item">
+            <a href="ppdb-2026.html" class="pill-btn pill-btn--accent pill-btn--has-arrow"><span>Daftar PPDB 2027</span><span class="pill-btn__badge"><i class="fas fa-arrow-right"></i></span></a>
+            <a href="https://raporsd.page.gd" target="_blank" class="pill-btn pill-btn--outline pill-btn--no-arrow"><span><i class="fas fa-graduation-cap"></i> Portal Rapor</span></a>
+          </div>
+          <div class="popular-keywords reveal-item">
+            <a href="jadwal-pelajaran.html" class="keyword-chip"><i class="fas fa-calendar-alt"></i> jadwal</a>
+            <a href="ppdb-2026.html" class="keyword-chip">PPDB 2027</a>
+            <a href="#gallery" class="keyword-chip"><i class="fas fa-images"></i> galeri</a>
+            <a href="prestasi.html" class="keyword-chip">prestasi</a>
+            <a href="perpustakaan.html" class="keyword-chip">perpustakaan</a>
+          </div>
+        </div>
 
-    <!-- Statistik -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-number">8</div>
-            <div class="stat-label"><i class="fas fa-chalkboard-user"></i> Jumlah Guru</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">107</div>
-            <div class="stat-label"><i class="fas fa-user-graduate"></i> Jumlah Siswa</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">6</div>
-            <div class="stat-label"><i class="fas fa-users"></i> Paguyuban Sekolah</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">11</div>
-            <div class="stat-label"><i class="fas fa-briefcase"></i> Total Pegawai</div>
-        </div>
-    </div>
-
-    <div class="digital-banner" style="background-image: url('background.jpg'); background-size: cover; background-position: center bottom 70%;">
-        <i class="fas fa-laptop-code" style="font-size: 1.5rem;"></i> 
-        <span style="font-size: 1.2rem;">🚀 Go Digital Sekolahku — Transformasi Digital SD Negeri 3 Ngantru</span>
-    </div>
-
-    <h2 class="section-title">Berita & Informasi</h2>
-    <div class="content-grid" id="newsGrid">
-        <div class="news-card">
-            <div class="card-img" style="background-image: url('background 1.jpg');"></div>
-            <div class="card-content">
-                <h3>Pembukaan PPDB 2026/2027</h3>
-                <p>Pendaftaran peserta didik baru telah dibuka. Ayo daftarkan putra-putri anda sekarang juga! Kuota terbatas.</p>
-                <a href="ppdb-2026.html" class="btn-read">Selengkapnya →</a>
+        <div class="hero-right reveal-item">
+          <div class="hero-card">
+            <div class="hero-card__inner">
+              <div class="hero-card__left"><i class="fas fa-lightbulb"></i></div>
+              <div class="hero-card__right">
+                <div>
+                  <div class="hero-card__caption" id="spotlightTag">Pengumuman</div>
+                  <div class="hero-card__title" id="spotlightTitle">PPDB 2027 Telah Dibuka!</div>
+                </div>
+                <div class="hero-card__bottom">
+                  <div class="hero-card__dashes">
+                    <span class="dash is-active" id="dash0"></span>
+                    <span class="dash" id="dash1"></span>
+                    <span class="dash" id="dash2"></span>
+                  </div>
+                  <div class="hero-card__nav">
+                    <button class="card-nav-btn" onclick="prevSpotlight()"><i class="fas fa-chevron-left"></i></button>
+                    <button class="card-nav-btn" onclick="nextSpotlight()"><i class="fas fa-chevron-right"></i></button>
+                  </div>
+                </div>
+              </div>
             </div>
-        </div>
-        <div class="news-card">
-            <div class="card-img" style="background-image: url('background 2.jpg');"></div>
-            <div class="card-content">
-                <h3>Lomba Cerdas Cermat Tingkat Kecamatan</h3>
-                <p>Tim SD Negeri 3 Ngantru meraih juara 2 dalam lomba cerdas cermat. Prestasi membanggakan!</p>
-                <a href="prestasi.html" class="btn-read">Selengkapnya →</a>
-            </div>
-        </div>
-        <div class="news-card">
-            <div class="card-img" style="background-image: url('background 3.jpg');"></div>
-            <div class="card-content">
-                <h3>Pelatihan Guru Implementasi Kurikulum Merdeka</h3>
-                <p>Seluruh guru mengikuti workshop penguatan metode pembelajaran interaktif.</p>
-                <a href="materi-kelas6.html" class="btn-read">Selengkapnya →</a>
-            </div>
-        </div>
-    </div>
+          </div>
 
-    <div style="margin: 40px 0;">
-        <h2 class="section-title">Akses Cepat</h2>
-        <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px;">
-            <a href="https://raporsd.page.gd" target="_blank" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;">📊 Rapor Digital</a>
-            <a href="kalender-akademik.html" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;">📅 Kalender Akademik</a>
-            <a href="perpustakaan.html" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;">📚 Perpustakaan Digital</a>
-            <a href="jadwal-pelajaran.html" class="btn-read" style="background:#eef2ff; padding:10px 20px; border-radius:40px;">📅 Jadwal Pelajaran</a>
+          <div class="login-glass-card">
+            <div id="loginBtnState">
+              <div class="login-glass-card__header">
+                <div class="login-glass-card__icon"><i class="fas fa-user-shield"></i></div>
+                <div>
+                  <div class="login-glass-card__title">Portal Guru</div>
+                  <div class="login-glass-card__subtitle">Masuk untuk upload & kelola</div>
+                </div>
+              </div>
+              <button class="login-glass-card__btn" onclick="openLoginModal()">
+                <i class="fas fa-key"></i>
+                <span>Login Sekarang</span>
+                <i class="fas fa-arrow-right login-glass-card__arrow"></i>
+              </button>
+            </div>
+            <div id="loginUserState" class="hidden">
+              <div class="login-glass-card__user">
+                <div class="login-glass-card__user-info">
+                  <div class="login-glass-card__avatar" id="userAvatar">A</div>
+                  <div>
+                    <div class="login-glass-card__user-name" id="userName">Admin</div>
+                    <div class="login-glass-card__user-role" id="userRole">guru</div>
+                  </div>
+                </div>
+                <button class="login-glass-card__logout" onclick="logoutAdmin()" title="Logout">
+                  <i class="fas fa-sign-out-alt"></i>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </section>
+
+  <section class="stats-shell">
+    <div class="shell">
+      <div class="stats-panel">
+        <div class="stats-header-row">
+          <div class="eyebrow eyebrow--light">Data & Statistik</div>
+          <h2 class="stats-title">Komitmen kami dalam memajukan pendidikan.</h2>
+        </div>
+        <div class="stats-grid">
+          <div><div class="stat-num" id="statGuru">8</div><div class="stat-label"><i class="fas fa-chalkboard-teacher" style="color:#fbbf24;"></i> Tenaga Pendidik</div></div>
+          <div><div class="stat-num" id="statSiswa">107</div><div class="stat-label"><i class="fas fa-user-graduate" style="color:#38bdf8;"></i> Peserta Didik</div></div>
+          <div><div class="stat-num" id="statPaguyuban">6</div><div class="stat-label"><i class="fas fa-users" style="color:#f472b6;"></i> Paguyuban</div></div>
+          <div><div class="stat-num" id="statPegawai">11</div><div class="stat-label"><i class="fas fa-briefcase" style="color:#a7f3d0;"></i> Total Pegawai</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="app-launcher" id="apps">
+    <div class="shell">
+      <div class="app-launcher__header">
+        <div class="eyebrow eyebrow--dark">Menu & Akses Cepat</div>
+        <h2 class="app-launcher__title">Layanan Digital Sekolah</h2>
+        <p class="app-launcher__subtitle">Klik ikon untuk membuka file atau halaman. Admin dapat mengelola isi di sini.</p>
+      </div>
+      <div class="app-grid" id="appGrid">
+        <div style="grid-column: 1/-1; text-align: center; color: var(--muted); padding: 2rem;">Memuat menu...</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blocks-section" id="blocks">
+    <div class="shell">
+      <div class="blocks-header">
+        <div class="eyebrow eyebrow--dark">Informasi & Kegiatan</div>
+        <h2 class="blocks-title">Seputar Sekolah Kami</h2>
+      </div>
+      <div class="block-list" id="blockList">
+        <div style="text-align: center; color: var(--muted); padding: 2rem;">Memuat blok...</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery">
+    <div class="shell">
+      <div class="portfolio-header">
+        <div>
+          <div class="eyebrow eyebrow--dark">Dokumentasi</div>
+          <h2 class="portfolio-title">Galeri Foto</h2>
+        </div>
+        <button id="btnUploadTop" class="btn-admin-action hidden" onclick="openUploadModal()"><i class="fas fa-camera"></i> Upload Foto</button>
+      </div>
+      <div class="file-grid" id="publicFilesGrid">
+        <div style="grid-column: 1/-1; text-align: center; color: var(--muted); padding: 2rem;">Memuat foto...</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="works">
+    <div class="shell">
+      <div class="portfolio-shell">
+        <div class="portfolio-header">
+          <div>
+            <div class="eyebrow eyebrow--dark">Kabar Sekolah</div>
+            <h2 class="portfolio-title">Berita & Informasi</h2>
+          </div>
+        </div>
+        <div class="portfolio-grid" id="newsGrid">
+          <div class="news-card"><div class="card-img" style="background-image: url('background 1.jpg');"></div><div class="card-content"><div><h3>Pembukaan PPDB 2027</h3><p>Pendaftaran siswa baru telah dibuka.</p></div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
-<footer class="footer">
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-col">
-                <h4>SD Negeri 3 Ngantru</h4>
-                <p>Jln Sawahan, Bayanan, Ngantru<br>Kec. Ngantang, Kab. Malang</p>
-                <p>Email: sdn3ngantru.ngantang@gmail.com | Telp: 085179998236</p>
-            </div>
-            <div class="footer-col">
-                <h4>Tautan Penting</h4>
-                <ul>
-                    <li><a href="ppdb-2026.html">PPDB Online</a></li>
-                    <li><a href="perpustakaan.html">E-Learning</a></li>
-                    <li><a href="https://raporsd.page.gd" target="_blank">Login Raport Digital</a></li>
-                    <li><a href="kontak-kami.html">Pengaduan Masyarakat</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Sosial Media</h4>
-                <ul>
-                    <li><a href="https://www.facebook.com/profile.php?id=100080344573562" target="_blank"><i class="fab fa-facebook"></i> Facebook</a></li>
-                    <li><a href="https://www.instagram.com/sd_negeri_3_ngantru_ngantang?igsh=MWFjcnJxcWZweGtvMg==" target="_blank"><i class="fab fa-instagram"></i> Instagram</a></li>
-                    <li><a href="https://www.youtube.com/@sdnegeri3ngantrukecamatann821" target="_blank"><i class="fab fa-youtube"></i> YouTube</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="copyright">
-            &copy; 2026 SD Negeri 3 NGANTRU Kec. Ngantang Kab. Malang. All Rights Reserved. | Go Digital Sekolahku
-        </div>
+<footer id="footer">
+  <div class="shell">
+    <div class="footer-shell">
+      <div class="footer-cta">
+        <div><div class="eyebrow eyebrow--light">Mari Bergabung</div><h2 class="footer-cta__title">Siapkan Masa Depan Putra-Putri Anda.</h2></div>
+        <a href="ppdb-2026.html" class="pill-btn pill-btn--accent pill-btn--has-arrow" style="background:#fbbf24; color: var(--ink);"><span>Daftar Sekarang</span><span class="pill-btn__badge" style="background: var(--ink); color:#fff;"><i class="fas fa-arrow-right"></i></span></a>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col"><h4>SD Negeri 3 Ngantru</h4><p>Jln Sawahan, Bayanan, Ngantru<br>Kec. Ngantang, Kab. Malang</p><p style="margin-top:0.5rem;"><i class="fas fa-envelope"></i> sdn3ngantru.ngantang@gmail.com</p></div>
+        <div class="footer-col"><h4>Tautan</h4><ul><li><a href="ppdb-2026.html">PPDB</a></li><li><a href="#gallery">Galeri</a></li><li><a href="https://raporsd.page.gd">Rapor</a></li></ul></div>
+        <div class="footer-col"><h4>Login</h4><ul><li><a href="#" onclick="openLoginModal()"><i class="fas fa-key"></i> Login Guru</a></li></ul></div>
+        <div class="footer-col"><h4>Ikuti Kami</h4><div class="social-row"><a href="#" class="social-chip"><i class="fab fa-facebook-f"></i></a><a href="#" class="social-chip"><i class="fab fa-instagram"></i></a><a href="#" class="social-chip"><i class="fab fa-youtube"></i></a></div></div>
+      </div>
+      <div class="copyright">&copy; 2026 SD Negeri 3 NGANTRU — Go Digital Sekolahku</div>
     </div>
+  </div>
 </footer>
 
-<!-- ICON ANAK SD BERGERAK -->
-<div class="kid-float" id="kidIcon">
-    <i class="fas fa-child"></i>
-    <span class="kid-tooltip">Cari informasi sekolah! 🔍</span>
+<!-- MODALS -->
+<div id="visiMisiModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-star" style="color:#fbbf24;"></i> Visi & Misi</h3>
+    <p style="margin: 16px 0; font-size: 1.05rem; line-height: 1.6; color: var(--ink);"><strong>✨ Unggul dalam Prestasi, Berkarakter Mulia, dan Berwawasan Lingkungan ✨</strong></p>
+    <button class="close-modal" onclick="closeModal('visiMisiModal')">Tutup</button>
+  </div>
 </div>
 
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-user-lock"></i> Login Guru & Admin</h3>
+    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 20px;">Masukkan email & password dari admin sekolah</p>
+    <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="guru@sdn3ngantru.sch.id"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="loginPassword"></div>
+    <button class="btn-submit" id="loginSubmitBtn" onclick="handleLogin()">Masuk</button>
+    <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('loginModal')">Batal</button>
+  </div>
+</div>
+
+<div id="uploadModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-camera"></i> Upload Foto</h3>
+    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 16px;">Hanya file gambar (jpg, png, webp)</p>
+    <div class="form-group"><label>Judul / Caption</label><input type="text" id="uploadCaption" placeholder="Contoh: Kegiatan Pramuka"></div>
+    <div class="form-group">
+      <label>Tujuan Foto</label>
+      <select id="uploadPurpose">
+        <option value="galeri">📸 Galeri Umum</option>
+        <option value="hero">🖼️ Foto Hero</option>
+        <option value="before">⬅️ Foto Before</option>
+        <option value="after">➡️ Foto After</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Pilih Foto (max 10 MB)</label><input type="file" id="uploadFile" accept="image/jpeg,image/png,image/webp,image/jpg"></div>
+    <img id="uploadPreview" class="preview-img" alt="">
+    <div class="progress-bar" id="uploadProgressBar"><div class="progress-fill" id="uploadProgressFill"></div></div>
+    <div id="uploadResult" style="margin-top:12px; font-size:0.85rem; text-align:left;"></div>
+    <button class="btn-submit" id="uploadSubmitBtn" onclick="handleUpload()" style="margin-top:12px;">Upload Foto</button>
+    <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('uploadModal')">Batal</button>
+  </div>
+</div>
+
+<div id="uploadLogoModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-school"></i> Upload Logo Sekolah</h3>
+    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 16px;">Logo akan tampil di header & halaman utama</p>
+    <div class="form-group"><label>Pilih Logo</label><input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/webp,image/svg+xml"></div>
+    <img id="logoPreviewImg" class="preview-img" alt="Preview">
+    <div class="progress-bar" id="logoProgressBar"><div class="progress-fill" id="logoProgressFill"></div></div>
+    <div id="logoResult" style="margin-top:12px; font-size:0.85rem; text-align:left;"></div>
+    <button class="btn-submit" id="logoSubmitBtn" onclick="handleUploadLogo()" style="margin-top:12px;">Upload Logo</button>
+    <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('uploadLogoModal')">Batal</button>
+  </div>
+</div>
+
+<div id="addBlockModal" class="modal">
+  <div class="modal-content">
+    <h3 id="blockModalTitle"><i class="fas fa-plus"></i> Tambah Blok Baru</h3>
+    <input type="hidden" id="blockEditId">
+    <div class="form-group"><label>Judul Blok</label><input type="text" id="blockTitle" placeholder="Contoh: Ekstrakurikuler Pramuka"></div>
+    <div class="form-group"><label>Deskripsi</label><textarea id="blockDesc" rows="3" placeholder="Tulis deskripsi singkat..."></textarea></div>
+    <div class="form-group">
+      <label>Foto Blok</label>
+      <input type="file" id="blockImageInput" accept="image/*">
+      <img id="blockImagePreview" class="preview-img" alt="">
+      <input type="hidden" id="blockImageUrl">
+    </div>
+    <div class="form-group"><label>Link (opsional)</label><input type="text" id="blockLink" placeholder="https://... atau halaman.html"></div>
+    <div class="form-group"><label>Label Link (opsional)</label><input type="text" id="blockLinkLabel" placeholder="Selengkapnya"></div>
+    <button class="btn-submit" id="blockSubmitBtn" onclick="saveBlock()">Simpan Blok</button>
+    <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('addBlockModal')">Batal</button>
+  </div>
+</div>
+
+<div id="addMenuModal" class="modal">
+  <div class="modal-content">
+    <h3 id="menuModalTitle"><i class="fas fa-th"></i> Tambah Menu Baru</h3>
+    <input type="hidden" id="menuEditId">
+    <div class="form-group"><label>Label Menu</label><input type="text" id="menuLabel" placeholder="Contoh: Profil Sekolah"></div>
+    <div class="form-group">
+      <label>Tipe Menu</label>
+      <select id="menuMode">
+        <option value="link_html">🔗 Link HTML Internal</option>
+        <option value="link_external">🌐 Link Eksternal</option>
+        <option value="file">📄 File Tunggal (PDF/Gambar/Video)</option>
+        <option value="folder">📁 Folder Multi-File</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Pilih Icon</label>
+      <div class="icon-picker" id="iconPicker"></div>
+      <input type="hidden" id="menuIcon" value="fa-folder">
+    </div>
+    <div class="form-group"><label>Warna Icon</label><input type="color" id="menuColor" value="#0f6b52" style="height: 44px; padding: 4px;"></div>
+    <div class="form-group menu-mode-section" data-mode="link_html">
+      <label>URL Halaman HTML</label>
+      <input type="text" id="menuLinkHtml" placeholder="profil-sekolah.html">
+    </div>
+    <div class="form-group menu-mode-section" data-mode="link_external" style="display:none;">
+      <label>URL Eksternal</label>
+      <input type="text" id="menuLinkExternal" placeholder="https://example.com">
+    </div>
+    <div class="form-group menu-mode-section" data-mode="file" style="display:none;">
+      <label>Upload File (PDF, DOCX, Gambar, Video)</label>
+      <div class="file-drop" id="menuFileDrop" onclick="document.getElementById('menuFileInput').click()">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p>Klik untuk pilih file</p>
+        <p style="font-size: 0.75rem; margin-top: 4px;" id="menuFileName">Belum ada file</p>
+      </div>
+      <input type="file" id="menuFileInput" style="display:none">
+      <input type="hidden" id="menuFileUrl">
+      <input type="hidden" id="menuFileType">
+      <input type="hidden" id="menuFileFormat">
+      <div class="progress-bar" id="menuProgressBar"><div class="progress-fill" id="menuProgressFill"></div></div>
+    </div>
+    <div class="form-group">
+      <label>Tampilkan di</label>
+      <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+        <label style="display: flex; align-items: center; gap: 0.4rem; text-transform: none; font-weight: 500; font-size: 0.85rem;"><input type="checkbox" id="menuShowHeader" checked style="width: auto;"> Header</label>
+        <label style="display: flex; align-items: center; gap: 0.4rem; text-transform: none; font-weight: 500; font-size: 0.85rem;"><input type="checkbox" id="menuShowLauncher" checked style="width: auto;"> App Launcher</label>
+      </div>
+    </div>
+    <button class="btn-submit" id="menuSubmitBtn" onclick="saveMenu()">Simpan Menu</button>
+    <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('addMenuModal')">Batal</button>
+  </div>
+</div>
+
+<div id="editBeforeAfterModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-wand-magic-sparkles"></i> Edit Before/After</h3>
+    <div class="form-group"><label>URL Foto Before (statis)</label><input type="text" id="editImgBefore"></div>
+    <div class="form-group"><label>Label Before</label><input type="text" id="editLabelBefore"></div>
+    <div class="form-group"><label>URL Foto After (gosok)</label><input type="text" id="editImgAfter"></div>
+    <div class="form-group"><label>Label After</label><input type="text" id="editLabelAfter"></div>
+    <button class="btn-submit" onclick="saveBeforeAfter()">Simpan</button>
+    <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('editBeforeAfterModal')">Batal</button>
+  </div>
+</div>
+
+<div id="editStatsModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-chart-bar"></i> Edit Statistik</h3>
+    <div class="form-group"><label>Jumlah Guru</label><input type="number" id="editGuruInput"></div>
+    <div class="form-group"><label>Jumlah Siswa</label><input type="number" id="editSiswaInput"></div>
+    <div class="form-group"><label>Paguyuban</label><input type="number" id="editPaguyubanInput"></div>
+    <div class="form-group"><label>Total Pegawai</label><input type="number" id="editPegawaiInput"></div>
+    <button class="btn-submit" onclick="saveStats()">Update</button>
+    <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('editStatsModal')">Batal</button>
+  </div>
+</div>
+
+<div id="manageGalleryModal" class="modal">
+  <div class="modal-content" style="max-width: 720px;">
+    <h3><i class="fas fa-images"></i> Kelola Galeri</h3>
+    <div id="manageGalleryList" style="margin-top: 1rem; text-align: left; max-height: 60vh; overflow-y: auto;">Memuat...</div>
+    <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('manageGalleryModal')">Tutup</button>
+  </div>
+</div>
+
+<div id="previewOverlay" class="preview-overlay">
+  <div class="preview-box">
+    <div class="preview-header">
+      <div class="preview-title" id="previewTitle"><i class="fas fa-file"></i> Preview</div>
+      <button class="preview-close" onclick="closePreview()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="preview-body" id="previewBody"></div>
+    <div class="preview-footer" id="previewFooter"></div>
+  </div>
+</div>
+
+<div id="customToast" class="custom-toast"><i class="fas fa-info-circle" style="color:#34d399;"></i><span id="toastMessage">Notifikasi</span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-    // ============================================================
-    // DATA HALAMAN STATIS UNTUK PENCARIAN (Fitur #3)
-    // ============================================================
-    const halamanDatabase = [
-        { kata: ["jadwal pelajaran", "jadwal", "pelajaran", "mapel"], url: "jadwal-pelajaran.html" },
-        { kata: ["ppdb", "pendaftaran", "siswa baru", "ppdb 2026"], url: "ppdb-2026.html" },
-        { kata: ["rapor online", "rapor", "raport", "nilai"], url: "https://raporsd.page.gd" },
-        { kata: ["ekstrakurikuler", "ekskul", "ekstra"], url: "ekskul.html" },
-        { kata: ["kalender akademik", "kalender", "akademik", "libur"], url: "kalender-akademik.html" },
-        { kata: ["prestasi sekolah", "prestasi", "juara", "lomba"], url: "prestasi.html" },
-        { kata: ["profil sekolah", "profil", "sejarah", "visi misi"], url: "profil-sekolah.html" },
-        { kata: ["administrasi", "dokumen", "surat", "arsip"], url: "administrasi.html" },
-        { kata: ["kontak", "hubungi", "telepon", "email"], url: "kontak-kami.html" },
-        { kata: ["lingkungan", "fasilitas", "sarana"], url: "lingkungan.html" },
-        { kata: ["seragam sekolah", "seragam", "baju"], url: "seragam-sekolah.html" },
-        { kata: ["perpustakaan", "buku", "literasi"], url: "perpustakaan.html" },
-        { kata: ["materi kelas 6", "materi", "kelas 6"], url: "materi-kelas6.html" },
-        { kata: ["ulangan harian", "ulangan", "ujian"], url: "ulangan.html" },
-        { kata: ["try out", "tryout", "to", "latihan soal"], url: "tryout.html" }
-    ];
+// ============================================================
+// KONFIGURASI
+// ============================================================
+const SUPABASE_URL = 'https://ebxtrlurcigfbitdxghn.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVieHRybHVyY2lnZmJpdGR4Z2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMDU0MjIsImV4cCI6MjEwNjY4MTQyMn0.M10w3Zek3MmmyTrN-4aW9zFS80fmuj8WFMxq2uJo-SU';
+const CLOUDINARY_CLOUD_NAME = 'j6sfv399';
+const CLOUDINARY_UPLOAD_PRESET = 'sdnngantru3@gmail.com';
+const CLOUDINARY_FOLDER = 'sdn3ngantru/uploads-user';
+const DEFAULT_AFTER_IMAGE = 'https://res.cloudinary.com/j6sfv399/image/upload/v1788762440/772879928_1090776230277186_3705696280195234379_n.jpg';
 
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const googleBtn = document.getElementById('googleSearchBtn');
-    const suggestionsDiv = document.getElementById('searchSuggestions');
+let supabaseClient = null;
+let currentUser = null;
+let currentProfile = null;
+let allMenus = [];
+let allBlocks = [];
 
-    function showSuggestions(value) {
-        if (!value.trim()) {
-            suggestionsDiv.classList.remove('show');
-            return;
-        }
-        const lower = value.toLowerCase();
-        const filtered = halamanDatabase.filter(h => 
-            h.kata.some(k => k.toLowerCase().includes(lower))
-        ).slice(0, 6);
-        
-        if (filtered.length > 0) {
-            suggestionsDiv.innerHTML = filtered.map(h => 
-                `<div class="suggestion-item" data-url="${h.url}">🔍 ${h.kata[0]}</div>`
-            ).join('');
-            suggestionsDiv.classList.add('show');
-            document.querySelectorAll('.suggestion-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const url = item.dataset.url;
-                    if (url.startsWith('http')) window.open(url, '_blank');
-                    else window.location.href = url;
-                });
-            });
-        } else {
-            suggestionsDiv.classList.remove('show');
-        }
+// ============================================================
+// HELPERS
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('customToast');
+  document.getElementById('toastMessage').innerText = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+function openModal(id) { const m = document.getElementById(id); if (m) m.classList.add('show'); }
+function closeModal(id) { const m = document.getElementById(id); if (m) m.classList.remove('show'); }
+function openLoginModal() { openModal('loginModal'); }
+function isAdmin() { return currentProfile && currentProfile.role === 'admin'; }
+function isLoggedIn() { return !!currentUser; }
+function escapeHtml(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ============================================================
+// PAGE LOADER
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  let progress = 0;
+  const fill = document.getElementById('loaderFill');
+  const percent = document.getElementById('loaderPercent');
+  const interval = setInterval(() => {
+    progress += Math.floor(Math.random() * 25) + 10;
+    if (progress > 100) progress = 100;
+    fill.style.width = progress + '%';
+    percent.innerText = progress + '%';
+    if (progress === 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        document.getElementById('pageLoader').style.transform = 'translateY(-100%)';
+        document.getElementById('header').classList.add('is-ready');
+        document.getElementById('heroWatermark').classList.add('is-ready');
+        document.querySelectorAll('.line-inner, .reveal-item').forEach(el => el.classList.add('is-revealed'));
+      }, 300);
+    }
+  }, 60);
+});
+
+// ============================================================
+// SPOTLIGHT CAROUSEL
+// ============================================================
+const spotlightData = [
+  { tag: "Pendaftaran", title: "PPDB 2027 Telah Dibuka!" },
+  { tag: "E-Rapor", title: "Sistem Rapor Online Terintegrasi" },
+  { tag: "Prestasi", title: "Juara Lomba Cerdas Cermat" }
+];
+let spotlightIdx = 0;
+function updateSpotlight() {
+  const d = spotlightData[spotlightIdx];
+  document.getElementById('spotlightTag').innerText = d.tag;
+  document.getElementById('spotlightTitle').innerText = d.title;
+  for (let i = 0; i < 3; i++) {
+    const dash = document.getElementById('dash' + i);
+    if (dash) dash.classList.toggle('is-active', i === spotlightIdx);
+  }
+}
+function nextSpotlight() { spotlightIdx = (spotlightIdx + 1) % spotlightData.length; updateSpotlight(); }
+function prevSpotlight() { spotlightIdx = (spotlightIdx - 1 + spotlightData.length) % spotlightData.length; updateSpotlight(); }
+setInterval(nextSpotlight, 5000);
+
+// ============================================================
+// LOGIN / LOGOUT
+// ============================================================
+async function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) { showToast('⚠️ Isi email & password!'); return; }
+
+  const btn = document.getElementById('loginSubmitBtn');
+  btn.disabled = true; btn.innerText = 'Memuat...';
+
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) { showToast('❌ ' + error.message); btn.disabled = false; btn.innerText = 'Masuk'; return; }
+
+    currentUser = data.user;
+    let profile = null;
+    for (let i = 0; i < 3; i++) {
+      const res = await supabaseClient.from('profiles').select('*').eq('id', data.user.id).maybeSingle();
+      if (res.data) { profile = res.data; break; }
+      await new Promise(r => setTimeout(r, 500));
+    }
+    currentProfile = profile || { email: data.user.email, role: 'guru', full_name: data.user.email };
+
+    setLoggedInUI(true);
+    closeModal('loginModal');
+    showToast('✅ Selamat datang, ' + (currentProfile.full_name || currentProfile.email));
+    document.getElementById('loginPassword').value = '';
+
+    if (currentProfile.role === 'guru') await ensureTeacherFolder();
+    await loadMenus();
+    await loadBlocks();
+  } catch (err) {
+    showToast('❌ ' + err.message);
+  } finally {
+    btn.disabled = false; btn.innerText = 'Masuk';
+  }
+}
+
+async function logoutAdmin() {
+  try { await supabaseClient.auth.signOut(); } catch (e) {}
+  currentUser = null; currentProfile = null;
+  setLoggedInUI(false);
+  showToast('👋 Logout');
+  await loadMenus();
+  await loadBlocks();
+}
+
+async function checkSession() {
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) { setLoggedInUI(false); return; }
+
+    currentUser = session.user;
+    let profile = null;
+    for (let i = 0; i < 3; i++) {
+      const res = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+      if (res.data) { profile = res.data; break; }
+      await new Promise(r => setTimeout(r, 400));
+    }
+    currentProfile = profile || { email: session.user.email, role: 'guru', full_name: session.user.email };
+    setLoggedInUI(true);
+    if (currentProfile.role === 'guru') await ensureTeacherFolder();
+  } catch (err) { setLoggedInUI(false); }
+}
+
+function setLoggedInUI(on) {
+  const adminBar = document.getElementById('adminBar');
+  const loginBtnState = document.getElementById('loginBtnState');
+  const loginUserState = document.getElementById('loginUserState');
+  const btnUploadTop = document.getElementById('btnUploadTop');
+  const adminUser = currentProfile && currentProfile.role === 'admin';
+
+  if (on) {
+    adminBar.classList.add('admin-bar-active');
+    document.getElementById('adminEmail').innerText = currentProfile?.email || currentUser?.email || '-';
+    document.querySelectorAll('[data-admin-only]').forEach(el => { el.style.display = adminUser ? '' : 'none'; });
+    loginBtnState.classList.add('hidden');
+    loginUserState.classList.remove('hidden');
+    document.getElementById('userName').innerText = currentProfile?.full_name || currentProfile?.email || '-';
+    document.getElementById('userRole').innerText = currentProfile?.role || 'guru';
+    document.getElementById('userAvatar').innerText = (currentProfile?.full_name || currentProfile?.email || 'A').charAt(0).toUpperCase();
+    if (btnUploadTop) btnUploadTop.classList.remove('hidden');
+  } else {
+    adminBar.classList.remove('admin-bar-active');
+    loginBtnState.classList.remove('hidden');
+    loginUserState.classList.add('hidden');
+    if (btnUploadTop) btnUploadTop.classList.add('hidden');
+  }
+}
+
+// ============================================================
+// AUTO-CREATE FOLDER GURU
+// ============================================================
+async function ensureTeacherFolder() {
+  try {
+    const { data: existing } = await supabaseClient.from('page_menus').select('id').eq('is_teacher_folder', true).eq('owner_id', currentUser.id).limit(1);
+    if (existing && existing.length > 0) return;
+
+    const { data: parent } = await supabaseClient.from('page_menus').select('id').eq('menu_label', 'Pembelajaran').eq('menu_mode', 'folder').limit(1);
+    const rawName = currentProfile.full_name || currentProfile.email.split('@')[0];
+    const folderName = rawName.trim() || 'Guru';
+
+    await supabaseClient.from('page_menus').insert([{
+      menu_label: folderName, menu_icon: 'fa-user-circle', menu_color: '#0f6b52',
+      menu_mode: 'folder', is_teacher_folder: true, owner_id: currentUser.id,
+      parent_id: parent && parent.length > 0 ? parent[0].id : null,
+      show_in_header: false, show_in_launcher: false, display_order: 999,
+      created_by: currentUser.id
+    }]);
+  } catch (err) { console.error(err); }
+}
+
+// ============================================================
+// UPLOAD FOTO
+// ============================================================
+document.getElementById('uploadFile')?.addEventListener('change', (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  const p = document.getElementById('uploadPreview');
+  if (f.type.startsWith('image/')) { p.src = URL.createObjectURL(f); p.classList.add('show'); }
+  else { p.classList.remove('show'); }
+});
+
+function openUploadModal() {
+  if (!isLoggedIn()) { showToast('🔒 Login dulu!'); return; }
+  document.getElementById('uploadFile').value = '';
+  document.getElementById('uploadCaption').value = '';
+  document.getElementById('uploadPreview').classList.remove('show');
+  document.getElementById('uploadResult').innerHTML = '';
+  openModal('uploadModal');
+}
+
+async function handleUpload() {
+  if (!currentUser) { showToast('🔒 Login dulu!'); return; }
+  const file = document.getElementById('uploadFile').files[0];
+  const caption = document.getElementById('uploadCaption').value.trim();
+  const purpose = document.getElementById('uploadPurpose').value;
+
+  if (!file) { showToast('⚠️ Pilih foto dulu!'); return; }
+  if (!file.type.startsWith('image/')) { showToast('⚠️ Hanya file gambar!'); return; }
+  if (file.size > 10 * 1024 * 1024) { showToast('⚠️ Max 10 MB!'); return; }
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  formData.append('folder', CLOUDINARY_FOLDER);
+
+  const btn = document.getElementById('uploadSubmitBtn');
+  const pb = document.getElementById('uploadProgressBar');
+  const pf = document.getElementById('uploadProgressFill');
+  const rb = document.getElementById('uploadResult');
+  btn.disabled = true; pb.classList.add('show'); pf.style.width = '0%';
+  rb.innerHTML = '⏳ Mengupload...';
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`);
+  xhr.upload.onprogress = (e) => { pf.style.width = Math.round((e.loaded / e.total) * 100) + '%'; };
+
+  xhr.onload = async () => {
+    btn.disabled = false;
+    if (xhr.status !== 200) { pb.classList.remove('show'); rb.innerHTML = '❌ Gagal: ' + xhr.responseText; return; }
+    const result = JSON.parse(xhr.responseText);
+
+    const { error } = await supabaseClient.from('cloudinary_files').insert([{
+      public_id: result.public_id, secure_url: result.secure_url,
+      resource_type: 'image', format: result.format, bytes: result.bytes,
+      folder: result.folder || CLOUDINARY_FOLDER,
+      original_filename: result.original_filename,
+      caption: caption || result.original_filename,
+      category: purpose, purpose: purpose,
+      uploaded_by: currentUser.id, is_public: true
+    }]);
+
+    setTimeout(() => pb.classList.remove('show'), 800);
+    if (error) { rb.innerHTML = '⚠️ Metadata gagal: ' + error.message; return; }
+
+    rb.innerHTML = '✅ Berhasil!';
+    showToast('✅ Foto berhasil diupload!');
+
+    if (purpose === 'before' || purpose === 'after' || purpose === 'hero') {
+      await updateSiteSetting(purpose === 'hero' ? 'hero_image_url' : 'ba_' + purpose, result.secure_url);
     }
 
-    function performSearch() {
-        const keyword = searchInput.value.trim().toLowerCase();
-        if (!keyword) {
-            alert("🔍 Masukkan kata kunci terlebih dahulu");
-            return;
-        }
-        
-        for (const h of halamanDatabase) {
-            if (h.kata.some(k => keyword.includes(k) || k.includes(keyword))) {
-                if (h.url.startsWith('http')) window.open(h.url, '_blank');
-                else window.location.href = h.url;
-                return;
-            }
-        }
-        
-        const useGoogle = confirm(`🔍 "${keyword}" tidak ditemukan.\n\n• OK: Cari dengan Google\n• Batal: Cari di halaman ini`);
-        if (useGoogle) {
-            window.open(`https://www.google.com/search?q=${encodeURIComponent(keyword + " SD Negeri 3 Ngantru")}`, '_blank');
-        } else {
-            alert("Coba kata kunci lain: jadwal pelajaran, PPDB, rapor online, ekstrakurikuler");
-        }
-    }
+    document.getElementById('uploadFile').value = '';
+    document.getElementById('uploadCaption').value = '';
+    document.getElementById('uploadPreview').classList.remove('show');
 
-    searchInput.addEventListener('input', (e) => showSuggestions(e.target.value));
-    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
-    searchBtn.addEventListener('click', performSearch);
-    googleBtn.addEventListener('click', () => {
-        const kw = searchInput.value.trim();
-        if (kw) window.open(`https://www.google.com/search?q=${encodeURIComponent(kw + " SD Negeri 3 Ngantru")}`, '_blank');
-        else alert("Masukkan kata kunci");
-    });
-    document.addEventListener('click', (e) => { if (!e.target.closest('.search-wrapper')) suggestionsDiv.classList.remove('show'); });
-    
-    // Modal Visi Misi
-    function showModal() { document.getElementById('visiMisiModal').style.display = 'flex'; }
-    function closeModal() { document.getElementById('visiMisiModal').style.display = 'none'; }
-    window.closeModal = closeModal;
-    document.getElementById('visiMisiBtn')?.addEventListener('click', (e) => { e.preventDefault(); showModal(); });
-    window.onclick = (e) => { if (e.target === document.getElementById('visiMisiModal')) closeModal(); };
-    
-    // Icon anak SD
-    document.getElementById('kidIcon')?.addEventListener('click', () => alert("🔍 Ketik kata kunci! Contoh: jadwal pelajaran, PPDB, rapor online"));
-    
-    // Placeholder bergantian
-    const placeholders = ["🔍 Cari: jadwal pelajaran", "🔍 Cari: PPDB 2026", "🔍 Cari: rapor online", "🔍 Cari: ekstrakurikuler", "🔍 Cari: kalender akademik"];
-    let phIndex = 0;
-    setInterval(() => {
-        if(searchInput && document.activeElement !== searchInput) {
-            searchInput.placeholder = placeholders[phIndex % placeholders.length];
-            phIndex++;
-        }
-    }, 4000);
-    
-    console.log("✅ Website SD Negeri 3 Ngantru siap dengan semua link aktif!");
+    setTimeout(() => {
+      closeModal('uploadModal'); rb.innerHTML = '';
+      loadPublicFiles();
+      if (purpose === 'before') document.getElementById('imgBefore').src = result.secure_url;
+      if (purpose === 'after') loadLiquidImage(result.secure_url);
+    }, 1500);
+  };
+  xhr.onerror = () => { btn.disabled = false; pb.classList.remove('show'); rb.innerHTML = '❌ Kesalahan jaringan.'; };
+  xhr.send(formData);
+}
+
+// ============================================================
+// UPLOAD LOGO
+// ============================================================
+document.getElementById('logoFileInput')?.addEventListener('change', (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  const img = document.getElementById('logoPreviewImg');
+  img.src = URL.createObjectURL(f);
+  img.classList.add('show');
+});
+
+function openUploadLogoModal() {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin'); return; }
+  document.getElementById('logoFileInput').value = '';
+  document.getElementById('logoPreviewImg').classList.remove('show');
+  document.getElementById('logoResult').innerHTML = '';
+  openModal('uploadLogoModal');
+}
+
+async function handleUploadLogo() {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin'); return; }
+  const file = document.getElementById('logoFileInput').files[0];
+  if (!file) { showToast('⚠️ Pilih file logo dulu!'); return; }
+  if (!file.type.startsWith('image/')) { showToast('⚠️ Harus file gambar!'); return; }
+  if (file.size > 5 * 1024 * 1024) { showToast('⚠️ Max 5 MB!'); return; }
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  formData.append('folder', 'sdn3ngantru/logo');
+
+  const btn = document.getElementById('logoSubmitBtn');
+  const pb = document.getElementById('logoProgressBar');
+  const pf = document.getElementById('logoProgressFill');
+  const rb = document.getElementById('logoResult');
+  btn.disabled = true; pb.classList.add('show'); pf.style.width = '0%';
+  rb.innerHTML = '⏳ Mengupload logo...';
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`);
+  xhr.upload.onprogress = (e) => { pf.style.width = Math.round((e.loaded / e.total) * 100) + '%'; };
+
+  xhr.onload = async () => {
+    btn.disabled = false;
+    if (xhr.status !== 200) { pb.classList.remove('show'); rb.innerHTML = '❌ Gagal: ' + xhr.responseText; return; }
+    const result = JSON.parse(xhr.responseText);
+    await updateSiteSetting('school_logo_url', result.secure_url);
+    applyLogo(result.secure_url);
+    setTimeout(() => pb.classList.remove('show'), 800);
+    rb.innerHTML = '✅ Logo berhasil diupdate!';
+    showToast('✅ Logo sekolah diperbarui');
+    setTimeout(() => { closeModal('uploadLogoModal'); rb.innerHTML = ''; }, 1500);
+  };
+  xhr.onerror = () => { btn.disabled = false; pb.classList.remove('show'); rb.innerHTML = '❌ Kesalahan jaringan.'; };
+  xhr.send(formData);
+}
+
+function applyLogo(url) {
+  document.querySelectorAll('.school-logo-img, .loader-logo').forEach(el => {
+    el.style.backgroundImage = `url('${url}')`;
+  });
+}
+
+async function loadSchoolLogo() {
+  try {
+    const { data } = await supabaseClient.from('site_settings').select('value').eq('key', 'school_logo_url').single();
+    if (data && data.value) applyLogo(data.value);
+  } catch (e) {}
+}
+
+async function updateSiteSetting(key, value) {
+  try { await supabaseClient.from('site_settings').upsert({ key, value }); } catch (e) {}
+}
+
+// ============================================================
+// LOAD FOTO PUBLIK
+// ============================================================
+async function loadPublicFiles() {
+  const grid = document.getElementById('publicFilesGrid');
+  try {
+    const { data, error } = await supabaseClient.from('public_files').select('*').limit(12);
+    if (error) { grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);">⚠️ ${error.message}</div>`; return; }
+    if (!data || data.length === 0) { grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-style:italic;">Belum ada foto.</div>`; return; }
+
+    grid.innerHTML = data.map(f => {
+      const date = new Date(f.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+      return `<div class="file-card">
+        <div class="file-card__preview"><img src="${f.secure_url}" alt="" loading="lazy"></div>
+        <div class="file-card__body">
+          <div class="file-card__title">${escapeHtml(f.caption || f.original_filename || 'Tanpa judul')}</div>
+          <div class="file-card__meta">${f.purpose || f.category || 'galeri'} • ${date}</div>
+          <div class="file-card__actions"><a href="${f.secure_url}" target="_blank">Buka</a></div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) { grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);">⚠️ ${err.message}</div>`; }
+}
+
+// ============================================================
+// KELOLA GALERI
+// ============================================================
+function openManageGallery() {
+  if (!isLoggedIn()) { showToast('🔒 Login dulu!'); return; }
+  openModal('manageGalleryModal');
+  loadManageGallery();
+}
+
+async function loadManageGallery() {
+  const list = document.getElementById('manageGalleryList');
+  list.innerHTML = 'Memuat...';
+  let query = supabaseClient.from('cloudinary_files').select('*').order('created_at', { ascending: false }).limit(50);
+  if (!isAdmin()) query = query.eq('uploaded_by', currentUser.id);
+  const { data, error } = await query;
+  if (error) { list.innerHTML = '⚠️ ' + error.message; return; }
+  if (!data || data.length === 0) { list.innerHTML = '<i>Belum ada foto.</i>'; return; }
+
+  list.innerHTML = data.map(f => `
+    <div style="display:flex;gap:12px;padding:10px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;align-items:center;">
+      <img src="${f.secure_url}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
+      <div style="flex:1;font-size:0.85rem;min-width:0;">
+        <strong style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(f.caption || f.original_filename)}</strong>
+        <span style="color:var(--muted);font-size:0.75rem;">${f.purpose || f.category || 'galeri'}</span>
+      </div>
+      <button onclick="deleteFile('${f.id}')" style="background:#fee2e2;color:#991b1b;border:none;padding:8px 14px;border-radius:9999px;font-weight:600;cursor:pointer;font-size:0.8rem;">Hapus</button>
+    </div>
+  `).join('');
+}
+
+async function deleteFile(id) {
+  if (!confirm('Yakin hapus foto ini?')) return;
+  const { error } = await supabaseClient.from('cloudinary_files').delete().eq('id', id);
+  if (error) { showToast('❌ ' + error.message); return; }
+  showToast('✅ Foto dihapus');
+  loadManageGallery(); loadPublicFiles();
+}
+
+// ============================================================
+// MENU
+// ============================================================
+async function loadMenus() {
+  try {
+    const { data, error } = await supabaseClient.from('page_menus').select('*').eq('is_visible', true).order('display_order').order('created_at');
+    if (error) { console.error(error); return; }
+    allMenus = data || [];
+
+    const headerMenus = allMenus.filter(m => m.show_in_header && !m.parent_id && !m.is_teacher_folder && m.menu_mode !== 'folder');
+    const headerList = document.getElementById('headerNavList');
+    const visiMisi = `<li><a href="#" id="visiMisiBtn"><i class="fas fa-shield-halved"></i> Visi & Misi</a></li>`;
+    const home = `<li><a href="#home"><i class="fas fa-house"></i> Home</a></li>`;
+
+    headerList.innerHTML = visiMisi + home + headerMenus.map(m => {
+      const icon = m.menu_icon || 'fa-folder';
+      return `<li><a href="#" onclick="handleMenuClick('${m.id}'); return false;"><i class="fas ${icon}"></i> ${escapeHtml(m.menu_label)}</a></li>`;
+    }).join('');
+
+    const launcherMenus = allMenus.filter(m => m.show_in_launcher && !m.parent_id && !m.is_teacher_folder);
+    renderLauncher(launcherMenus);
+
+    document.getElementById('visiMisiBtn')?.addEventListener('click', (e) => { e.preventDefault(); openModal('visiMisiModal'); });
+  } catch (err) { console.error(err); }
+}
+
+function renderLauncher(menus) {
+  const grid = document.getElementById('appGrid');
+  if (menus.length === 0) { grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-style:italic;">Belum ada menu.</div>`; return; }
+
+  grid.innerHTML = menus.map(m => {
+    const icon = m.menu_icon || 'fa-folder';
+    const color = m.menu_color || '#0f6b52';
+    let badge = '';
+    if (m.menu_mode === 'file') badge = `<span class="app-card__badge app-card__badge--file">File</span>`;
+    else if (m.menu_mode === 'folder') badge = `<span class="app-card__badge app-card__badge--folder">Folder</span>`;
+    else if (m.menu_mode === 'link_external') badge = `<span class="app-card__badge app-card__badge--link">Link</span>`;
+
+    const adminBtns = isAdmin() ? `
+      <div class="app-card__admin-actions">
+        <button class="app-card__admin-btn" onclick="event.preventDefault();event.stopPropagation();editMenu('${m.id}')" title="Edit"><i class="fas fa-pencil"></i></button>
+        <button class="app-card__admin-btn app-card__admin-btn--danger" onclick="event.preventDefault();event.stopPropagation();deleteMenu('${m.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
+      </div>` : '';
+
+    return `<div class="app-card" onclick="handleMenuClick('${m.id}')">
+      ${adminBtns}${badge}
+      <div class="app-card__icon" style="background: ${color}"><i class="fas ${icon}"></i></div>
+      <div class="app-card__label">${escapeHtml(m.menu_label)}</div>
+    </div>`;
+  }).join('');
+}
+
+async function handleMenuClick(menuId) {
+  const menu = allMenus.find(m => m.id === menuId);
+  if (!menu) return;
+  if (menu.menu_mode === 'link_html') { if (menu.external_link) window.location.href = menu.external_link; }
+  else if (menu.menu_mode === 'link_external') { if (menu.external_link) window.open(menu.external_link, '_blank'); }
+  else if (menu.menu_mode === 'file') { openPreview(menu.file_url, menu.menu_label, menu.file_format, menu.file_type); }
+  else if (menu.menu_mode === 'folder') { await openFolderView(menu); }
+}
+
+// ============================================================
+// FOLDER VIEW
+// ============================================================
+async function openFolderView(folderMenu) {
+  const { data: children, error } = await supabaseClient.from('page_menus').select('*').eq('parent_id', folderMenu.id).eq('is_visible', true).order('display_order').order('created_at');
+  if (error) { showToast('❌ ' + error.message); return; }
+
+  const items = children || [];
+  const canUpload = isLoggedIn() && (isAdmin() || folderMenu.is_teacher_folder);
+  const body = document.getElementById('previewBody');
+  const title = document.getElementById('previewTitle');
+  const footer = document.getElementById('previewFooter');
+
+  title.innerHTML = `<i class="fas fa-folder-open"></i> ${escapeHtml(folderMenu.menu_label)}`;
+
+  if (items.length === 0) {
+    body.innerHTML = `<div style="padding: 3rem; text-align: center; color: var(--muted);">
+      <i class="fas fa-folder-open" style="font-size: 4rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+      <p>Folder ini masih kosong.</p>
+      ${canUpload ? '<p style="font-size: 0.85rem; margin-top: 0.5rem;">Klik tombol di bawah untuk upload file.</p>' : ''}
+    </div>`;
+  } else {
+    body.innerHTML = `<div class="folder-grid" style="width: 100%;">
+      ${items.map(item => {
+        let icon = 'fa-file';
+        if (item.file_format === 'pdf') icon = 'fa-file-pdf';
+        else if (['doc','docx'].includes(item.file_format)) icon = 'fa-file-word';
+        else if (['xls','xlsx'].includes(item.file_format)) icon = 'fa-file-excel';
+        else if (['ppt','pptx'].includes(item.file_format)) icon = 'fa-file-powerpoint';
+        else if (['jpg','jpeg','png','webp','gif'].includes(item.file_format)) icon = 'fa-file-image';
+        else if (['mp4','mov','avi'].includes(item.file_format)) icon = 'fa-file-video';
+
+        const adminBtns = (isAdmin() || item.owner_id === currentUser?.id) ? `
+          <div class="folder-item__admin">
+            <button onclick="event.stopPropagation();deleteMenuItem('${item.id}')" style="background:#dc2626;color:#fff;border:none;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:0.7rem;"><i class="fas fa-times"></i></button>
+          </div>` : '';
+
+        return `<div class="folder-item" onclick="openPreview('${item.file_url}', '${escapeHtml(item.menu_label)}', '${item.file_format}', '${item.file_type}')">
+          ${adminBtns}
+          <div class="folder-item__icon"><i class="fas ${icon}"></i></div>
+          <div class="folder-item__label">${escapeHtml(item.menu_label)}</div>
+          <div class="folder-item__meta">${(item.file_format || '').toUpperCase()}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  footer.innerHTML = `
+    ${canUpload ? `<button class="btn-submit" onclick="openUploadFileToFolder('${folderMenu.id}')" style="background: #2563eb;"><i class="fas fa-upload"></i> Upload File ke Folder Ini</button>` : ''}
+    <button class="btn-submit btn-secondary" onclick="closePreview()">Tutup</button>
+  `;
+  document.getElementById('previewOverlay').classList.add('show');
+}
+
+// ============================================================
+// PREVIEW FILE
+// ============================================================
+function openPreview(url, label, format, type) {
+  if (!url) { showToast('⚠️ File tidak tersedia'); return; }
+  const body = document.getElementById('previewBody');
+  const title = document.getElementById('previewTitle');
+  const footer = document.getElementById('previewFooter');
+  title.innerHTML = `<i class="fas fa-file"></i> ${escapeHtml(label || 'Preview')}`;
+
+  const fmt = (format || '').toLowerCase();
+  const isImage = ['jpg','jpeg','png','webp','gif','svg','bmp'].includes(fmt);
+  const isVideo = ['mp4','mov','avi','webm','mkv'].includes(fmt);
+  const isPdf = fmt === 'pdf';
+  const isOffice = ['doc','docx','xls','xlsx','ppt','pptx'].includes(fmt);
+
+  let content = '';
+  if (isImage) content = `<img src="${url}" alt="${escapeHtml(label)}">`;
+  else if (isVideo) content = `<video controls><source src="${url}" type="video/${fmt}"></video>`;
+  else if (isPdf) content = `<iframe src="${url}" title="${escapeHtml(label)}"></iframe>`;
+  else if (isOffice) {
+    const viewer = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+    content = `<iframe src="${viewer}" title="${escapeHtml(label)}"></iframe>`;
+  } else {
+    content = `<div style="padding: 3rem; text-align: center;">
+      <i class="fas fa-file" style="font-size: 4rem; color: var(--accent); opacity: 0.5;"></i>
+      <p style="margin-top: 1rem; color: var(--muted);">Preview tidak tersedia untuk format <b>.${fmt}</b></p>
+      <p style="color: var(--muted); font-size: 0.85rem;">Klik tombol Download di bawah untuk membuka file</p>
+    </div>`;
+  }
+
+  body.innerHTML = content;
+  footer.innerHTML = `
+    <a href="${url}" download class="btn-submit btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; width: auto; padding: 10px 24px;"><i class="fas fa-download"></i> Download</a>
+    <button class="btn-submit" onclick="closePreview()" style="width: auto; padding: 10px 24px;">Tutup</button>
+  `;
+  document.getElementById('previewOverlay').classList.add('show');
+}
+
+function closePreview() {
+  document.getElementById('previewOverlay').classList.remove('show');
+  document.getElementById('previewBody').innerHTML = '';
+}
+
+// ============================================================
+// UPLOAD FILE KE FOLDER
+// ============================================================
+function openUploadFileToFolder(folderId) {
+  if (!isLoggedIn()) { showToast('🔒 Login dulu!'); return; }
+  const label = prompt('Nama file / label:');
+  if (!label) return;
+
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,image/*,video/*';
+
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) { showToast('⚠️ Max 50 MB!'); return; }
+    showToast('⏳ Upload file...');
+
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    fd.append('folder', 'sdn3ngantru/menu-files');
+
+    try {
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, { method: 'POST', body: fd });
+      const result = await res.json();
+      if (!result.secure_url) throw new Error('Upload gagal');
+
+      await supabaseClient.from('page_menus').insert([{
+        menu_label: label, menu_icon: 'fa-file', menu_mode: 'file',
+        parent_id: folderId, file_url: result.secure_url,
+        file_type: result.resource_type, file_format: result.format,
+        owner_id: currentUser.id, show_in_header: false, show_in_launcher: false,
+        created_by: currentUser.id
+      }]);
+
+      showToast('✅ File berhasil diupload!');
+      const folderMenu = allMenus.find(m => m.id === folderId);
+      if (folderMenu) { await loadMenus(); setTimeout(() => openFolderView(folderMenu), 300); }
+    } catch (err) { showToast('❌ ' + err.message); }
+  };
+  input.click();
+}
+
+async function deleteMenuItem(id) {
+  if (!confirm('Yakin hapus file ini?')) return;
+  const { error } = await supabaseClient.from('page_menus').delete().eq('id', id);
+  if (error) { showToast('❌ ' + error.message); return; }
+  showToast('✅ File dihapus');
+  await loadMenus();
+  closePreview();
+}
+
+// ============================================================
+// ADD / EDIT MENU
+// ============================================================
+const ICON_OPTIONS = [
+  'fa-folder','fa-file-pdf','fa-file-word','fa-file-excel','fa-file-powerpoint',
+  'fa-image','fa-video','fa-book','fa-graduation-cap','fa-calendar-alt',
+  'fa-user-plus','fa-users','fa-phone','fa-envelope','fa-globe','fa-link',
+  'fa-gamepad','fa-pencil-alt','fa-chalkboard','fa-flask','fa-calculator',
+  'fa-language','fa-palette','fa-microscope','fa-laptop','fa-download',
+  'fa-star','fa-trophy','fa-certificate','fa-newspaper','fa-map',
+  'fa-compass','fa-lightbulb','fa-school','fa-lock','fa-key',
+  'fa-folder-open','fa-th-large','fa-list','fa-clipboard','fa-chart-bar'
+];
+
+function renderIconPicker(selected = 'fa-folder') {
+  const picker = document.getElementById('iconPicker');
+  picker.innerHTML = ICON_OPTIONS.map(ic => `
+    <div class="icon-picker__item ${ic === selected ? 'selected' : ''}" onclick="selectIcon(this, '${ic}')">
+      <i class="fas ${ic}"></i>
+    </div>
+  `).join('');
+  document.getElementById('menuIcon').value = selected;
+}
+
+function selectIcon(el, icon) {
+  document.querySelectorAll('.icon-picker__item').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('menuIcon').value = icon;
+}
+
+function openAddMenuModal() {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin'); return; }
+  document.getElementById('menuModalTitle').innerHTML = '<i class="fas fa-th"></i> Tambah Menu Baru';
+  document.getElementById('menuEditId').value = '';
+  document.getElementById('menuLabel').value = '';
+  document.getElementById('menuMode').value = 'link_html';
+  document.getElementById('menuColor').value = '#0f6b52';
+  document.getElementById('menuLinkHtml').value = '';
+  document.getElementById('menuLinkExternal').value = '';
+  document.getElementById('menuFileUrl').value = '';
+  document.getElementById('menuFileName').innerText = 'Belum ada file';
+  document.getElementById('menuFileDrop').classList.remove('has-file');
+  document.getElementById('menuShowHeader').checked = true;
+  document.getElementById('menuShowLauncher').checked = true;
+  renderIconPicker('fa-folder');
+  updateMenuModeSections();
+  openModal('addMenuModal');
+}
+
+function editMenu(id) {
+  if (!isAdmin()) return;
+  const m = allMenus.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('menuModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Menu';
+  document.getElementById('menuEditId').value = m.id;
+  document.getElementById('menuLabel').value = m.menu_label || '';
+  document.getElementById('menuMode').value = m.menu_mode || 'link_html';
+  document.getElementById('menuColor').value = m.menu_color || '#0f6b52';
+  document.getElementById('menuLinkHtml').value = m.menu_mode === 'link_html' ? (m.external_link || '') : '';
+  document.getElementById('menuLinkExternal').value = m.menu_mode === 'link_external' ? (m.external_link || '') : '';
+  document.getElementById('menuFileUrl').value = m.file_url || '';
+  document.getElementById('menuFileName').innerText = m.file_url ? '✓ File sudah ada' : 'Belum ada file';
+  document.getElementById('menuFileDrop').classList.toggle('has-file', !!m.file_url);
+  document.getElementById('menuShowHeader').checked = m.show_in_header !== false;
+  document.getElementById('menuShowLauncher').checked = m.show_in_launcher !== false;
+  renderIconPicker(m.menu_icon || 'fa-folder');
+  updateMenuModeSections();
+  openModal('addMenuModal');
+}
+
+document.getElementById('menuMode')?.addEventListener('change', updateMenuModeSections);
+
+function updateMenuModeSections() {
+  const mode = document.getElementById('menuMode').value;
+  document.querySelectorAll('.menu-mode-section').forEach(el => {
+    el.style.display = el.dataset.mode === mode ? '' : 'none';
+  });
+}
+
+document.getElementById('menuFileInput')?.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 50 * 1024 * 1024) { showToast('⚠️ Max 50 MB!'); return; }
+
+  const drop = document.getElementById('menuFileDrop');
+  const nameEl = document.getElementById('menuFileName');
+  const pb = document.getElementById('menuProgressBar');
+  const pf = document.getElementById('menuProgressFill');
+  nameEl.innerText = '⏳ Upload: ' + file.name;
+  pb.classList.add('show'); pf.style.width = '0%';
+
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  fd.append('folder', 'sdn3ngantru/menu-files');
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`);
+  xhr.upload.onprogress = (ev) => { pf.style.width = Math.round((ev.loaded / ev.total) * 100) + '%'; };
+
+  xhr.onload = () => {
+    if (xhr.status !== 200) { pb.classList.remove('show'); nameEl.innerText = '❌ Gagal'; showToast('❌ Upload gagal'); return; }
+    const result = JSON.parse(xhr.responseText);
+    document.getElementById('menuFileUrl').value = result.secure_url;
+    document.getElementById('menuFileType').value = result.resource_type;
+    document.getElementById('menuFileFormat').value = result.format || '';
+    setTimeout(() => pb.classList.remove('show'), 500);
+    nameEl.innerText = '✅ ' + file.name;
+    drop.classList.add('has-file');
+    showToast('✅ File siap');
+  };
+  xhr.send(fd);
+});
+
+async function saveMenu() {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin'); return; }
+  const id = document.getElementById('menuEditId').value;
+  const label = document.getElementById('menuLabel').value.trim();
+  const icon = document.getElementById('menuIcon').value;
+  const color = document.getElementById('menuColor').value;
+  const mode = document.getElementById('menuMode').value;
+  const showHeader = document.getElementById('menuShowHeader').checked;
+  const showLauncher = document.getElementById('menuShowLauncher').checked;
+  if (!label) { showToast('⚠️ Isi label menu'); return; }
+
+  let externalLink = null, fileUrl = null, fileType = null, fileFormat = null;
+  if (mode === 'link_html') { externalLink = document.getElementById('menuLinkHtml').value.trim(); if (!externalLink) { showToast('⚠️ Isi URL halaman HTML'); return; } }
+  else if (mode === 'link_external') { externalLink = document.getElementById('menuLinkExternal').value.trim(); if (!externalLink) { showToast('⚠️ Isi URL eksternal'); return; } }
+  else if (mode === 'file') {
+    fileUrl = document.getElementById('menuFileUrl').value;
+    fileType = document.getElementById('menuFileType').value;
+    fileFormat = document.getElementById('menuFileFormat').value;
+    if (!fileUrl) { showToast('⚠️ Upload file dulu'); return; }
+  }
+
+  const payload = {
+    menu_label: label, menu_icon: icon, menu_color: color, menu_mode: mode,
+    external_link: externalLink, file_url: fileUrl, file_type: fileType, file_format: fileFormat,
+    show_in_header: showHeader, show_in_launcher: showLauncher,
+    created_by: currentUser.id
+  };
+
+  try {
+    if (id) { const { error } = await supabaseClient.from('page_menus').update(payload).eq('id', id); if (error) throw error; showToast('✅ Menu diperbarui'); }
+    else { const { error } = await supabaseClient.from('page_menus').insert([payload]); if (error) throw error; showToast('✅ Menu ditambahkan'); }
+    closeModal('addMenuModal');
+    await loadMenus();
+  } catch (err) { showToast('❌ ' + err.message); }
+}
+
+async function deleteMenu(id) {
+  if (!isAdmin()) return;
+  if (!confirm('Yakin hapus menu ini?')) return;
+  const { error } = await supabaseClient.from('page_menus').delete().eq('id', id);
+  if (error) { showToast('❌ ' + error.message); return; }
+  showToast('✅ Menu dihapus');
+  await loadMenus();
+}
+
+// ============================================================
+// PAGE BLOCKS
+// ============================================================
+async function loadBlocks() {
+  const list = document.getElementById('blockList');
+  try {
+    const { data, error } = await supabaseClient.from('page_blocks').select('*').eq('is_visible', true).order('display_order').order('created_at');
+    if (error) { list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:2rem;">⚠️ ${error.message}</div>`; return; }
+    allBlocks = data || [];
+    if (allBlocks.length === 0) { list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:2rem;font-style:italic;">Belum ada blok.</div>`; return; }
+
+    list.innerHTML = allBlocks.map((b, idx) => {
+      const layout = idx % 2 === 0 ? 'normal' : 'reverse';
+      const adminBtns = isAdmin() ? `
+        <div class="block-item__admin-actions">
+          <button class="block-item__admin-btn" onclick="editBlock('${b.id}')" title="Edit"><i class="fas fa-pencil"></i></button>
+          <button class="block-item__admin-btn block-item__admin-btn--danger" onclick="deleteBlock('${b.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
+        </div>` : '';
+
+      const media = b.image_url ? `<img src="${b.image_url}" alt="${escapeHtml(b.title || '')}" loading="lazy">` : `<div class="placeholder"><i class="fas fa-image"></i></div>`;
+      const linkBtn = b.link_url ? `<a href="${b.link_url}" target="_blank" class="block-item__link">${escapeHtml(b.link_label || 'Selengkapnya')} <i class="fas fa-arrow-right"></i></a>` : '';
+
+      return `<div class="block-item block-item--${layout}">
+        ${adminBtns}
+        <div class="block-item__grid">
+          <div class="block-item__media">${media}</div>
+          <div class="block-item__content">
+            <h3 class="block-item__title">${escapeHtml(b.title || 'Tanpa judul')}</h3>
+            <p class="block-item__desc">${escapeHtml(b.description || '')}</p>
+            ${linkBtn}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) { list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:2rem;">⚠️ ${err.message}</div>`; }
+}
+
+function openAddBlockModal() {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin'); return; }
+  document.getElementById('blockModalTitle').innerHTML = '<i class="fas fa-plus"></i> Tambah Blok Baru';
+  document.getElementById('blockEditId').value = '';
+  document.getElementById('blockTitle').value = '';
+  document.getElementById('blockDesc').value = '';
+  document.getElementById('blockImageUrl').value = '';
+  document.getElementById('blockImagePreview').classList.remove('show');
+  document.getElementById('blockImageInput').value = '';
+  document.getElementById('blockLink').value = '';
+  document.getElementById('blockLinkLabel').value = '';
+  openModal('addBlockModal');
+}
+
+function editBlock(id) {
+  if (!isAdmin()) return;
+  const b = allBlocks.find(x => x.id === id);
+  if (!b) return;
+  document.getElementById('blockModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Blok';
+  document.getElementById('blockEditId').value = b.id;
+  document.getElementById('blockTitle').value = b.title || '';
+  document.getElementById('blockDesc').value = b.description || '';
+  document.getElementById('blockImageUrl').value = b.image_url || '';
+  document.getElementById('blockLink').value = b.link_url || '';
+  document.getElementById('blockLinkLabel').value = b.link_label || '';
+  if (b.image_url) { document.getElementById('blockImagePreview').src = b.image_url; document.getElementById('blockImagePreview').classList.add('show'); }
+  else { document.getElementById('blockImagePreview').classList.remove('show'); }
+  openModal('addBlockModal');
+}
+
+document.getElementById('blockImageInput')?.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showToast('⚠️ Harus gambar!'); return; }
+  if (file.size > 10 * 1024 * 1024) { showToast('⚠️ Max 10 MB!'); return; }
+  const preview = document.getElementById('blockImagePreview');
+  preview.src = URL.createObjectURL(file);
+  preview.classList.add('show');
+  showToast('⏳ Upload gambar...');
+
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  fd.append('folder', 'sdn3ngantru/blocks');
+
+  try {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+    const result = await res.json();
+    if (result.secure_url) { document.getElementById('blockImageUrl').value = result.secure_url; preview.src = result.secure_url; showToast('✅ Gambar siap'); }
+    else showToast('❌ Upload gagal');
+  } catch (err) { showToast('❌ ' + err.message); }
+});
+
+async function saveBlock() {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin'); return; }
+  const id = document.getElementById('blockEditId').value;
+  const title = document.getElementById('blockTitle').value.trim();
+  const desc = document.getElementById('blockDesc').value.trim();
+  const imgUrl = document.getElementById('blockImageUrl').value;
+  const link = document.getElementById('blockLink').value.trim();
+  const linkLabel = document.getElementById('blockLinkLabel').value.trim();
+  if (!title) { showToast('⚠️ Isi judul blok'); return; }
+
+  const payload = {
+    block_type: 'image_text', title, description: desc,
+    image_url: imgUrl || null, link_url: link || null,
+    link_label: linkLabel || 'Selengkapnya',
+    created_by: currentUser.id
+  };
+
+  try {
+    if (id) { const { error } = await supabaseClient.from('page_blocks').update(payload).eq('id', id); if (error) throw error; showToast('✅ Blok diperbarui'); }
+    else { const { error } = await supabaseClient.from('page_blocks').insert([payload]); if (error) throw error; showToast('✅ Blok ditambahkan'); }
+    closeModal('addBlockModal');
+    await loadBlocks();
+  } catch (err) { showToast('❌ ' + err.message); }
+}
+
+async function deleteBlock(id) {
+  if (!isAdmin()) return;
+  if (!confirm('Yakin hapus blok ini?')) return;
+  const { error } = await supabaseClient.from('page_blocks').delete().eq('id', id);
+  if (error) { showToast('❌ ' + error.message); return; }
+  showToast('✅ Blok dihapus');
+  await loadBlocks();
+}
+
+// ============================================================
+// EDIT BEFORE/AFTER
+// ============================================================
+function openEditBeforeAfterModal() {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin'); return; }
+  document.getElementById('editImgBefore').value = document.getElementById('imgBefore').src;
+  document.getElementById('editLabelBefore').value = document.getElementById('baLabelBefore').innerText;
+  document.getElementById('editLabelAfter').value = document.getElementById('baLabelAfter').innerText;
+  openModal('editBeforeAfterModal');
+}
+
+async function saveBeforeAfter() {
+  const beforeImg = document.getElementById('editImgBefore').value.trim();
+  const afterImg = document.getElementById('editImgAfter').value.trim();
+  const beforeLbl = document.getElementById('editLabelBefore').value.trim();
+  const afterLbl = document.getElementById('editLabelAfter').value.trim();
+
+  if (beforeLbl) document.getElementById('baLabelBefore').innerText = beforeLbl;
+  if (afterLbl) document.getElementById('baLabelAfter').innerText = afterLbl;
+  if (beforeImg) document.getElementById('imgBefore').src = beforeImg;
+  if (afterImg) loadLiquidImage(afterImg);
+
+  const config = { beforeImg, afterImg, beforeLbl, afterLbl };
+  localStorage.setItem('sdn3_ba_config', JSON.stringify(config));
+  try { await supabaseClient.from('site_settings').upsert({ key: 'ba_config', value: JSON.stringify(config) }); } catch (e) {}
+  closeModal('editBeforeAfterModal');
+  showToast('✨ Before/After diperbarui');
+}
+
+async function loadBeforeAfterConfig() {
+  const cached = localStorage.getItem('sdn3_ba_config');
+  if (cached) applyBAConfig(JSON.parse(cached));
+  try {
+    const { data } = await supabaseClient.from('site_settings').select('value').eq('key', 'ba_config').single();
+    if (data && data.value) {
+      const config = JSON.parse(data.value);
+      applyBAConfig(config);
+      localStorage.setItem('sdn3_ba_config', data.value);
+    }
+  } catch (e) {}
+}
+
+function applyBAConfig(config) {
+  if (config.beforeLbl) document.getElementById('baLabelBefore').innerText = config.beforeLbl;
+  if (config.afterLbl) document.getElementById('baLabelAfter').innerText = config.afterLbl;
+  if (config.beforeImg) document.getElementById('imgBefore').src = config.beforeImg;
+  if (config.afterImg) loadLiquidImage(config.afterImg);
+}
+
+// ============================================================
+// EDIT STATISTIK
+// ============================================================
+function openEditStatsModal() {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin'); return; }
+  document.getElementById('editGuruInput').value = document.getElementById('statGuru').innerText;
+  document.getElementById('editSiswaInput').value = document.getElementById('statSiswa').innerText;
+  document.getElementById('editPaguyubanInput').value = document.getElementById('statPaguyuban').innerText;
+  document.getElementById('editPegawaiInput').value = document.getElementById('statPegawai').innerText;
+  openModal('editStatsModal');
+}
+
+async function saveStats() {
+  const guru = document.getElementById('editGuruInput').value;
+  const siswa = document.getElementById('editSiswaInput').value;
+  const paguyuban = document.getElementById('editPaguyubanInput').value;
+  const pegawai = document.getElementById('editPegawaiInput').value;
+  if (guru) document.getElementById('statGuru').innerText = guru;
+  if (siswa) document.getElementById('statSiswa').innerText = siswa;
+  if (paguyuban) document.getElementById('statPaguyuban').innerText = paguyuban;
+  if (pegawai) document.getElementById('statPegawai').innerText = pegawai;
+  try { await supabaseClient.from('statistik').upsert({ id: 1, guru, siswa, paguyuban, pegawai }); showToast('✅ Statistik diperbarui'); }
+  catch (e) { showToast('⚠️ ' + e.message); }
+  closeModal('editStatsModal');
+}
+
+// ============================================================
+// LIQUID EFFECT — VERSI BERSIH
+// ============================================================
+const liquidImageAfter = new Image();
+let liquidAfterUrl = DEFAULT_AFTER_IMAGE;
+let liquidInitialized = false;
+
+function loadLiquidImage(url) {
+  if (!url) url = DEFAULT_AFTER_IMAGE;
+  liquidAfterUrl = url;
+  console.log('🖼️ [LIQUID] Loading:', url);
+  liquidImageAfter.onload = () => { console.log('✅ [LIQUID] Loaded'); initLiquid(); };
+  liquidImageAfter.onerror = () => { console.error('❌ [LIQUID] Failed:', url); };
+  liquidImageAfter.src = url;
+}
+
+function initLiquid() {
+  const wrapper = document.getElementById('liquidWrapper');
+  const canvas = document.getElementById('liquidCanvas');
+  if (!wrapper || !canvas) { console.warn('Liquid container tidak ditemukan'); return; }
+  if (!liquidImageAfter.complete || !liquidImageAfter.naturalWidth) { setTimeout(initLiquid, 500); return; }
+  if (liquidInitialized) { console.log('ℹ️ Liquid sudah init'); return; }
+
+  console.log('🎨 [LIQUID] Init:', liquidImageAfter.naturalWidth, 'x', liquidImageAfter.naturalHeight);
+  const ctx = canvas.getContext('2d');
+
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let width = 0, height = 0;
+  const brushRadius = 120;
+  const decay = 0.016;
+
+  const coverCanvas = document.createElement('canvas');
+  const coverCtx = coverCanvas.getContext('2d');
+  const brushCanvas = document.createElement('canvas');
+  const brushCtx = brushCanvas.getContext('2d');
+
+  function resize() {
+    const rect = wrapper.getBoundingClientRect();
+    width = rect.width; height = rect.height;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = width * dpr; canvas.height = height * dpr;
+    canvas.style.width = width + 'px'; canvas.style.height = height + 'px';
+    coverCanvas.width = width * dpr; coverCanvas.height = height * dpr;
+    updateCover(); updateBrush();
+  }
+
+  function updateCover() {
+    if (!liquidImageAfter.complete || !liquidImageAfter.naturalWidth) return;
+    const cW = coverCanvas.width, cH = coverCanvas.height;
+    const imgRatio = liquidImageAfter.naturalWidth / liquidImageAfter.naturalHeight;
+    const cRatio = cW / cH;
+    let rW, rH, oX, oY;
+    if (cRatio > imgRatio) { rW = cW; rH = cW / imgRatio; oX = 0; oY = (cH - rH) / 2; }
+    else { rH = cH; rW = cH * imgRatio; oX = (cW - rW) / 2; oY = 0; }
+    coverCtx.clearRect(0, 0, cW, cH);
+    coverCtx.drawImage(liquidImageAfter, oX, oY, rW, rH);
+  }
+
+  function updateBrush() {
+    const r = brushRadius * dpr;
+    const d = Math.ceil(r * 2);
+    brushCanvas.width = d; brushCanvas.height = d;
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+
+  let queuedPoints = [], lastPoint = null, idle = 0, isDrawing = false;
+
+  function handleMove(e) {
+    const rect = wrapper.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) { lastPoint = null; return; }
+
+    const pos = { x: (clientX - rect.left) * dpr, y: (clientY - rect.top) * dpr };
+    const r = brushRadius * dpr;
+    if (pos.x < -r || pos.x > canvas.width + r || pos.y < -r || pos.y > canvas.height + r) { lastPoint = null; return; }
+
+    if (lastPoint) {
+      const dist = Math.hypot(pos.x - lastPoint.x, pos.y - lastPoint.y);
+      const step = Math.max(r * 0.3, 1);
+      const n = Math.min(Math.ceil(dist / step), 60);
+      for (let i = 1; i <= n; i++) {
+        queuedPoints.push({
+          x: lastPoint.x + (pos.x - lastPoint.x) * (i / n),
+          y: lastPoint.y + (pos.y - lastPoint.y) * (i / n)
+        });
+      }
+    } else {
+      queuedPoints.push(pos);
+    }
+    lastPoint = pos;
+    isDrawing = true;
+  }
+
+  window.addEventListener('pointermove', handleMove);
+  window.addEventListener('touchmove', (e) => { handleMove(e); }, { passive: true });
+
+  function stamp(pt) {
+    const r = brushRadius * dpr;
+    const d = brushCanvas.width;
+    const c = d / 2;
+    brushCtx.clearRect(0, 0, d, d);
+    brushCtx.globalCompositeOperation = 'source-over';
+    const grad = brushCtx.createRadialGradient(c, c, 0, c, c, r);
+    grad.addColorStop(0, 'rgba(255,255,255,1)');
+    grad.addColorStop(0.55, 'rgba(255,255,255,0.82)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    brushCtx.fillStyle = grad;
+    brushCtx.beginPath();
+    brushCtx.arc(c, c, r, 0, Math.PI * 2);
+    brushCtx.fill();
+    brushCtx.globalCompositeOperation = 'source-in';
+    brushCtx.drawImage(coverCanvas, pt.x - c, pt.y - c, d, d, 0, 0, d, d);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.drawImage(brushCanvas, pt.x - c, pt.y - c);
+  }
+
+  function loop() {
+    if (queuedPoints.length > 0) idle = 0;
+    else { idle++; isDrawing = false; }
+    if (idle <= 120) {
+      const fade = isDrawing ? decay : Math.min(decay + idle * 0.004, 0.5);
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = `rgba(0,0,0,${fade})`;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (queuedPoints.length > 0) {
+        for (let i = 0; i < queuedPoints.length; i++) stamp(queuedPoints[i]);
+        queuedPoints = [];
+      }
+    } else if (idle === 121) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  liquidInitialized = true;
+}
+
+// ============================================================
+// LOAD SITE DATA
+// ============================================================
+async function loadSiteData() {
+  try {
+    const { data: stats } = await supabaseClient.from('statistik').select('*').single();
+    if (stats) {
+      if (stats.guru) document.getElementById('statGuru').innerText = stats.guru;
+      if (stats.siswa) document.getElementById('statSiswa').innerText = stats.siswa;
+      if (stats.paguyuban) document.getElementById('statPaguyuban').innerText = stats.paguyuban;
+      if (stats.pegawai) document.getElementById('statPegawai').innerText = stats.pegawai;
+    }
+  } catch (e) {}
+
+  try {
+    const { data: berita } = await supabaseClient.from('berita').select('*').order('created_at', { ascending: false }).limit(6);
+    if (berita && berita.length > 0) {
+      document.getElementById('newsGrid').innerHTML = berita.map(item => `
+        <div class="news-card">
+          <div class="card-img" style="background-image: url('${item.gambar || 'background 1.jpg'}');"></div>
+          <div class="card-content">
+            <div><h3>${escapeHtml(item.judul)}</h3><p>${escapeHtml(item.isi)}</p></div>
+            <a href="${item.link || '#'}" style="color:var(--accent);font-weight:700;font-size:0.85rem;">Selengkapnya →</a>
+          </div>
+        </div>
+      `).join('');
+    }
+  } catch (e) {}
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('searchInput');
+  const box = document.getElementById('searchSuggestions');
+  if (!input || !box) return;
+
+  input.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    if (!q) { box.classList.remove('show'); return; }
+    const matches = allMenus.filter(m => m.menu_label.toLowerCase().includes(q));
+    box.innerHTML = matches.length
+      ? matches.map(m => `<div class="suggestion-item" onclick="handleMenuClick('${m.id}');document.getElementById('searchSuggestions').classList.remove('show');"><i class="fas ${m.menu_icon || 'fa-folder'}" style="margin-right:8px;opacity:0.6;"></i>${escapeHtml(m.menu_label)}</div>`).join('')
+      : '<div class="suggestion-item" style="color:var(--muted);">Tidak ditemukan</div>';
+    box.classList.add('show');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !box.contains(e.target)) box.classList.remove('show');
+  });
+});
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', async () => {
+  try {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    console.log('✅ Supabase OK');
+  } catch (err) { showToast('❌ Gagal koneksi DB'); return; }
+
+  await checkSession();
+  await loadBeforeAfterConfig();
+  await loadSchoolLogo();
+  loadLiquidImage(DEFAULT_AFTER_IMAGE);
+  loadSiteData();
+  loadPublicFiles();
+  loadMenus();
+  loadBlocks();
+});
 </script>
 </body>
 </html>
