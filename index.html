@@ -176,13 +176,38 @@ body:has(.admin-bar-active) {
 .suggestion-item { padding: 0.6rem 1rem; cursor: pointer; font-size: 0.85rem; font-weight: 500; border-radius: 0.5rem; }
 .suggestion-item:hover { background: var(--surface-2); color: var(--accent); }
 
-/* HERO */
-#home { position: relative; isolation: isolate; overflow: hidden; border-radius: 0 0 var(--radius-card) var(--radius-card); background: linear-gradient(180deg, #f0f8f4 0%, #d8ece2 100%); min-height: 100vh; display: flex; flex-direction: column; }
+/* ============================================================
+   HERO — PERBAIKAN: Gambar Cloudinary tampil 100% jelas
+   ============================================================ */
+#home { 
+  position: relative; 
+  isolation: isolate; 
+  overflow: hidden; 
+  border-radius: 0 0 var(--radius-card) var(--radius-card); 
+  /* PERBAIKAN: background gelap netral, bukan putih/hijau muda */
+  background: #0a1f18;
+  min-height: 100vh; 
+  display: flex; 
+  flex-direction: column; 
+}
 #home .hero-liquid-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
 #home .hero-liquid-bg .liquid-base, #home .hero-liquid-bg canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-#home .hero-liquid-bg .liquid-base { opacity: 0.4; }
+/* PERBAIKAN: gambar before tampil 100% opaque */
+#home .hero-liquid-bg .liquid-base { opacity: 1; }
 #home .hero-liquid-bg canvas { cursor: crosshair; touch-action: none; }
-#home .hero-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(120deg, rgba(255,255,255,0.72) 0%, rgba(240,248,244,0.42) 40%, rgba(240,248,244,0.15) 70%, rgba(240,248,244,0.05) 100%); }
+/* PERBAIKAN: overlay hanya di area teks kiri, sisi kanan gambar 100% jelas */
+#home .hero-overlay { 
+  position: absolute; 
+  inset: 0; 
+  z-index: 1; 
+  pointer-events: none; 
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.92) 0%, 
+    rgba(255,255,255,0.78) 25%, 
+    rgba(255,255,255,0.35) 45%, 
+    rgba(255,255,255,0) 60%, 
+    rgba(255,255,255,0) 100%);
+}
 #home .liquid-badge { position: absolute; top: 6rem; padding: 0.5rem 1.25rem; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; z-index: 3; backdrop-filter: blur(8px); pointer-events: none; }
 #home .liquid-badge--before { left: 1.5rem; background: rgba(7,30,23,0.8); color: #fff; }
 #home .liquid-badge--after { right: 1.5rem; background: rgba(15,107,82,0.9); color: #fff; }
@@ -2324,7 +2349,12 @@ function initLiquid() {
   if (liquidInitialized) { console.log('ℹ️ Liquid sudah init'); return; }
 
   console.log('🎨 [LIQUID] Init:', liquidImageAfter.naturalWidth, 'x', liquidImageAfter.naturalHeight);
-  const ctx = canvas.getContext('2d');
+
+  // ============================================================
+  // PERBAIKAN: canvas dibuat OPAQUE (alpha: false)
+  // agar gambar after tidak tercampur dengan transparansi
+  // ============================================================
+  const ctx = canvas.getContext('2d', { alpha: false });
 
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
   let width = 0, height = 0;
@@ -2332,7 +2362,7 @@ function initLiquid() {
   const decay = 0.016;
 
   const coverCanvas = document.createElement('canvas');
-  const coverCtx = coverCanvas.getContext('2d');
+  const coverCtx = coverCanvas.getContext('2d', { alpha: false });
   const brushCanvas = document.createElement('canvas');
   const brushCtx = brushCanvas.getContext('2d');
 
@@ -2354,7 +2384,12 @@ function initLiquid() {
     let rW, rH, oX, oY;
     if (cRatio > imgRatio) { rW = cW; rH = cW / imgRatio; oX = 0; oY = (cH - rH) / 2; }
     else { rH = cH; rW = cH * imgRatio; oX = (cW - rW) / 2; oY = 0; }
-    coverCtx.clearRect(0, 0, cW, cH);
+    // ============================================================
+    // PERBAIKAN: isi background hitam dulu (bukan clearRect),
+    // agar tidak ada area transparan
+    // ============================================================
+    coverCtx.fillStyle = '#000';
+    coverCtx.fillRect(0, 0, cW, cH);
     coverCtx.drawImage(liquidImageAfter, oX, oY, rW, rH);
   }
 
@@ -2405,9 +2440,13 @@ function initLiquid() {
     const c = d / 2;
     brushCtx.clearRect(0, 0, d, d);
     brushCtx.globalCompositeOperation = 'source-over';
+    // ============================================================
+    // PERBAIKAN: gradien lebih pekat (0.95 di tengah) supaya
+    // gambar after terlihat 100% jelas, hanya tepi yang fade
+    // ============================================================
     const grad = brushCtx.createRadialGradient(c, c, 0, c, c, r);
     grad.addColorStop(0, 'rgba(255,255,255,1)');
-    grad.addColorStop(0.55, 'rgba(255,255,255,0.82)');
+    grad.addColorStop(0.7, 'rgba(255,255,255,0.95)');
     grad.addColorStop(1, 'rgba(255,255,255,0)');
     brushCtx.fillStyle = grad;
     brushCtx.beginPath();
