@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 ROCKET BATTLE - Race to the Moon</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS for Excel Import/Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
+        
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        /* Starry Space Background */
+        .space-bg {
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stars-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 3s) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Pulse and Shake effects */
+        .animate-bounce-short {
+            animation: bounce 0.6s ease-in-out 2;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .shake-element {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* Flame Thruster Animations */
+        @keyframes thruster {
+            0% { transform: scaleY(0.9) scaleX(0.95); opacity: 0.8; }
+            50% { transform: scaleY(1.25) scaleX(1.1); opacity: 1; }
+            100% { transform: scaleY(0.9) scaleX(0.95); opacity: 0.8; }
+        }
+
+        .flame-anim {
+            transform-origin: top center;
+            animation: thruster 0.15s infinite alternate ease-in-out;
+        }
+
+        .flame-super {
+            transform-origin: top center;
+            animation: thruster 0.08s infinite alternate ease-in-out;
+            filter: drop-shadow(0 0 12px #f59e0b);
+        }
+
+        /* Speed lines on boost */
+        @keyframes speedLine {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100%); opacity: 0; }
+        }
+
+        .speed-line {
+            position: absolute;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.8), transparent);
+            animation: speedLine 0.4s linear infinite;
+        }
+
+        /* Glassmorphism panel */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .glass-card-blue {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border: 2px solid rgba(59, 130, 246, 0.4);
+        }
+
+        .glass-card-red {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border: 2px solid rgba(239, 68, 68, 0.4);
+        }
+
+        /* Touch Button Active state for IFP */
+        .btn-touch-active:active {
+            transform: scale(0.95) translateY(2px);
+            filter: brightness(1.2);
+        }
+    </style>
+</head>
+<body class="space-bg text-white min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-cyan-500 selection:text-black">
+
+    <!-- Dynamic Star Background -->
+    <div id="stars-container" class="stars-container"></div>
+
+    <!-- AUDIO SYNTHESIZER (Web Audio API - 100% Offline & Reliable) -->
+    <script>
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioCtx();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playCorrect() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                
+                const osc1 = this.ctx.createOscillator();
+                const osc2 = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc1.type = 'sine';
+                osc2.type = 'triangle';
+
+                osc1.frequency.setValueAtTime(523.25, now); // C5
+                osc1.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
+                osc1.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
+                osc1.frequency.exponentialRampToValueAtTime(1046.50, now + 0.35); // C6
+
+                osc2.frequency.setValueAtTime(261.63, now);
+                osc2.frequency.exponentialRampToValueAtTime(523.25, now + 0.35);
+
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.5);
+                osc2.stop(now + 0.5);
+            }
+
+            playWrong() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(160, now);
+                osc.frequency.linearRampToValueAtTime(90, now + 0.3);
+
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.35);
+            }
+
+            playBoost() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+
+                // White noise sweep
+                const bufferSize = this.ctx.sampleRate * 0.4;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(200, now);
+                filter.frequency.exponentialRampToValueAtTime(3000, now + 0.35);
+                filter.Q.value = 3;
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                noise.start(now);
+                noise.stop(now + 0.4);
+            }
+
+            playCombo() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                
+                const notes = [440, 554.37, 659.25, 880]; // A major arpeggio
+                notes.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+
+                    gain.gain.setValueAtTime(0.25, now + idx * 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.2);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start(now + idx * 0.06);
+                    osc.stop(now + idx * 0.06 + 0.2);
+                });
+            }
+
+            playVictory() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const melody = [
+                    { f: 523.25, d: 0.15 }, { f: 659.25, d: 0.15 }, { f: 783.99, d: 0.15 },
+                    { f: 1046.50, d: 0.4 }, { f: 783.99, d: 0.15 }, { f: 1046.50, d: 0.6 }
+                ];
+                let time = now;
+                melody.forEach(item => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(item.f, time);
+                    gain.gain.setValueAtTime(0.3, time);
+                    gain.gain.exponentialRampToValueAtTime(0.001, time + item.d);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(time);
+                    osc.stop(time + item.d);
+                    time += item.d + 0.03;
+                });
+            }
+        }
+
+        const sound = new SoundEngine();
+    </script>
+
+    <!-- MAIN APPLICATION WRAPPER -->
+    <div id="app" class="relative z-10 min-h-screen flex flex-col justify-between p-3 md:p-6 max-w-[1920px] mx-auto w-full">
+
+        <!-- TOP NAVIGATION & BRANDING BAR -->
+        <header class="flex justify-between items-center bg-slate-900/80 backdrop-blur-md px-6 py-3 rounded-2xl border border-slate-700/60 shadow-xl mb-4">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showScreen('menu')">
+                <span class="text-3xl md:text-4xl animate-bounce">🚀</span>
+                <div>
+                    <h1 class="text-xl md:text-28 font-black tracking-wider bg-gradient-to-r from-amber-300 via-sky-400 to-indigo-400 bg-clip-text text-transparent uppercase">
+                        ROCKET BATTLE
+                    </h1>
+                    <p class="text-xs text-slate-400 font-semibold tracking-widest hidden sm:block">RACE TO THE MOON • CLASSROOM DUEL</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <!-- Sound Toggle Button -->
+                <button id="sound-btn" onclick="toggleSound()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold flex items-center space-x-2 transition btn-touch-active">
+                    <span id="sound-icon">🔊</span>
+                    <span id="sound-text" class="text-sm hidden sm:inline">SUARA: ON</span>
+                </button>
+                
+                <!-- Main Menu / Reset Button -->
+                <button onclick="showScreen('menu')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold flex items-center space-x-2 transition btn-touch-active">
+                    <span>🏠</span>
+                    <span class="text-sm hidden sm:inline">MENU</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- SCREEN 1: MAIN MENU -->
+        <div id="screen-menu" class="flex-1 flex flex-col justify-center items-center py-4">
+            <div class="w-full max-w-4xl glass-panel p-6 md:p-10 rounded-3xl border border-slate-700/80 shadow-2xl text-center space-y-8">
+                
+                <!-- Title & Tagline Header -->
+                <div class="space-y-3">
+                    <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs md:text-sm font-bold uppercase tracking-wider">
+                        ✨ Game Edukasi Interaktif IFP
+                    </div>
+                    <h2 class="text-4xl md:text-6xl font-black text-white tracking-tight leading-none">
+                        🚀 ROCKET BATTLE
+                    </h2>
+                    <p class="text-xl md:text-2xl font-bold text-amber-400 italic">
+                        "Answer Fast. Fly Higher. Reach the Moon!"
+                    </p>
+                </div>
+
+                <!-- Main Action Buttons Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto pt-2">
+                    <button onclick="openSetupModal()" class="md:col-span-2 py-5 px-8 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-2xl shadow-lg shadow-cyan-500/25 flex items-center justify-center space-x-3 transition transform hover:scale-[1.02] btn-touch-active">
+                        <span>🚀</span>
+                        <span>START BATTLE NOW</span>
+                    </button>
+
+                    <button onclick="showScreen('bank')" class="py-4 px-6 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 font-bold text-lg flex items-center justify-center space-x-3 transition btn-touch-active">
+                        <span>📚</span>
+                        <span>BANK SOAL (<span id="bank-count-badge">1</span>)</span>
+                    </button>
+
+                    <button onclick="downloadTemplateExcel()" class="py-4 px-6 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 font-bold text-lg flex items-center justify-center space-x-3 transition btn-touch-active">
+                        <span>📥</span>
+                        <span>DOWNLOAD TEMPLATE</span>
+                    </button>
+
+                    <label class="py-4 px-6 rounded-2xl bg-indigo-900/60 hover:bg-indigo-800/80 border border-indigo-500/50 text-indigo-200 font-bold text-lg flex items-center justify-center space-x-3 cursor-pointer transition btn-touch-active">
+                        <span>📤</span>
+                        <span>IMPORT EXCEL SOAL</span>
+                        <input type="file" id="excel-file-input" accept=".xlsx, .xls" class="hidden" onchange="importExcelSoal(event)">
+                    </label>
+
+                    <button onclick="showScreen('howto')" class="py-4 px-6 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 font-bold text-lg flex items-center justify-center space-x-3 transition btn-touch-active">
+                        <span>❓</span>
+                        <span>CARA BERMAIN</span>
+                    </button>
+                </div>
+
+                <!-- Bank Soal Quick Selector -->
+                <div class="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
+                    <div>
+                        <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">Bank Soal Aktif:</span>
+                        <span id="active-bank-name" class="text-base font-extrabold text-cyan-300">Default: Pengetahuan Umum SD (10 Soal)</span>
+                    </div>
+                    <button onclick="showScreen('bank')" class="text-xs text-amber-400 hover:text-amber-300 font-bold underline">
+                        Ganti Bank Soal ⚙️
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETUP MODAL / DIALOG -->
+        <div id="modal-setup" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+            <div class="w-full max-w-xl glass-panel p-6 md:p-8 rounded-3xl border border-slate-700 shadow-2xl space-y-6">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                    <h3 class="text-2xl font-black text-white flex items-center space-x-2">
+                        <span>⚙️</span> <span>PENGATURAN PERMAINAN</span>
+                    </h3>
+                    <button onclick="closeSetupModal()" class="text-slate-400 hover:text-white font-bold text-xl px-2">✕</button>
+                </div>
+
+                <div class="space-y-5 text-left">
+                    <!-- Bank Soal Picker -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-300 mb-1">📚 Pilih Bank Soal:</label>
+                        <select id="setup-bank-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white font-semibold focus:outline-none focus:border-cyan-500">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <!-- Target Questions / Checkpoints -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-300 mb-1">🌕 Target Progress (Bulan):</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button type="button" onclick="setTargetQuestions(5)" id="btn-target-5" class="target-btn py-3 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700">5 Soal</button>
+                            <button type="button" onclick="setTargetQuestions(10)" id="btn-target-10" class="target-btn py-3 rounded-xl bg-cyan-600 border border-cyan-400 font-bold">10 Soal</button>
+                            <button type="button" onclick="setTargetQuestions(15)" id="btn-target-15" class="target-btn py-3 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700">15 Soal</button>
+                            <button type="button" onclick="setTargetQuestions(20)" id="btn-target-20" class="target-btn py-3 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700">20 Soal</button>
+                        </div>
+                    </div>
+
+                    <!-- Timer Duration -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-300 mb-1">⏱️ Waktu Per Soal:</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" onclick="setTimerSecs(5)" id="btn-timer-5" class="timer-btn py-2.5 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700">5 Detik</button>
+                            <button type="button" onclick="setTimerSecs(10)" id="btn-timer-10" class="timer-btn py-2.5 rounded-xl bg-cyan-600 border border-cyan-400 font-bold">10 Detik</button>
+                            <button type="button" onclick="setTimerSecs(15)" id="btn-timer-15" class="timer-btn py-2.5 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700">15 Detik</button>
+                        </div>
+                    </div>
+
+                    <!-- Team Names Input -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-blue-950/40 p-3 rounded-xl border border-blue-500/40">
+                            <label class="block text-xs font-bold text-blue-300 mb-1">🔵 Nama Tim Biru:</label>
+                            <input type="text" id="team-blue-name" value="TIM BIRU" class="w-full bg-slate-900 border border-blue-500/50 rounded-lg p-2.5 font-black text-blue-300 focus:outline-none">
+                        </div>
+                        <div class="bg-red-950/40 p-3 rounded-xl border border-red-500/40">
+                            <label class="block text-xs font-bold text-red-300 mb-1">🔴 Nama Tim Merah:</label>
+                            <input type="text" id="team-red-name" value="TIM MERAH" class="w-full bg-slate-900 border border-red-500/50 rounded-lg p-2.5 font-black text-red-300 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex space-x-3">
+                    <button onclick="closeSetupModal()" class="w-1/3 py-4 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-bold btn-touch-active">BATAL</button>
+                    <button onclick="startBattleGame()" class="w-2/3 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xl shadow-lg shadow-cyan-500/20 btn-touch-active">🚀 LAUNCH BATTLE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: BANK SOAL MANAGER -->
+        <div id="screen-bank" class="hidden flex-1 flex flex-col justify-center items-center py-4">
+            <div class="w-full max-w-4xl glass-panel p-6 md:p-8 rounded-3xl border border-slate-700/80 shadow-2xl space-y-6">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                    <div>
+                        <h2 class="text-3xl font-black text-white flex items-center space-x-2">
+                            <span>📚</span> <span>BANK SOAL TERSIMPANN</span>
+                        </h2>
+                        <p class="text-xs text-slate-400">Pilih atau atur paket soal untuk duel di kelas</p>
+                    </div>
+                    <button onclick="showScreen('menu')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-600 font-bold text-sm">Kembali</button>
+                </div>
+
+                <!-- Saved Banks List -->
+                <div id="bank-list-container" class="space-y-3 max-h-[380px] overflow-y-auto pr-2">
+                    <!-- Dynamic rendering -->
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-800">
+                    <button onclick="downloadTemplateExcel()" class="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 border border-slate-600 hover:bg-slate-700 font-bold text-sm flex items-center justify-center space-x-2">
+                        <span>📥</span> <span>Download Template Excel</span>
+                    </button>
+
+                    <label class="w-full sm:w-auto px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm flex items-center justify-center space-x-2 cursor-pointer">
+                        <span>📤</span> <span>Import File Excel Baru</span>
+                        <input type="file" accept=".xlsx, .xls" class="hidden" onchange="importExcelSoal(event)">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: HOW TO PLAY -->
+        <div id="screen-howto" class="hidden flex-1 flex flex-col justify-center items-center py-4">
+            <div class="w-full max-w-4xl glass-panel p-6 md:p-8 rounded-3xl border border-slate-700/80 shadow-2xl space-y-6 text-left">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                    <h2 class="text-3xl font-black text-white flex items-center space-x-2">
+                        <span>❓</span> <span>CARA BERMAIN ROCKET BATTLE</span>
+                    </h2>
+                    <button onclick="showScreen('menu')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-600 font-bold text-sm">Kembali</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
+                        <div class="text-amber-400 font-black text-base">1️⃣ DUEL BERSAMAAN (NO TURNS)</div>
+                        <p class="text-slate-300">Tim Biru dan Tim Merah tampil di dua sisi layar dan mengerjakan soal secara <strong>langsung bersamaan</strong> tanpa menunggu giliran lawan!</p>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
+                        <div class="text-amber-400 font-black text-base">2️⃣ BANK SOAL & RANDOMISASI</div>
+                        <p class="text-slate-300">Kedua tim mendapatkan soal dari paket yang sama, namun <strong>urutan soal diacak terpisah</strong> sehingga tidak bisa menyontek lawan!</p>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
+                        <div class="text-amber-400 font-black text-base">3️⃣ KECEPATAN & BOOST PROGRESS</div>
+                        <p class="text-slate-300">Jawab benar dalam 0–3 detik memberikan bonus ⚡ <strong>+2 Checkpoint</strong>. Jawaban normal memberikan 🚀 <strong>+1 Checkpoint</strong>.</p>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
+                        <div class="text-amber-400 font-black text-base">4️⃣ SYSTEM COMBO 🔥</div>
+                        <p class="text-slate-300">Jawaban benar beruntun mengaktifkan <strong>COMBO x2, x3, x4</strong> dan 🚀🚀🚀 <strong>MOON BOOST (Combo x5)</strong> untuk melesat cepat ke bulan!</p>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
+                        <div class="text-amber-400 font-black text-base">5️⃣ NYAWA ❤️ & PENALTI</div>
+                        <p class="text-slate-300">Setiap kesalahan/timeout mengurangi 1❤️. Jika nyawa habis (0), roket mundur 1 checkpoint dan nyawa ter-reset ke 5. Game tidak pernah berhenti!</p>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
+                        <div class="text-amber-400 font-black text-base">6️⃣ SIAPA CEPAT DIA MENANG 🌕</div>
+                        <p class="text-slate-300">Tim pertama yang roketnya mendarat di Bulan terlebih dahulu langsung dinyatakan sebagai <strong>PEMENANG UTAMA!</strong></p>
+                    </div>
+                </div>
+
+                <div class="pt-2 text-center">
+                    <button onclick="openSetupModal()" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-lg shadow-lg">🚀 SIAP BERMAIN!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: BATTLE ARENA (16:9 SPLIT SCREEN LANDSCAPE OPTIMIZED FOR IFP) -->
+        <div id="screen-arena" class="hidden flex-1 flex flex-col justify-between relative overflow-hidden">
+            
+            <!-- CENTRAL RACE TRACK & MOON DISPLAY -->
+            <div class="relative w-full h-24 md:h-28 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-700/80 mb-3 flex items-center justify-between px-6 overflow-hidden">
+                
+                <!-- Speed lines overlay -->
+                <div id="speed-lines-bg" class="absolute inset-0 pointer-events-none opacity-30"></div>
+
+                <!-- Blue Rocket Track Indicator -->
+                <div class="flex items-center space-x-3 w-1/3">
+                    <div class="text-blue-400 font-black text-sm md:text-base truncate" id="arena-blue-title">🔵 TIM BIRU</div>
+                    <div class="flex-1 bg-slate-800 h-4 rounded-full overflow-hidden p-0.5 border border-blue-500/40 relative">
+                        <div id="blue-progress-bar" class="bg-gradient-to-r from-blue-600 to-cyan-400 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
+                    </div>
+                    <span id="blue-progress-text" class="text-xs font-black text-cyan-300 w-12 text-right">0/10</span>
+                </div>
+
+                <!-- Target Moon Center graphic -->
+                <div class="flex flex-col items-center justify-center relative z-10 px-2">
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-amber-200 shadow-[0_0_25px_rgba(251,191,36,0.6)] flex items-center justify-center border-2 border-amber-100 animate-pulse">
+                        <span class="text-2xl md:text-3xl">🌕</span>
+                    </div>
+                    <span class="text-[10px] font-black tracking-widest text-amber-300 uppercase mt-0.5">FINISH MOON</span>
+                </div>
+
+                <!-- Red Rocket Track Indicator -->
+                <div class="flex items-center space-x-3 w-1/3 justify-end">
+                    <span id="red-progress-text" class="text-xs font-black text-rose-300 w-12 text-left">0/10</span>
+                    <div class="flex-1 bg-slate-800 h-4 rounded-full overflow-hidden p-0.5 border border-red-500/40 relative">
+                        <div id="red-progress-bar" class="bg-gradient-to-r from-red-600 to-rose-400 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
+                    </div>
+                    <div class="text-rose-400 font-black text-sm md:text-base truncate" id="arena-red-title">🔴 TIM MERAH</div>
+                </div>
+            </div>
+
+            <!-- SPLIT SCREEN ARENA: BLUE vs RED -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 flex-1 items-stretch">
+                
+                <!-- ================= LEFT SIDE: BLUE TEAM ================= -->
+                <div id="blue-panel" class="glass-card-blue p-4 md:p-6 rounded-3xl flex flex-col justify-between relative overflow-hidden shadow-2xl transition-all">
+                    
+                    <!-- Feedback Banner Overlay -->
+                    <div id="blue-feedback" class="absolute inset-x-0 top-1/3 z-30 flex justify-center items-center pointer-events-none opacity-0 transition-all transform scale-50">
+                        <div class="px-6 py-3 rounded-2xl bg-cyan-500 text-slate-950 font-black text-2xl md:text-3xl shadow-2xl border-2 border-white tracking-wider flex items-center space-x-2">
+                            <span id="blue-feedback-text">⚡ SUPER FAST!</span>
+                        </div>
+                    </div>
+
+                    <!-- Blue Header Info -->
+                    <div class="flex justify-between items-center pb-3 border-b border-blue-500/30">
+                        <div>
+                            <div class="text-blue-300 font-black text-lg md:text-xl flex items-center space-x-2">
+                                <span>🔵</span> <span id="blue-team-label">TIM BIRU</span>
+                            </div>
+                            <div class="text-xs text-blue-200/70 font-bold" id="blue-q-counter">Soal 1 / 10</div>
+                        </div>
+
+                        <!-- Energy & Combo -->
+                        <div class="flex flex-col items-end space-y-1">
+                            <div id="blue-energy-hearts" class="flex space-x-1 text-base md:text-lg">
+                                ❤️ ❤️ ❤️ ❤️ ❤️
+                            </div>
+                            <div id="blue-combo-badge" class="text-xs font-black px-2.5 py-0.5 rounded-full bg-blue-500/30 text-cyan-300 border border-cyan-400/30">
+                                COMBO x0
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rocket Visual Lane (Blue) -->
+                    <div class="my-2 py-2 flex items-center justify-between bg-slate-950/40 rounded-xl px-4 border border-blue-900/40">
+                        <div class="text-xs font-bold text-blue-300">STATUS ROKET:</div>
+                        <div id="blue-rocket-container" class="flex items-center space-x-2">
+                            <span id="blue-rocket-flame" class="text-xl flame-anim">🔥</span>
+                            <!-- SVG Blue Cartoon Rocket -->
+                            <svg class="w-10 h-10 md:w-12 md:h-12 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" viewBox="0 0 100 100">
+                                <path d="M50 10 C35 30 30 65 30 80 L70 80 C70 65 65 30 50 10 Z" fill="#2563eb" stroke="#bfdbfe" stroke-width="4"/>
+                                <path d="M50 10 C45 35 45 65 50 80 Z" fill="#3b82f6"/>
+                                <circle cx="50" cy="40" r="12" fill="#dbeafe" stroke="#1d4ed8" stroke-width="3"/>
+                                <circle cx="50" cy="40" r="6" fill="#60a5fa"/>
+                                <path d="M25 65 L10 85 L30 80 Z" fill="#1e40af"/>
+                                <path d="M75 65 L90 85 L70 80 Z" fill="#1e40af"/>
+                            </svg>
+                            <span class="text-xs font-black text-cyan-200" id="blue-rocket-status">READY TO LAUNCH</span>
+                        </div>
+                    </div>
+
+                    <!-- Question Text Box -->
+                    <div class="bg-slate-900/90 p-4 md:p-5 rounded-2xl border border-blue-500/40 my-2 flex-1 flex flex-col justify-center min-h-[120px]">
+                        <p id="blue-q-text" class="text-lg md:text-2xl font-black text-white text-center leading-snug">
+                            Memuat soal...
+                        </p>
+                    </div>
+
+                    <!-- Timer Bar -->
+                    <div class="w-full bg-slate-900 rounded-full h-3 mb-3 overflow-hidden p-0.5 border border-slate-700 relative">
+                        <div id="blue-timer-bar" class="bg-cyan-400 h-full rounded-full transition-all duration-100" style="width: 100%;"></div>
+                    </div>
+
+                    <!-- 4 Large Answer Touch Buttons Grid -->
+                    <div class="grid grid-cols-2 gap-2 md:gap-3">
+                        <button onclick="submitAnswer('blue', 'A')" id="blue-opt-A" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-blue-900/80 border-2 border-slate-700 hover:border-blue-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
+                            <span class="px-2 py-1 bg-blue-600 rounded-lg text-xs md:text-sm">A</span>
+                            <span id="blue-txt-A" class="truncate">Option A</span>
+                        </button>
+                        <button onclick="submitAnswer('blue', 'B')" id="blue-opt-B" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-blue-900/80 border-2 border-slate-700 hover:border-blue-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
+                            <span class="px-2 py-1 bg-blue-600 rounded-lg text-xs md:text-sm">B</span>
+                            <span id="blue-txt-B" class="truncate">Option B</span>
+                        </button>
+                        <button onclick="submitAnswer('blue', 'C')" id="blue-opt-C" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-blue-900/80 border-2 border-slate-700 hover:border-blue-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
+                            <span class="px-2 py-1 bg-blue-600 rounded-lg text-xs md:text-sm">C</span>
+                            <span id="blue-txt-C" class="truncate">Option C</span>
+                        </button>
+                        <button onclick="submitAnswer('blue', 'D')" id="blue-opt-D" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-blue-900/80 border-2 border-slate-700 hover:border-blue-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
+                            <span class="px-2 py-1 bg-blue-600 rounded-lg text-xs md:text-sm">D</span>
+                            <span id="blue-txt-D" class="truncate">Option D</span>
+                        </button>
+                    </div>
+                </div>
+
+
+                <!-- ================= RIGHT SIDE: RED TEAM ================= -->
+                <div id="red-panel" class="glass-card-red p-4 md:p-6 rounded-3xl flex flex-col justify-between relative overflow-hidden shadow-2xl transition-all">
+                    
+                    <!-- Feedback Banner Overlay -->
+                    <div id="red-feedback" class="absolute inset-x-0 top-1/3 z-30 flex justify-center items-center pointer-events-none opacity-0 transition-all transform scale-50">
+                        <div class="px-6 py-3 rounded-2xl bg-rose-500 text-slate-950 font-black text-2xl md:text-3xl shadow-2xl border-2 border-white tracking-wider flex items-center space-x-2">
+                            <span id="red-feedback-text">⚡ SUPER FAST!</span>
+                        </div>
+                    </div>
+
+                    <!-- Red Header Info -->
+                    <div class="flex justify-between items-center pb-3 border-b border-red-500/30">
+                        <div>
+                            <div class="text-rose-300 font-black text-lg md:text-xl flex items-center space-x-2">
+                                <span>🔴</span> <span id="red-team-label">TIM MERAH</span>
+                            </div>
+                            <div class="text-xs text-rose-200/70 font-bold" id="red-q-counter">Soal 1 / 10</div>
+                        </div>
+
+                        <!-- Energy & Combo -->
+                        <div class="flex flex-col items-end space-y-1">
+                            <div id="red-energy-hearts" class="flex space-x-1 text-base md:text-lg">
+                                ❤️ ❤️ ❤️ ❤️ ❤️
+                            </div>
+                            <div id="red-combo-badge" class="text-xs font-black px-2.5 py-0.5 rounded-full bg-red-500/30 text-rose-300 border border-rose-400/30">
+                                COMBO x0
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rocket Visual Lane (Red) -->
+                    <div class="my-2 py-2 flex items-center justify-between bg-slate-950/40 rounded-xl px-4 border border-red-900/40">
+                        <div class="text-xs font-bold text-rose-300">STATUS ROKET:</div>
+                        <div id="red-rocket-container" class="flex items-center space-x-2">
+                            <span id="red-rocket-flame" class="text-xl flame-anim">🔥</span>
+                            <!-- SVG Red Cartoon Rocket -->
+                            <svg class="w-10 h-10 md:w-12 md:h-12 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]" viewBox="0 0 100 100">
+                                <path d="M50 10 C35 30 30 65 30 80 L70 80 C70 65 65 30 50 10 Z" fill="#dc2626" stroke="#fca5a5" stroke-width="4"/>
+                                <path d="M50 10 C45 35 45 65 50 80 Z" fill="#ef4444"/>
+                                <circle cx="50" cy="40" r="12" fill="#fef2f2" stroke="#b91c1c" stroke-width="3"/>
+                                <circle cx="50" cy="40" r="6" fill="#f87171"/>
+                                <path d="M25 65 L10 85 L30 80 Z" fill="#991b1b"/>
+                                <path d="M75 65 L90 85 L70 80 Z" fill="#991b1b"/>
+                            </svg>
+                            <span class="text-xs font-black text-rose-200" id="red-rocket-status">READY TO LAUNCH</span>
+                        </div>
+                    </div>
+
+                    <!-- Question Text Box -->
+                    <div class="bg-slate-900/90 p-4 md:p-5 rounded-2xl border border-red-500/40 my-2 flex-1 flex flex-col justify-center min-h-[120px]">
+                        <p id="red-q-text" class="text-lg md:text-2xl font-black text-white text-center leading-snug">
+                            Memuat soal...
+                        </p>
+                    </div>
+
+                    <!-- Timer Bar -->
+                    <div class="w-full bg-slate-900 rounded-full h-3 mb-3 overflow-hidden p-0.5 border border-slate-700 relative">
+                        <div id="red-timer-bar" class="bg-rose-400 h-full rounded-full transition-all duration-100" style="width: 100%;"></div>
+                    </div>
+
+                    <!-- 4 Large Answer Touch Buttons Grid -->
+                    <div class="grid grid-cols-2 gap-2 md:gap-3">
+                        <button onclick="submitAnswer('red', 'A')" id="red-opt-A" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-red-900/80 border-2 border-slate-700 hover:border-red-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
+                            <span class="px-2 py-1 bg-red-600 rounded-lg text-xs md:text-sm">A</span>
+                            <span id="red-txt-A" class="truncate">Option A</span>
+                        </button>
+                        <button onclick="submitAnswer('red', 'B')" id="red-opt-B" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-red-900/80 border-2 border-slate-700 hover:border-red-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
+                            <span class="px-2 py-1 bg-red-600 rounded-lg text-xs md:text-sm">B</span>
+                            <span id="red-txt-B" class="truncate">Option B</span>
+                        </button>
+                        <button onclick="submitAnswer('red', 'C')" id="red-opt-C" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-red-900/80 border-2 border-slate-700 hover:border-red-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
+                            <span class="px-2 py-1 bg-red-600 rounded-lg text-xs md:text-sm">C</span>
+                            <span id="red-txt-C" class="truncate">Option C</span>
+                        </button>
+                        <button onclick="submitAnswer('red', 'D')" id="red-opt-D" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-red-900/80 border-2 border-slate-700 hover:border-red-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
+                            <span class="px-2 py-1 bg-red-600 rounded-lg text-xs md:text-sm">D</span>
+                            <span id="red-txt-D" class="truncate">Option D</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SCREEN 5: FINAL WINNER SCREEN -->
+        <div id="screen-victory" class="hidden flex-1 flex flex-col justify-center items-center py-4">
+            <div class="w-full max-w-4xl glass-panel p-6 md:p-10 rounded-3xl border border-slate-700/80 shadow-2xl text-center space-y-6 relative overflow-hidden">
+                
+                <div class="space-y-2">
+                    <div class="text-4xl md:text-6xl animate-bounce">🌕🚀</div>
+                    <h2 class="text-xs md:text-sm font-black tracking-widest text-amber-400 uppercase">ROCKET BATTLE COMPLETE!</h2>
+                    <h1 id="winner-title-text" class="text-4xl md:text-6xl font-black text-white uppercase tracking-tight">
+                        🔵 TIM BIRU WINS!
+                    </h1>
+                    <p id="winner-sub-text" class="text-xl md:text-2xl font-bold text-cyan-300">
+                        "REACHED THE MOON FIRST!"
+                    </p>
+                </div>
+
+                <!-- Dual Stats Summary Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                    
+                    <!-- Blue Stats Box -->
+                    <div class="bg-blue-950/60 p-5 rounded-2xl border border-blue-500/40 space-y-3">
+                        <div class="text-lg font-black text-blue-300 border-b border-blue-800 pb-2 flex justify-between items-center">
+                            <span>🔵 <span id="stat-blue-name">TIM BIRU</span></span>
+                            <span id="stat-blue-badge" class="text-xs px-2 py-1 rounded bg-blue-600 text-white">WINNER 🏆</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs md:text-sm">
+                            <div class="text-slate-400">Soal Benar:</div>
+                            <div class="font-bold text-white text-right" id="stat-blue-correct">0</div>
+
+                            <div class="text-slate-400">Waktu Reaksi Tercepat:</div>
+                            <div class="font-bold text-cyan-300 text-right" id="stat-blue-fastest">0.0s</div>
+
+                            <div class="text-slate-400">Combo Tertinggi:</div>
+                            <div class="font-bold text-amber-400 text-right" id="stat-blue-combo">0x</div>
+
+                            <div class="text-slate-400">Sisa Nyawa:</div>
+                            <div class="font-bold text-rose-400 text-right" id="stat-blue-hearts">5 ❤️</div>
+                        </div>
+                    </div>
+
+                    <!-- Red Stats Box -->
+                    <div class="bg-red-950/60 p-5 rounded-2xl border border-red-500/40 space-y-3">
+                        <div class="text-lg font-black text-red-300 border-b border-red-800 pb-2 flex justify-between items-center">
+                            <span>🔴 <span id="stat-red-name">TIM MERAH</span></span>
+                            <span id="stat-red-badge" class="text-xs px-2 py-1 rounded bg-slate-700 text-slate-300">SO CLOSE!</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs md:text-sm">
+                            <div class="text-slate-400">Soal Benar:</div>
+                            <div class="font-bold text-white text-right" id="stat-red-correct">0</div>
+
+                            <div class="text-slate-400">Waktu Reaksi Tercepat:</div>
+                            <div class="font-bold text-cyan-300 text-right" id="stat-red-fastest">0.0s</div>
+
+                            <div class="text-slate-400">Combo Tertinggi:</div>
+                            <div class="font-bold text-amber-400 text-right" id="stat-red-combo">0x</div>
+
+                            <div class="text-slate-400">Sisa Nyawa:</div>
+                            <div class="font-bold text-rose-400 text-right" id="stat-red-hearts">5 ❤️</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
+                    <button onclick="openSetupModal()" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xl shadow-lg transition btn-touch-active">
+                        🔄 MAIN LAGI
+                    </button>
+                    <button onclick="showScreen('menu')" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-bold text-xl transition btn-touch-active">
+                        🏠 MENU UTAMA
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        
+        // DEFAULT BANK SOAL DATA
+        const DEFAULT_BANK = {
+            id: 'default-sd-kelas-5',
+            title: 'Pengetahuan Umum & Sains SD Kelas 5',
+            description: 'Gabungan soal IPAS, Matematika, dan Bahasa Indonesia',
+            questions: [
+                { id: 1, question: "25 + 17 = ?", optionA: "32", optionB: "42", optionC: "52", optionD: "62", answer: "B" },
+                { id: 2, question: "8 × 7 = ?", optionA: "54", optionB: "56", optionC: "64", optionD: "72", answer: "B" },
+                { id: 3, question: "Planet terdekat dengan Matahari adalah?", optionA: "Venus", optionB: "Bumi", optionC: "Merkurius", optionD: "Mars", answer: "C" },
+                { id: 4, question: "Gas yang dihirup manusia saat bernapas adalah?", optionA: "Karbondioksida", optionB: "Oksigen", optionC: "Nitrogen", optionD: "Hidrogen", answer: "B" },
+                { id: 5, question: "Pancasila ke-3 dilambangkan oleh?", optionA: "Bintang", optionB: "Rantai", optionC: "Pohon Beringin", optionD: "Padi dan Kapas", answer: "C" },
+                { id: 6, question: "Hasil dari 125 ÷ 5 adalah?", optionA: "20", optionB: "25", optionC: "30", optionD: "35", answer: "B" },
+                { id: 7, question: "Alat pernapasan pada ikan adalah?", optionA: "Paru-paru", optionB: "Trakea", optionC: "Insang", optionD: "Kulit", answer: "C" },
+                { id: 8, question: "Ibu kota negara Indonesia saat ini adalah?", optionA: "Surabaya", optionB: "Bandung", optionC: "Nusantara (IKN)", optionD: "Medan", answer: "C" },
+                { id: 9, question: "Bentuk pecahan biasa dari 0,5 adalah?", optionA: "1/4", optionB: "1/2", optionC: "3/4", optionD: "2/5", answer: "B" },
+                { id: 10, question: "Proses pembuatan makanan pada tumbuhan hijau disebut?", optionA: "Respirasi", optionB: "Fotosintesis", optionC: "Adaptasi", optionD: "Transpirasi", answer: "B" },
+                { id: 11, question: "15 × 6 = ?", optionA: "80", optionB: "90", optionC: "100", optionD: "110", answer: "B" },
+                { id: 12, question: "Sudut tegak lurus memiliki besaran?", optionA: "45°", optionB: "90°", optionC: "180°", optionD: "360°", answer: "B" },
+                { id: 13, question: "Matahari terbit di sebelah?", optionA: "Barat", optionB: "Timur", optionC: "Utara", optionD: "Selatan", answer: "B" },
+                { id: 14, question: "Bahasa persatuan bangsa Indonesia adalah?", optionA: "Bahasa Jawa", optionB: "Bahasa Melayu", optionC: "Bahasa Indonesia", optionD: "Bahasa Sunda", answer: "C" },
+                { id: 15, question: "Satuan internasional untuk waktu adalah?", optionA: "Jam", optionB: "Menit", optionC: "Detik (Sekon)", optionD: "Hari", answer: "C" }
+            ]
+        };
+
+        // GLOBAL APPLICATION STATE
+        let appState = {
+            banks: [DEFAULT_BANK],
+            selectedBankId: 'default-sd-kelas-5',
+            targetProgress: 10,
+            timerSecs: 10,
+            boostEnabled: true,
+            maxHearts: 5,
+            
+            // Team Configurations
+            blueTeam: { name: 'TIM BIRU', score: 0, progress: 0, combo: 0, maxCombo: 0, hearts: 5, questions: [], index: 0, timer: 10, interval: null, stats: { correct: 0, fastest: 99 } },
+            redTeam: { name: 'TIM MERAH', score: 0, progress: 0, combo: 0, maxCombo: 0, hearts: 5, questions: [], index: 0, timer: 10, interval: null, stats: { correct: 0, fastest: 99 } },
+
+            gameActive: false
+        };
+
+        // INITIALIZATION ON WINDOW LOAD
+        window.onload = function() {
+            generateStarfield();
+            loadSavedBanks();
+            updateBankUI();
+        };
+
+        function generateStarfield() {
+            const container = document.getElementById('stars-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 70; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                container.appendChild(star);
+            }
+        }
+
+        // NAVIGATION SCREEN MANAGER
+        function showScreen(screenId) {
+            ['menu', 'bank', 'howto', 'arena', 'victory'].forEach(s => {
+                document.getElementById(`screen-${s}`).classList.add('hidden');
+            });
+            document.getElementById(`screen-${screenId}`).classList.remove('hidden');
+
+            if (screenId === 'bank') renderBankList();
+        }
+
+        // SOUND TOGGLE
+        function toggleSound() {
+            sound.enabled = !sound.enabled;
+            document.getElementById('sound-icon').innerText = sound.enabled ? '🔊' : '🔇';
+            document.getElementById('sound-text').innerText = sound.enabled ? 'SUARA: ON' : 'SUARA: OFF';
+        }
+
+        function loadSavedBanks() {
+            try {
+                const stored = localStorage.getItem('rocket_battle_banks');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        appState.banks = parsed;
+                    }
+                }
+            } catch (e) {
+                console.warn('Gagal memuat bank soal lokal:', e);
+            }
+        }
+
+        function saveBanksToStorage() {
+            try {
+                localStorage.setItem('rocket_battle_banks', JSON.stringify(appState.banks));
+            } catch (e) {
+                console.warn('Gagal menyimpan bank soal lokal:', e);
+            }
+        }
+
+        function updateBankUI() {
+            const activeBank = appState.banks.find(b => b.id === appState.selectedBankId) || appState.banks[0];
+            document.getElementById('active-bank-name').innerText = `${activeBank.title} (${activeBank.questions.length} Soal)`;
+            document.getElementById('bank-count-badge').innerText = appState.banks.length;
+        }
+
+        // DOWNLOAD TEMPLATE EXCEL
+        function downloadTemplateExcel() {
+            const templateData = [
+                ["No", "Soal", "A", "B", "C", "D", "Jawaban"],
+                [1, "25 + 17 = ?", "32", "42", "52", "62", "B"],
+                [2, "8 × 7 = ?", "54", "56", "64", "72", "B"],
+                [3, "Planet terdekat dengan Matahari?", "Venus", "Bumi", "Merkurius", "Mars", "C"],
+                [4, "Gas yang dihirup manusia saat bernapas?", "Karbondioksida", "Oksigen", "Nitrogen", "Hidrogen", "B"],
+                [5, "Ibu kota Indonesia saat ini?", "Surabaya", "Bandung", "Nusantara (IKN)", "Medan", "C"]
+            ];
+
+            const ws = XLSX.utils.aoa_to_sheet(templateData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Template_Soal");
+
+            XLSX.writeFile(wb, "Template_Rocket_Battle.xlsx");
+        }
+
+        // IMPORT EXCEL FILE
+        function importExcelSoal(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet);
+
+                    if (json.length === 0) {
+                        alert("⚠️ File Excel kosong atau format tidak sesuai!");
+                        return;
+                    }
+
+                    // Validate Columns
+                    const firstRow = json[0];
+                    if (!('Soal' in firstRow && 'A' in firstRow && 'B' in firstRow && 'C' in firstRow && 'D' in firstRow && 'Jawaban' in firstRow)) {
+                        alert("⚠️ FORMAT FILE TIDAK SESUAI!\n\nPastikan file menggunakan template Rocket Battle dan memiliki kolom: No, Soal, A, B, C, D, Jawaban.");
+                        return;
+                    }
+
+                    const importedQuestions = [];
+                    json.forEach((row, idx) => {
+                        if (row.Soal && row.A && row.B && row.C && row.D && row.Jawaban) {
+                            const ans = String(row.Jawaban).trim().toUpperCase();
+                            if (['A', 'B', 'C', 'D'].includes(ans)) {
+                                importedQuestions.push({
+                                    id: idx + 1,
+                                    question: String(row.Soal).trim(),
+                                    optionA: String(row.A).trim(),
+                                    optionB: String(row.B).trim(),
+                                    optionC: String(row.C).trim(),
+                                    optionD: String(row.D).trim(),
+                                    answer: ans
+                                });
+                            }
+                        }
+                    });
+
+                    if (importedQuestions.length === 0) {
+                        alert("⚠️ Tidak ada soal valid yang ditemukan dalam file Excel.");
+                        return;
+                    }
+
+                    const newBank = {
+                        id: 'bank-' + Date.now(),
+                        title: file.name.replace(/\.[^/.]+$/, ""),
+                        description: `Diimpor pada ${new Date().toLocaleDateString('id-ID')}`,
+                        questions: importedQuestions
+                    };
+
+                    appState.banks.push(newBank);
+                    appState.selectedBankId = newBank.id;
+                    saveBanksToStorage();
+                    updateBankUI();
+
+                    alert(`✅ IMPORT BERHASIL!\n\n${importedQuestions.length} soal siap dimainkan.`);
+                    showScreen('menu');
+
+                } catch (err) {
+                    alert("⚠️ Gagal membaca file Excel. Pastikan format file .xlsx valid.");
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // RENDER SAVED BANKS LIST
+        function renderBankList() {
+            const container = document.getElementById('bank-list-container');
+            container.innerHTML = '';
+
+            appState.banks.forEach(bank => {
+                const isSelected = bank.id === appState.selectedBankId;
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-3 transition ${isSelected ? 'bg-cyan-950/60 border-cyan-400' : 'bg-slate-900/60 border-slate-800'}`;
+                
+                card.innerHTML = `
+                    <div class="text-left flex-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xl">🧮</span>
+                            <span class="font-extrabold text-white text-lg">${bank.title}</span>
+                            ${isSelected ? '<span class="text-xs px-2 py-0.5 rounded bg-cyan-600 font-bold text-white">AKTIF</span>' : ''}
+                        </div>
+                        <div class="text-xs text-slate-400 mt-1">${bank.description || 'Paket Soal'} • <strong class="text-amber-300">${bank.questions.length} Soal</strong></div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="selectBank('${bank.id}')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 font-bold text-sm text-slate-200">
+                            ${isSelected ? 'Dipilih' : 'Gunakan'}
+                        </button>
+                        ${bank.id !== 'default-sd-kelas-5' ? `
+                            <button onclick="deleteBank('${bank.id}')" class="px-3 py-2 rounded-xl bg-rose-900/50 hover:bg-rose-800 text-rose-300 border border-rose-700 font-bold text-sm">
+                                🗑️
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectBank(bankId) {
+            appState.selectedBankId = bankId;
+            saveBanksToStorage();
+            updateBankUI();
+            renderBankList();
+        }
+
+        function deleteBank(bankId) {
+            if (confirm("Hapus bank soal ini?")) {
+                appState.banks = appState.banks.filter(b => b.id !== bankId);
+                if (appState.selectedBankId === bankId) {
+                    appState.selectedBankId = appState.banks[0].id;
+                }
+                saveBanksToStorage();
+                updateBankUI();
+                renderBankList();
+            }
+        }
+
+        function openSetupModal() {
+            const select = document.getElementById('setup-bank-select');
+            select.innerHTML = '';
+            appState.banks.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b.id;
+                opt.innerText = `${b.title} (${b.questions.length} Soal)`;
+                if (b.id === appState.selectedBankId) opt.selected = true;
+                select.appendChild(opt);
+            });
+
+            document.getElementById('modal-setup').classList.remove('hidden');
+        }
+
+        function closeSetupModal() {
+            document.getElementById('modal-setup').classList.add('hidden');
+        }
+
+        function setTargetQuestions(count) {
+            appState.targetProgress = count;
+            document.querySelectorAll('.target-btn').forEach(btn => {
+                btn.className = 'target-btn py-3 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700';
+            });
+            document.getElementById(`btn-target-${count}`).className = 'target-btn py-3 rounded-xl bg-cyan-600 border border-cyan-400 font-bold';
+        }
+
+        function setTimerSecs(secs) {
+            appState.timerSecs = secs;
+            document.querySelectorAll('.timer-btn').forEach(btn => {
+                btn.className = 'timer-btn py-2.5 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700';
+            });
+            document.getElementById(`btn-timer-${secs}`).className = 'timer-btn py-2.5 rounded-xl bg-cyan-600 border border-cyan-400 font-bold';
+        }
+
+        // ARRAY SHUFFLE HELPER FOR SEPARATE RANDOMIZATION
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startBattleGame() {
+            const bankId = document.getElementById('setup-bank-select').value;
+            appState.selectedBankId = bankId;
+            const bank = appState.banks.find(b => b.id === bankId) || appState.banks[0];
+
+            const blueNameInput = document.getElementById('team-blue-name').value.trim() || 'TIM BIRU';
+            const redNameInput = document.getElementById('team-red-name').value.trim() || 'TIM MERAH';
+
+            // Prepare Independent Random Questions for both teams
+            let baseQuestions = [...bank.questions];
+            if (baseQuestions.length < appState.targetProgress) {
+                // Loop questions if target exceeds bank size
+                while (baseQuestions.length < appState.targetProgress * 2) {
+                    baseQuestions = baseQuestions.concat([...bank.questions]);
+                }
+            }
+
+            appState.blueTeam = {
+                name: blueNameInput,
+                progress: 0,
+                combo: 0,
+                maxCombo: 0,
+                hearts: appState.maxHearts,
+                questions: shuffleArray(baseQuestions),
+                index: 0,
+                timer: appState.timerSecs,
+                interval: null,
+                stats: { correct: 0, fastest: 99 }
+            };
+
+            appState.redTeam = {
+                name: redNameInput,
+                progress: 0,
+                combo: 0,
+                maxCombo: 0,
+                hearts: appState.maxHearts,
+                questions: shuffleArray(baseQuestions),
+                index: 0,
+                timer: appState.timerSecs,
+                interval: null,
+                stats: { correct: 0, fastest: 99 }
+            };
+
+            appState.gameActive = true;
+            closeSetupModal();
+
+            // Update UI Labels
+            document.getElementById('arena-blue-title').innerText = `🔵 ${blueNameInput}`;
+            document.getElementById('arena-red-title').innerText = `🔴 ${redNameInput}`;
+            document.getElementById('blue-team-label').innerText = blueNameInput;
+            document.getElementById('red-team-label').innerText = redNameInput;
+
+            showScreen('arena');
+            
+            // Render Initial State & Timers
+            renderTeamUI('blue');
+            renderTeamUI('red');
+            
+            startTeamTimer('blue');
+            startTeamTimer('red');
+        }
+
+        function renderTeamUI(teamKey) {
+            const team = appState[`${teamKey}Team`];
+            const q = team.questions[team.index];
+
+            // Progress Bar & Counter
+            const pct = Math.min(100, Math.round((team.progress / appState.targetProgress) * 100));
+            document.getElementById(`${teamKey}-progress-bar`).style.width = `${pct}%`;
+            document.getElementById(`${teamKey}-progress-text`).innerText = `${team.progress}/${appState.targetProgress}`;
+
+            // Question Text & Options
+            document.getElementById(`${teamKey}-q-counter`).innerText = `Soal ${team.index + 1} / ${appState.targetProgress}`;
+            document.getElementById(`${teamKey}-q-text`).innerText = q.question;
+
+            document.getElementById(`${teamKey}-txt-A`).innerText = q.optionA;
+            document.getElementById(`${teamKey}-txt-B`).innerText = q.optionB;
+            document.getElementById(`${teamKey}-txt-C`).innerText = q.optionC;
+            document.getElementById(`${teamKey}-txt-D`).innerText = q.optionD;
+
+            // Hearts Display
+            let heartsStr = '';
+            for (let i = 0; i < appState.maxHearts; i++) {
+                heartsStr += i < team.hearts ? '❤️ ' : '🖤 ';
+            }
+            document.getElementById(`${teamKey}-energy-hearts`).innerText = heartsStr;
+
+            // Combo Display
+            document.getElementById(`${teamKey}-combo-badge`).innerText = `COMBO x${team.combo}`;
+
+            // Rocket Flame Effect based on Combo
+            const flameEl = document.getElementById(`${teamKey}-rocket-flame`);
+            if (team.combo >= 5) {
+                flameEl.className = 'text-2xl flame-super';
+                flameEl.innerText = '⚡🔥⚡';
+            } else if (team.combo >= 2) {
+                flameEl.className = 'text-xl flame-anim';
+                flameEl.innerText = '🔥🔥';
+            } else {
+                flameEl.className = 'text-xl flame-anim';
+                flameEl.innerText = '🔥';
+            }
+        }
+
+        function startTeamTimer(teamKey) {
+            const team = appState[`${teamKey}Team`];
+            clearInterval(team.interval);
+            team.timer = appState.timerSecs;
+
+            const timerBar = document.getElementById(`${teamKey}-timer-bar`);
+            timerBar.style.width = '100%';
+
+            const startTime = Date.now();
+
+            team.interval = setInterval(() => {
+                if (!appState.gameActive) return;
+
+                const elapsed = (Date.now() - startTime) / 1000;
+                const remaining = Math.max(0, appState.timerSecs - elapsed);
+                team.timer = remaining;
+
+                const pct = (remaining / appState.timerSecs) * 100;
+                timerBar.style.width = `${pct}%`;
+
+                if (remaining <= 0) {
+                    clearInterval(team.interval);
+                    handleAnswerTimeout(teamKey);
+                }
+            }, 100);
+        }
+
+        function submitAnswer(teamKey, selectedOpt) {
+            if (!appState.gameActive) return;
+
+            const team = appState[`${teamKey}Team`];
+            clearInterval(team.interval);
+
+            const q = team.questions[team.index];
+            const timeTaken = appState.timerSecs - team.timer;
+
+            if (selectedOpt === q.answer) {
+                // CORRECT ANSWER!
+                sound.playCorrect();
+                team.stats.correct++;
+                if (timeTaken < team.stats.fastest) team.stats.fastest = timeTaken;
+
+                team.combo++;
+                if (team.combo > team.maxCombo) team.maxCombo = team.combo;
+
+                // Speed & Combo Progress Calculation
+                let addProgress = 1;
+                let feedbackText = '✅ CORRECT!';
+
+                if (timeTaken <= 3) {
+                    addProgress = 2;
+                    feedbackText = '⚡ SUPER FAST! +2';
+                } else {
+                    feedbackText = '🚀 FAST! +1';
+                }
+
+                // Combo Moon Boost
+                if (team.combo >= 5) {
+                    addProgress += 2;
+                    feedbackText = '🚀🚀🚀 MOON BOOST! +3';
+                    sound.playBoost();
+                } else if (team.combo >= 2) {
+                    sound.playCombo();
+                }
+
+                team.progress += addProgress;
+                showFeedback(teamKey, feedbackText, 'correct');
+
+            } else {
+                // WRONG ANSWER!
+                sound.playWrong();
+                team.combo = 0;
+                team.hearts--;
+
+                showFeedback(teamKey, '❌ WRONG!', 'wrong');
+
+                if (team.hearts <= 0) {
+                    // Energy Reset penalty
+                    team.progress = Math.max(0, team.progress - 1);
+                    team.hearts = appState.maxHearts;
+                    showFeedback(teamKey, '⚠️ ENERGY RESET! -1 Checkpoint', 'wrong');
+                }
+            }
+
+            // Check Victory Condition immediately!
+            if (team.progress >= appState.targetProgress) {
+                team.progress = appState.targetProgress;
+                renderTeamUI(teamKey);
+                triggerVictory(teamKey);
+                return;
+            }
+
+            // Advance to Next Question
+            team.index = (team.index + 1) % team.questions.length;
+            renderTeamUI(teamKey);
+            startTeamTimer(teamKey);
+        }
+
+        function handleAnswerTimeout(teamKey) {
+            const team = appState[`${teamKey}Team`];
+            sound.playWrong();
+            team.combo = 0;
+            team.hearts--;
+
+            showFeedback(teamKey, '⏰ TIME OUT!', 'wrong');
+
+            if (team.hearts <= 0) {
+                team.progress = Math.max(0, team.progress - 1);
+                team.hearts = appState.maxHearts;
+            }
+
+            team.index = (team.index + 1) % team.questions.length;
+            renderTeamUI(teamKey);
+            startTeamTimer(teamKey);
+        }
+
+        function showFeedback(teamKey, text, type) {
+            const fb = document.getElementById(`${teamKey}-feedback`);
+            const fbText = document.getElementById(`${teamKey}-feedback-text`);
+
+            fbText.innerText = text;
+            fb.classList.remove('opacity-0', 'scale-50');
+            fb.classList.add('opacity-100', 'scale-100');
+
+            setTimeout(() => {
+                fb.classList.remove('opacity-100', 'scale-100');
+                fb.classList.add('opacity-0', 'scale-50');
+            }, 900);
+        }
+
+        function triggerVictory(winningTeamKey) {
+            appState.gameActive = false;
+            clearInterval(appState.blueTeam.interval);
+            clearInterval(appState.redTeam.interval);
+
+            sound.playVictory();
+
+            const winner = appState[`${winningTeamKey}Team`];
+            const loserKey = winningTeamKey === 'blue' ? 'red' : 'blue';
+            const loser = appState[`${loserKey}Team`];
+
+            document.getElementById('winner-title-text').innerText = `${winningTeamKey === 'blue' ? '🔵' : '🔴'} ${winner.name} WINS!`;
+            document.getElementById('winner-sub-text').innerText = `"REACHED THE MOON FIRST!"`;
+
+            // Render Blue Stats
+            document.getElementById('stat-blue-name').innerText = appState.blueTeam.name;
+            document.getElementById('stat-blue-correct').innerText = `${appState.blueTeam.stats.correct} / ${appState.targetProgress}`;
+            document.getElementById('stat-blue-fastest').innerText = appState.blueTeam.stats.fastest === 99 ? '-' : `${appState.blueTeam.stats.fastest.toFixed(1)}s`;
+            document.getElementById('stat-blue-combo').innerText = `${appState.blueTeam.maxCombo}x`;
+            document.getElementById('stat-blue-hearts').innerText = `${appState.blueTeam.hearts} ❤️`;
+            document.getElementById('stat-blue-badge').innerText = winningTeamKey === 'blue' ? 'WINNER 🏆' : 'SO CLOSE!';
+            document.getElementById('stat-blue-badge').className = winningTeamKey === 'blue' ? 'text-xs px-2 py-1 rounded bg-blue-600 text-white font-bold' : 'text-xs px-2 py-1 rounded bg-slate-700 text-slate-300 font-bold';
+
+            // Render Red Stats
+            document.getElementById('stat-red-name').innerText = appState.redTeam.name;
+            document.getElementById('stat-red-correct').innerText = `${appState.redTeam.stats.correct} / ${appState.targetProgress}`;
+            document.getElementById('stat-red-fastest').innerText = appState.redTeam.stats.fastest === 99 ? '-' : `${appState.redTeam.stats.fastest.toFixed(1)}s`;
+            document.getElementById('stat-red-combo').innerText = `${appState.redTeam.maxCombo}x`;
+            document.getElementById('stat-red-hearts').innerText = `${appState.redTeam.hearts} ❤️`;
+            document.getElementById('stat-red-badge').innerText = winningTeamKey === 'red' ? 'WINNER 🏆' : 'SO CLOSE!';
+            document.getElementById('stat-red-badge').className = winningTeamKey === 'red' ? 'text-xs px-2 py-1 rounded bg-red-600 text-white font-bold' : 'text-xs px-2 py-1 rounded bg-slate-700 text-slate-300 font-bold';
+
+            showScreen('victory');
+        }
+    </script>
+</body>
+</html>
