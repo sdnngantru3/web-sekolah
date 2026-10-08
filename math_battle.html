@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>⚔️ MATH BATTLE KELAS - Math Artillery Shooter</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Fredoka / Outfit for fun arcade vibe -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Fredoka', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif']
+                    },
+                    colors: {
+                        blueTeam: {
+                            light: '#60A5FA',
+                            DEFAULT: '#2563EB',
+                            dark: '#1D4ED8',
+                            accent: '#93C5FD'
+                        },
+                        redTeam: {
+                            light: '#F87171',
+                            DEFAULT: '#DC2626',
+                            dark: '#B91C1C',
+                            accent: '#FCA5A5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #0f172a;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* IFP Touch target enhancements */
+        .btn-touch {
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+        }
+        .btn-touch:active {
+            transform: scale(0.96);
+        }
+
+        /* Pulse and float animations */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: floatSlow 3s ease-in-out infinite;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .animate-pop {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .screen-shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-3px, 0, 0); }
+            20%, 80% { transform: translate3d(5px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
+            40%, 60% { transform: translate3d(8px, 0, 0); }
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen w-screen overflow-hidden text-white select-none">
+
+    <!-- MAIN CONTAINER (16:9 Aspect Ratio Lockable or Fluid Fullscreen) -->
+    <div id="game-container" class="relative w-full h-full flex flex-col bg-slate-900 overflow-hidden">
+
+        <!-- TOP BAR / HUD (Always visible in game) -->
+        <div id="hud-bar" class="hidden absolute top-0 left-0 right-0 z-20 px-4 py-2 bg-slate-900/80 backdrop-blur-md border-b-4 border-slate-700/60 flex justify-between items-center shadow-2xl">
+            <!-- BLUE TEAM HUD -->
+            <div id="hud-blue" class="flex items-center gap-3 bg-blue-950/80 border-2 border-blue-500 rounded-2xl px-4 py-2 shadow-lg transition-all duration-300">
+                <div class="flex flex-col">
+                    <span id="blue-team-name-hud" class="font-black text-xl text-blue-400 tracking-wider">🔵 TIM BIRU</span>
+                    <div class="flex items-center gap-1 text-2xl text-red-500" id="blue-lives-container">
+                        <i class="fa-solid fa-heart drop-shadow"></i>
+                        <i class="fa-solid fa-heart drop-shadow"></i>
+                        <i class="fa-solid fa-heart drop-shadow"></i>
+                        <i class="fa-solid fa-heart drop-shadow"></i>
+                        <i class="fa-solid fa-heart drop-shadow"></i>
+                    </div>
+                </div>
+                <div class="border-l-2 border-blue-500/40 pl-3">
+                    <div class="text-xs text-blue-200 font-bold uppercase tracking-widest">SKOR</div>
+                    <div id="blue-score" class="font-display font-black text-3xl text-yellow-300">0000</div>
+                </div>
+            </div>
+
+            <!-- CENTER GAME TITLE & TURN INDICATOR -->
+            <div class="flex flex-col items-center">
+                <div class="font-display text-lg md:text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-200 drop-shadow">
+                    ⚔️ MATH BATTLE KELAS
+                </div>
+                <div id="turn-banner" class="mt-1 px-5 py-1 rounded-full text-base md:text-lg font-black uppercase tracking-wider bg-yellow-400 text-slate-950 shadow-lg border-2 border-yellow-200 animate-pulse">
+                    GILIRAN: TIM BIRU
+                </div>
+            </div>
+
+            <!-- RED TEAM HUD -->
+            <div id="hud-red" class="flex items-center gap-3 bg-red-950/80 border-2 border-red-500 rounded-2xl px-4 py-2 shadow-lg transition-all duration-300">
+                <div class="text-right border-r-2 border-red-500/40 pr-3">
+                    <div class="text-xs text-red-200 font-bold uppercase tracking-widest">SKOR</div>
+                    <div id="red-score" class="font-display font-black text-3xl text-yellow-300">0000</div>
+                </div>
+                <div class="flex flex-col items-end">
+                    <span id="red-team-name-hud" class="font-black text-xl text-red-400 tracking-wider">🔴 TIM MERAH</span>
+                    <div class="flex items-center gap-1 text-2xl text-red-500" id="red-lives-container">
+                        <i class="fa-solid fa-heart drop-shadow"></i>
+                        <i class="fa-solid fa-heart drop-shadow"></i>
+                        <i class="fa-solid fa-heart drop-shadow"></i>
+                        <i class="fa-solid fa-heart drop-shadow"></i>
+                        <i class="fa-solid fa-heart drop-shadow"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME CANVAS FOR PHYSICS & TANK ARTILLERY -->
+        <canvas id="gameCanvas" class="w-full h-full block bg-sky-300 cursor-crosshair"></canvas>
+
+        
+        <!-- ================= MAIN MENU SCREEN ================= -->
+        <div id="screen-main-menu" class="absolute inset-0 z-30 flex flex-col items-center justify-between p-6 bg-gradient-to-b from-sky-400 via-sky-600 to-indigo-900 text-white">
+            <!-- Animated Background Deco Elements -->
+            <div class="absolute top-10 left-10 text-6xl text-white/20 animate-float"><i class="fa-solid fa-cloud"></i></div>
+            <div class="absolute top-20 right-20 text-8xl text-white/20 animate-float" style="animation-delay: 1.5s;"><i class="fa-solid fa-cloud"></i></div>
+            
+            <!-- Header Title -->
+            <div class="text-center mt-6 z-10">
+                <div class="inline-block px-6 py-2 bg-yellow-400 text-slate-900 font-black text-xl md:text-2xl rounded-full border-4 border-yellow-200 shadow-xl mb-3 tracking-widest">
+                    GAME EDUKASI INTERAKTIF SD KELAS 5
+                </div>
+                <h1 class="font-display text-5xl md:text-7xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 via-yellow-400 to-orange-500 drop-shadow-[0_8px_0_rgba(0,0,0,0.4)]">
+                    ⚔️ MATH BATTLE KELAS ⚔️
+                </h1>
+                <p class="text-2xl md:text-3xl font-bold text-sky-100 drop-shadow mt-2">
+                    🚀 Math Artillery Shooter
+                </p>
+            </div>
+
+            <!-- Cute Tank Visuals Preview -->
+            <div class="flex items-center justify-center gap-12 my-2 z-10">
+                <div class="bg-blue-600/80 p-5 rounded-3xl border-4 border-blue-300 shadow-2xl text-center transform -rotate-3 hover:rotate-0 transition">
+                    <i class="fa-solid fa-shield-cat text-7xl text-yellow-300"></i>
+                    <div class="text-xl font-black mt-2">🔵 TIM BIRU</div>
+                </div>
+                <div class="text-4xl font-black text-yellow-300 italic animate-bounce">VS</div>
+                <div class="bg-red-600/80 p-5 rounded-3xl border-4 border-red-300 shadow-2xl text-center transform rotate-3 hover:rotate-0 transition">
+                    <i class="fa-solid fa-shield-dog text-7xl text-yellow-300"></i>
+                    <div class="text-xl font-black mt-2">🔴 TIM MERAH</div>
+                </div>
+            </div>
+
+            <!-- Big Touchscreen IFP Buttons -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl z-10 mb-8">
+                <button id="btn-start-game" onclick="app.showScreen('screen-teacher')" class="btn-touch md:col-span-2 py-5 px-8 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-black text-3xl md:text-4xl rounded-3xl border-b-8 border-green-800 shadow-2xl flex items-center justify-center gap-4">
+                    <i class="fa-solid fa-play"></i> MULAI BATTLE
+                </button>
+
+                <button onclick="app.showScreen('screen-tutorial')" class="btn-touch py-4 px-6 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-black text-2xl rounded-2xl border-b-8 border-orange-800 shadow-xl flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-book-open"></i> CARA BERMAIN
+                </button>
+
+                <button onclick="app.toggleSound()" id="btn-sound-toggle" class="btn-touch py-4 px-6 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white font-black text-2xl rounded-2xl border-b-8 border-indigo-900 shadow-xl flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-volume-high" id="sound-icon"></i> EFEK SUARA: ON
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= TEACHER / GAME SETUP SCREEN ================= -->
+        <div id="screen-teacher" class="hidden absolute inset-0 z-30 flex flex-col p-6 bg-slate-900/95 backdrop-blur-md overflow-y-auto">
+            <div class="max-w-4xl mx-auto w-full my-auto bg-slate-800 rounded-3xl border-4 border-slate-600 p-6 shadow-2xl text-white">
+                <div class="flex justify-between items-center border-b-4 border-slate-700 pb-4 mb-6">
+                    <h2 class="text-3xl md:text-4xl font-black text-yellow-400 flex items-center gap-3">
+                        <i class="fa-solid fa-chalkboard-user"></i> 👨‍🏫 PENGATURAN GURU / MODE BATTLE
+                    </h2>
+                    <button onclick="app.showScreen('screen-main-menu')" class="btn-touch px-5 py-2 bg-slate-700 hover:bg-slate-600 rounded-2xl font-bold text-lg border-b-4 border-slate-900">
+                        <i class="fa-solid fa-xmark"></i> KEMBALI
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- MATERI MATEMATIKA -->
+                    <div class="bg-slate-700/60 p-5 rounded-2xl border-2 border-slate-600">
+                        <label class="block font-black text-xl text-sky-300 mb-3">📚 MATERI MATEMATIKA (KELAS 5):</label>
+                        <div class="grid grid-cols-2 gap-2" id="topic-selector">
+                            <button onclick="app.selectTopic('ALL')" class="topic-btn py-3 px-3 rounded-xl font-bold text-base text-left bg-sky-600 border-2 border-sky-300 shadow flex items-center gap-2" data-topic="ALL">
+                                🌟 Semua Materi
+                            </button>
+                            <button onclick="app.selectTopic('ADD')" class="topic-btn py-3 px-3 rounded-xl font-bold text-base text-left bg-slate-800 border-2 border-slate-600 hover:bg-slate-700 flex items-center gap-2" data-topic="ADD">
+                                ➕ Penjumlahan
+                            </button>
+                            <button onclick="app.selectTopic('SUB')" class="topic-btn py-3 px-3 rounded-xl font-bold text-base text-left bg-slate-800 border-2 border-slate-600 hover:bg-slate-700 flex items-center gap-2" data-topic="SUB">
+                                ➖ Pengurangan
+                            </button>
+                            <button onclick="app.selectTopic('MUL')" class="topic-btn py-3 px-3 rounded-xl font-bold text-base text-left bg-slate-800 border-2 border-slate-600 hover:bg-slate-700 flex items-center gap-2" data-topic="MUL">
+                                ✖️ Perkalian
+                            </button>
+                            <button onclick="app.selectTopic('DIV')" class="topic-btn py-3 px-3 rounded-xl font-bold text-base text-left bg-slate-800 border-2 border-slate-600 hover:bg-slate-700 flex items-center gap-2" data-topic="DIV">
+                                ➗ Pembagian
+                            </button>
+                            <button onclick="app.selectTopic('FRAC')" class="topic-btn py-3 px-3 rounded-xl font-bold text-base text-left bg-slate-800 border-2 border-slate-600 hover:bg-slate-700 flex items-center gap-2" data-topic="FRAC">
+                                🍕 Pecahan Sederhana
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TINGKAT KESULITAN -->
+                    <div class="bg-slate-700/60 p-5 rounded-2xl border-2 border-slate-600 flex flex-col justify-between">
+                        <div>
+                            <label class="block font-black text-xl text-yellow-300 mb-3">🎯 TINGKAT KESULITAN:</label>
+                            <div class="grid grid-cols-3 gap-3" id="difficulty-selector">
+                                <button onclick="app.selectDifficulty('EASY')" class="diff-btn py-3 px-2 rounded-xl font-black text-center bg-emerald-600 border-2 border-emerald-300 shadow" data-diff="EASY">
+                                    🟢 MUDAH
+                                </button>
+                                <button onclick="app.selectDifficulty('MEDIUM')" class="diff-btn py-3 px-2 rounded-xl font-black text-center bg-slate-800 border-2 border-slate-600 hover:bg-slate-700" data-diff="MEDIUM">
+                                    🟡 SEDANG
+                                </button>
+                                <button onclick="app.selectDifficulty('HARD')" class="diff-btn py-3 px-2 rounded-xl font-black text-center bg-slate-800 border-2 border-slate-600 hover:bg-slate-700" data-diff="HARD">
+                                    🔴 SULIT
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- JUMLAH RONDE / TARGET -->
+                        <div class="mt-4">
+                            <label class="block font-black text-xl text-emerald-300 mb-2">⏱️ BATAS RONDE PERMAINAN:</label>
+                            <div class="grid grid-cols-3 gap-3" id="rounds-selector">
+                                <button onclick="app.selectRounds(10)" class="rounds-btn py-2 px-2 rounded-xl font-bold text-center bg-indigo-600 border-2 border-indigo-300" data-rounds="10">10 Soal</button>
+                                <button onclick="app.selectRounds(15)" class="rounds-btn py-2 px-2 rounded-xl font-bold text-center bg-slate-800 border-2 border-slate-600 hover:bg-slate-700" data-rounds="15">15 Soal</button>
+                                <button onclick="app.selectRounds(20)" class="rounds-btn py-2 px-2 rounded-xl font-bold text-center bg-slate-800 border-2 border-slate-600 hover:bg-slate-700" data-rounds="20">20 Soal</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NAMA TIM -->
+                    <div class="md:col-span-2 bg-slate-700/60 p-5 rounded-2xl border-2 border-slate-600 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-black text-lg text-blue-400 mb-1">🔵 NAMA TIM BIRU:</label>
+                            <input id="input-blue-name" type="text" value="TIM BIRU" class="w-full px-4 py-3 bg-slate-900 border-2 border-blue-500 rounded-xl font-black text-xl text-blue-300 focus:outline-none focus:border-yellow-400">
+                        </div>
+                        <div>
+                            <label class="block font-black text-lg text-red-400 mb-1">🔴 NAMA TIM MERAH:</label>
+                            <input id="input-red-name" type="text" value="TIM MERAH" class="w-full px-4 py-3 bg-slate-900 border-2 border-red-500 rounded-xl font-black text-xl text-red-300 focus:outline-none focus:border-yellow-400">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LAUNCH BUTTON -->
+                <button onclick="app.startGame()" class="btn-touch w-full mt-6 py-5 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-600 hover:from-green-400 hover:to-teal-500 font-black text-3xl md:text-4xl text-white rounded-2xl border-b-8 border-green-900 shadow-2xl flex items-center justify-center gap-3">
+                    🚀 MULAI PERMAINAN SEKARANG!
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= TUTORIAL / CARA BERMAIN ================= -->
+        <div id="screen-tutorial" class="hidden absolute inset-0 z-30 flex flex-col p-6 bg-slate-900/95 backdrop-blur-md overflow-y-auto">
+            <div class="max-w-4xl mx-auto w-full my-auto bg-slate-800 rounded-3xl border-4 border-slate-600 p-6 shadow-2xl text-white">
+                <div class="flex justify-between items-center border-b-4 border-slate-700 pb-4 mb-6">
+                    <h2 class="text-3xl font-black text-yellow-400 flex items-center gap-3">
+                        📖 CARA BERMAIN MATH BATTLE
+                    </h2>
+                    <button onclick="app.showScreen('screen-main-menu')" class="btn-touch px-5 py-2 bg-slate-700 hover:bg-slate-600 rounded-2xl font-bold text-lg border-b-4 border-slate-900">
+                        <i class="fa-solid fa-xmark"></i> TUTUP
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                    <div class="bg-slate-700/60 p-4 rounded-2xl border border-slate-500 flex gap-4 items-start">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center font-black text-2xl shrink-0">1</div>
+                        <div>
+                            <h3 class="font-black text-xl text-sky-300">Jawab Soal Matematika</h3>
+                            <p class="text-slate-200 text-base mt-1">Soal muncul secara bergantian dengan batas waktu 10 detik. Pilih jawaban yang paling tepat!</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-700/60 p-4 rounded-2xl border border-slate-500 flex gap-4 items-start">
+                        <div class="w-12 h-12 rounded-2xl bg-green-600 flex items-center justify-center font-black text-2xl shrink-0">2</div>
+                        <div>
+                            <h3 class="font-black text-xl text-emerald-300">Dapatkan Kesempatan Menembak</h3>
+                            <p class="text-slate-200 text-base mt-1">Jika jawaban BENAR (+100 poin & Combo bonus), meriam tank tim kamu akan aktif!</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-700/60 p-4 rounded-2xl border border-slate-500 flex gap-4 items-start">
+                        <div class="w-12 h-12 rounded-2xl bg-orange-600 flex items-center justify-center font-black text-2xl shrink-0">3</div>
+                        <div>
+                            <h3 class="font-black text-xl text-amber-300">Bidik Meriam di Touchscreen</h3>
+                            <p class="text-slate-200 text-base mt-1">Sentuh & tarik meriam tank (atau gunakan tombol pengatur) untuk menyesuaikan Sudut & Kekuatan tembakan.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-700/60 p-4 rounded-2xl border border-slate-500 flex gap-4 items-start">
+                        <div class="w-12 h-12 rounded-2xl bg-red-600 flex items-center justify-center font-black text-2xl shrink-0">4</div>
+                        <div>
+                            <h3 class="font-black text-xl text-red-300">Hancurkan Tank Lawan</h3>
+                            <p class="text-slate-200 text-base mt-1">Lepaskan tembakan untuk menembak peluru parabola! Tembakan tepat sasaran mengurangi 1 nyawa lawan (+200 poin).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-yellow-500/20 border-2 border-yellow-400 rounded-2xl text-center">
+                    <p class="font-black text-xl text-yellow-300">🏆 Tim yang berhasil menghabiskan 5 nyawa lawan menjadi PEMENANG KELAS!</p>
+                </div>
+
+                <button onclick="app.showScreen('screen-teacher')" class="btn-touch w-full mt-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 font-black text-2xl text-white rounded-2xl border-b-6 border-indigo-900 shadow-xl">
+                    SAYA SIAP! MULAI PENGATURAN 🚀
+                </button>
+            </div>
+        </div>
+
+        
+        <!-- ================= QUESTION MODAL OVERLAY ================= -->
+        <div id="modal-question" class="hidden absolute inset-0 z-20 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+            <div class="w-full max-w-3xl bg-slate-800 rounded-3xl border-8 border-yellow-400 p-6 md:p-8 shadow-2xl flex flex-col items-center animate-pop">
+                <!-- Team Turn Badge & Timer Header -->
+                <div class="w-full flex justify-between items-center mb-4">
+                    <div id="question-team-badge" class="px-5 py-2 rounded-2xl font-black text-xl md:text-2xl bg-blue-600 text-white shadow-lg">
+                        🔵 GILIRAN TIM BIRU
+                    </div>
+                    <div class="flex items-center gap-2 bg-slate-900 px-5 py-2 rounded-2xl border-2 border-yellow-400">
+                        <i class="fa-solid fa-stopwatch text-yellow-400 text-2xl animate-spin"></i>
+                        <span id="question-timer" class="font-display font-black text-3xl md:text-4xl text-yellow-300">10</span>
+                        <span class="text-xs text-slate-400 font-bold">DETIK</span>
+                    </div>
+                </div>
+
+                <!-- Question Text (VERY LARGE FOR IFP CLASSROOM VIEW) -->
+                <div class="w-full bg-slate-900 py-6 px-4 rounded-2xl border-4 border-slate-700 text-center my-2 shadow-inner">
+                    <div id="question-text" class="font-display font-black text-4xl md:text-6xl text-white tracking-wide">
+                        25 + 17 = ?
+                    </div>
+                </div>
+
+                <!-- Answer Choices Grid (Large Buttons for Easy Touching) -->
+                <div class="grid grid-cols-2 gap-4 w-full mt-4" id="answers-grid">
+                    <button onclick="app.submitAnswer(0)" class="btn-touch answer-btn py-5 px-6 bg-slate-700 hover:bg-slate-600 border-4 border-slate-500 rounded-2xl font-black text-3xl md:text-4xl text-white text-center shadow-xl flex items-center justify-center gap-4">
+                        <span class="w-10 h-10 rounded-full bg-slate-900 text-yellow-400 text-2xl flex items-center justify-center font-bold">A</span>
+                        <span class="answer-val">32</span>
+                    </button>
+                    <button onclick="app.submitAnswer(1)" class="btn-touch answer-btn py-5 px-6 bg-slate-700 hover:bg-slate-600 border-4 border-slate-500 rounded-2xl font-black text-3xl md:text-4xl text-white text-center shadow-xl flex items-center justify-center gap-4">
+                        <span class="w-10 h-10 rounded-full bg-slate-900 text-yellow-400 text-2xl flex items-center justify-center font-bold">B</span>
+                        <span class="answer-val">42</span>
+                    </button>
+                    <button onclick="app.submitAnswer(2)" class="btn-touch answer-btn py-5 px-6 bg-slate-700 hover:bg-slate-600 border-4 border-slate-500 rounded-2xl font-black text-3xl md:text-4xl text-white text-center shadow-xl flex items-center justify-center gap-4">
+                        <span class="w-10 h-10 rounded-full bg-slate-900 text-yellow-400 text-2xl flex items-center justify-center font-bold">C</span>
+                        <span class="answer-val">52</span>
+                    </button>
+                    <button onclick="app.submitAnswer(3)" class="btn-touch answer-btn py-5 px-6 bg-slate-700 hover:bg-slate-600 border-4 border-slate-500 rounded-2xl font-black text-3xl md:text-4xl text-white text-center shadow-xl flex items-center justify-center gap-4">
+                        <span class="w-10 h-10 rounded-full bg-slate-900 text-yellow-400 text-2xl flex items-center justify-center font-bold">D</span>
+                        <span class="answer-val">62</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= AIMING & FIRE CONTROL OVERLAY ================= -->
+        <div id="aim-hud-overlay" class="hidden absolute bottom-4 left-4 right-4 z-10 flex flex-col md:flex-row items-center justify-between gap-3 pointer-events-none">
+            <!-- Left Aim Helper Box -->
+            <div class="pointer-events-auto bg-slate-900/80 backdrop-blur-md p-3 rounded-2xl border-2 border-slate-600 text-white flex items-center gap-4 shadow-xl">
+                <div>
+                    <div class="text-xs text-slate-400 font-bold uppercase">SUDUT TEMBAK</div>
+                    <div id="aim-angle-display" class="text-2xl font-black text-yellow-300">45°</div>
+                </div>
+                <div class="h-8 border-r border-slate-700"></div>
+                <div>
+                    <div class="text-xs text-slate-400 font-bold uppercase">KEKUATAN</div>
+                    <div id="aim-power-display" class="text-2xl font-black text-orange-400">70%</div>
+                </div>
+            </div>
+
+            <!-- Touch IFP Direct Control Panel (for precise button adjustments if dragging isn't easy on wall IFP) -->
+            <div class="pointer-events-auto bg-slate-900/90 backdrop-blur-md px-4 py-2 rounded-2xl border-2 border-yellow-400 flex items-center gap-3 shadow-2xl">
+                <div class="flex items-center gap-1">
+                    <span class="text-xs font-bold text-slate-300">SUDUT:</span>
+                    <button onclick="app.adjustAim(-5, 0)" class="btn-touch w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl font-black text-xl">-</button>
+                    <button onclick="app.adjustAim(5, 0)" class="btn-touch w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl font-black text-xl">+</button>
+                </div>
+                <div class="flex items-center gap-1 border-l border-slate-700 pl-2">
+                    <span class="text-xs font-bold text-slate-300">POWER:</span>
+                    <button onclick="app.adjustAim(0, -5)" class="btn-touch w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl font-black text-xl">-</button>
+                    <button onclick="app.adjustAim(0, 5)" class="btn-touch w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl font-black text-xl">+</button>
+                </div>
+                <button id="btn-fire-cannon" onclick="app.fireCannon()" class="btn-touch ml-2 px-6 py-3 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white font-black text-2xl rounded-xl border-b-4 border-red-800 shadow-xl flex items-center gap-2">
+                    🔥 TEMBAK!
+                </button>
+            </div>
+
+            <!-- Aim Timer -->
+            <div class="pointer-events-auto bg-slate-900/80 backdrop-blur-md px-4 py-2 rounded-2xl border-2 border-slate-600 flex items-center gap-2">
+                <i class="fa-solid fa-clock text-amber-400 text-xl"></i>
+                <span id="aim-timer" class="font-display font-black text-2xl text-amber-300">15</span>s
+            </div>
+        </div>
+
+        <!-- ================= FEEDBACK ANNOUNCER OVERLAY ================= -->
+        <div id="feedback-overlay" class="hidden absolute inset-0 z-20 pointer-events-none flex flex-col items-center justify-center">
+            <div id="feedback-box" class="bg-slate-900/90 border-4 border-yellow-400 px-10 py-6 rounded-3xl shadow-2xl text-center transform scale-0 transition-transform duration-300 flex flex-col items-center">
+                <div id="feedback-icon" class="text-7xl mb-2">🎯</div>
+                <div id="feedback-title" class="font-display font-black text-4xl md:text-5xl text-yellow-300 tracking-wider">
+                    JAWABAN BENAR!
+                </div>
+                <div id="feedback-subtitle" class="text-xl md:text-2xl text-white font-bold mt-2">
+                    +100 Poin! Siapkan tembakan meriam!
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= GAME OVER SCREEN ================= -->
+        <div id="screen-gameover" class="hidden absolute inset-0 z-30 flex flex-col items-center justify-center p-6 bg-slate-950/95 backdrop-blur-lg text-white">
+            <div class="max-w-2xl w-full bg-slate-900 rounded-3xl border-8 border-yellow-400 p-8 shadow-2xl text-center animate-pop">
+                <div class="text-7xl mb-2">🏆</div>
+                <h1 class="font-display text-4xl md:text-6xl font-black text-yellow-400 drop-shadow mb-2">
+                    GAME OVER!
+                </h1>
+                <div id="winner-announcement" class="text-3xl md:text-4xl font-black text-sky-300 my-4 py-3 bg-slate-800 rounded-2xl border-2 border-slate-600">
+                    🎉 TIM BIRU MENANG!
+                </div>
+
+                <!-- Final Scores & Stats -->
+                <div class="grid grid-cols-2 gap-4 my-6 text-left">
+                    <div class="bg-blue-950/80 border-2 border-blue-500 p-4 rounded-2xl">
+                        <div class="font-black text-xl text-blue-400" id="go-blue-name">🔵 TIM BIRU</div>
+                        <div class="text-3xl font-black text-yellow-300 mt-1" id="go-blue-score">SKOR: 1500</div>
+                        <div class="text-sm text-slate-300 mt-2 space-y-1">
+                            <div>Jawaban Benar: <b id="go-blue-correct" class="text-emerald-400">0</b></div>
+                            <div>Tembakan Hit: <b id="go-blue-hits" class="text-amber-400">0</b></div>
+                            <div>Combo Maks: <b id="go-blue-combo" class="text-orange-400">x0</b></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-950/80 border-2 border-red-500 p-4 rounded-2xl">
+                        <div class="font-black text-xl text-red-400" id="go-red-name">🔴 TIM MERAH</div>
+                        <div class="text-3xl font-black text-yellow-300 mt-1" id="go-red-score">SKOR: 1200</div>
+                        <div class="text-sm text-slate-300 mt-2 space-y-1">
+                            <div>Jawaban Benar: <b id="go-red-correct" class="text-emerald-400">0</b></div>
+                            <div>Tembakan Hit: <b id="go-red-hits" class="text-amber-400">0</b></div>
+                            <div>Combo Maks: <b id="go-red-combo" class="text-orange-400">x0</b></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 mt-6">
+                    <button onclick="app.startGame()" class="btn-touch flex-1 py-4 bg-gradient-to-r from-emerald-500 to-green-600 font-black text-2xl rounded-2xl border-b-6 border-green-800 shadow-xl">
+                        🔄 MAIN LAGI
+                    </button>
+                    <button onclick="app.showScreen('screen-main-menu')" class="btn-touch flex-1 py-4 bg-slate-700 hover:bg-slate-600 font-black text-2xl rounded-2xl border-b-6 border-slate-900 shadow-xl">
+                        🏠 MENU UTAMA
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /**
+         * MATH BATTLE KELAS - Math Artillery Shooter Core Engine
+         * Built specifically for classroom IFP Touchscreen interactive play.
+         */
+
+        // Web Audio Synthesizer for self-contained sound effects
+        class SoundEngine {
+            constructor() {
+                this.enabled = true;
+                this.ctx = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) this.ctx = new AudioContext();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playClick() {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.05);
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.05);
+            }
+
+            playCorrect() {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                    gain.gain.setValueAtTime(0.25, now + idx * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.2);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + idx * 0.08);
+                    osc.stop(now + idx * 0.08 + 0.2);
+                });
+            }
+
+            playWrong() {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(110, now + 0.3);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+
+            playFire() {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.25);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            }
+
+            playBoom() {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                
+                // Noise buffer for explosion
+                const bufferSize = this.ctx.sampleRate * 0.5;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(800, now);
+                filter.frequency.linearRampToValueAtTime(50, now + 0.5);
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+                noise.start(now);
+                noise.stop(now + 0.5);
+            }
+
+            playVictory() {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+                const notes = [440, 554.37, 659.25, 880];
+                const now = this.ctx.currentTime;
+                notes.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+                    gain.gain.setValueAtTime(0.3, now + idx * 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.12 + 0.4);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + idx * 0.12);
+                    osc.stop(now + idx * 0.12 + 0.4);
+                });
+            }
+        }
+
+        class MathBattleApp {
+            constructor() {
+                this.sound = new SoundEngine();
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+
+                // Game Configuration
+                this.config = {
+                    topic: 'ALL',
+                    difficulty: 'EASY',
+                    maxRounds: 10,
+                    blueName: 'TIM BIRU',
+                    redName: 'TIM MERAH'
+                };
+
+                // State
+                this.currentTurn = 'BLUE'; // 'BLUE' or 'RED'
+                this.roundCount = 0;
+                this.gameActive = false;
+                this.phase = 'SETUP'; // 'SETUP', 'QUESTION', 'AIM', 'SHOOTING', 'GAMEOVER'
+                
+                // Teams State
+                this.teams = {
+                    BLUE: { lives: 5, score: 0, combo: 0, maxCombo: 0, correctCount: 0, hitCount: 0 },
+                    RED: { lives: 5, score: 0, combo: 0, maxCombo: 0, correctCount: 0, hitCount: 0 }
+                };
+
+                // Active Question
+                this.currentQuestion = null;
+                this.questionTimer = null;
+                this.questionTimeLeft = 10;
+
+                // Aiming State
+                this.aimAngle = 45; // Degrees
+                this.aimPower = 60; // 20 to 100
+                this.aimTimer = null;
+                this.aimTimeLeft = 15;
+                this.isDraggingAim = false;
+
+                // Physics Simulation
+                this.projectile = null; // {x, y, vx, vy, radius, trail: []}
+                this.particles = [];
+                this.terrain = [];
+                this.obstacles = [];
+                this.clouds = [];
+
+                // Cannon positions
+                this.blueTank = { x: 100, y: 0, radius: 28 };
+                this.redTank = { x: 700, y: 0, radius: 28 };
+
+                this.bindEvents();
+                this.resizeCanvas();
+                this.generateBackgroundDeco();
+                this.gameLoop();
+            }
+
+            resizeCanvas() {
+                const rect = this.canvas.parentElement.getBoundingClientRect();
+                this.canvas.width = rect.width;
+                this.canvas.height = rect.height;
+                this.initTerrain();
+            }
+
+            initTerrain() {
+                const w = this.canvas.width;
+                const h = this.canvas.height;
+                if (w === 0 || h === 0) return;
+
+                // Generate smooth ground curve with hill in middle
+                this.terrain = [];
+                for (let x = 0; x <= w; x += 10) {
+                    // Central hill algorithm
+                    const centerFactor = Math.exp(-Math.pow((x - w / 2) / (w * 0.25), 2));
+                    const hillHeight = h * 0.22 * centerFactor;
+                    const baseGround = h * 0.72 + Math.sin(x * 0.01) * 12;
+                    this.terrain.push({ x: x, y: baseGround - hillHeight });
+                }
+
+                // Tank coordinates on terrain
+                this.blueTank.x = w * 0.12;
+                this.blueTank.y = this.getTerrainHeightAt(this.blueTank.x) - 15;
+
+                this.redTank.x = w * 0.88;
+                this.redTank.y = this.getTerrainHeightAt(this.redTank.x) - 15;
+
+                // Central destructible/block barrier
+                this.obstacles = [
+                    { x: w * 0.5 - 25, y: this.getTerrainHeightAt(w * 0.5) - 60, w: 50, h: 60, hp: 3 },
+                    { x: w * 0.5 - 15, y: this.getTerrainHeightAt(w * 0.5) - 110, w: 30, h: 50, hp: 2 }
+                ];
+            }
+
+            getTerrainHeightAt(x) {
+                if (this.terrain.length === 0) return this.canvas.height * 0.75;
+                for (let i = 0; i < this.terrain.length - 1; i++) {
+                    if (x >= this.terrain[i].x && x <= this.terrain[i + 1].x) {
+                        const t = (x - this.terrain[i].x) / (this.terrain[i + 1].x - this.terrain[i].x);
+                        return this.terrain[i].y + t * (this.terrain[i + 1].y - this.terrain[i].y);
+                    }
+                }
+                return this.terrain[this.terrain.length - 1].y;
+            }
+
+            generateBackgroundDeco() {
+                this.clouds = [];
+                for (let i = 0; i < 6; i++) {
+                    this.clouds.push({
+                        x: Math.random() * 1000,
+                        y: 30 + Math.random() * 120,
+                        size: 30 + Math.random() * 40,
+                        speed: 0.2 + Math.random() * 0.4
+                    });
+                }
+            }
+
+            bindEvents() {
+                window.addEventListener('resize', () => this.resizeCanvas());
+
+                // Touch & Drag events for Aiming on IFP
+                const handlePointerDown = (e) => {
+                    if (this.phase !== 'AIM') return;
+                    this.isDraggingAim = true;
+                    this.updateAimFromPointer(e);
+                };
+
+                const handlePointerMove = (e) => {
+                    if (!this.isDraggingAim || this.phase !== 'AIM') return;
+                    this.updateAimFromPointer(e);
+                };
+
+                const handlePointerUp = () => {
+                    this.isDraggingAim = false;
+                };
+
+                this.canvas.addEventListener('mousedown', handlePointerDown);
+                this.canvas.addEventListener('mousemove', handlePointerMove);
+                window.addEventListener('mouseup', handlePointerUp);
+
+                this.canvas.addEventListener('touchstart', (e) => handlePointerDown(e.touches[0]), { passive: true });
+                this.canvas.addEventListener('touchmove', (e) => handlePointerMove(e.touches[0]), { passive: true });
+                window.addEventListener('touchend', handlePointerUp);
+            }
+
+            updateAimFromPointer(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const px = e.clientX - rect.left;
+                const py = e.clientY - rect.top;
+
+                const activeTank = this.currentTurn === 'BLUE' ? this.blueTank : this.redTank;
+                const dx = px - activeTank.x;
+                const dy = activeTank.y - py; // Flip Y for physics coordinate
+
+                let angleRad = Math.atan2(dy, dx);
+                if (this.currentTurn === 'RED') {
+                    // For Red tank facing left
+                    angleRad = Math.atan2(dy, -dx);
+                }
+
+                let angleDeg = Math.round(angleRad * (180 / Math.PI));
+                angleDeg = Math.max(10, Math.min(85, angleDeg)); // Clamp 10° - 85°
+
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                let power = Math.round((distance / (this.canvas.width * 0.35)) * 100);
+                power = Math.max(25, Math.min(100, power));
+
+                this.aimAngle = angleDeg;
+                this.aimPower = power;
+                this.updateAimHUD();
+            }
+
+            showScreen(screenId) {
+                this.sound.playClick();
+                ['screen-main-menu', 'screen-teacher', 'screen-tutorial', 'screen-gameover'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                });
+
+                if (screenId) {
+                    const target = document.getElementById(screenId);
+                    if (target) target.classList.remove('hidden');
+                }
+
+                if (screenId === 'screen-main-menu' || screenId === 'screen-teacher' || screenId === 'screen-tutorial') {
+                    document.getElementById('hud-bar').classList.add('hidden');
+                    document.getElementById('aim-hud-overlay').classList.add('hidden');
+                }
+            }
+
+            toggleSound() {
+                this.sound.enabled = !this.sound.enabled;
+                const icon = document.getElementById('sound-icon');
+                const btn = document.getElementById('btn-sound-toggle');
+                if (this.sound.enabled) {
+                    icon.className = 'fa-solid fa-volume-high';
+                    btn.innerHTML = `<i class="fa-solid fa-volume-high"></i> EFEK SUARA: ON`;
+                } else {
+                    icon.className = 'fa-solid fa-volume-xmark';
+                    btn.innerHTML = `<i class="fa-solid fa-volume-xmark"></i> EFEK SUARA: OFF`;
+                }
+                this.sound.playClick();
+            }
+
+            selectTopic(topic) {
+                this.sound.playClick();
+                this.config.topic = topic;
+                document.querySelectorAll('.topic-btn').forEach(btn => {
+                    if (btn.dataset.topic === topic) {
+                        btn.className = 'topic-btn py-3 px-3 rounded-xl font-bold text-base text-left bg-sky-600 border-2 border-sky-300 shadow flex items-center gap-2';
+                    } else {
+                        btn.className = 'topic-btn py-3 px-3 rounded-xl font-bold text-base text-left bg-slate-800 border-2 border-slate-600 hover:bg-slate-700 flex items-center gap-2';
+                    }
+                });
+            }
+
+            selectDifficulty(diff) {
+                this.sound.playClick();
+                this.config.difficulty = diff;
+                const colors = { EASY: 'bg-emerald-600 border-emerald-300', MEDIUM: 'bg-amber-600 border-amber-300', HARD: 'bg-red-600 border-red-300' };
+                document.querySelectorAll('.diff-btn').forEach(btn => {
+                    if (btn.dataset.diff === diff) {
+                        btn.className = `diff-btn py-3 px-2 rounded-xl font-black text-center ${colors[diff]} shadow`;
+                    } else {
+                        btn.className = 'diff-btn py-3 px-2 rounded-xl font-black text-center bg-slate-800 border-2 border-slate-600 hover:bg-slate-700';
+                    }
+                });
+            }
+
+            selectRounds(num) {
+                this.sound.playClick();
+                this.config.maxRounds = num;
+                document.querySelectorAll('.rounds-btn').forEach(btn => {
+                    if (parseInt(btn.dataset.rounds) === num) {
+                        btn.className = 'rounds-btn py-2 px-2 rounded-xl font-bold text-center bg-indigo-600 border-2 border-indigo-300';
+                    } else {
+                        btn.className = 'rounds-btn py-2 px-2 rounded-xl font-bold text-center bg-slate-800 border-2 border-slate-600 hover:bg-slate-700';
+                    }
+                });
+            }
+
+            generateMathQuestion() {
+                const diff = this.config.difficulty;
+                let topic = this.config.topic;
+
+                if (topic === 'ALL') {
+                    const topics = ['ADD', 'SUB', 'MUL', 'DIV', 'FRAC'];
+                    topic = topics[Math.floor(Math.random() * topics.length)];
+                }
+
+                let qText = '';
+                let correctVal = 0;
+
+                if (topic === 'ADD') {
+                    let a, b;
+                    if (diff === 'EASY') { a = Math.floor(Math.random() * 40) + 10; b = Math.floor(Math.random() * 40) + 10; }
+                    else if (diff === 'MEDIUM') { a = Math.floor(Math.random() * 150) + 50; b = Math.floor(Math.random() * 150) + 50; }
+                    else { a = Math.floor(Math.random() * 450) + 150; b = Math.floor(Math.random() * 450) + 150; }
+                    correctVal = a + b;
+                    qText = `${a} + ${b} = ?`;
+                } 
+                else if (topic === 'SUB') {
+                    let a, b;
+                    if (diff === 'EASY') { a = Math.floor(Math.random() * 50) + 20; b = Math.floor(Math.random() * (a - 5)) + 5; }
+                    else if (diff === 'MEDIUM') { a = Math.floor(Math.random() * 200) + 100; b = Math.floor(Math.random() * (a - 20)) + 10; }
+                    else { a = Math.floor(Math.random() * 600) + 200; b = Math.floor(Math.random() * (a - 50)) + 30; }
+                    correctVal = a - b;
+                    qText = `${a} − ${b} = ?`;
+                }
+                else if (topic === 'MUL') {
+                    let a, b;
+                    if (diff === 'EASY') { a = Math.floor(Math.random() * 8) + 2; b = Math.floor(Math.random() * 8) + 2; }
+                    else if (diff === 'MEDIUM') { a = Math.floor(Math.random() * 12) + 4; b = Math.floor(Math.random() * 9) + 3; }
+                    else { a = Math.floor(Math.random() * 15) + 6; b = Math.floor(Math.random() * 12) + 4; }
+                    correctVal = a * b;
+                    qText = `${a} × ${b} = ?`;
+                }
+                else if (topic === 'DIV') {
+                    let ans, b;
+                    if (diff === 'EASY') { ans = Math.floor(Math.random() * 8) + 2; b = Math.floor(Math.random() * 8) + 2; }
+                    else if (diff === 'MEDIUM') { ans = Math.floor(Math.random() * 12) + 3; b = Math.floor(Math.random() * 9) + 3; }
+                    else { ans = Math.floor(Math.random() * 20) + 5; b = Math.floor(Math.random() * 12) + 4; }
+                    const a = ans * b;
+                    correctVal = ans;
+                    qText = `${a} ÷ ${b} = ?`;
+                }
+                else if (topic === 'FRAC') {
+                    // Simple grade 5 fraction e.g. "3/4 dari 20 = ?"
+                    const numerators = [1, 2, 3, 4];
+                    const denoms = [2, 4, 5, 10];
+                    const d = denoms[Math.floor(Math.random() * denoms.length)];
+                    const n = Math.floor(Math.random() * (d - 1)) + 1;
+                    const mult = Math.floor(Math.random() * 6) + 2;
+                    const baseNum = d * mult;
+                    correctVal = (n / d) * baseNum;
+                    qText = `${n}/${d} dari ${baseNum} = ?`;
+                }
+
+                // Generate 4 plausible distractor options
+                const choices = [correctVal];
+                while (choices.length < 4) {
+                    const offset = (Math.floor(Math.random() * 6) + 1) * (Math.random() < 0.5 ? 1 : -1);
+                    const wrongVal = correctVal + offset;
+                    if (wrongVal >= 0 && !choices.includes(wrongVal)) {
+                        choices.push(wrongVal);
+                    }
+                }
+
+                // Shuffle choices
+                for (let i = choices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [choices[i], choices[j]] = [choices[j], choices[i]];
+                }
+
+                return {
+                    text: qText,
+                    choices: choices,
+                    correctIndex: choices.indexOf(correctVal)
+                };
+            }
+
+            startGame() {
+                // Fetch team names from input
+                const bName = document.getElementById('input-blue-name').value.trim();
+                const rName = document.getElementById('input-red-name').value.trim();
+                this.config.blueName = bName || 'TIM BIRU';
+                this.config.redName = rName || 'TIM MERAH';
+
+                // Reset HUD Text
+                document.getElementById('blue-team-name-hud').innerText = `🔵 ${this.config.blueName}`;
+                document.getElementById('red-team-name-hud').innerText = `🔴 ${this.config.redName}`;
+
+                // Reset Teams State
+                this.teams = {
+                    BLUE: { lives: 5, score: 0, combo: 0, maxCombo: 0, correctCount: 0, hitCount: 0 },
+                    RED: { lives: 5, score: 0, combo: 0, maxCombo: 0, correctCount: 0, hitCount: 0 }
+                };
+
+                this.roundCount = 0;
+                this.currentTurn = 'BLUE';
+                this.gameActive = true;
+
+                this.updateHUD();
+                this.initTerrain();
+
+                this.showScreen(null); // Hide all setup overlays
+                document.getElementById('hud-bar').classList.remove('hidden');
+
+                this.startRound();
+            }
+
+            updateHUD() {
+                document.getElementById('blue-score').innerText = String(this.teams.BLUE.score).padStart(4, '0');
+                document.getElementById('red-score').innerText = String(this.teams.RED.score).padStart(4, '0');
+
+                // Update Hearts
+                const renderHearts = (lives) => {
+                    let html = '';
+                    for (let i = 0; i < 5; i++) {
+                        if (i < lives) {
+                            html += `<i class="fa-solid fa-heart drop-shadow text-red-500"></i>`;
+                        } else {
+                            html += `<i class="fa-solid fa-heart drop-shadow text-slate-700 opacity-40"></i>`;
+                        }
+                    }
+                    return html;
+                };
+
+                document.getElementById('blue-lives-container').innerHTML = renderHearts(this.teams.BLUE.lives);
+                document.getElementById('red-lives-container').innerHTML = renderHearts(this.teams.RED.lives);
+
+                // Turn Banner
+                const turnBanner = document.getElementById('turn-banner');
+                if (this.currentTurn === 'BLUE') {
+                    turnBanner.innerText = `GILIRAN: ${this.config.blueName.toUpperCase()}`;
+                    turnBanner.className = 'mt-1 px-5 py-1 rounded-full text-base md:text-lg font-black uppercase tracking-wider bg-blue-600 text-white shadow-lg border-2 border-blue-300 animate-pulse';
+                } else {
+                    turnBanner.innerText = `GILIRAN: ${this.config.redName.toUpperCase()}`;
+                    turnBanner.className = 'mt-1 px-5 py-1 rounded-full text-base md:text-lg font-black uppercase tracking-wider bg-red-600 text-white shadow-lg border-2 border-red-300 animate-pulse';
+                }
+            }
+
+            startRound() {
+                if (!this.gameActive) return;
+
+                if (this.teams.BLUE.lives <= 0 || this.teams.RED.lives <= 0 || this.roundCount >= this.config.maxRounds * 2) {
+                    this.endGame();
+                    return;
+                }
+
+                this.roundCount++;
+                this.phase = 'QUESTION';
+                this.aimAngle = 45;
+                this.aimPower = 65;
+
+                // Hide Aim HUD
+                document.getElementById('aim-hud-overlay').classList.add('hidden');
+
+                // Generate & Display Question
+                this.currentQuestion = this.generateMathQuestion();
+                this.showQuestionModal();
+            }
+
+            showQuestionModal() {
+                const modal = document.getElementById('modal-question');
+                const teamBadge = document.getElementById('question-team-badge');
+                const qText = document.getElementById('question-text');
+
+                const currentName = this.currentTurn === 'BLUE' ? this.config.blueName : this.config.redName;
+                if (this.currentTurn === 'BLUE') {
+                    teamBadge.innerText = `🔵 GILIRAN ${currentName.toUpperCase()}`;
+                    teamBadge.className = 'px-5 py-2 rounded-2xl font-black text-xl md:text-2xl bg-blue-600 text-white shadow-lg';
+                } else {
+                    teamBadge.innerText = `🔴 GILIRAN ${currentName.toUpperCase()}`;
+                    teamBadge.className = 'px-5 py-2 rounded-2xl font-black text-xl md:text-2xl bg-red-600 text-white shadow-lg';
+                }
+
+                qText.innerText = this.currentQuestion.text;
+
+                // Answers
+                const buttons = document.querySelectorAll('.answer-btn');
+                buttons.forEach((btn, idx) => {
+                    const valSpan = btn.querySelector('.answer-val');
+                    valSpan.innerText = this.currentQuestion.choices[idx];
+                    btn.className = 'btn-touch answer-btn py-5 px-6 bg-slate-700 hover:bg-slate-600 border-4 border-slate-500 rounded-2xl font-black text-3xl md:text-4xl text-white text-center shadow-xl flex items-center justify-center gap-4';
+                });
+
+                modal.classList.remove('hidden');
+
+                // Start Question Timer (10 Seconds)
+                this.questionTimeLeft = 10;
+                document.getElementById('question-timer').innerText = this.questionTimeLeft;
+
+                clearInterval(this.questionTimer);
+                this.questionTimer = setInterval(() => {
+                    this.questionTimeLeft--;
+                    document.getElementById('question-timer').innerText = this.questionTimeLeft;
+                    if (this.questionTimeLeft <= 0) {
+                        clearInterval(this.questionTimer);
+                        this.handleQuestionTimeout();
+                    }
+                }, 1000);
+            }
+
+            submitAnswer(choiceIndex) {
+                if (this.phase !== 'QUESTION') return;
+                clearInterval(this.questionTimer);
+
+                const isCorrect = (choiceIndex === this.currentQuestion.correctIndex);
+                const activeTeam = this.teams[this.currentTurn];
+
+                if (isCorrect) {
+                    this.sound.playCorrect();
+                    activeTeam.correctCount++;
+                    activeTeam.combo++;
+                    if (activeTeam.combo > activeTeam.maxCombo) activeTeam.maxCombo = activeTeam.combo;
+
+                    // Base 100 points + combo bonus
+                    const comboBonus = (activeTeam.combo - 1) * 50;
+                    const totalPoints = 100 + comboBonus;
+                    activeTeam.score += totalPoints;
+
+                    this.updateHUD();
+
+                    const comboTxt = activeTeam.combo > 1 ? ` 🔥 COMBO x${activeTeam.combo}!` : '';
+                    this.showFeedback('🎯 JAWABAN BENAR!', `+${totalPoints} Poin!${comboTxt} Siapkan Meriam!`, 'text-emerald-400', () => {
+                        this.startAimPhase();
+                    });
+                } else {
+                    this.sound.playWrong();
+                    activeTeam.combo = 0; // Reset combo
+
+                    this.showFeedback('❌ JAWABAN SALAH!', 'Kesempatan menembak hilang!', 'text-red-400', () => {
+                        this.switchTurn();
+                    });
+                }
+            }
+
+            handleQuestionTimeout() {
+                this.sound.playWrong();
+                this.teams[this.currentTurn].combo = 0;
+                this.showFeedback('⏰ WAKTU HABIS!', 'Kesempatan menembak hilang!', 'text-amber-400', () => {
+                    this.switchTurn();
+                });
+            }
+
+            showFeedback(title, subtitle, textColorClass, callback) {
+                document.getElementById('modal-question').classList.add('hidden');
+
+                const overlay = document.getElementById('feedback-overlay');
+                const box = document.getElementById('feedback-box');
+                const titleEl = document.getElementById('feedback-title');
+                const subEl = document.getElementById('feedback-subtitle');
+
+                titleEl.innerText = title;
+                titleEl.className = `font-display font-black text-4xl md:text-5xl ${textColorClass} tracking-wider`;
+                subEl.innerText = subtitle;
+
+                overlay.classList.remove('hidden');
+                box.style.transform = 'scale(1)';
+
+                setTimeout(() => {
+                    box.style.transform = 'scale(0)';
+                    setTimeout(() => {
+                        overlay.classList.add('hidden');
+                        if (callback) callback();
+                    }, 250);
+                }, 1600);
+            }
+
+            startAimPhase() {
+                this.phase = 'AIM';
+                document.getElementById('aim-hud-overlay').classList.remove('hidden');
+                this.updateAimHUD();
+
+                // 15 seconds timer for aiming & firing
+                this.aimTimeLeft = 15;
+                document.getElementById('aim-timer').innerText = this.aimTimeLeft;
+
+                clearInterval(this.aimTimer);
+                this.aimTimer = setInterval(() => {
+                    this.aimTimeLeft--;
+                    document.getElementById('aim-timer').innerText = this.aimTimeLeft;
+                    if (this.aimTimeLeft <= 0) {
+                        clearInterval(this.aimTimer);
+                        this.fireCannon(); // Auto fire on timeout
+                    }
+                }, 1000);
+            }
+
+            adjustAim(deltaAngle, deltaPower) {
+                this.sound.playClick();
+                this.aimAngle = Math.max(10, Math.min(85, this.aimAngle + deltaAngle));
+                this.aimPower = Math.max(25, Math.min(100, this.aimPower + deltaPower));
+                this.updateAimHUD();
+            }
+
+            updateAimHUD() {
+                document.getElementById('aim-angle-display').innerText = `${this.aimAngle}°`;
+                document.getElementById('aim-power-display').innerText = `${this.aimPower}%`;
+            }
+
+            fireCannon() {
+                if (this.phase !== 'AIM') return;
+                this.phase = 'SHOOTING';
+                clearInterval(this.aimTimer);
+
+                document.getElementById('aim-hud-overlay').classList.add('hidden');
+                this.sound.playFire();
+
+                const tank = this.currentTurn === 'BLUE' ? this.blueTank : this.redTank;
+                const dir = this.currentTurn === 'BLUE' ? 1 : -1;
+
+                // Convert Angle & Power to Initial Velocity (vx, vy)
+                const angleRad = (this.aimAngle * Math.PI) / 180;
+                const speed = (this.aimPower / 100) * (this.canvas.width * 0.022);
+
+                const barrelLen = 35;
+                const startX = tank.x + Math.cos(angleRad) * barrelLen * dir;
+                const startY = tank.y - 10 - Math.sin(angleRad) * barrelLen;
+
+                this.projectile = {
+                    x: startX,
+                    y: startY,
+                    vx: Math.cos(angleRad) * speed * dir,
+                    vy: -Math.sin(angleRad) * speed, // Upward initial velocity
+                    radius: 8,
+                    trail: []
+                };
+
+                // Add smoke puff at nozzle
+                for (let i = 0; i < 12; i++) {
+                    this.particles.push({
+                        x: startX,
+                        y: startY,
+                        vx: (Math.random() - 0.5) * 3 + dir * 2,
+                        vy: (Math.random() - 0.5) * 3,
+                        size: Math.random() * 8 + 4,
+                        color: 'rgba(255, 200, 100, 0.8)',
+                        life: 25
+                    });
+                }
+            }
+
+            updatePhysics() {
+                if (!this.projectile) return;
+
+                const p = this.projectile;
+                const gravity = 0.28; // Arcade gravity feel
+
+                // Record trail position
+                p.trail.push({ x: p.x, y: p.y });
+                if (p.trail.length > 15) p.trail.shift();
+
+                // Apply velocity & gravity
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += gravity;
+
+                // Add smoke trail particle
+                if (Math.random() < 0.6) {
+                    this.particles.push({
+                        x: p.x,
+                        y: p.y,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        size: Math.random() * 6 + 3,
+                        color: 'rgba(200, 200, 200, 0.6)',
+                        life: 20
+                    });
+                }
+
+                // Check collisions
+                const targetTank = this.currentTurn === 'BLUE' ? this.redTank : this.blueTank;
+                const enemyTeamKey = this.currentTurn === 'BLUE' ? 'RED' : 'BLUE';
+
+                // 1. Collision with Target Tank
+                const dxTank = p.x - targetTank.x;
+                const dyTank = p.y - (targetTank.y - 10);
+                const distTank = Math.sqrt(dxTank * dxTank + dyTank * dyTank);
+
+                if (distTank < targetTank.radius + p.radius) {
+                    // HIT ENEMY TANK!
+                    this.createExplosion(p.x, p.y, '#EF4444');
+                    this.sound.playBoom();
+                    this.projectile = null;
+
+                    // Apply Damage
+                    this.teams[enemyTeamKey].lives--;
+                    this.teams[this.currentTurn].score += 200; // Hit bonus
+                    this.teams[this.currentTurn].hitCount++;
+
+                    // Screen shake effect
+                    document.getElementById('game-container').classList.add('screen-shake');
+                    setTimeout(() => document.getElementById('game-container').classList.remove('screen-shake'), 400);
+
+                    this.updateHUD();
+
+                    this.showFeedback('💥 BOOM! TARGET HIT!', `Tembakan mengenai tank lawan! -1 Nyawa!`, 'text-red-400', () => {
+                        this.switchTurn();
+                    });
+                    return;
+                }
+
+                // 2. Collision with Central Obstacles
+                for (let obs of this.obstacles) {
+                    if (obs.hp > 0 && p.x >= obs.x && p.x <= obs.x + obs.w && p.y >= obs.y && p.y <= obs.y + obs.h) {
+                        obs.hp--;
+                        this.createExplosion(p.x, p.y, '#F59E0B');
+                        this.sound.playBoom();
+                        this.projectile = null;
+
+                        this.showFeedback('🧱 BENTENG TERKENA!', 'Tembakan terhalang oleh tembok!', 'text-amber-400', () => {
+                            this.switchTurn();
+                        });
+                        return;
+                    }
+                }
+
+                // 3. Collision with Ground/Terrain
+                const groundY = this.getTerrainHeightAt(p.x);
+                if (p.y >= groundY) {
+                    this.createExplosion(p.x, groundY, '#10B981');
+                    this.sound.playBoom();
+                    this.projectile = null;
+
+                    this.showFeedback('💨 MISS! MELESET!', 'Tembakan mengenai tanah!', 'text-slate-300', () => {
+                        this.switchTurn();
+                    });
+                    return;
+                }
+
+                // 4. Out of Canvas Bounds
+                if (p.x < -100 || p.x > this.canvas.width + 100 || p.y > this.canvas.height + 100) {
+                    this.projectile = null;
+                    this.showFeedback('💨 MISS! OUT OF BOUNDS!', 'Tembakan keluar arena!', 'text-slate-300', () => {
+                        this.switchTurn();
+                    });
+                }
+            }
+
+            createExplosion(x, y, color) {
+                for (let i = 0; i < 35; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 6 + 2;
+                    this.particles.push({
+                        x: x,
+                        y: y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        size: Math.random() * 10 + 4,
+                        color: i % 2 === 0 ? color : '#FBBF24',
+                        life: 35
+                    });
+                }
+            }
+
+            switchTurn() {
+                this.currentTurn = this.currentTurn === 'BLUE' ? 'RED' : 'BLUE';
+                this.updateHUD();
+                this.startRound();
+            }
+
+            endGame() {
+                this.gameActive = false;
+                this.phase = 'GAMEOVER';
+                this.sound.playVictory();
+
+                document.getElementById('hud-bar').classList.add('hidden');
+                document.getElementById('aim-hud-overlay').classList.add('hidden');
+
+                const blue = this.teams.BLUE;
+                const red = this.teams.RED;
+
+                let winnerTxt = '';
+                if (blue.lives > red.lives) {
+                    winnerTxt = `🎉 ${this.config.blueName.toUpperCase()} MENANG!`;
+                } else if (red.lives > blue.lives) {
+                    winnerTxt = `🎉 ${this.config.redName.toUpperCase()} MENANG!`;
+                } else {
+                    winnerTxt = blue.score >= red.score ? `🎉 ${this.config.blueName.toUpperCase()} MENANG (SKOR)!` : `🎉 ${this.config.redName.toUpperCase()} MENANG (SKOR)!`;
+                }
+
+                document.getElementById('winner-announcement').innerText = winnerTxt;
+
+                // Fill Stats
+                document.getElementById('go-blue-name').innerText = `🔵 ${this.config.blueName}`;
+                document.getElementById('go-blue-score').innerText = `SKOR: ${blue.score}`;
+                document.getElementById('go-blue-correct').innerText = blue.correctCount;
+                document.getElementById('go-blue-hits').innerText = blue.hitCount;
+                document.getElementById('go-blue-combo').innerText = `x${blue.maxCombo}`;
+
+                document.getElementById('go-red-name').innerText = `🔴 ${this.config.redName}`;
+                document.getElementById('go-red-score').innerText = `SKOR: ${red.score}`;
+                document.getElementById('go-red-correct').innerText = red.correctCount;
+                document.getElementById('go-red-hits').innerText = red.hitCount;
+                document.getElementById('go-red-combo').innerText = `x${red.maxCombo}`;
+
+                this.showScreen('screen-gameover');
+            }
+
+            drawScene() {
+                const w = this.canvas.width;
+                const h = this.canvas.height;
+                if (w === 0 || h === 0) return;
+
+                // Clear
+                this.ctx.clearRect(0, 0, w, h);
+
+                // Sky Gradient
+                const skyGrad = this.ctx.createLinearGradient(0, 0, 0, h);
+                skyGrad.addColorStop(0, '#38bdf8');
+                skyGrad.addColorStop(0.6, '#bae6fd');
+                skyGrad.addColorStop(1, '#e0f2fe');
+                this.ctx.fillStyle = skyGrad;
+                this.ctx.fillRect(0, 0, w, h);
+
+                // Draw Sun
+                this.ctx.fillStyle = '#fde047';
+                this.ctx.beginPath();
+                this.ctx.arc(w * 0.5, h * 0.18, 45, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                // Draw Clouds
+                this.clouds.forEach(c => {
+                    c.x += c.speed;
+                    if (c.x > w + 100) c.x = -100;
+                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                    this.ctx.beginPath();
+                    this.ctx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
+                    this.ctx.arc(c.x + c.size * 0.7, c.y - c.size * 0.2, c.size * 0.8, 0, Math.PI * 2);
+                    this.ctx.arc(c.x + c.size * 1.4, c.y, c.size * 0.7, 0, Math.PI * 2);
+                    this.ctx.fill();
+                });
+
+                // Draw Terrain
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, h);
+                this.terrain.forEach(pt => this.ctx.lineTo(pt.x, pt.y));
+                this.ctx.lineTo(w, h);
+                this.ctx.closePath();
+
+                const groundGrad = this.ctx.createLinearGradient(0, h * 0.5, 0, h);
+                groundGrad.addColorStop(0, '#22c55e');
+                groundGrad.addColorStop(0.15, '#16a34a');
+                groundGrad.addColorStop(1, '#15803d');
+                this.ctx.fillStyle = groundGrad;
+                this.ctx.fill();
+
+                // Terrain Outline / Grass cap
+                this.ctx.strokeStyle = '#86efac';
+                this.ctx.lineWidth = 6;
+                this.ctx.stroke();
+
+                // Draw Central Block Obstacles
+                this.obstacles.forEach(obs => {
+                    if (obs.hp <= 0) return;
+                    this.ctx.fillStyle = obs.hp === 3 ? '#b45309' : (obs.hp === 2 ? '#d97706' : '#f59e0b');
+                    this.ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    this.ctx.strokeStyle = '#78350f';
+                    this.ctx.lineWidth = 3;
+                    this.ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+
+                    // Brick texture lines
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(obs.x, obs.y + obs.h / 2);
+                    this.ctx.lineTo(obs.x + obs.w, obs.y + obs.h / 2);
+                    this.ctx.stroke();
+                });
+
+                // Draw Tanks
+                this.drawTank(this.blueTank, 'BLUE');
+                this.drawTank(this.redTank, 'RED');
+
+                // Draw Trajectory Aim Line if in AIM phase
+                if (this.phase === 'AIM') {
+                    this.drawAimTrajectory();
+                }
+
+                // Draw Active Projectile
+                if (this.projectile) {
+                    const p = this.projectile;
+                    // Draw Trail
+                    this.ctx.beginPath();
+                    p.trail.forEach((pt, i) => {
+                        if (i === 0) this.ctx.moveTo(pt.x, pt.y);
+                        else this.ctx.lineTo(pt.x, pt.y);
+                    });
+                    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                    this.ctx.lineWidth = 3;
+                    this.ctx.stroke();
+
+                    // Projectile Body
+                    this.ctx.fillStyle = '#0f172a';
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.strokeStyle = '#f59e0b';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                }
+
+                // Draw Particles
+                this.particles.forEach((part, index) => {
+                    part.x += part.vx;
+                    part.y += part.vy;
+                    part.life--;
+
+                    this.ctx.fillStyle = part.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(part.x, part.y, Math.max(1, part.size * (part.life / 35)), 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    if (part.life <= 0) this.particles.splice(index, 1);
+                });
+            }
+
+            drawTank(tank, teamKey) {
+                const isBlue = teamKey === 'BLUE';
+                const baseColor = isBlue ? '#2563eb' : '#dc2626';
+                const darkColor = isBlue ? '#1d4ed8' : '#b91c1c';
+                const dir = isBlue ? 1 : -1;
+
+                this.ctx.save();
+                this.ctx.translate(tank.x, tank.y);
+
+                // Cannon Barrel Angle
+                let angleRad = (this.aimAngle * Math.PI) / 180;
+                if (this.phase !== 'AIM' && this.phase !== 'SHOOTING') angleRad = (35 * Math.PI) / 180;
+
+                // Draw Cannon Barrel
+                this.ctx.save();
+                this.ctx.translate(0, -10);
+                this.ctx.rotate(isBlue ? -angleRad : angleRad);
+                this.ctx.fillStyle = '#475569';
+                this.ctx.fillRect(0, -6, dir * 36, 12);
+                this.ctx.restore();
+
+                // Tank Body / Turret
+                this.ctx.fillStyle = baseColor;
+                this.ctx.beginPath();
+                this.ctx.arc(0, -10, 20, Math.PI, 0); // Dome turret
+                this.ctx.fill();
+                this.ctx.strokeStyle = darkColor;
+                this.ctx.lineWidth = 3;
+                this.ctx.stroke();
+
+                // Tank Base Box
+                this.ctx.fillStyle = darkColor;
+                this.ctx.fillRect(-26, -5, 52, 14);
+
+                // Track Wheels
+                this.ctx.fillStyle = '#1e293b';
+                this.ctx.beginPath();
+                this.ctx.roundRect(-28, 5, 56, 12, 6);
+                this.ctx.fill();
+
+                // Cute Face Expressions / Badge
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.beginPath();
+                this.ctx.arc(dir * 6, -14, 5, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.fillStyle = '#000000';
+                this.ctx.beginPath();
+                this.ctx.arc(dir * 7, -14, 2, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.restore();
+            }
+
+            drawAimTrajectory() {
+                const tank = this.currentTurn === 'BLUE' ? this.blueTank : this.redTank;
+                const dir = this.currentTurn === 'BLUE' ? 1 : -1;
+
+                const angleRad = (this.aimAngle * Math.PI) / 180;
+                const speed = (this.aimPower / 100) * (this.canvas.width * 0.022);
+
+                let simX = tank.x + Math.cos(angleRad) * 35 * dir;
+                let simY = tank.y - 10 - Math.sin(angleRad) * 35;
+                let simVx = Math.cos(angleRad) * speed * dir;
+                let simVy = -Math.sin(angleRad) * speed;
+
+                this.ctx.fillStyle = this.currentTurn === 'BLUE' ? '#60a5fa' : '#f87171';
+
+                for (let i = 0; i < 28; i++) {
+                    simX += simVx;
+                    simY += simVy;
+                    simVy += 0.28; // match physics gravity
+
+                    // Draw dotted guide
+                    this.ctx.beginPath();
+                    this.ctx.arc(simX, simY, 4, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    if (simY > this.getTerrainHeightAt(simX)) break;
+                }
+            }
+
+            gameLoop() {
+                if (this.phase === 'SHOOTING') {
+                    this.updatePhysics();
+                }
+
+                this.drawScene();
+                requestAnimationFrame(() => this.gameLoop());
+            }
+        }
+
+        // Initialize App on Load
+        let app;
+        window.addEventListener('load', () => {
+            app = new MathBattleApp();
+        });
+    </script>
+</body>
+</html>

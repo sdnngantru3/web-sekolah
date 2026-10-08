@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Duel Kelas IFP: Battle of Brains & Reflexes</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti for Celebration -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        p1: {
+                            main: '#06b6d4',
+                            dark: '#0e7490',
+                            light: '#a5f3fc',
+                            accent: '#38bdf8'
+                        },
+                        p2: {
+                            main: '#f43f5e',
+                            dark: '#be123c',
+                            light: '#fecdd3',
+                            accent: '#fb7185'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            overflow: hidden;
+            background-color: #0f172a;
+        }
+
+        .touch-btn {
+            transition: transform 0.08s ease, filter 0.1s ease;
+        }
+        .touch-btn:active {
+            transform: scale(0.94);
+            filter: brightness(1.2);
+        }
+
+        .glow-p1 {
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+        }
+        .glow-p2 {
+            box-shadow: 0 0 25px rgba(244, 63, 94, 0.5);
+        }
+
+        .pulse-target {
+            animation: pulse-anim 0.8s infinite alternate ease-in-out;
+        }
+        @keyframes pulse-anim {
+            from { transform: scale(0.92); opacity: 0.85; }
+            to { transform: scale(1.08); opacity: 1; }
+        }
+
+        /* Glassmorphism panel */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        /* Tank projectile animation */
+        @keyframes launchArc {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(120px, -100px) scale(1.4); }
+            100% { transform: translate(240px, 10px) scale(0.8); }
+        }
+        .animate-bomb {
+            animation: launchArc 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px) rotate(-3deg); }
+            40%, 80% { transform: translateX(8px) rotate(3deg); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen text-white select-none relative flex flex-col justify-between">
+
+    <script>
+        // Web Audio API Synthesizer for rich SFX without external audio files
+        class SoundEffects {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playTap() {
+                if (this.muted) return;
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.08);
+            }
+
+            playExplosion() {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.exponentialRampToValueAtTime(30, now + 0.4);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            }
+
+            playCorrect() {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, index) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.06);
+                    gain.gain.setValueAtTime(0.25, now + index * 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.06 + 0.15);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + index * 0.06);
+                    osc.stop(now + index * 0.06 + 0.15);
+                });
+            }
+
+            playWrong() {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            }
+
+            playCountdown() {
+                if (this.muted) return;
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.1);
+            }
+
+            playVictory() {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const notes = [440, 554.37, 659.25, 880, 659.25, 880];
+                const durations = [0.15, 0.15, 0.15, 0.3, 0.15, 0.5];
+                let timeOffset = 0;
+                notes.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + timeOffset);
+                    gain.gain.setValueAtTime(0.3, now + timeOffset);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + timeOffset + durations[i]);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + timeOffset);
+                    osc.stop(now + timeOffset + durations[i]);
+                    timeOffset += durations[i] * 0.9;
+                });
+            }
+        }
+
+        const sfx = new SoundEffects();
+    </script>
+
+    <!-- Top Global Header / Central Score Bar -->
+    <header id="global-header" class="w-full bg-slate-900/95 border-b border-slate-700/80 px-6 py-3 flex items-center justify-between z-30 shadow-2xl h-20">
+        <!-- Player 1 Header Info -->
+        <div class="flex items-center space-x-4 w-1/3">
+            <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center text-cyan-300 text-2xl font-bold shadow-lg">
+                <i class="fa-solid fa-user-ninja"></i>
+            </div>
+            <div>
+                <h2 id="p1-display-name" class="text-xl md:text-2xl font-bold text-cyan-400 truncate max-w-[180px]">Pemain 1</h2>
+                <div class="text-xs text-cyan-300/70 uppercase tracking-wider font-sans">Tim Biru</div>
+            </div>
+            <div class="ml-auto bg-slate-800/90 border border-cyan-500/40 rounded-2xl px-4 py-1 text-center min-w-[70px]">
+                <span class="text-xs text-slate-400 block font-sans">SKOR</span>
+                <span id="p1-score" class="text-2xl font-extrabold text-cyan-400">0</span>
+            </div>
+        </div>
+
+        <!-- Center Match Info & Controls -->
+        <div class="flex flex-col items-center justify-center w-1/3 px-2">
+            <div class="bg-slate-800/80 border border-slate-700 rounded-full px-4 py-1 flex items-center space-x-3 shadow-inner">
+                <span id="game-mode-badge" class="text-xs md:text-sm font-bold text-amber-400 tracking-wide uppercase">DUEL KELAS IFP</span>
+                <span class="text-slate-600">|</span>
+                <span id="round-indicator" class="text-xs md:text-sm font-semibold text-slate-300">Ronde 1 / 5</span>
+            </div>
+            <div id="central-timer" class="text-xl font-black text-amber-300 mt-1 hidden">
+                <i class="fa-solid fa-stopwatch mr-1"></i><span id="timer-count">10</span>s
+            </div>
+        </div>
+
+        <!-- Player 2 Header Info -->
+        <div class="flex items-center space-x-4 justify-end w-1/3">
+            <div class="mr-auto bg-slate-800/90 border border-rose-500/40 rounded-2xl px-4 py-1 text-center min-w-[70px]">
+                <span class="text-xs text-slate-400 block font-sans">SKOR</span>
+                <span id="p2-score" class="text-2xl font-extrabold text-rose-400">0</span>
+            </div>
+            <div class="text-right">
+                <h2 id="p2-display-name" class="text-xl md:text-2xl font-bold text-rose-400 truncate max-w-[180px]">Pemain 2</h2>
+                <div class="text-xs text-rose-300/70 uppercase tracking-wider font-sans">Tim Merah</div>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-rose-500/20 border-2 border-rose-400 flex items-center justify-center text-rose-300 text-2xl font-bold shadow-lg">
+                <i class="fa-solid fa-user-astronaut"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- START / SETUP OVERLAY SCREEN -->
+    <div id="setup-screen" class="absolute inset-0 z-50 bg-slate-950/95 flex items-center justify-center p-6">
+        <div class="glass-panel max-w-4xl w-full rounded-3xl p-8 border border-slate-700 shadow-2xl text-center space-y-6 relative overflow-hidden">
+            <div class="absolute -top-24 -left-24 w-60 h-60 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -right-24 w-60 h-60 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-sm font-semibold mb-1">
+                🎮 Touchscreen / IFP Classroom Friendly
+            </div>
+
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-amber-300 to-rose-400">
+                DUEL KELAS IFP
+            </h1>
+            <p class="text-slate-300 max-w-xl mx-auto font-sans text-base">
+                Adu otak dan refleks 2 pemain secara langsung di layar interaktif kelas! Termasuk Tank Bom Matematika, Refleks Warna, Target Pop, Tug of War & Memori.
+            </p>
+
+            <!-- Customization Settings Form -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left max-w-2xl mx-auto font-sans pt-2">
+                <!-- Player 1 Name Input -->
+                <div class="bg-slate-900/80 p-4 rounded-2xl border border-cyan-500/30 space-y-2">
+                    <label class="text-xs uppercase font-bold text-cyan-400 tracking-wider block">Pemain 1 (Kiri)</label>
+                    <input type="text" id="input-p1-name" value="Siswa A" class="w-full bg-slate-800 border border-cyan-500/50 rounded-xl px-4 py-2.5 text-white font-fredoka text-lg focus:outline-none focus:ring-2 focus:ring-cyan-400">
+                </div>
+
+                <!-- Player 2 Name Input -->
+                <div class="bg-slate-900/80 p-4 rounded-2xl border border-rose-500/30 space-y-2">
+                    <label class="text-xs uppercase font-bold text-rose-400 tracking-wider block">Pemain 2 (Kanan)</label>
+                    <input type="text" id="input-p2-name" value="Siswa B" class="w-full bg-slate-800 border border-rose-500/50 rounded-xl px-4 py-2.5 text-white font-fredoka text-lg focus:outline-none focus:ring-2 focus:ring-rose-400">
+                </div>
+            </div>
+
+            <!-- Round Selector -->
+            <div class="space-y-3 font-sans">
+                <label class="text-xs uppercase font-bold text-slate-400 tracking-wider block">Jumlah Ronde</label>
+                <div class="flex justify-center space-x-4">
+                    <button type="button" onclick="setRoundTarget(3)" id="round-btn-3" class="round-select-btn px-6 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-bold hover:bg-slate-700 transition">3 Ronde</button>
+                    <button type="button" onclick="setRoundTarget(5)" id="round-btn-5" class="round-select-btn px-6 py-2.5 rounded-xl border border-amber-500/60 bg-amber-500/20 text-amber-300 font-bold hover:bg-amber-500/30 transition">5 Ronde</button>
+                    <button type="button" onclick="setRoundTarget(7)" id="round-btn-7" class="round-select-btn px-6 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-bold hover:bg-slate-700 transition">7 Ronde</button>
+                </div>
+            </div>
+
+            <!-- Audio & Start Buttons -->
+            <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button id="toggle-sound-btn" onclick="toggleAudio()" class="px-5 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 font-sans font-semibold flex items-center space-x-2">
+                    <i class="fa-solid fa-volume-high text-amber-400" id="sound-icon"></i>
+                    <span id="sound-text">Suara: ON</span>
+                </button>
+
+                <button onclick="startGame()" class="px-10 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold text-2xl shadow-xl hover:shadow-emerald-500/30 transform hover:-translate-y-0.5 active:translate-y-0 transition touch-btn">
+                    MULAI PERTANDINGAN <i class="fa-solid fa-play ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN GAMEPLAY ARENA (SPLIT SCREEN) -->
+    <main class="flex-1 flex w-full relative overflow-hidden">
+        
+        <!-- Center Divider Bar -->
+        <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-2 bg-slate-700/60 z-20 flex flex-col items-center justify-center">
+            <div class="w-8 h-8 rounded-full bg-slate-800 border-2 border-slate-600 flex items-center justify-center text-slate-400 text-xs font-bold shadow-lg">
+                VS
+            </div>
+        </div>
+
+        <!-- PLAYER 1 SIDE (LEFT - BLUE) -->
+        <section id="p1-arena" class="w-1/2 h-full bg-slate-900/60 border-r border-slate-800 p-6 flex flex-col justify-between relative">
+            <div class="absolute top-4 left-4 bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 px-3 py-1 rounded-full text-xs font-sans font-bold">
+                <i class="fa-solid fa-hand-pointer mr-1"></i> AREA PLAYER 1
+            </div>
+
+            <!-- Dynamic Content P1 Container -->
+            <div id="p1-game-container" class="flex-1 flex flex-col items-center justify-center w-full my-auto">
+                <!-- Content injected dynamically -->
+            </div>
+        </section>
+
+        <!-- PLAYER 2 SIDE (RIGHT - RED) -->
+        <section id="p2-arena" class="w-1/2 h-full bg-slate-900/60 border-l border-slate-800 p-6 flex flex-col justify-between relative">
+            <div class="absolute top-4 right-4 bg-rose-950/60 border border-rose-500/30 text-rose-300 px-3 py-1 rounded-full text-xs font-sans font-bold">
+                AREA PLAYER 2 <i class="fa-solid fa-hand-pointer ml-1"></i>
+            </div>
+
+            <!-- Dynamic Content P2 Container -->
+            <div id="p2-game-container" class="flex-1 flex flex-col items-center justify-center w-full my-auto">
+                <!-- Content injected dynamically -->
+            </div>
+        </section>
+    </main>
+
+    <!-- ROUND ANNOUNCEMENT OVERLAY -->
+    <div id="round-overlay" class="absolute inset-0 z-40 bg-slate-950/90 flex flex-col items-center justify-center hidden">
+        <div class="text-center space-y-4 max-w-lg p-6">
+            <div id="round-overlay-title" class="text-2xl font-bold text-amber-400 font-sans tracking-wide uppercase">RONDE 1</div>
+            <div id="round-overlay-game" class="text-4xl md:text-5xl font-black text-white">Tank & Bom Matematika</div>
+            <p id="round-overlay-desc" class="text-slate-300 font-sans text-lg">Jawab matematika untuk menembakkan bom tank tepat ke markas musuh!</p>
+            <div id="countdown-banner" class="text-6xl font-black text-cyan-400 pt-4 animate-bounce">3</div>
+        </div>
+    </div>
+
+    <!-- WINNER / GAMEOVER OVERLAY -->
+    <div id="victory-screen" class="absolute inset-0 z-50 bg-slate-950/95 flex items-center justify-center p-6 hidden">
+        <div class="glass-panel max-w-2xl w-full rounded-3xl p-8 border border-amber-500/40 text-center space-y-6 shadow-2xl relative">
+            <div class="text-6xl text-amber-400 animate-bounce">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white">PEMENANG DUEL!</h1>
+            
+            <div id="winner-banner" class="text-3xl md:text-4xl font-black py-4 px-6 rounded-2xl bg-slate-800 border-2 border-amber-400 text-amber-300 inline-block shadow-lg">
+                Pemain 1 Menang!
+            </div>
+
+            <div class="flex justify-center space-x-8 font-sans py-2">
+                <div class="text-center">
+                    <div class="text-cyan-400 font-bold text-lg" id="final-p1-name">Pemain 1</div>
+                    <div class="text-3xl font-extrabold text-cyan-300" id="final-p1-score">0</div>
+                </div>
+                <div class="text-2xl text-slate-500 font-black flex items-center">-</div>
+                <div class="text-center">
+                    <div class="text-rose-400 font-bold text-lg" id="final-p2-name">Pemain 2</div>
+                    <div class="text-3xl font-extrabold text-rose-300" id="final-p2-score">0</div>
+                </div>
+            </div>
+
+            <div class="pt-4 flex justify-center space-x-4">
+                <button onclick="resetGameToSetup()" class="px-8 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold text-lg transition touch-btn">
+                    <i class="fa-solid fa-rotate-right mr-2"></i> Pengaturan Ulang
+                </button>
+                <button onclick="startGame()" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-lg transition shadow-lg touch-btn">
+                    MAIN LAGI <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global Game Configuration & State
+        let gameState = {
+            p1Name: 'Siswa A',
+            p2Name: 'Siswa B',
+            p1Score: 0,
+            p2Score: 0,
+            currentRound: 1,
+            totalRounds: 5,
+            activeGameType: '',
+            isLocked: false,
+            timerInterval: null,
+            timerValue: 0
+        };
+
+        const MINI_GAMES = [
+            { id: 'tank', name: 'Tank & Bom Matematika', desc: 'Jawab soal hitungan (+, -, ×, ÷) untuk menembakkan meriam tank ke benteng lawan!' },
+            { id: 'stroop', name: 'Refleks Warna (Stroop)', desc: 'Tentukan apakah WARNA TEKS sesuai dengan arti tulisan!' },
+            { id: 'target', name: 'Berburu Target Pop', desc: 'Ketuk semua target yang muncul di area layar kamu!' },
+            { id: 'tugofwar', name: 'Tarik Tambang Sentuh', desc: 'Tekan tombol secepat mungkin untuk menarik garis ke pihakmu!' },
+            { id: 'memory', name: 'Mengingat Pola Tombol', desc: 'Ketuk urutan tombol sesuai pola cahaya yang ditampilkan!' }
+        ];
+
+        // Round selector UI updater
+        function setRoundTarget(rounds) {
+            sfx.playTap();
+            gameState.totalRounds = rounds;
+            document.querySelectorAll('.round-select-btn').forEach(btn => {
+                btn.className = "round-select-btn px-6 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-bold hover:bg-slate-700 transition";
+            });
+            const activeBtn = document.getElementById(`round-btn-${rounds}`);
+            if (activeBtn) {
+                activeBtn.className = "round-select-btn px-6 py-2.5 rounded-xl border border-amber-500/60 bg-amber-500/20 text-amber-300 font-bold hover:bg-amber-500/30 transition";
+            }
+        }
+
+        function toggleAudio() {
+            sfx.muted = !sfx.muted;
+            const text = document.getElementById('sound-text');
+            const icon = document.getElementById('sound-icon');
+            if (sfx.muted) {
+                text.innerText = "Suara: OFF";
+                icon.className = "fa-solid fa-volume-xmark text-slate-500";
+            } else {
+                text.innerText = "Suara: ON";
+                icon.className = "fa-solid fa-volume-high text-amber-400";
+                sfx.playTap();
+            }
+        }
+
+        function startGame() {
+            sfx.playTap();
+            const name1 = document.getElementById('input-p1-name').value.trim() || 'Pemain 1';
+            const name2 = document.getElementById('input-p2-name').value.trim() || 'Pemain 2';
+
+            gameState.p1Name = name1;
+            gameState.p2Name = name2;
+            gameState.p1Score = 0;
+            gameState.p2Score = 0;
+            gameState.currentRound = 1;
+
+            document.getElementById('p1-display-name').innerText = name1;
+            document.getElementById('p2-display-name').innerText = name2;
+            document.getElementById('p1-score').innerText = '0';
+            document.getElementById('p2-score').innerText = '0';
+
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('victory-screen').classList.add('hidden');
+
+            startRoundCycle();
+        }
+
+        function resetGameToSetup() {
+            sfx.playTap();
+            clearInterval(gameState.timerInterval);
+            document.getElementById('victory-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+        }
+
+        function startRoundCycle() {
+            if (gameState.currentRound > gameState.totalRounds) {
+                finishMatch();
+                return;
+            }
+
+            document.getElementById('round-indicator').innerText = `Ronde ${gameState.currentRound} / ${gameState.totalRounds}`;
+            document.getElementById('central-timer').classList.add('hidden');
+
+            // Pick mini game sequentially or randomly
+            const gameIndex = (gameState.currentRound - 1) % MINI_GAMES.length;
+            const currentGame = MINI_GAMES[gameIndex];
+            gameState.activeGameType = currentGame.id;
+
+            // Show Round Announcement Overlay
+            const overlay = document.getElementById('round-overlay');
+            document.getElementById('round-overlay-title').innerText = `RONDE ${gameState.currentRound} DARI ${gameState.totalRounds}`;
+            document.getElementById('round-overlay-game').innerText = currentGame.name;
+            document.getElementById('round-overlay-desc').innerText = currentGame.desc;
+            document.getElementById('game-mode-badge').innerText = currentGame.name;
+
+            overlay.classList.remove('hidden');
+
+            let countdown = 3;
+            const countElem = document.getElementById('countdown-banner');
+            countElem.innerText = countdown;
+            sfx.playCountdown();
+
+            const countTimer = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    countElem.innerText = countdown;
+                    sfx.playCountdown();
+                } else {
+                    clearInterval(countTimer);
+                    overlay.classList.add('hidden');
+                    gameState.isLocked = false;
+                    loadMiniGame(currentGame.id);
+                }
+            }, 900);
+        }
+
+        function loadMiniGame(type) {
+            const containerP1 = document.getElementById('p1-game-container');
+            const containerP2 = document.getElementById('p2-game-container');
+            containerP1.innerHTML = '';
+            containerP2.innerHTML = '';
+
+            switch (type) {
+                case 'tank':
+                    setupTankGame(containerP1, containerP2);
+                    break;
+                case 'stroop':
+                    setupStroopGame(containerP1, containerP2);
+                    break;
+                case 'target':
+                    setupTargetGame(containerP1, containerP2);
+                    break;
+                case 'tugofwar':
+                    setupTugOfWarGame(containerP1, containerP2);
+                    break;
+                case 'memory':
+                    setupMemoryGame(containerP1, containerP2);
+                    break;
+            }
+        }
+
+        /* -------------------------------------------------------------
+           1. MINI-GAME: TANK & BOM MATEMATIKA (MATH ARTILLERY)
+        ------------------------------------------------------------- */
+        let tankState = {
+            p1Hp: 3,
+            p2Hp: 3,
+            p1Problem: null,
+            p2Problem: null,
+            p1Locked: false,
+            p2Locked: false
+        };
+
+        function generateMathProblem() {
+            const ops = ['+', '-', '×', '÷'];
+            const op = ops[Math.floor(Math.random() * ops.length)];
+            let num1, num2, correctAns;
+
+            if (op === '+') {
+                num1 = Math.floor(Math.random() * 25) + 5;
+                num2 = Math.floor(Math.random() * 25) + 5;
+                correctAns = num1 + num2;
+            } else if (op === '-') {
+                num1 = Math.floor(Math.random() * 30) + 15;
+                num2 = Math.floor(Math.random() * 14) + 1;
+                correctAns = num1 - num2;
+            } else if (op === '×') {
+                num1 = Math.floor(Math.random() * 9) + 2;
+                num2 = Math.floor(Math.random() * 9) + 2;
+                correctAns = num1 * num2;
+            } else { // Division
+                num2 = Math.floor(Math.random() * 8) + 2;
+                correctAns = Math.floor(Math.random() * 9) + 2;
+                num1 = num2 * correctAns;
+            }
+
+            let options = new Set([correctAns]);
+            while (options.size < 4) {
+                let delta = (Math.floor(Math.random() * 4) + 1) * (Math.random() < 0.5 ? 1 : -1);
+                let fake = correctAns + delta;
+                if (fake >= 0) options.add(fake);
+            }
+
+            return {
+                question: `${num1} ${op} ${num2} = ?`,
+                correctAns: correctAns,
+                options: Array.from(options).sort(() => Math.random() - 0.5)
+            };
+        }
+
+        function setupTankGame(c1, c2) {
+            tankState = {
+                p1Hp: 3,
+                p2Hp: 3,
+                p1Problem: generateMathProblem(),
+                p2Problem: generateMathProblem(),
+                p1Locked: false,
+                p2Locked: false
+            };
+
+            renderTankSide(c1, true);
+            renderTankSide(c2, false);
+        }
+
+        function renderTankSide(container, isP1) {
+            const prefix = isP1 ? 'p1' : 'p2';
+            const problem = isP1 ? tankState.p1Problem : tankState.p2Problem;
+            const hp = isP1 ? tankState.p1Hp : tankState.p2Hp;
+
+            const tankColor = isP1 ? 'text-cyan-400' : 'text-rose-400';
+            const btnColor = isP1 ? 'bg-cyan-600 hover:bg-cyan-500 border-cyan-400' : 'bg-rose-600 hover:bg-rose-500 border-rose-400';
+
+            // Generate HP hearts
+            let heartsHtml = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < hp) {
+                    heartsHtml += `<i class="fa-solid fa-shield-halved text-amber-400 text-xl"></i> `;
+                } else {
+                    heartsHtml += `<i class="fa-solid fa-shield-halved text-slate-700 text-xl"></i> `;
+                }
+            }
+
+            container.innerHTML = `
+                <div class="flex flex-col items-center space-y-4 w-full max-w-md">
+                    <!-- Tank Battle Arena Visual -->
+                    <div id="${prefix}-tank-stage" class="w-full bg-slate-950/80 rounded-2xl border border-slate-700 p-4 relative overflow-hidden h-36 flex items-center justify-between shadow-inner">
+                        <!-- Tank Player -->
+                        <div class="relative flex flex-col items-center">
+                            <div class="text-xs font-bold text-slate-400 mb-1">TANGKI BENTENG</div>
+                            <div class="text-4xl ${tankColor}">
+                                <i class="fa-solid fa-tank"></i>
+                            </div>
+                        </div>
+
+                        <!-- Bomb Flight Slot -->
+                        <div class="relative flex-1 h-full flex items-center justify-center">
+                            <div id="${prefix}-bomb-elem" class="hidden absolute left-4 bottom-6 text-amber-400 text-2xl z-10">
+                                <i class="fa-solid fa-bomb"></i>
+                            </div>
+                            <div id="${prefix}-impact-elem" class="hidden absolute right-4 text-orange-500 text-4xl font-black z-10 animate-ping">
+                                <i class="fa-solid fa-burst"></i>
+                            </div>
+                        </div>
+
+                        <!-- Target Castle / Fort -->
+                        <div id="${prefix}-fortress" class="relative flex flex-col items-center transition-transform">
+                            <div class="flex space-x-1 mb-1">${heartsHtml}</div>
+                            <div class="text-4xl text-amber-500">
+                                <i class="fa-solid fa-chess-rook"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question Card -->
+                    <div class="px-6 py-3 rounded-2xl bg-slate-800/90 border border-slate-700 text-center shadow-lg w-full">
+                        <span class="text-xs uppercase font-bold text-amber-400 tracking-wider block mb-1">JAWAB MATEMATIKA UNTUK TEMBAK BOM</span>
+                        <span id="${prefix}-tank-q" class="text-3xl md:text-4xl font-black text-white">${problem.question}</span>
+                    </div>
+
+                    <!-- Option Buttons -->
+                    <div id="${prefix}-tank-options" class="grid grid-cols-2 gap-3 w-full">
+                        ${problem.options.map(opt => `
+                            <button onclick="handleTankAnswer(${opt}, ${isP1})" class="touch-btn py-4 rounded-xl border-2 ${btnColor} text-white font-black text-2xl shadow-md flex items-center justify-center">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleTankAnswer(selected, isP1) {
+            if (gameState.isLocked) return;
+            const prefix = isP1 ? 'p1' : 'p2';
+            const problem = isP1 ? tankState.p1Problem : tankState.p2Problem;
+            const isLockedSide = isP1 ? tankState.p1Locked : tankState.p2Locked;
+
+            if (isLockedSide) return;
+
+            if (selected === problem.correctAns) {
+                // Set lock on side during shoot animation
+                if (isP1) tankState.p1Locked = true; else tankState.p2Locked = true;
+                
+                sfx.playCorrect();
+
+                // Animate bomb shot
+                const bomb = document.getElementById(`${prefix}-bomb-elem`);
+                const impact = document.getElementById(`${prefix}-impact-elem`);
+                const fortress = document.getElementById(`${prefix}-fortress`);
+
+                if (bomb) {
+                    bomb.classList.remove('hidden');
+                    bomb.classList.add('animate-bomb');
+                }
+
+                setTimeout(() => {
+                    sfx.playExplosion();
+                    if (bomb) {
+                        bomb.classList.add('hidden');
+                        bomb.classList.remove('animate-bomb');
+                    }
+                    if (impact) {
+                        impact.classList.remove('hidden');
+                        setTimeout(() => impact.classList.add('hidden'), 400);
+                    }
+                    if (fortress) {
+                        fortress.classList.add('animate-shake');
+                        setTimeout(() => fortress.classList.remove('animate-shake'), 400);
+                    }
+
+                    // Deduct Fortress HP
+                    if (isP1) {
+                        tankState.p2Hp--;
+                        tankState.p1Problem = generateMathProblem();
+                        tankState.p1Locked = false;
+                        if (tankState.p2Hp <= 0) {
+                            awardRoundWinner(1);
+                            return;
+                        }
+                    } else {
+                        tankState.p1Hp--;
+                        tankState.p2Problem = generateMathProblem();
+                        tankState.p2Locked = false;
+                        if (tankState.p1Hp <= 0) {
+                            awardRoundWinner(2);
+                            return;
+                        }
+                    }
+
+                    // Re-render updated state
+                    const c1 = document.getElementById('p1-game-container');
+                    const c2 = document.getElementById('p2-game-container');
+                    renderTankSide(c1, true);
+                    renderTankSide(c2, false);
+
+                }, 600);
+
+            } else {
+                sfx.playWrong();
+                // Penalty wiggle & load new question
+                if (isP1) tankState.p1Problem = generateMathProblem();
+                else tankState.p2Problem = generateMathProblem();
+
+                const container = document.getElementById(isP1 ? 'p1-game-container' : 'p2-game-container');
+                renderTankSide(container, isP1);
+            }
+        }
+
+        /* -------------------------------------------------------------
+           2. MINI-GAME: REFLEKS WARNA (STROOP EFFECT)
+        ------------------------------------------------------------- */
+        function setupStroopGame(c1, c2) {
+            const colors = [
+                { name: 'MERAH', color: '#f43f5e' },
+                { name: 'HIJAU', color: '#10b981' },
+                { name: 'BIRU', color: '#06b6d4' },
+                { name: 'KUNING', color: '#f59e0b' }
+            ];
+
+            const textObj = colors[Math.floor(Math.random() * colors.length)];
+            const colorObj = colors[Math.floor(Math.random() * colors.length)];
+            const isMatching = textObj.name === colorObj.name;
+
+            const renderSide = (container, isP1) => {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center space-y-6 w-full max-w-md">
+                        <div class="p-6 rounded-3xl bg-slate-800/90 border border-slate-700 text-center shadow-lg w-full">
+                            <div class="text-xs uppercase text-slate-400 font-sans mb-2">Apakah WARNA TEKS sesuai dengan TULISAN?</div>
+                            <div class="text-5xl font-black tracking-wider my-2" style="color: ${colorObj.color}">
+                                ${textObj.name}
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 w-full">
+                            <button onclick="checkStroopAnswer(true, ${isMatching}, ${isP1})" class="touch-btn py-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-2xl shadow-xl border-b-4 border-emerald-800 flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-circle-check"></i> <span>SAMA</span>
+                            </button>
+                            <button onclick="checkStroopAnswer(false, ${isMatching}, ${isP1})" class="touch-btn py-6 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-2xl shadow-xl border-b-4 border-rose-800 flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-circle-xmark"></i> <span>BEDA</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            };
+
+            renderSide(c1, true);
+            renderSide(c2, false);
+        }
+
+        function checkStroopAnswer(choice, actual, isP1) {
+            if (gameState.isLocked) return;
+            if (choice === actual) {
+                sfx.playCorrect();
+                awardRoundWinner(isP1 ? 1 : 2);
+            } else {
+                sfx.playWrong();
+            }
+        }
+
+        /* -------------------------------------------------------------
+           3. MINI-GAME: BERBURU TARGET POP
+        ------------------------------------------------------------- */
+        let targetScores = { p1: 0, p2: 0 };
+
+        function setupTargetGame(c1, c2) {
+            targetScores = { p1: 0, p2: 0 };
+            
+            c1.innerHTML = `
+                <div class="flex flex-col items-center justify-between h-full w-full relative">
+                    <div class="text-xl font-bold text-cyan-400 mb-2">Skor: <span id="p1-target-val">0</span></div>
+                    <div id="p1-target-box" class="w-full flex-1 relative bg-slate-950/40 rounded-3xl border border-cyan-500/20 overflow-hidden"></div>
+                </div>
+            `;
+            c2.innerHTML = `
+                <div class="flex flex-col items-center justify-between h-full w-full relative">
+                    <div class="text-xl font-bold text-rose-400 mb-2">Skor: <span id="p2-target-val">0</span></div>
+                    <div id="p2-target-box" class="w-full flex-1 relative bg-slate-950/40 rounded-3xl border border-rose-500/20 overflow-hidden"></div>
+                </div>
+            `;
+
+            startCentralTimer(8, () => {
+                if (targetScores.p1 > targetScores.p2) {
+                    awardRoundWinner(1);
+                } else if (targetScores.p2 > targetScores.p1) {
+                    awardRoundWinner(2);
+                } else {
+                    awardRoundWinner(Math.random() < 0.5 ? 1 : 2);
+                }
+            });
+
+            spawnTarget(true);
+            spawnTarget(false);
+        }
+
+        function spawnTarget(isP1) {
+            const boxId = isP1 ? 'p1-target-box' : 'p2-target-box';
+            const box = document.getElementById(boxId);
+            if (!box) return;
+
+            box.innerHTML = '';
+
+            const btn = document.createElement('button');
+            const size = Math.floor(Math.random() * 20) + 70;
+            const top = Math.floor(Math.random() * 65) + 10;
+            const left = Math.floor(Math.random() * 65) + 10;
+
+            const bgClass = isP1 ? 'bg-cyan-500 border-cyan-300 glow-p1' : 'bg-rose-500 border-rose-300 glow-p2';
+
+            btn.style.cssText = `top: ${top}%; left: ${left}%; width: ${size}px; height: ${size}px; position: absolute;`;
+            btn.className = `rounded-full border-4 ${bgClass} text-white font-black text-2xl flex items-center justify-center pulse-target shadow-2xl touch-btn`;
+            btn.innerHTML = `<i class="fa-solid fa-bullseye"></i>`;
+
+            btn.onclick = () => {
+                sfx.playTap();
+                if (isP1) {
+                    targetScores.p1++;
+                    document.getElementById('p1-target-val').innerText = targetScores.p1;
+                } else {
+                    targetScores.p2++;
+                    document.getElementById('p2-target-val').innerText = targetScores.p2;
+                }
+                spawnTarget(isP1);
+            };
+
+            box.appendChild(btn);
+        }
+
+        /* -------------------------------------------------------------
+           4. MINI-GAME: TARIK TANGGANG SENTUH (TUG OF WAR)
+        ------------------------------------------------------------- */
+        let tugPosition = 50;
+
+        function setupTugOfWarGame(c1, c2) {
+            tugPosition = 50;
+
+            const renderSide = (container, isP1) => {
+                const btnColor = isP1 ? 'bg-cyan-500 hover:bg-cyan-400 border-cyan-300' : 'bg-rose-500 hover:bg-rose-400 border-rose-300';
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full w-full space-y-6">
+                        <div class="text-center">
+                            <span class="text-slate-400 text-sm block mb-1">TEKAN CEPAT & TERUS-MENERUS!</span>
+                            <span class="text-2xl font-black text-white">TARIK KE PIHAKMU</span>
+                        </div>
+
+                        <div class="w-full bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                            <div class="w-full h-8 bg-slate-800 rounded-xl relative overflow-hidden flex items-center">
+                                <div id="${isP1 ? 'p1' : 'p2'}-tug-bar" class="h-full bg-gradient-to-r from-cyan-500 to-rose-500 transition-all duration-75" style="width: 50%;"></div>
+                            </div>
+                        </div>
+
+                        <button onclick="handleTugTap(${isP1})" class="w-44 h-44 rounded-full border-4 ${btnColor} text-slate-950 font-black text-3xl shadow-2xl flex flex-col items-center justify-center touch-btn active:scale-95">
+                            <i class="fa-solid fa-hand-back-fist text-5xl mb-2"></i>
+                            <span>TEKAN!</span>
+                        </button>
+                    </div>
+                `;
+            };
+
+            renderSide(c1, true);
+            renderSide(c2, false);
+            updateTugBarUI();
+        }
+
+        function handleTugTap(isP1) {
+            if (gameState.isLocked) return;
+            sfx.playTap();
+
+            if (isP1) {
+                tugPosition -= 4;
+            } else {
+                tugPosition += 4;
+            }
+
+            if (tugPosition <= 5) {
+                awardRoundWinner(1);
+            } else if (tugPosition >= 95) {
+                awardRoundWinner(2);
+            } else {
+                updateTugBarUI();
+            }
+        }
+
+        function updateTugBarUI() {
+            const bar1 = document.getElementById('p1-tug-bar');
+            const bar2 = document.getElementById('p2-tug-bar');
+            if (bar1) bar1.style.width = `${100 - tugPosition}%`;
+            if (bar2) bar2.style.width = `${tugPosition}%`;
+        }
+
+        /* -------------------------------------------------------------
+           5. MINI-GAME: INGAT POLA MEMORI
+        ------------------------------------------------------------- */
+        let memorySeq = [];
+        let p1Input = [];
+        let p2Input = [];
+
+        function setupMemoryGame(c1, c2) {
+            memorySeq = [];
+            for (let i = 0; i < 4; i++) {
+                memorySeq.push(Math.floor(Math.random() * 4));
+            }
+            p1Input = [];
+            p2Input = [];
+
+            const renderSide = (container, isP1) => {
+                const prefix = isP1 ? 'p1' : 'p2';
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center space-y-6 w-full max-w-xs">
+                        <div id="${prefix}-mem-status" class="text-lg font-bold text-amber-300 text-center">
+                            Perhatikan Pola...
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 w-full">
+                            <button id="${prefix}-pad-0" onclick="handleMemInput(0, ${isP1})" class="h-28 rounded-2xl bg-amber-500/40 border-2 border-amber-400 font-bold text-2xl text-white touch-btn opacity-60">1</button>
+                            <button id="${prefix}-pad-1" onclick="handleMemInput(1, ${isP1})" class="h-28 rounded-2xl bg-emerald-500/40 border-2 border-emerald-400 font-bold text-2xl text-white touch-btn opacity-60">2</button>
+                            <button id="${prefix}-pad-2" onclick="handleMemInput(2, ${isP1})" class="h-28 rounded-2xl bg-cyan-500/40 border-2 border-cyan-400 font-bold text-2xl text-white touch-btn opacity-60">3</button>
+                            <button id="${prefix}-pad-3" onclick="handleMemInput(3, ${isP1})" class="h-28 rounded-2xl bg-indigo-500/40 border-2 border-indigo-400 font-bold text-2xl text-white touch-btn opacity-60">4</button>
+                        </div>
+                    </div>
+                `;
+            };
+
+            renderSide(c1, true);
+            renderSide(c2, false);
+
+            gameState.isLocked = true;
+            playMemorySequence();
+        }
+
+        function playMemorySequence() {
+            let step = 0;
+            const interval = setInterval(() => {
+                if (step < memorySeq.length) {
+                    const padIdx = memorySeq[step];
+                    flashPad('p1', padIdx);
+                    flashPad('p2', padIdx);
+                    sfx.playCountdown();
+                    step++;
+                } else {
+                    clearInterval(interval);
+                    gameState.isLocked = false;
+                    const s1 = document.getElementById('p1-mem-status');
+                    const s2 = document.getElementById('p2-mem-status');
+                    if (s1) s1.innerText = "ULANGI POLA!";
+                    if (s2) s2.innerText = "ULANGI POLA!";
+                }
+            }, 600);
+        }
+
+        function flashPad(playerPrefix, padIdx) {
+            const pad = document.getElementById(`${playerPrefix}-pad-${padIdx}`);
+            if (pad) {
+                pad.classList.remove('opacity-60');
+                pad.classList.add('opacity-100', 'scale-105', 'brightness-150');
+                setTimeout(() => {
+                    pad.classList.remove('opacity-100', 'scale-105', 'brightness-150');
+                    pad.classList.add('opacity-60');
+                }, 300);
+            }
+        }
+
+        function handleMemInput(padIdx, isP1) {
+            if (gameState.isLocked) return;
+            sfx.playTap();
+
+            const playerSeq = isP1 ? p1Input : p2Input;
+            const prefix = isP1 ? 'p1' : 'p2';
+
+            playerSeq.push(padIdx);
+            flashPad(prefix, padIdx);
+
+            const currentStep = playerSeq.length - 1;
+            if (playerSeq[currentStep] !== memorySeq[currentStep]) {
+                sfx.playWrong();
+                const status = document.getElementById(`${prefix}-mem-status`);
+                if (status) status.innerText = "SALAH! COBA LAGI";
+                if (isP1) p1Input = []; else p2Input = [];
+                return;
+            }
+
+            if (playerSeq.length === memorySeq.length) {
+                sfx.playCorrect();
+                awardRoundWinner(isP1 ? 1 : 2);
+            }
+        }
+
+        /* -------------------------------------------------------------
+           TIMER & WINNER SCORING LOGIC
+        ------------------------------------------------------------- */
+        function startCentralTimer(seconds, onComplete) {
+            clearInterval(gameState.timerInterval);
+            gameState.timerValue = seconds;
+            const timerElem = document.getElementById('central-timer');
+            const countElem = document.getElementById('timer-count');
+
+            timerElem.classList.remove('hidden');
+            countElem.innerText = gameState.timerValue;
+
+            gameState.timerInterval = setInterval(() => {
+                gameState.timerValue--;
+                countElem.innerText = gameState.timerValue;
+                if (gameState.timerValue <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    timerElem.classList.add('hidden');
+                    if (onComplete) onComplete();
+                }
+            }, 1000);
+        }
+
+        function awardRoundWinner(winnerPlayerNum) {
+            if (gameState.isLocked) return;
+            gameState.isLocked = true;
+            clearInterval(gameState.timerInterval);
+
+            if (winnerPlayerNum === 1) {
+                gameState.p1Score++;
+                document.getElementById('p1-score').innerText = gameState.p1Score;
+            } else {
+                gameState.p2Score++;
+                document.getElementById('p2-score').innerText = gameState.p2Score;
+            }
+
+            const winnerName = winnerPlayerNum === 1 ? gameState.p1Name : gameState.p2Name;
+
+            // Flash overlay announcement for round winner
+            const overlay = document.getElementById('round-overlay');
+            document.getElementById('round-overlay-title').innerText = `RONDE ${gameState.currentRound} SELESAI`;
+            document.getElementById('round-overlay-game').innerText = `Poin untuk ${winnerName}! 🎉`;
+            document.getElementById('round-overlay-desc').innerText = `Skor Sementara: ${gameState.p1Name} (${gameState.p1Score}) - ${gameState.p2Name} (${gameState.p2Score})`;
+            document.getElementById('countdown-banner').innerText = "";
+
+            overlay.classList.remove('hidden');
+
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                gameState.currentRound++;
+                startRoundCycle();
+            }, 1800);
+        }
+
+        function finishMatch() {
+            sfx.playVictory();
+            const victoryOverlay = document.getElementById('victory-screen');
+            const winnerBanner = document.getElementById('winner-banner');
+
+            document.getElementById('final-p1-name').innerText = gameState.p1Name;
+            document.getElementById('final-p2-name').innerText = gameState.p2Name;
+            document.getElementById('final-p1-score').innerText = gameState.p1Score;
+            document.getElementById('final-p2-score').innerText = gameState.p2Score;
+
+            if (gameState.p1Score > gameState.p2Score) {
+                winnerBanner.innerText = `🏆 ${gameState.p1Name} MENANG!`;
+                winnerBanner.className = "text-3xl md:text-4xl font-black py-4 px-6 rounded-2xl bg-cyan-950 border-2 border-cyan-400 text-cyan-300 inline-block shadow-lg";
+            } else if (gameState.p2Score > gameState.p1Score) {
+                winnerBanner.innerText = `🏆 ${gameState.p2Name} MENANG!`;
+                winnerBanner.className = "text-3xl md:text-4xl font-black py-4 px-6 rounded-2xl bg-rose-950 border-2 border-rose-400 text-rose-300 inline-block shadow-lg";
+            } else {
+                winnerBanner.innerText = `🤝 HASIL SERI!`;
+                winnerBanner.className = "text-3xl md:text-4xl font-black py-4 px-6 rounded-2xl bg-amber-950 border-2 border-amber-400 text-amber-300 inline-block shadow-lg";
+            }
+
+            victoryOverlay.classList.remove('hidden');
+
+            // Trigger Confetti Celebration
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
