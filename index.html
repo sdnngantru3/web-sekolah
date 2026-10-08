@@ -303,6 +303,22 @@ body.drawer-open { overflow: hidden; }
 .line-mask { overflow: hidden; display: block; }
 .line-inner { display: block; transform: translateY(100%); opacity: 0; transition: all 0.9s; }
 .line-inner.is-revealed { transform: translateY(0%); opacity: 1; }
+
+/* === PATCH: stabilo putih transparan di teks hero === */
+.hero-h1 .hero-h1__highlight {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.75) !important;
+  padding: 0.12em 0.55em;
+  border-radius: 0.4em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  text-shadow: none;
+  color: var(--accent);
+  -webkit-text-fill-color: var(--accent);
+}
+/* Hilangkan text-shadow di parent agar tidak dobel */
+.hero-h1 { text-shadow: none; }
+/* === END PATCH === */
 .reveal-item { opacity: 0; transform: translateY(16px); transition: all 0.7s; }
 .reveal-item.is-revealed { opacity: 1; transform: translateY(0); }
 .hero-rating { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
@@ -757,10 +773,10 @@ body.drawer-open { overflow: hidden; }
         <div class="hero-left">
           <div class="eyebrow eyebrow--dark reveal-item"><span>Kabupaten Malang — Jawa Timur</span></div>
           <h1 class="hero-h1">
-            <span class="line-mask"><span class="line-inner">Generasi Artuga</span></span>
-            <span class="line-mask"><span class="line-inner"><span>Unggul & Berkarakter</span></span></span>
-            <span class="line-mask"><span class="line-inner">Go Digital Sekolahku.</span></span>
-          </h1>
+  <span class="line-mask"><span class="line-inner"><span class="hero-h1__highlight">Generasi Artuga</span></span></span>
+  <span class="line-mask"><span class="line-inner"><span class="hero-h1__highlight">Berkarakter</span></span></span>
+  <span class="line-mask"><span class="line-inner"><span class="hero-h1__highlight">Go Digital Sekolahku.</span></span></span>
+</h1>
           <div class="hero-rating reveal-item">
             <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
             <span class="rating-badge"><i class="fas fa-award" style="color:#d97706;"></i> Terakreditasi B — NPSN: 20554981</span>
