@@ -296,7 +296,7 @@ body.drawer-open { overflow: hidden; }
 @media (min-width: 1024px) { .hero-content { display: grid; min-height: 92vh; grid-template-columns: repeat(12, 1fr); gap: 2.5rem; padding: 9.5rem 2rem 5rem; align-content: center; } }
 .hero-left { display: flex; flex-direction: column; gap: 1.75rem; position: relative; z-index: 2; }
 @media (min-width: 1024px) { .hero-left { grid-column: span 7; } }
-.hero-h1 { max-width: 18ch; font-size: 2.5rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: var(--ink); text-shadow: 0 1px 3px rgba(255,255,255,0.7); }
+.hero-h1 { max-width: 100%; font-size: 2.5rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: var(--ink); text-shadow: 0 1px 3px rgba(255,255,255,0.7); }
 @media (min-width: 640px) { .hero-h1 { font-size: 3.25rem; } }
 @media (min-width: 768px) { .hero-h1 { font-size: 3.85rem; } }
 .hero-h1 span { color: var(--accent); -webkit-text-fill-color: var(--accent); background: none; filter: none; }
@@ -315,6 +315,7 @@ body.drawer-open { overflow: hidden; }
   text-shadow: none;
   color: var(--accent);
   -webkit-text-fill-color: var(--accent);
+  white-space: nowrap;
 }
 /* Hilangkan text-shadow di parent agar tidak dobel */
 .hero-h1 { text-shadow: none; }
@@ -597,7 +598,8 @@ body.drawer-open { overflow: hidden; }
    ============================================================ */
 @media (max-width: 768px) {
   .hero-content { padding: 6rem 1rem 3rem; gap: 1.75rem; }
-  .hero-h1 { font-size: 2rem; max-width: 100%; }
+  .hero-h1 { font-size: 2rem; max-width: 100%; letter-spacing: -0.04em; }
+.hero-h1 .hero-h1__highlight { padding: 0.1em 0.4em; }
   .hero-h1 .line-mask { margin-bottom: 0.25rem; }
   .hero-card { max-width: 100%; }
   .login-glass-card { max-width: 100%; }
@@ -668,7 +670,8 @@ body.drawer-open { overflow: hidden; }
 
 @media (max-width: 480px) {
   .hero-content { padding: 5.5rem 0.875rem 2.5rem; }
-  .hero-h1 { font-size: 1.6rem; line-height: 1.1; }
+  .hero-h1 { font-size: 1.5rem; line-height: 1.15; letter-spacing: -0.045em; }
+.hero-h1 .hero-h1__highlight { padding: 0.08em 0.35em; }
   .hero-ctas { flex-direction: column; width: 100%; }
   .hero-ctas .pill-btn { width: 100%; justify-content: center; }
   .popular-keywords { gap: 0.35rem; }
