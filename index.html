@@ -719,6 +719,26 @@ body.drawer-open { overflow: hidden; }
   #visiMisiModal .visimisi-embed > div { padding: 1.25rem !important; }
 }
 /* === END PATCH === */
+/* === PATCH: Modal video portrait === */
+.preview-overlay.is-video .preview-box {
+  max-width: 500px;
+  width: auto;
+}
+.preview-overlay.is-video .preview-body {
+  padding: 0;
+  display: block;
+  background: #000;
+}
+.preview-overlay.is-video .preview-body video {
+  max-width: 100%;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  display: block;
+  margin: 0 auto;
+}
+/* === END PATCH === */
 </style>
 </head>
 <body>
@@ -2154,6 +2174,9 @@ function openPreview(url, label, format, type) {
   const isVideo = ['mp4','mov','avi','webm','mkv'].includes(fmt);
   const isPdf = fmt === 'pdf';
   const isOffice = ['doc','docx','xls','xlsx','ppt','pptx'].includes(fmt);
+    // ✅ Tambahkan 2 baris ini:
+  const overlay = document.getElementById('previewOverlay');
+  overlay.classList.toggle('is-video', isVideo);
 
   let content = '';
   if (isImage) content = `<img src="${url}" alt="${escapeHtml(label)}">`;
@@ -2179,7 +2202,9 @@ function openPreview(url, label, format, type) {
 }
 
 function closePreview() {
-  document.getElementById('previewOverlay').classList.remove('show');
+  const overlay = document.getElementById('previewOverlay');
+  overlay.classList.remove('show');
+  overlay.classList.remove('is-video');   // ✅ Tambahkan baris ini
   document.getElementById('previewBody').innerHTML = '';
 }
 
