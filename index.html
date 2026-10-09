@@ -752,13 +752,13 @@ body.drawer-open { overflow: hidden; }
 <header id="header">
   <div class="shell">
     <div class="header-inner">
-      <a href="#" class="header-logo">
-        <div class="school-logo-img"></div>
-        <div class="logo-text-wrap">
-          <h1>SDN 3 NGANTRU</h1>
-          <p>Kec. Ngantang, Kab. Malang</p>
-        </div>
-      </a>
+      <a href="#" onclick="event.preventDefault(); openPreview('sekolah.mp4', 'Video Profil Sekolah', 'mp4', 'video'); return false;" class="header-logo" title="Putar Video Profil">
+  <div class="school-logo-img"></div>
+  <div class="logo-text-wrap">
+    <h1>SDN 3 NGANTRU</h1>
+    <p>Kec. Ngantang, Kab. Malang</p>
+  </div>
+</a>
       <nav class="header-nav" id="headerNav">
         <ul id="headerNavList">
           <li><a href="#home"><i class="fas fa-house"></i> Home</a></li>
