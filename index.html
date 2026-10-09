@@ -701,6 +701,24 @@ body.drawer-open { overflow: hidden; }
 @supports (-webkit-touch-callout: none) {
   #home { min-height: -webkit-fill-available; }
 }
+/* === PATCH: Modal Visi & Misi lebih lebar === */
+#visiMisiModal .modal-content {
+  padding: 0 !important;
+  max-width: 900px !important;
+  text-align: left !important;
+  overflow: hidden !important;
+}
+#visiMisiModal .modal-content::-webkit-scrollbar { width: 8px; }
+#visiMisiModal .modal-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+#visiMisiModal .visimisi-embed > div::-webkit-scrollbar { width: 8px; }
+#visiMisiModal .visimisi-embed > div::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+@media (max-width: 640px) {
+  #visiMisiModal .modal-content { max-width: 100% !important; border-radius: 1rem !important; }
+  #visiMisiModal header { padding: 1rem 1.25rem !important; }
+  #visiMisiModal header h1 { font-size: 1rem !important; }
+  #visiMisiModal .visimisi-embed > div { padding: 1.25rem !important; }
+}
+/* === END PATCH === */
 </style>
 </head>
 <body>
@@ -982,10 +1000,232 @@ body.drawer-open { overflow: hidden; }
 
 <!-- MODALS -->
 <div id="visiMisiModal" class="modal">
-  <div class="modal-content">
-    <h3><i class="fas fa-star" style="color:#fbbf24;"></i> Visi & Misi</h3>
-    <p style="margin: 16px 0; font-size: 1.05rem; line-height: 1.6; color: var(--ink);"><strong>✨ Unggul dalam Prestasi, Berkarakter Mulia, dan Berwawasan Lingkungan ✨</strong></p>
-    <button class="close-modal" onclick="closeModal('visiMisiModal')">Tutup</button>
+  <div class="modal-content" style="max-width: 900px; text-align: left; padding: 0; overflow: hidden;">
+    <div class="visimisi-embed">
+      <!-- ===== RINGKASAN DOKUMEN INTEGRASI ===== -->
+      <header style="background: linear-gradient(135deg, #065f46, #0f766e); color: #fff; padding: 1.5rem 1.75rem; position: sticky; top: 0; z-index: 10;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="background: #fff; border-radius: 50%; width: 3.5rem; height: 3.5rem; display: grid; place-items: center; flex-shrink: 0;">
+            <i class="fas fa-book-open" style="color: #065f46; font-size: 1.5rem;"></i>
+          </div>
+          <div style="flex: 1; min-width: 0;">
+            <h1 style="font-size: 1.15rem; font-weight: 800; margin: 0; line-height: 1.2;">SD NEGERI 3 NGANTRU</h1>
+            <p style="font-size: 0.75rem; color: rgba(255,255,255,0.85); margin: 2px 0 0;">Kec. Ngantang, Kab. Malang, Jawa Timur (Since 1978)</p>
+          </div>
+          <button class="preview-close" onclick="closeModal('visiMisiModal')" style="background: rgba(255,255,255,0.2); color: #fff; border: none; width: 2.5rem; height: 2.5rem; border-radius: 50%; cursor: pointer; font-size: 1rem; flex-shrink: 0;">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </header>
+
+      <div style="padding: 1.75rem; background: #ecfdf5; max-height: 65vh; overflow-y: auto;">
+
+        <!-- Ringkasan -->
+        <section style="background: #fff; border-radius: 1rem; padding: 1.5rem; border: 1px solid #d1fae5; margin-bottom: 1.5rem; text-align: center;">
+          <span style="display: inline-block; padding: 0.25rem 0.75rem; background: #d1fae5; color: #065f46; font-size: 0.65rem; font-weight: 700; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">Ringkasan Dokumen Integrasi</span>
+          <h2 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;">Filosofi Logo, Visi Misi, dan Rencana Strategis</h2>
+          <p style="color: #64748b; font-size: 0.85rem; line-height: 1.6; max-width: 60ch; margin: 0 auto;">
+            Terletak di kawasan pedesaan agrowisata dan persawahan pertanian, SD Negeri 3 Ngantru berkomitmen mencetak generasi unggul melalui pendidikan berbasis lingkungan (<strong style="color: #047857;">Green School</strong>).
+          </p>
+        </section>
+
+        <!-- VISI -->
+        <section style="margin-bottom: 1.5rem;">
+          <div style="border-left: 4px solid #059669; padding-left: 1rem; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0;">Visi & Pilar Akronim GREEN</h3>
+            <p style="font-size: 0.8rem; color: #64748b; margin: 2px 0 0;">Landasan dan arah utama penyelenggaraan pendidikan sekolah</p>
+          </div>
+
+          <div style="background: linear-gradient(135deg, #047857, #0f766e); color: #fff; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1rem;">
+            <span style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #6ee7b7; font-weight: 700;">Visi Sekolah</span>
+            <blockquote style="font-size: 1rem; font-weight: 500; margin: 0.5rem 0 0; font-style: italic; line-height: 1.6;">
+              "Terwujudnya Generasi Unggul yang Berkarakter GREEN (Gotong Royong, Religius, Efektif-Efisien, Ekologis, dan Nasionalis) Berbasis Potensi Agro-Lingkungan Pedesaan."
+            </blockquote>
+          </div>
+
+          <!-- Pilar GREEN -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
+            <div style="background: #fff; padding: 1rem; border-radius: 0.75rem; border: 1px solid #d1fae5; display: flex; gap: 0.75rem; align-items: flex-start;">
+              <div style="background: #d1fae5; color: #065f46; font-weight: 800; width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; display: grid; place-items: center; flex-shrink: 0;">G</div>
+              <div>
+                <h4 style="font-weight: 700; color: #0f172a; margin: 0; font-size: 0.9rem;">Gotong Royong</h4>
+                <p style="font-size: 0.72rem; color: #64748b; margin: 0.25rem 0 0; line-height: 1.5;">Semangat kebersamaan dan kepedulian sosial antar sesama warga sekolah & masyarakat.</p>
+              </div>
+            </div>
+            <div style="background: #fff; padding: 1rem; border-radius: 0.75rem; border: 1px solid #d1fae5; display: flex; gap: 0.75rem; align-items: flex-start;">
+              <div style="background: #d1fae5; color: #065f46; font-weight: 800; width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; display: grid; place-items: center; flex-shrink: 0;">R</div>
+              <div>
+                <h4 style="font-weight: 700; color: #0f172a; margin: 0; font-size: 0.9rem;">Religius</h4>
+                <p style="font-size: 0.72rem; color: #64748b; margin: 0.25rem 0 0; line-height: 1.5;">Membentuk siswa yang beriman, bertaqwa, dan berakhlak mulia.</p>
+              </div>
+            </div>
+            <div style="background: #fff; padding: 1rem; border-radius: 0.75rem; border: 1px solid #d1fae5; display: flex; gap: 0.75rem; align-items: flex-start;">
+              <div style="background: #d1fae5; color: #065f46; font-weight: 800; width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; display: grid; place-items: center; flex-shrink: 0;">E</div>
+              <div>
+                <h4 style="font-weight: 700; color: #0f172a; margin: 0; font-size: 0.9rem;">Efektif</h4>
+                <p style="font-size: 0.72rem; color: #64748b; margin: 0.25rem 0 0; line-height: 1.5;">Pembelajaran dan manajemen sekolah berorientasi pada mutu dan pencapaian target.</p>
+              </div>
+            </div>
+            <div style="background: #fff; padding: 1rem; border-radius: 0.75rem; border: 1px solid #d1fae5; display: flex; gap: 0.75rem; align-items: flex-start;">
+              <div style="background: #d1fae5; color: #065f46; font-weight: 800; width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; display: grid; place-items: center; flex-shrink: 0;">E</div>
+              <div>
+                <h4 style="font-weight: 700; color: #0f172a; margin: 0; font-size: 0.9rem;">Efisien (Ekologis)</h4>
+                <p style="font-size: 0.72rem; color: #64748b; margin: 0.25rem 0 0; line-height: 1.5;">Pengelolaan sumber daya efisien berbasis digitalisasi & pelestarian lingkungan persawahan.</p>
+              </div>
+            </div>
+            <div style="background: #fff; padding: 1rem; border-radius: 0.75rem; border: 1px solid #d1fae5; display: flex; gap: 0.75rem; align-items: flex-start;">
+              <div style="background: #d1fae5; color: #065f46; font-weight: 800; width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; display: grid; place-items: center; flex-shrink: 0;">N</div>
+              <div>
+                <h4 style="font-weight: 700; color: #0f172a; margin: 0; font-size: 0.9rem;">Nasionalis</h4>
+                <p style="font-size: 0.72rem; color: #64748b; margin: 0.25rem 0 0; line-height: 1.5;">Menanamkan rasa cinta tanah air dan kebanggaan pada kearifan lokal bangsa.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MISI -->
+        <section style="background: #fff; border-radius: 1rem; padding: 1.5rem; border: 1px solid #d1fae5; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0 0 0.75rem;">5 Misi Utama Sekolah</h4>
+          <ol style="margin: 0; padding-left: 1.25rem; font-size: 0.85rem; color: #334155; line-height: 1.7;">
+            <li style="margin-bottom: 0.5rem;"><strong style="color: #0f172a;">Menanamkan Nilai Religiusitas & Moralitas:</strong> Kegiatan keagamaan rutin dan pembiasaan budi pekerti luhur (simbol Bintang).</li>
+            <li style="margin-bottom: 0.5rem;"><strong style="color: #0f172a;">Mengembangkan Pembelajaran Berbasis Agro-Lingkungan:</strong> Integrasi pendidikan lingkungan hidup dan agrikultur lokal (simbol Buku, Tunas & warna Hijau).</li>
+            <li style="margin-bottom: 0.5rem;"><strong style="color: #0f172a;">Meningkatkan Mutu Pembelajaran Efektif & Efisien:</strong> Proses belajar inovatif, berpusat pada siswa, dan optimalisasi sumber daya.</li>
+            <li style="margin-bottom: 0.5rem;"><strong style="color: #0f172a;">Menumbuhkan Jiwa Nasionalisme & Gotong Royong:</strong> Kolaborasi, kepedulian lingkungan, serta intrakurikuler kemasyarakatan (simbol Perisai & Siswa Bertoga).</li>
+            <li><strong style="color: #0f172a;">Mewujudkan Digitalisasi Sekolah Terjangkau:</strong> Literasi digital guru & siswa menghadapi tantangan zaman tanpa merusak kearifan lokal.</li>
+          </ol>
+        </section>
+
+        <!-- LOGO -->
+        <section style="margin-bottom: 1.5rem;">
+          <div style="border-left: 4px solid #059669; padding-left: 1rem; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0;">Filosofi & Makna Lambang (Logo)</h3>
+            <p style="font-size: 0.8rem; color: #64748b; margin: 2px 0 0;">Identitas visual dan representasi nilai moral sekolah</p>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
+            <div style="background: #fff; padding: 1rem; border-radius: 0.75rem; border: 1px solid #d1fae5;">
+              <span style="font-size: 0.65rem; font-weight: 700; color: #047857; background: #ecfdf5; padding: 0.15rem 0.5rem; border-radius: 0.375rem;">Bentuk Perisai</span>
+              <h4 style="font-weight: 700; color: #0f172a; font-size: 0.85rem; margin: 0.5rem 0 0.25rem;">Perlindungan & Ketahanan</h4>
+              <p style="font-size: 0.72rem; color: #64748b; margin: 0; line-height: 1.5;">Tempat aman bagi siswa untuk menimba ilmu dan membentuk karakter dasar yang kokoh.</p>
+            </div>
+            <div style="background: #fff; padding: 1rem; border-radius: 0.75rem; border: 1px solid #d1fae5;">
+              <span style="font-size: 0.65rem; font-weight: 700; color: #047857; background: #ecfdf5; padding: 0.15rem 0.5rem; border-radius: 0.375rem;">Buku & Tunas Daun</span>
+              <h4 style="font-weight: 700; color: #0f172a; font-size: 0.85rem; margin: 0.5rem 0 0.25rem;">Sumber Ilmu & Keberlanjutan</h4>
+              <p style="font-size: 0.72rem; color: #64748b; margin: 0; line-height: 1.5;">Buku sumber ilmu, tunas hijau tumbuh ke puncak menggambarkan pendidikan berkelanjutan.</p>
+            </div>
+            <div style="background: #fff; padding: 1rem; border-radius: 0.75rem; border: 1px solid #d1fae5;">
+              <span style="font-size: 0.65rem; font-weight: 700; color: #047857; background: #ecfdf5; padding: 0.15rem 0.5rem; border-radius: 0.375rem;">Tiga Figur Siswa</span>
+              <h4 style="font-weight: 700; color: #0f172a; font-size: 0.85rem; margin: 0.5rem 0 0.25rem;">Prestasi & Kolaborasi</h4>
+              <p style="font-size: 0.72rem; color: #64748b; margin: 0; line-height: 1.5;">Siswa bertoga siap meraih prestasi setinggi mungkin dengan menjunjung nilai kebersamaan.</p>
+            </div>
+            <div style="background: #fff; padding: 1rem; border-radius: 0.75rem; border: 1px solid #d1fae5;">
+              <span style="font-size: 0.65rem; font-weight: 700; color: #047857; background: #ecfdf5; padding: 0.15rem 0.5rem; border-radius: 0.375rem;">Bintang</span>
+              <h4 style="font-weight: 700; color: #0f172a; font-size: 0.85rem; margin: 0.5rem 0 0.25rem;">Ketuhanan & Moralitas</h4>
+              <p style="font-size: 0.72rem; color: #64748b; margin: 0; line-height: 1.5;">Berada di puncak menyimbolkan nilai Ketuhanan Yang Maha Esa dan cita-cita tinggi.</p>
+            </div>
+            <div style="background: #fff; padding: 1rem; border-radius: 0.75rem; border: 1px solid #d1fae5;">
+              <span style="font-size: 0.65rem; font-weight: 700; color: #047857; background: #ecfdf5; padding: 0.15rem 0.5rem; border-radius: 0.375rem;">Warna Hijau & Since 1978</span>
+              <h4 style="font-weight: 700; color: #0f172a; font-size: 0.85rem; margin: 0.5rem 0 0.25rem;">Identitas & Konsistensi</h4>
+              <p style="font-size: 0.72rem; color: #64748b; margin: 0; line-height: 1.5;">Nuansa Green School yang asri serta pengalaman pengabdian panjang sejak tahun 1978.</p>
+            </div>
+            <div style="background: #fff; padding: 1rem; border-radius: 0.75rem; border: 1px solid #d1fae5;">
+              <span style="font-size: 0.65rem; font-weight: 700; color: #047857; background: #ecfdf5; padding: 0.15rem 0.5rem; border-radius: 0.375rem;">Teks Lingkaran Luar</span>
+              <h4 style="font-weight: 700; color: #0f172a; font-size: 0.85rem; margin: 0.5rem 0 0.25rem;">Akronim GREEN</h4>
+              <p style="font-size: 0.72rem; color: #64748b; margin: 0; line-height: 1.5;">Gotong Royong, Religius, Efektif, Efisien, Nasionalis sebagai pilar utama sekolah.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- RENSTRA -->
+        <section style="margin-bottom: 1.5rem;">
+          <div style="border-left: 4px solid #059669; padding-left: 1rem; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0;">Rencana Strategis Jangka Panjang (Renstra 4 Tahun)</h3>
+            <p style="font-size: 0.8rem; color: #64748b; margin: 2px 0 0;">Tahapan operasional pencapaian visi dan misi sekolah</p>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+            <div style="background: #fff; border-radius: 1rem; padding: 1.25rem; border: 1px solid #d1fae5;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="padding: 0.2rem 0.65rem; background: #d1fae5; color: #065f46; font-size: 0.7rem; font-weight: 700; border-radius: 9999px;">Tahun I (2026–2027)</span>
+                <span style="font-size: 0.7rem; color: #94a3b8;">Fase Penataan</span>
+              </div>
+              <h4 style="font-weight: 800; color: #0f172a; font-size: 0.9rem; margin: 0 0 0.5rem;">Pembiasaan & Penataan Lingkungan</h4>
+              <p style="font-size: 0.75rem; color: #64748b; margin: 0; line-height: 1.6;">Pembuatan Kebun Edukasi Sekolah (Agro-Garden) berbasis lahan persawahan, pembentukan Bank Sampah Sekolah (GREEN-Waste), kompos mandiri, serta program pembiasaan ibadah dan "Jumat Bersih & Berkah".</p>
+            </div>
+            <div style="background: #fff; border-radius: 1rem; padding: 1.25rem; border: 1px solid #d1fae5;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="padding: 0.2rem 0.65rem; background: #d1fae5; color: #065f46; font-size: 0.7rem; font-weight: 700; border-radius: 9999px;">Tahun II (2027–2028)</span>
+                <span style="font-size: 0.7rem; color: #94a3b8;">Fase Integrasi</span>
+              </div>
+              <h4 style="font-weight: 800; color: #0f172a; font-size: 0.9rem; margin: 0 0 0.5rem;">Kurikulum & Digitalisasi</h4>
+              <p style="font-size: 0.75rem; color: #64748b; margin: 0; line-height: 1.6;">Penyusunan Kurikulum Operasional berbasis pengamatan ekosistem persawahan, penerapan digitalisasi administrasi & media pembelajaran efisien, serta kemitraan bersama kelompok tani lokal.</p>
+            </div>
+            <div style="background: #fff; border-radius: 1rem; padding: 1.25rem; border: 1px solid #d1fae5;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="padding: 0.2rem 0.65rem; background: #d1fae5; color: #065f46; font-size: 0.7rem; font-weight: 700; border-radius: 9999px;">Tahun III (2028–2029)</span>
+                <span style="font-size: 0.7rem; color: #94a3b8;">Fase Inovasi</span>
+              </div>
+              <h4 style="font-weight: 800; color: #0f172a; font-size: 0.9rem; margin: 0 0 0.5rem;">Inovasi & Prestasi Ekologis</h4>
+              <p style="font-size: 0.75rem; color: #64748b; margin: 0; line-height: 1.6;">Pengembangan kewirausahaan dasar dari produk kebun/kompos sekolah, gerakan efisiensi energi & air (GREEN-Energy), serta persiapan dan pengajuan kriteria Rintisan Sekolah Adiwiyata Kabupaten Malang.</p>
+            </div>
+            <div style="background: #fff; border-radius: 1rem; padding: 1.25rem; border: 1px solid #d1fae5;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="padding: 0.2rem 0.65rem; background: #d1fae5; color: #065f46; font-size: 0.7rem; font-weight: 700; border-radius: 9999px;">Tahun IV (2029–2030)</span>
+                <span style="font-size: 0.7rem; color: #94a3b8;">Fase Rujukan</span>
+              </div>
+              <h4 style="font-weight: 800; color: #0f172a; font-size: 0.9rem; margin: 0 0 0.5rem;">Sekolah Rujukan & Kelulusan Unggul</h4>
+              <p style="font-size: 0.75rem; color: #64748b; margin: 0; line-height: 1.6;">Menjadi sekolah model rujukan berbasis Agro-Edukasional di tingkat Kabupaten Malang serta pencapaian profil lulusan berkarakter GREEN yang tangguh.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- MATRIKS KORELASI -->
+        <section>
+          <div style="border-left: 4px solid #059669; padding-left: 1rem; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0;">Matriks Korelasi Keterpaduan</h3>
+            <p style="font-size: 0.8rem; color: #64748b; margin: 2px 0 0;">Hubungan langsung elemen logo, misi, dan rencana strategis</p>
+          </div>
+          <div style="background: #fff; border-radius: 1rem; border: 1px solid #d1fae5; overflow: hidden;">
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; text-align: left;">
+                <thead style="background: #ecfdf5; color: #064e3b; font-weight: 700;">
+                  <tr>
+                    <th style="padding: 0.85rem 1rem;">Elemen Logo</th>
+                    <th style="padding: 0.85rem 1rem;">Nilai Utama</th>
+                    <th style="padding: 0.85rem 1rem;">Implementasi Visi, Misi & Renstra</th>
+                  </tr>
+                </thead>
+                <tbody style="color: #334155;">
+                  <tr style="border-top: 1px solid #f1f5f9;">
+                    <td style="padding: 0.85rem 1rem; font-weight: 600; color: #0f172a;">Buku Terbuka & Tunas Daun</td>
+                    <td style="padding: 0.85rem 1rem;">Literasi & Ekologis</td>
+                    <td style="padding: 0.85rem 1rem;">Misi 2 & 3 — Renstra Tahun I & II (Kebun Edukasi & Kurikulum Ekosistem).</td>
+                  </tr>
+                  <tr style="border-top: 1px solid #f1f5f9;">
+                    <td style="padding: 0.85rem 1rem; font-weight: 600; color: #0f172a;">Bintang</td>
+                    <td style="padding: 0.85rem 1rem;">Religius</td>
+                    <td style="padding: 0.85rem 1rem;">Misi 1 — Renstra Tahun I (Pembiasaan ibadah harian & Jumat Bersih).</td>
+                  </tr>
+                  <tr style="border-top: 1px solid #f1f5f9;">
+                    <td style="padding: 0.85rem 1rem; font-weight: 600; color: #0f172a;">Perisai & Siswa Bertoga</td>
+                    <td style="padding: 0.85rem 1rem;">Nasionalis & Gotong Royong</td>
+                    <td style="padding: 0.85rem 1rem;">Misi 4 — Renstra Tahun IV (Profil Pelajar Pancasila & sekolah rujukan).</td>
+                  </tr>
+                  <tr style="border-top: 1px solid #f1f5f9;">
+                    <td style="padding: 0.85rem 1rem; font-weight: 600; color: #0f172a;">Warna Hijau & Akronim GREEN</td>
+                    <td style="padding: 0.85rem 1rem;">Green School & Efisien</td>
+                    <td style="padding: 0.85rem 1rem;">Misi 2 & 5 — Renstra Tahun I, III, IV (Green Waste, Energy & Adiwiyata).</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <div style="padding: 1rem 1.75rem; background: #fff; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+        <button class="close-modal" onclick="closeModal('visiMisiModal')" style="width: auto; padding: 10px 24px; margin: 0;">Tutup</button>
+      </div>
+    </div>
   </div>
 </div>
 
