@@ -3,1373 +3,1129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 ROCKET BATTLE - Race to the Moon</title>
-    <!-- Tailwind CSS CDN -->
+    <title>🚀 ROCKET BATTLE - Pixel Moon Race</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SheetJS for Excel Import/Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@600;800;900&display=swap');
         
         * {
             font-family: 'Plus Jakarta Sans', sans-serif;
             user-select: none;
-            -webkit-user-select: none;
             touch-action: manipulation;
         }
 
-        /* Custom scrollbars */
+        .pixel-font {
+            font-family: 'Press Start 2P', monospace;
+            image-rendering: pixelated;
+        }
+
+        .pixel-art {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        /* Space Sky Pixel Motion Background */
+        .pixel-space {
+            background: #070913;
+            background-image: 
+                radial-gradient(white 1.5px, transparent 0),
+                radial-gradient(rgba(255,255,255,0.6) 1px, transparent 0),
+                radial-gradient(rgba(56, 189, 248, 0.4) 1px, transparent 0);
+            background-size: 60px 60px, 30px 30px, 90px 90px;
+            background-position: 0 0, 15px 15px, 30px 30px;
+        }
+
+        @keyframes starScroll {
+            from { background-position: 0 0, 15px 15px, 30px 30px; }
+            to { background-position: 0 1000px, 15px 1015px, 30px 1030px; }
+        }
+
+        .stars-moving {
+            animation: starScroll 12s linear infinite;
+        }
+
+        /* Pixel Flame Animation */
+        @keyframes pixelFlame {
+            0% { transform: scaleY(1) scaleX(1); opacity: 0.9; }
+            50% { transform: scaleY(1.5) scaleX(0.85); opacity: 1; filter: drop-shadow(0 0 6px #f59e0b); }
+            100% { transform: scaleY(0.8) scaleX(1.1); opacity: 0.8; }
+        }
+
+        @keyframes turboFlame {
+            0% { transform: scaleY(1.3) scaleX(1.1); opacity: 1; filter: drop-shadow(0 0 12px #38bdf8); }
+            50% { transform: scaleY(2.2) scaleX(0.9); opacity: 1; filter: drop-shadow(0 0 18px #a855f7); }
+            100% { transform: scaleY(1.1) scaleX(1.2); opacity: 0.9; }
+        }
+
+        @keyframes weakFlame {
+            0% { transform: scaleY(0.4) scaleX(0.7); opacity: 0.3; }
+            50% { transform: scaleY(0.6) scaleX(0.8); opacity: 0.5; }
+            100% { transform: scaleY(0.3) scaleX(0.6); opacity: 0.2; }
+        }
+
+        .flame-normal { animation: pixelFlame 0.15s infinite alternate ease-in-out; }
+        .flame-fast { animation: turboFlame 0.06s infinite alternate ease-in-out; }
+        .flame-slow { animation: weakFlame 0.3s infinite alternate ease-in-out; }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(14px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Dynamic Starfield inside Arena Monitor */
+        .arena-starfield {
+            background: radial-gradient(ellipse at bottom, #0f172a 0%, #030712 100%);
+        }
+
+        @keyframes starScrollDown {
+            from { background-position: 0 0, 15px 15px, 30px 30px; }
+            to { background-position: 0 600px, 15px 615px, 30px 630px; }
+        }
+
+        .arena-stars-moving {
+            background-image: 
+                radial-gradient(#ffffff 1.5px, transparent 0),
+                radial-gradient(rgba(56, 189, 248, 0.8) 1.2px, transparent 0),
+                radial-gradient(rgba(245, 158, 11, 0.6) 1.5px, transparent 0);
+            background-size: 80px 80px, 45px 45px, 110px 110px;
+            animation: starScrollDown 10s linear infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+
+        .twinkle-star {
+            animation: twinkle 2.5s infinite alternate ease-in-out;
+        }
+
+        .btn-touch {
+            transition: all 0.15s ease;
+        }
+
+        .btn-touch:active {
+            transform: scale(0.95);
+            filter: brightness(1.25);
+        }
+
+        /* Custom Scrollbar for Builder */
         ::-webkit-scrollbar {
             width: 8px;
-            height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #0f172a;
+            background: rgba(15, 23, 42, 0.6);
         }
         ::-webkit-scrollbar-thumb {
             background: #334155;
             border-radius: 4px;
         }
-
-        /* Starry Space Background */
-        .space-bg {
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-            overflow: hidden;
-            position: relative;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
         }
 
-        .stars-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .star {
-            position: absolute;
-            background-color: #fff;
-            border-radius: 50%;
-            animation: twinkle var(--duration, 3s) infinite ease-in-out;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-
-        /* Pulse and Shake effects */
-        .animate-bounce-short {
-            animation: bounce 0.6s ease-in-out 2;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-8px); }
-            40%, 80% { transform: translateX(8px); }
-        }
-
-        .shake-element {
-            animation: shake 0.4s ease-in-out;
-        }
-
-        /* Flame Thruster Animations */
-        @keyframes thruster {
-            0% { transform: scaleY(0.9) scaleX(0.95); opacity: 0.8; }
-            50% { transform: scaleY(1.25) scaleX(1.1); opacity: 1; }
-            100% { transform: scaleY(0.9) scaleX(0.95); opacity: 0.8; }
-        }
-
-        .flame-anim {
-            transform-origin: top center;
-            animation: thruster 0.15s infinite alternate ease-in-out;
-        }
-
-        .flame-super {
-            transform-origin: top center;
-            animation: thruster 0.08s infinite alternate ease-in-out;
-            filter: drop-shadow(0 0 12px #f59e0b);
-        }
-
-        /* Speed lines on boost */
-        @keyframes speedLine {
-            0% { transform: translateY(-100%); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(100%); opacity: 0; }
-        }
-
-        .speed-line {
-            position: absolute;
-            width: 2px;
-            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.8), transparent);
-            animation: speedLine 0.4s linear infinite;
-        }
-
-        /* Glassmorphism panel */
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        .glass-card-blue {
-            background: linear-gradient(135deg, rgba(30, 58, 138, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%);
-            border: 2px solid rgba(59, 130, 246, 0.4);
-        }
-
-        .glass-card-red {
-            background: linear-gradient(135deg, rgba(153, 27, 27, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%);
-            border: 2px solid rgba(239, 68, 68, 0.4);
-        }
-
-        /* Touch Button Active state for IFP */
-        .btn-touch-active:active {
-            transform: scale(0.95) translateY(2px);
-            filter: brightness(1.2);
+        .launch-pad {
+            background: linear-gradient(180deg, #475569 0%, #1e293b 100%);
+            border-top: 2px solid #94a3b8;
+            box-shadow: 0 0 10px rgba(0,0,0,0.8);
         }
     </style>
 </head>
-<body class="space-bg text-white min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-cyan-500 selection:text-black">
+<body class="pixel-space stars-moving text-white min-h-screen flex flex-col justify-between p-3 selection:bg-cyan-500 selection:text-black overflow-x-hidden" id="body-bg">
 
-    <!-- Dynamic Star Background -->
-    <div id="stars-container" class="stars-container"></div>
-
-    <!-- AUDIO SYNTHESIZER (Web Audio API - 100% Offline & Reliable) -->
+    <!-- Web Audio Synthesizer -->
     <script>
         class SoundEngine {
-            constructor() {
-                this.ctx = null;
-                this.enabled = true;
-            }
-
+            constructor() { this.ctx = null; this.enabled = true; }
             init() {
                 if (!this.ctx) {
                     const AudioCtx = window.AudioContext || window.webkitAudioContext;
                     this.ctx = new AudioCtx();
                 }
-                if (this.ctx && this.ctx.state === 'suspended') {
-                    this.ctx.resume();
-                }
+                if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
             }
-
             playCorrect() {
-                if (!this.enabled) return;
-                this.init();
+                if (!this.enabled) return; this.init();
                 const now = this.ctx.currentTime;
-                
-                const osc1 = this.ctx.createOscillator();
-                const osc2 = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-
-                osc1.type = 'sine';
-                osc2.type = 'triangle';
-
-                osc1.frequency.setValueAtTime(523.25, now); // C5
-                osc1.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
-                osc1.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
-                osc1.frequency.exponentialRampToValueAtTime(1046.50, now + 0.35); // C6
-
-                osc2.frequency.setValueAtTime(261.63, now);
-                osc2.frequency.exponentialRampToValueAtTime(523.25, now + 0.35);
-
-                gain.gain.setValueAtTime(0.3, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-
-                osc1.connect(gain);
-                osc2.connect(gain);
-                gain.connect(this.ctx.destination);
-
-                osc1.start(now);
-                osc2.start(now);
-                osc1.stop(now + 0.5);
-                osc2.stop(now + 0.5);
-            }
-
-            playWrong() {
-                if (!this.enabled) return;
-                this.init();
-                const now = this.ctx.currentTime;
-                
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
-
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(160, now);
-                osc.frequency.linearRampToValueAtTime(90, now + 0.3);
-
-                gain.gain.setValueAtTime(0.4, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-
-                osc.start(now);
-                osc.stop(now + 0.35);
-            }
-
-            playBoost() {
-                if (!this.enabled) return;
-                this.init();
-                const now = this.ctx.currentTime;
-
-                // White noise sweep
-                const bufferSize = this.ctx.sampleRate * 0.4;
-                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
-                }
-
-                const noise = this.ctx.createBufferSource();
-                noise.buffer = buffer;
-
-                const filter = this.ctx.createBiquadFilter();
-                filter.type = 'bandpass';
-                filter.frequency.setValueAtTime(200, now);
-                filter.frequency.exponentialRampToValueAtTime(3000, now + 0.35);
-                filter.Q.value = 3;
-
-                const gain = this.ctx.createGain();
-                gain.gain.setValueAtTime(0.5, now);
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+                osc.frequency.setValueAtTime(1046.50, now + 0.24); // C6
+                gain.gain.setValueAtTime(0.2, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-
-                noise.connect(filter);
-                filter.connect(gain);
-                gain.connect(this.ctx.destination);
-
-                noise.start(now);
-                noise.stop(now + 0.4);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(now); osc.stop(now + 0.4);
             }
-
-            playCombo() {
-                if (!this.enabled) return;
-                this.init();
+            playWrong() {
+                if (!this.enabled) return; this.init();
                 const now = this.ctx.currentTime;
-                
-                const notes = [440, 554.37, 659.25, 880]; // A major arpeggio
-                notes.forEach((freq, idx) => {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(freq, now + idx * 0.06);
-
-                    gain.gain.setValueAtTime(0.25, now + idx * 0.06);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.2);
-
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-
-                    osc.start(now + idx * 0.06);
-                    osc.stop(now + idx * 0.06 + 0.2);
-                });
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(now); osc.stop(now + 0.3);
             }
-
             playVictory() {
-                if (!this.enabled) return;
-                this.init();
-                const now = this.ctx.currentTime;
-                const melody = [
-                    { f: 523.25, d: 0.15 }, { f: 659.25, d: 0.15 }, { f: 783.99, d: 0.15 },
-                    { f: 1046.50, d: 0.4 }, { f: 783.99, d: 0.15 }, { f: 1046.50, d: 0.6 }
-                ];
-                let time = now;
-                melody.forEach(item => {
+                if (!this.enabled) return; this.init();
+                const notes = [523.25, 659.25, 783.99, 1046.50, 880, 1046.50];
+                const times = [0, 0.15, 0.30, 0.45, 0.65, 0.85];
+                const dur = [0.12, 0.12, 0.12, 0.18, 0.15, 0.5];
+                notes.forEach((freq, i) => {
+                    const now = this.ctx.currentTime + times[i];
                     const osc = this.ctx.createOscillator();
                     const gain = this.ctx.createGain();
                     osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(item.f, time);
-                    gain.gain.setValueAtTime(0.3, time);
-                    gain.gain.exponentialRampToValueAtTime(0.001, time + item.d);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start(time);
-                    osc.stop(time + item.d);
-                    time += item.d + 0.03;
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + dur[i]);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(now); osc.stop(now + dur[i]);
                 });
             }
         }
-
         const sound = new SoundEngine();
     </script>
 
-    <!-- MAIN APPLICATION WRAPPER -->
-    <div id="app" class="relative z-10 min-h-screen flex flex-col justify-between p-3 md:p-6 max-w-[1920px] mx-auto w-full">
-
-        <!-- TOP NAVIGATION & BRANDING BAR -->
-        <header class="flex justify-between items-center bg-slate-900/80 backdrop-blur-md px-6 py-3 rounded-2xl border border-slate-700/60 shadow-xl mb-4">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="showScreen('menu')">
-                <span class="text-3xl md:text-4xl animate-bounce">🚀</span>
-                <div>
-                    <h1 class="text-xl md:text-28 font-black tracking-wider bg-gradient-to-r from-amber-300 via-sky-400 to-indigo-400 bg-clip-text text-transparent uppercase">
-                        ROCKET BATTLE
-                    </h1>
-                    <p class="text-xs text-slate-400 font-semibold tracking-widest hidden sm:block">RACE TO THE MOON • CLASSROOM DUEL</p>
-                </div>
-            </div>
-
-            <div class="flex items-center space-x-3">
-                <!-- Sound Toggle Button -->
-                <button id="sound-btn" onclick="toggleSound()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold flex items-center space-x-2 transition btn-touch-active">
-                    <span id="sound-icon">🔊</span>
-                    <span id="sound-text" class="text-sm hidden sm:inline">SUARA: ON</span>
-                </button>
-                
-                <!-- Main Menu / Reset Button -->
-                <button onclick="showScreen('menu')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold flex items-center space-x-2 transition btn-touch-active">
-                    <span>🏠</span>
-                    <span class="text-sm hidden sm:inline">MENU</span>
-                </button>
-            </div>
-        </header>
-
-        <!-- SCREEN 1: MAIN MENU -->
-        <div id="screen-menu" class="flex-1 flex flex-col justify-center items-center py-4">
-            <div class="w-full max-w-4xl glass-panel p-6 md:p-10 rounded-3xl border border-slate-700/80 shadow-2xl text-center space-y-8">
-                
-                <!-- Title & Tagline Header -->
-                <div class="space-y-3">
-                    <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs md:text-sm font-bold uppercase tracking-wider">
-                        ✨ Game Edukasi Interaktif IFP
-                    </div>
-                    <h2 class="text-4xl md:text-6xl font-black text-white tracking-tight leading-none">
-                        🚀 ROCKET BATTLE
-                    </h2>
-                    <p class="text-xl md:text-2xl font-bold text-amber-400 italic">
-                        "Answer Fast. Fly Higher. Reach the Moon!"
-                    </p>
-                </div>
-
-                <!-- Main Action Buttons Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto pt-2">
-                    <button onclick="openSetupModal()" class="md:col-span-2 py-5 px-8 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-2xl shadow-lg shadow-cyan-500/25 flex items-center justify-center space-x-3 transition transform hover:scale-[1.02] btn-touch-active">
-                        <span>🚀</span>
-                        <span>START BATTLE NOW</span>
-                    </button>
-
-                    <button onclick="showScreen('bank')" class="py-4 px-6 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 font-bold text-lg flex items-center justify-center space-x-3 transition btn-touch-active">
-                        <span>📚</span>
-                        <span>BANK SOAL (<span id="bank-count-badge">1</span>)</span>
-                    </button>
-
-                    <button onclick="downloadTemplateExcel()" class="py-4 px-6 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 font-bold text-lg flex items-center justify-center space-x-3 transition btn-touch-active">
-                        <span>📥</span>
-                        <span>DOWNLOAD TEMPLATE</span>
-                    </button>
-
-                    <label class="py-4 px-6 rounded-2xl bg-indigo-900/60 hover:bg-indigo-800/80 border border-indigo-500/50 text-indigo-200 font-bold text-lg flex items-center justify-center space-x-3 cursor-pointer transition btn-touch-active">
-                        <span>📤</span>
-                        <span>IMPORT EXCEL SOAL</span>
-                        <input type="file" id="excel-file-input" accept=".xlsx, .xls" class="hidden" onchange="importExcelSoal(event)">
-                    </label>
-
-                    <button onclick="showScreen('howto')" class="py-4 px-6 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 font-bold text-lg flex items-center justify-center space-x-3 transition btn-touch-active">
-                        <span>❓</span>
-                        <span>CARA BERMAIN</span>
-                    </button>
-                </div>
-
-                <!-- Bank Soal Quick Selector -->
-                <div class="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
-                    <div>
-                        <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">Bank Soal Aktif:</span>
-                        <span id="active-bank-name" class="text-base font-extrabold text-cyan-300">Default: Pengetahuan Umum SD (10 Soal)</span>
-                    </div>
-                    <button onclick="showScreen('bank')" class="text-xs text-amber-400 hover:text-amber-300 font-bold underline">
-                        Ganti Bank Soal ⚙️
-                    </button>
-                </div>
+    <!-- HEADER TOP BAR -->
+    <header class="flex justify-between items-center bg-slate-900/90 px-4 py-2 rounded-2xl border-2 border-slate-700 shadow-xl mb-2 z-20">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="showScreen('menu')">
+            <span class="text-2xl animate-bounce">🚀</span>
+            <div>
+                <h1 class="pixel-font text-xs sm:text-sm text-cyan-400 uppercase tracking-widest">ROCKET BATTLE</h1>
+                <p class="text-[10px] text-slate-400 font-bold">PIXEL MOON RACE SIMULATOR</p>
             </div>
         </div>
-
-        <!-- SETUP MODAL / DIALOG -->
-        <div id="modal-setup" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-            <div class="w-full max-w-xl glass-panel p-6 md:p-8 rounded-3xl border border-slate-700 shadow-2xl space-y-6">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-                    <h3 class="text-2xl font-black text-white flex items-center space-x-2">
-                        <span>⚙️</span> <span>PENGATURAN PERMAINAN</span>
-                    </h3>
-                    <button onclick="closeSetupModal()" class="text-slate-400 hover:text-white font-bold text-xl px-2">✕</button>
-                </div>
-
-                <div class="space-y-5 text-left">
-                    <!-- Bank Soal Picker -->
-                    <div>
-                        <label class="block text-sm font-bold text-slate-300 mb-1">📚 Pilih Bank Soal:</label>
-                        <select id="setup-bank-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white font-semibold focus:outline-none focus:border-cyan-500">
-                            <!-- Populated dynamically -->
-                        </select>
-                    </div>
-
-                    <!-- Target Questions / Checkpoints -->
-                    <div>
-                        <label class="block text-sm font-bold text-slate-300 mb-1">🌕 Target Progress (Bulan):</label>
-                        <div class="grid grid-cols-4 gap-2">
-                            <button type="button" onclick="setTargetQuestions(5)" id="btn-target-5" class="target-btn py-3 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700">5 Soal</button>
-                            <button type="button" onclick="setTargetQuestions(10)" id="btn-target-10" class="target-btn py-3 rounded-xl bg-cyan-600 border border-cyan-400 font-bold">10 Soal</button>
-                            <button type="button" onclick="setTargetQuestions(15)" id="btn-target-15" class="target-btn py-3 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700">15 Soal</button>
-                            <button type="button" onclick="setTargetQuestions(20)" id="btn-target-20" class="target-btn py-3 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700">20 Soal</button>
-                        </div>
-                    </div>
-
-                    <!-- Timer Duration -->
-                    <div>
-                        <label class="block text-sm font-bold text-slate-300 mb-1">⏱️ Waktu Per Soal:</label>
-                        <div class="grid grid-cols-3 gap-2">
-                            <button type="button" onclick="setTimerSecs(5)" id="btn-timer-5" class="timer-btn py-2.5 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700">5 Detik</button>
-                            <button type="button" onclick="setTimerSecs(10)" id="btn-timer-10" class="timer-btn py-2.5 rounded-xl bg-cyan-600 border border-cyan-400 font-bold">10 Detik</button>
-                            <button type="button" onclick="setTimerSecs(15)" id="btn-timer-15" class="timer-btn py-2.5 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700">15 Detik</button>
-                        </div>
-                    </div>
-
-                    <!-- Team Names Input -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="bg-blue-950/40 p-3 rounded-xl border border-blue-500/40">
-                            <label class="block text-xs font-bold text-blue-300 mb-1">🔵 Nama Tim Biru:</label>
-                            <input type="text" id="team-blue-name" value="TIM BIRU" class="w-full bg-slate-900 border border-blue-500/50 rounded-lg p-2.5 font-black text-blue-300 focus:outline-none">
-                        </div>
-                        <div class="bg-red-950/40 p-3 rounded-xl border border-red-500/40">
-                            <label class="block text-xs font-bold text-red-300 mb-1">🔴 Nama Tim Merah:</label>
-                            <input type="text" id="team-red-name" value="TIM MERAH" class="w-full bg-slate-900 border border-red-500/50 rounded-lg p-2.5 font-black text-red-300 focus:outline-none">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-2 flex space-x-3">
-                    <button onclick="closeSetupModal()" class="w-1/3 py-4 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-bold btn-touch-active">BATAL</button>
-                    <button onclick="startBattleGame()" class="w-2/3 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xl shadow-lg shadow-cyan-500/20 btn-touch-active">🚀 LAUNCH BATTLE</button>
-                </div>
-            </div>
+        <div class="flex items-center space-x-2">
+            <button onclick="openCreatorModal()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs btn-touch flex items-center space-x-1 shadow-md">
+                <span>📝</span> <span>BUAT SOAL</span>
+            </button>
+            <button onclick="showScreen('menu')" class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-600 font-bold text-xs hover:bg-slate-700 btn-touch">🏠 MENU</button>
         </div>
+    </header>
 
-        <!-- SCREEN 2: BANK SOAL MANAGER -->
-        <div id="screen-bank" class="hidden flex-1 flex flex-col justify-center items-center py-4">
-            <div class="w-full max-w-4xl glass-panel p-6 md:p-8 rounded-3xl border border-slate-700/80 shadow-2xl space-y-6">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-                    <div>
-                        <h2 class="text-3xl font-black text-white flex items-center space-x-2">
-                            <span>📚</span> <span>BANK SOAL TERSIMPANN</span>
-                        </h2>
-                        <p class="text-xs text-slate-400">Pilih atau atur paket soal untuk duel di kelas</p>
-                    </div>
-                    <button onclick="showScreen('menu')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-600 font-bold text-sm">Kembali</button>
-                </div>
-
-                <!-- Saved Banks List -->
-                <div id="bank-list-container" class="space-y-3 max-h-[380px] overflow-y-auto pr-2">
-                    <!-- Dynamic rendering -->
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-800">
-                    <button onclick="downloadTemplateExcel()" class="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 border border-slate-600 hover:bg-slate-700 font-bold text-sm flex items-center justify-center space-x-2">
-                        <span>📥</span> <span>Download Template Excel</span>
-                    </button>
-
-                    <label class="w-full sm:w-auto px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm flex items-center justify-center space-x-2 cursor-pointer">
-                        <span>📤</span> <span>Import File Excel Baru</span>
-                        <input type="file" accept=".xlsx, .xls" class="hidden" onchange="importExcelSoal(event)">
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- SCREEN 3: HOW TO PLAY -->
-        <div id="screen-howto" class="hidden flex-1 flex flex-col justify-center items-center py-4">
-            <div class="w-full max-w-4xl glass-panel p-6 md:p-8 rounded-3xl border border-slate-700/80 shadow-2xl space-y-6 text-left">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-                    <h2 class="text-3xl font-black text-white flex items-center space-x-2">
-                        <span>❓</span> <span>CARA BERMAIN ROCKET BATTLE</span>
-                    </h2>
-                    <button onclick="showScreen('menu')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-600 font-bold text-sm">Kembali</button>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
-                        <div class="text-amber-400 font-black text-base">1️⃣ DUEL BERSAMAAN (NO TURNS)</div>
-                        <p class="text-slate-300">Tim Biru dan Tim Merah tampil di dua sisi layar dan mengerjakan soal secara <strong>langsung bersamaan</strong> tanpa menunggu giliran lawan!</p>
-                    </div>
-
-                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
-                        <div class="text-amber-400 font-black text-base">2️⃣ BANK SOAL & RANDOMISASI</div>
-                        <p class="text-slate-300">Kedua tim mendapatkan soal dari paket yang sama, namun <strong>urutan soal diacak terpisah</strong> sehingga tidak bisa menyontek lawan!</p>
-                    </div>
-
-                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
-                        <div class="text-amber-400 font-black text-base">3️⃣ KECEPATAN & BOOST PROGRESS</div>
-                        <p class="text-slate-300">Jawab benar dalam 0–3 detik memberikan bonus ⚡ <strong>+2 Checkpoint</strong>. Jawaban normal memberikan 🚀 <strong>+1 Checkpoint</strong>.</p>
-                    </div>
-
-                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
-                        <div class="text-amber-400 font-black text-base">4️⃣ SYSTEM COMBO 🔥</div>
-                        <p class="text-slate-300">Jawaban benar beruntun mengaktifkan <strong>COMBO x2, x3, x4</strong> dan 🚀🚀🚀 <strong>MOON BOOST (Combo x5)</strong> untuk melesat cepat ke bulan!</p>
-                    </div>
-
-                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
-                        <div class="text-amber-400 font-black text-base">5️⃣ NYAWA ❤️ & PENALTI</div>
-                        <p class="text-slate-300">Setiap kesalahan/timeout mengurangi 1❤️. Jika nyawa habis (0), roket mundur 1 checkpoint dan nyawa ter-reset ke 5. Game tidak pernah berhenti!</p>
-                    </div>
-
-                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
-                        <div class="text-amber-400 font-black text-base">6️⃣ SIAPA CEPAT DIA MENANG 🌕</div>
-                        <p class="text-slate-300">Tim pertama yang roketnya mendarat di Bulan terlebih dahulu langsung dinyatakan sebagai <strong>PEMENANG UTAMA!</strong></p>
-                    </div>
-                </div>
-
-                <div class="pt-2 text-center">
-                    <button onclick="openSetupModal()" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-lg shadow-lg">🚀 SIAP BERMAIN!</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- SCREEN 4: BATTLE ARENA (16:9 SPLIT SCREEN LANDSCAPE OPTIMIZED FOR IFP) -->
-        <div id="screen-arena" class="hidden flex-1 flex flex-col justify-between relative overflow-hidden">
+    <!-- SCREEN 1: MENU UTAMA -->
+    <div id="screen-menu" class="flex-1 flex flex-col justify-center items-center py-2">
+        <div class="w-full max-w-3xl glass-panel p-6 rounded-3xl text-center space-y-6 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 text-8xl opacity-10 pointer-events-none">🚀</div>
             
-            <!-- CENTRAL RACE TRACK & MOON DISPLAY -->
-            <div class="relative w-full h-24 md:h-28 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-700/80 mb-3 flex items-center justify-between px-6 overflow-hidden">
-                
-                <!-- Speed lines overlay -->
-                <div id="speed-lines-bg" class="absolute inset-0 pointer-events-none opacity-30"></div>
+            <div>
+                <span class="pixel-font text-amber-400 text-xs block mb-2">=== CLASSROOM DUEL SIMULATOR ===</span>
+                <h2 class="pixel-font text-2xl md:text-4xl text-cyan-300 leading-tight drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]">PIXEL ROCKET DUEL</h2>
+                <p class="text-sm font-bold text-slate-300 mt-2">Jawab Benar = Roket Meluncur Naik Lebih Tinggi! Salah = Roket Melemah!</p>
+            </div>
 
-                <!-- Blue Rocket Track Indicator -->
-                <div class="flex items-center space-x-3 w-1/3">
-                    <div class="text-blue-400 font-black text-sm md:text-base truncate" id="arena-blue-title">🔵 TIM BIRU</div>
-                    <div class="flex-1 bg-slate-800 h-4 rounded-full overflow-hidden p-0.5 border border-blue-500/40 relative">
-                        <div id="blue-progress-bar" class="bg-gradient-to-r from-blue-600 to-cyan-400 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
-                    </div>
-                    <span id="blue-progress-text" class="text-xs font-black text-cyan-300 w-12 text-right">0/10</span>
+            <!-- ACTION BUTTONS GRID -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl mx-auto">
+                <button onclick="openSetupModal()" class="sm:col-span-2 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xl shadow-lg border-b-4 border-emerald-700 btn-touch flex items-center justify-center space-x-2">
+                    <span>🚀</span> <span>START BATTLE NOW</span>
+                </button>
+
+                <button onclick="openCreatorModal()" class="py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs border-b-4 border-amber-700 btn-touch flex items-center justify-center space-x-2">
+                    <span>📝</span> <span>BUAT SOAL (GOOGLE FORM STYLE)</span>
+                </button>
+
+                <button onclick="downloadExcelTemplate()" class="py-3 px-4 rounded-xl bg-cyan-600 hover:bg-cyan-500 font-black text-xs border-b-4 border-cyan-800 btn-touch flex items-center justify-center space-x-2">
+                    <span>📥</span> <span>DOWNLOAD TEMPLATE EXCEL</span>
+                </button>
+
+                <button onclick="openLinkModal()" class="py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-xs border-b-4 border-indigo-800 btn-touch flex items-center justify-center space-x-2">
+                    <span>🔗</span> <span>INPUT VIA LINK JSON</span>
+                </button>
+
+                <label class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 font-bold text-xs border-b-4 border-slate-950 cursor-pointer btn-touch flex items-center justify-center space-x-2">
+                    <span>📤</span> <span>IMPORT EXCEL</span>
+                    <input type="file" accept=".xlsx, .xls" class="hidden" onchange="importExcelSoal(event)">
+                </label>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
+                <div>
+                    <span class="text-slate-400 font-bold block">BANK SOAL AKTIF:</span>
+                    <span id="active-bank-name" class="font-extrabold text-cyan-300">Default SD (5 Soal)</span>
                 </div>
+                <span id="json-status-badge" class="px-2.5 py-1 bg-slate-800 border border-slate-600 rounded-lg text-[10px] text-slate-300 font-bold">Lokal</span>
+            </div>
+        </div>
+    </div>
 
-                <!-- Target Moon Center graphic -->
-                <div class="flex flex-col items-center justify-center relative z-10 px-2">
-                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-amber-200 shadow-[0_0_25px_rgba(251,191,36,0.6)] flex items-center justify-center border-2 border-amber-100 animate-pulse">
-                        <span class="text-2xl md:text-3xl">🌕</span>
+    <!-- MODAL 1: BUAT SOAL (GOOGLE FORM STYLE + JSON EXPORT) -->
+    <div id="modal-creator" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-3 hidden">
+        <div class="w-full max-w-3xl glass-panel p-5 rounded-3xl space-y-4 max-h-[90vh] flex flex-col border-2 border-amber-500/40 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">📝</span>
+                    <div>
+                        <h3 class="text-lg font-black text-amber-400">PEMBUAT SOAL INTERAKTIF</h3>
+                        <p class="text-[11px] text-slate-300">Buat paket soal lengkap dengan Kunci Jawaban, lalu unduh format JSON!</p>
                     </div>
-                    <span class="text-[10px] font-black tracking-widest text-amber-300 uppercase mt-0.5">FINISH MOON</span>
                 </div>
+                <button onclick="closeCreatorModal()" class="text-slate-400 hover:text-white text-lg font-bold">✖</button>
+            </div>
 
-                <!-- Red Rocket Track Indicator -->
-                <div class="flex items-center space-x-3 w-1/3 justify-end">
-                    <span id="red-progress-text" class="text-xs font-black text-rose-300 w-12 text-left">0/10</span>
-                    <div class="flex-1 bg-slate-800 h-4 rounded-full overflow-hidden p-0.5 border border-red-500/40 relative">
-                        <div id="red-progress-bar" class="bg-gradient-to-r from-red-600 to-rose-400 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
-                    </div>
-                    <div class="text-rose-400 font-black text-sm md:text-base truncate" id="arena-red-title">🔴 TIM MERAH</div>
+            <!-- Quiz Meta -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-cyan-300 mb-1">Judul Paket Soal:</label>
+                    <input type="text" id="creator-quiz-title" value="Kuis Sains & Matematika" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-400 font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-cyan-300 mb-1">Mata Pelajaran / Deskripsi:</label>
+                    <input type="text" id="creator-quiz-desc" value="Soal Latihan Cerdas Cermat" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-400">
                 </div>
             </div>
 
-            <!-- SPLIT SCREEN ARENA: BLUE vs RED -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 flex-1 items-stretch">
+            <!-- Questions Container -->
+            <div id="questions-builder-list" class="flex-1 overflow-y-auto space-y-4 pr-1">
+                <!-- Dynamic questions inserted here via JS -->
+            </div>
+
+            <!-- Builder Controls & Export -->
+            <div class="pt-3 border-t border-slate-800 flex flex-wrap gap-2 justify-between items-center">
+                <button onclick="addQuestionItem()" class="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl font-bold text-xs text-cyan-300 btn-touch flex items-center space-x-1">
+                    <span>➕</span> <span>TAMBAH PERTANYAAN</span>
+                </button>
+
+                <div class="flex space-x-2">
+                    <button onclick="applyCreatedQuizToGame()" class="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-black text-xs text-white btn-touch flex items-center space-x-1 shadow-lg">
+                        <span>🚀</span> <span>PAKAI DI GAME</span>
+                    </button>
+
+                    <button onclick="downloadQuizJSON()" class="py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl font-black text-xs btn-touch flex items-center space-x-1 shadow-lg">
+                        <span>💾</span> <span>UNDUH FORMAT JSON</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: INPUT LINK JSON (GOOGLE DRIVE) -->
+    <div id="modal-link" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="w-full max-w-lg glass-panel p-6 rounded-3xl space-y-4">
+            <h3 class="text-xl font-black text-white flex items-center space-x-2">
+                <span>🔗</span> <span>LOAD SOAL DARI LINK JSON</span>
+            </h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+                Masukkan URL publik JSON dari <strong>Google Drive</strong> atau web server tempat Anda meng-upload file JSON hasil generator.
+            </p>
+
+            <div>
+                <label class="block text-xs font-bold text-cyan-300 mb-1">URL Link File JSON / Google Drive:</label>
+                <input type="url" id="json-url-input" placeholder="https://drive.google.com/file/d/1abc.../view?usp=sharing" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono">
+            </div>
+
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeLinkModal()" class="w-1/3 py-3 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs btn-touch">BATAL</button>
+                <button onclick="fetchJsonFromUrl()" class="w-2/3 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-black text-xs text-white btn-touch">📥 LOAD SOAL JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: SETUP GAME -->
+    <div id="modal-setup" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="w-full max-w-md glass-panel p-6 rounded-3xl space-y-4 text-left">
+            <h3 class="text-xl font-black text-white">⚙️ PENGATURAN PERMAINAN</h3>
+            
+            <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Target Progress (Mencapai Bulan):</label>
+                <div class="grid grid-cols-4 gap-1.5">
+                    <button onclick="setTarget(5)" id="target-5" class="target-btn py-2 rounded-xl bg-cyan-600 font-bold text-xs">5 Soal</button>
+                    <button onclick="setTarget(10)" id="target-10" class="target-btn py-2 rounded-xl bg-slate-800 font-bold text-xs">10 Soal</button>
+                    <button onclick="setTarget(15)" id="target-15" class="target-btn py-2 rounded-xl bg-slate-800 font-bold text-xs">15 Soal</button>
+                    <button onclick="setTarget(20)" id="target-20" class="target-btn py-2 rounded-xl bg-slate-800 font-bold text-xs">20 Soal</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-[10px] font-bold text-blue-300 mb-1">Nama Tim Biru:</label>
+                    <input type="text" id="blue-name-input" value="TIM ALPHA 🚀" class="w-full bg-slate-900 border border-blue-500/50 rounded-lg p-2 text-xs font-bold text-blue-300">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-red-300 mb-1">Nama Tim Merah:</label>
+                    <input type="text" id="red-name-input" value="TIM OMEGA 🚀" class="w-full bg-slate-900 border border-red-500/50 rounded-lg p-2 text-xs font-bold text-red-300">
+                </div>
+            </div>
+
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeSetupModal()" class="w-1/3 py-3 rounded-xl bg-slate-800 font-bold text-xs btn-touch">BATAL</button>
+                <button onclick="startGame()" class="w-2/3 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 font-black text-slate-950 text-sm btn-touch shadow-lg">🚀 LAUNCH BATTLE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: BATTLE ARENA (WITH ENHANCED PIXEL ART SIMULATOR) -->
+    <div id="screen-arena" class="hidden flex-1 flex flex-col justify-start max-w-5xl mx-auto w-full my-auto">
+        
+        <!-- INTEGRATED ARENA MONITOR (UPPER CONSOLE) -->
+        <div class="w-full h-[460px] sm:h-[560px] md:h-[660px] bg-slate-950 border-4 border-slate-700 rounded-t-2xl relative overflow-hidden flex items-stretch justify-between arena-starfield arena-stars-moving shadow-2xl flex-none">
+            
+            <!-- Twinkling Decorative Background Stars -->
+            <div class="absolute top-8 left-10 text-amber-200 text-xs twinkle-star">✦</div>
+            <div class="absolute top-24 right-14 text-cyan-200 text-sm twinkle-star" style="animation-delay: 0.7s;">★</div>
+            <div class="absolute top-1/2 left-1/3 text-white text-[10px] twinkle-star" style="animation-delay: 1.2s;">✨</div>
+            <div class="absolute bottom-20 right-1/3 text-indigo-300 text-xs twinkle-star" style="animation-delay: 1.8s;">✦</div>
+
+            <!-- Dynamic Pixel Moon Target at top center -->
+            <div class="absolute top-3 left-1/2 -translate-x-1/2 text-center z-30 flex flex-col items-center bg-slate-900/90 px-4 py-1.5 rounded-2xl border-2 border-amber-400/60 backdrop-blur-md shadow-lg">
+                <div class="pixel-art text-3xl md:text-5xl animate-pulse drop-shadow-[0_0_15px_rgba(251,191,36,0.9)]">🌕</div>
+                <span class="pixel-font text-[9px] text-amber-300 block mt-1 tracking-widest">FINISH MOON</span>
+            </div>
+
+            <!-- LANE 1: BLUE ROCKET SIMULATION -->
+            <div class="w-1/2 h-full border-r border-slate-800/80 relative overflow-hidden">
+                <div class="absolute top-3 left-3 pixel-font text-[10px] sm:text-xs text-blue-400 font-bold bg-blue-950/90 px-2.5 py-1 rounded-lg border border-blue-500/50 z-30 shadow-md" id="arena-blue-name">TIM ALPHA</div>
                 
-                <!-- ================= LEFT SIDE: BLUE TEAM ================= -->
-                <div id="blue-panel" class="glass-card-blue p-4 md:p-6 rounded-3xl flex flex-col justify-between relative overflow-hidden shadow-2xl transition-all">
-                    
-                    <!-- Feedback Banner Overlay -->
-                    <div id="blue-feedback" class="absolute inset-x-0 top-1/3 z-30 flex justify-center items-center pointer-events-none opacity-0 transition-all transform scale-50">
-                        <div class="px-6 py-3 rounded-2xl bg-cyan-500 text-slate-950 font-black text-2xl md:text-3xl shadow-2xl border-2 border-white tracking-wider flex items-center space-x-2">
-                            <span id="blue-feedback-text">⚡ SUPER FAST!</span>
-                        </div>
-                    </div>
+                <!-- Speed & State Indicator -->
+                <div class="absolute top-11 left-3 text-[10px] sm:text-xs font-bold text-cyan-300 transition-all z-30" id="blue-speed-label">KECEPATAN: NORMAL</div>
 
-                    <!-- Blue Header Info -->
-                    <div class="flex justify-between items-center pb-3 border-b border-blue-500/30">
-                        <div>
-                            <div class="text-blue-300 font-black text-lg md:text-xl flex items-center space-x-2">
-                                <span>🔵</span> <span id="blue-team-label">TIM BIRU</span>
-                            </div>
-                            <div class="text-xs text-blue-200/70 font-bold" id="blue-q-counter">Soal 1 / 10</div>
-                        </div>
+                <!-- Progress Checkpoint Marker -->
+                <div class="absolute top-3 right-3 pixel-font text-[10px] text-blue-300 bg-slate-900/90 px-2 py-1 rounded border border-blue-500/40 z-30 shadow-md" id="blue-progress-text">0/5</div>
 
-                        <!-- Energy & Combo -->
-                        <div class="flex flex-col items-end space-y-1">
-                            <div id="blue-energy-hearts" class="flex space-x-1 text-base md:text-lg">
-                                ❤️ ❤️ ❤️ ❤️ ❤️
-                            </div>
-                            <div id="blue-combo-badge" class="text-xs font-black px-2.5 py-0.5 rounded-full bg-blue-500/30 text-cyan-300 border border-cyan-400/30">
-                                COMBO x0
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Rocket Visual Lane (Blue) -->
-                    <div class="my-2 py-2 flex items-center justify-between bg-slate-950/40 rounded-xl px-4 border border-blue-900/40">
-                        <div class="text-xs font-bold text-blue-300">STATUS ROKET:</div>
-                        <div id="blue-rocket-container" class="flex items-center space-x-2">
-                            <span id="blue-rocket-flame" class="text-xl flame-anim">🔥</span>
-                            <!-- SVG Blue Cartoon Rocket -->
-                            <svg class="w-10 h-10 md:w-12 md:h-12 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" viewBox="0 0 100 100">
-                                <path d="M50 10 C35 30 30 65 30 80 L70 80 C70 65 65 30 50 10 Z" fill="#2563eb" stroke="#bfdbfe" stroke-width="4"/>
-                                <path d="M50 10 C45 35 45 65 50 80 Z" fill="#3b82f6"/>
-                                <circle cx="50" cy="40" r="12" fill="#dbeafe" stroke="#1d4ed8" stroke-width="3"/>
-                                <circle cx="50" cy="40" r="6" fill="#60a5fa"/>
-                                <path d="M25 65 L10 85 L30 80 Z" fill="#1e40af"/>
-                                <path d="M75 65 L90 85 L70 80 Z" fill="#1e40af"/>
-                            </svg>
-                            <span class="text-xs font-black text-cyan-200" id="blue-rocket-status">READY TO LAUNCH</span>
-                        </div>
-                    </div>
-
-                    <!-- Question Text Box -->
-                    <div class="bg-slate-900/90 p-4 md:p-5 rounded-2xl border border-blue-500/40 my-2 flex-1 flex flex-col justify-center min-h-[120px]">
-                        <p id="blue-q-text" class="text-lg md:text-2xl font-black text-white text-center leading-snug">
-                            Memuat soal...
-                        </p>
-                    </div>
-
-                    <!-- Timer Bar -->
-                    <div class="w-full bg-slate-900 rounded-full h-3 mb-3 overflow-hidden p-0.5 border border-slate-700 relative">
-                        <div id="blue-timer-bar" class="bg-cyan-400 h-full rounded-full transition-all duration-100" style="width: 100%;"></div>
-                    </div>
-
-                    <!-- 4 Large Answer Touch Buttons Grid -->
-                    <div class="grid grid-cols-2 gap-2 md:gap-3">
-                        <button onclick="submitAnswer('blue', 'A')" id="blue-opt-A" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-blue-900/80 border-2 border-slate-700 hover:border-blue-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
-                            <span class="px-2 py-1 bg-blue-600 rounded-lg text-xs md:text-sm">A</span>
-                            <span id="blue-txt-A" class="truncate">Option A</span>
-                        </button>
-                        <button onclick="submitAnswer('blue', 'B')" id="blue-opt-B" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-blue-900/80 border-2 border-slate-700 hover:border-blue-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
-                            <span class="px-2 py-1 bg-blue-600 rounded-lg text-xs md:text-sm">B</span>
-                            <span id="blue-txt-B" class="truncate">Option B</span>
-                        </button>
-                        <button onclick="submitAnswer('blue', 'C')" id="blue-opt-C" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-blue-900/80 border-2 border-slate-700 hover:border-blue-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
-                            <span class="px-2 py-1 bg-blue-600 rounded-lg text-xs md:text-sm">C</span>
-                            <span id="blue-txt-C" class="truncate">Option C</span>
-                        </button>
-                        <button onclick="submitAnswer('blue', 'D')" id="blue-opt-D" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-blue-900/80 border-2 border-slate-700 hover:border-blue-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
-                            <span class="px-2 py-1 bg-blue-600 rounded-lg text-xs md:text-sm">D</span>
-                            <span id="blue-txt-D" class="truncate">Option D</span>
-                        </button>
-                    </div>
+                <!-- Launch Pad Base anchored strictly at bottom -->
+                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-28 h-6 launch-pad rounded-t-xl z-10 flex flex-col items-center justify-center border-t-2 border-blue-400">
+                    <div class="w-20 h-1.5 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_8px_#38bdf8]"></div>
                 </div>
 
+                <!-- Blue Rocket Visual -->
+                <div id="blue-rocket-lane" class="transition-all duration-500 flex flex-col items-center absolute left-1/2 -translate-x-1/2 z-20" style="bottom: 8%;">
+                    <!-- HIGH VISIBILITY PIXEL ART SVG BLUE ROCKET -->
+                    <svg class="w-12 h-16 sm:w-16 sm:h-20 pixel-art filter drop-shadow-[0_0_16px_rgba(56,189,248,1)]" viewBox="0 0 24 32">
+                        <!-- Rocket Nose Cone -->
+                        <path d="M11 0 H13 V2 H11 Z M10 2 H14 V4 H10 Z M9 4 H15 V6 H9 Z" fill="#e0f2fe"/>
+                        <!-- Main Body -->
+                        <path d="M8 6 H16 V20 H8 Z" fill="#2563eb"/>
+                        <path d="M9 6 H12 V20 H9 Z" fill="#38bdf8"/>
+                        <!-- Pixel Glass Window -->
+                        <path d="M10 9 H14 V13 H10 Z" fill="#0284c7"/>
+                        <path d="M11 10 H13 V12 H11 Z" fill="#ffffff"/>
+                        <!-- Side Wings / Fins -->
+                        <path d="M4 16 H8 V24 H4 Z M3 20 H4 V24 H3 Z" fill="#1d4ed8"/>
+                        <path d="M16 16 H20 V24 H16 Z M20 20 H21 V24 H20 Z" fill="#1d4ed8"/>
+                        <!-- Exhaust Engine Nozzle -->
+                        <path d="M8 20 H16 V24 H8 Z" fill="#1e3a8a"/>
+                        <path d="M10 24 H14 V26 H10 Z" fill="#94a3b8"/>
+                    </svg>
+                    <!-- Pixel Flame & Smoke Thruster Effect -->
+                    <div id="blue-flame" class="flame-normal text-sm -mt-1 font-mono drop-shadow-[0_0_8px_#f59e0b]">🔥</div>
+                </div>
+            </div>
 
-                <!-- ================= RIGHT SIDE: RED TEAM ================= -->
-                <div id="red-panel" class="glass-card-red p-4 md:p-6 rounded-3xl flex flex-col justify-between relative overflow-hidden shadow-2xl transition-all">
-                    
-                    <!-- Feedback Banner Overlay -->
-                    <div id="red-feedback" class="absolute inset-x-0 top-1/3 z-30 flex justify-center items-center pointer-events-none opacity-0 transition-all transform scale-50">
-                        <div class="px-6 py-3 rounded-2xl bg-rose-500 text-slate-950 font-black text-2xl md:text-3xl shadow-2xl border-2 border-white tracking-wider flex items-center space-x-2">
-                            <span id="red-feedback-text">⚡ SUPER FAST!</span>
-                        </div>
-                    </div>
+            <!-- LANE 2: RED ROCKET SIMULATION -->
+            <div class="w-1/2 h-full relative overflow-hidden">
+                <div class="absolute top-3 right-3 pixel-font text-[10px] sm:text-xs text-rose-400 font-bold bg-rose-950/90 px-2.5 py-1 rounded-lg border border-rose-500/50 z-30 shadow-md" id="arena-red-name">TIM OMEGA</div>
+                
+                <!-- Speed & State Indicator -->
+                <div class="absolute top-11 right-3 text-[10px] sm:text-xs font-bold text-rose-300 transition-all z-30" id="red-speed-label">KECEPATAN: NORMAL</div>
 
-                    <!-- Red Header Info -->
-                    <div class="flex justify-between items-center pb-3 border-b border-red-500/30">
-                        <div>
-                            <div class="text-rose-300 font-black text-lg md:text-xl flex items-center space-x-2">
-                                <span>🔴</span> <span id="red-team-label">TIM MERAH</span>
-                            </div>
-                            <div class="text-xs text-rose-200/70 font-bold" id="red-q-counter">Soal 1 / 10</div>
-                        </div>
+                <!-- Progress Checkpoint Marker -->
+                <div class="absolute top-3 left-3 pixel-font text-[10px] text-rose-300 bg-slate-900/90 px-2 py-1 rounded border border-rose-500/40 z-30 shadow-md" id="red-progress-text">0/5</div>
 
-                        <!-- Energy & Combo -->
-                        <div class="flex flex-col items-end space-y-1">
-                            <div id="red-energy-hearts" class="flex space-x-1 text-base md:text-lg">
-                                ❤️ ❤️ ❤️ ❤️ ❤️
-                            </div>
-                            <div id="red-combo-badge" class="text-xs font-black px-2.5 py-0.5 rounded-full bg-red-500/30 text-rose-300 border border-rose-400/30">
-                                COMBO x0
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Rocket Visual Lane (Red) -->
-                    <div class="my-2 py-2 flex items-center justify-between bg-slate-950/40 rounded-xl px-4 border border-red-900/40">
-                        <div class="text-xs font-bold text-rose-300">STATUS ROKET:</div>
-                        <div id="red-rocket-container" class="flex items-center space-x-2">
-                            <span id="red-rocket-flame" class="text-xl flame-anim">🔥</span>
-                            <!-- SVG Red Cartoon Rocket -->
-                            <svg class="w-10 h-10 md:w-12 md:h-12 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]" viewBox="0 0 100 100">
-                                <path d="M50 10 C35 30 30 65 30 80 L70 80 C70 65 65 30 50 10 Z" fill="#dc2626" stroke="#fca5a5" stroke-width="4"/>
-                                <path d="M50 10 C45 35 45 65 50 80 Z" fill="#ef4444"/>
-                                <circle cx="50" cy="40" r="12" fill="#fef2f2" stroke="#b91c1c" stroke-width="3"/>
-                                <circle cx="50" cy="40" r="6" fill="#f87171"/>
-                                <path d="M25 65 L10 85 L30 80 Z" fill="#991b1b"/>
-                                <path d="M75 65 L90 85 L70 80 Z" fill="#991b1b"/>
-                            </svg>
-                            <span class="text-xs font-black text-rose-200" id="red-rocket-status">READY TO LAUNCH</span>
-                        </div>
-                    </div>
-
-                    <!-- Question Text Box -->
-                    <div class="bg-slate-900/90 p-4 md:p-5 rounded-2xl border border-red-500/40 my-2 flex-1 flex flex-col justify-center min-h-[120px]">
-                        <p id="red-q-text" class="text-lg md:text-2xl font-black text-white text-center leading-snug">
-                            Memuat soal...
-                        </p>
-                    </div>
-
-                    <!-- Timer Bar -->
-                    <div class="w-full bg-slate-900 rounded-full h-3 mb-3 overflow-hidden p-0.5 border border-slate-700 relative">
-                        <div id="red-timer-bar" class="bg-rose-400 h-full rounded-full transition-all duration-100" style="width: 100%;"></div>
-                    </div>
-
-                    <!-- 4 Large Answer Touch Buttons Grid -->
-                    <div class="grid grid-cols-2 gap-2 md:gap-3">
-                        <button onclick="submitAnswer('red', 'A')" id="red-opt-A" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-red-900/80 border-2 border-slate-700 hover:border-red-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
-                            <span class="px-2 py-1 bg-red-600 rounded-lg text-xs md:text-sm">A</span>
-                            <span id="red-txt-A" class="truncate">Option A</span>
-                        </button>
-                        <button onclick="submitAnswer('red', 'B')" id="red-opt-B" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-red-900/80 border-2 border-slate-700 hover:border-red-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
-                            <span class="px-2 py-1 bg-red-600 rounded-lg text-xs md:text-sm">B</span>
-                            <span id="red-txt-B" class="truncate">Option B</span>
-                        </button>
-                        <button onclick="submitAnswer('red', 'C')" id="red-opt-C" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-red-900/80 border-2 border-slate-700 hover:border-red-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
-                            <span class="px-2 py-1 bg-red-600 rounded-lg text-xs md:text-sm">C</span>
-                            <span id="red-txt-C" class="truncate">Option C</span>
-                        </button>
-                        <button onclick="submitAnswer('red', 'D')" id="red-opt-D" class="btn-touch-active py-3 md:py-4 px-3 rounded-xl bg-slate-800 hover:bg-red-900/80 border-2 border-slate-700 hover:border-red-400 text-white font-black text-base md:text-xl flex items-center space-x-2 transition text-left">
-                            <span class="px-2 py-1 bg-red-600 rounded-lg text-xs md:text-sm">D</span>
-                            <span id="red-txt-D" class="truncate">Option D</span>
-                        </button>
-                    </div>
+                <!-- Launch Pad Base anchored strictly at bottom -->
+                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-28 h-6 launch-pad rounded-t-xl z-10 flex flex-col items-center justify-center border-t-2 border-rose-400">
+                    <div class="w-20 h-1.5 bg-rose-400 rounded-full animate-pulse shadow-[0_0_8px_#f43f5e]"></div>
                 </div>
 
+                <!-- Red Rocket Visual -->
+                <div id="red-rocket-lane" class="transition-all duration-500 flex flex-col items-center absolute left-1/2 -translate-x-1/2 z-20" style="bottom: 8%;">
+                    <!-- HIGH VISIBILITY PIXEL ART SVG RED ROCKET -->
+                    <svg class="w-12 h-16 sm:w-16 sm:h-20 pixel-art filter drop-shadow-[0_0_16px_rgba(244,63,94,1)]" viewBox="0 0 24 32">
+                        <!-- Rocket Nose Cone -->
+                        <path d="M11 0 H13 V2 H11 Z M10 2 H14 V4 H10 Z M9 4 H15 V6 H9 Z" fill="#ffe4e6"/>
+                        <!-- Main Body -->
+                        <path d="M8 6 H16 V20 H8 Z" fill="#dc2626"/>
+                        <path d="M9 6 H12 V20 H9 Z" fill="#f87171"/>
+                        <!-- Pixel Glass Window -->
+                        <path d="M10 9 H14 V13 H10 Z" fill="#0284c7"/>
+                        <path d="M11 10 H13 V12 H11 Z" fill="#ffffff"/>
+                        <!-- Side Wings / Fins -->
+                        <path d="M4 16 H8 V24 H4 Z M3 20 H4 V24 H3 Z" fill="#991b1b"/>
+                        <path d="M16 16 H20 V24 H16 Z M20 20 H21 V24 H20 Z" fill="#991b1b"/>
+                        <!-- Exhaust Engine Nozzle -->
+                        <path d="M8 20 H16 V24 H8 Z" fill="#881337"/>
+                        <path d="M10 24 H14 V26 H10 Z" fill="#94a3b8"/>
+                    </svg>
+                    <!-- Pixel Flame & Smoke Thruster Effect -->
+                    <div id="red-flame" class="flame-normal text-sm -mt-1 font-mono drop-shadow-[0_0_8px_#f59e0b]">🔥</div>
+                </div>
             </div>
         </div>
 
-        <!-- SCREEN 5: FINAL WINNER SCREEN -->
-        <div id="screen-victory" class="hidden flex-1 flex flex-col justify-center items-center py-4">
-            <div class="w-full max-w-4xl glass-panel p-6 md:p-10 rounded-3xl border border-slate-700/80 shadow-2xl text-center space-y-6 relative overflow-hidden">
-                
-                <div class="space-y-2">
-                    <div class="text-4xl md:text-6xl animate-bounce">🌕🚀</div>
-                    <h2 class="text-xs md:text-sm font-black tracking-widest text-amber-400 uppercase">ROCKET BATTLE COMPLETE!</h2>
-                    <h1 id="winner-title-text" class="text-4xl md:text-6xl font-black text-white uppercase tracking-tight">
-                        🔵 TIM BIRU WINS!
-                    </h1>
-                    <p id="winner-sub-text" class="text-xl md:text-2xl font-bold text-cyan-300">
-                        "REACHED THE MOON FIRST!"
-                    </p>
+        <!-- INTEGRATED QUESTIONS & CONTROLS PANEL (LOWER CONSOLE ATTACHED DIRECTLY) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 bg-slate-900/95 border-x-4 border-b-4 border-slate-700 rounded-b-2xl p-2.5 sm:p-3 shadow-2xl flex-none -mt-1">
+            
+            <!-- LEFT: BLUE TEAM PANEL -->
+            <div class="bg-blue-950/60 border border-blue-500/50 rounded-xl p-2.5 flex flex-col justify-between space-y-2">
+                <div class="flex justify-between items-center border-b border-blue-500/30 pb-1">
+                    <span class="font-black text-blue-300 text-xs" id="lbl-blue-team">TIM ALPHA</span>
+                    <span class="text-[11px] text-blue-200 font-bold" id="blue-q-num">Soal 1</span>
                 </div>
 
-                <!-- Dual Stats Summary Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-                    
-                    <!-- Blue Stats Box -->
-                    <div class="bg-blue-950/60 p-5 rounded-2xl border border-blue-500/40 space-y-3">
-                        <div class="text-lg font-black text-blue-300 border-b border-blue-800 pb-2 flex justify-between items-center">
-                            <span>🔵 <span id="stat-blue-name">TIM BIRU</span></span>
-                            <span id="stat-blue-badge" class="text-xs px-2 py-1 rounded bg-blue-600 text-white">WINNER 🏆</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-xs md:text-sm">
-                            <div class="text-slate-400">Soal Benar:</div>
-                            <div class="font-bold text-white text-right" id="stat-blue-correct">0</div>
-
-                            <div class="text-slate-400">Waktu Reaksi Tercepat:</div>
-                            <div class="font-bold text-cyan-300 text-right" id="stat-blue-fastest">0.0s</div>
-
-                            <div class="text-slate-400">Combo Tertinggi:</div>
-                            <div class="font-bold text-amber-400 text-right" id="stat-blue-combo">0x</div>
-
-                            <div class="text-slate-400">Sisa Nyawa:</div>
-                            <div class="font-bold text-rose-400 text-right" id="stat-blue-hearts">5 ❤️</div>
-                        </div>
-                    </div>
-
-                    <!-- Red Stats Box -->
-                    <div class="bg-red-950/60 p-5 rounded-2xl border border-red-500/40 space-y-3">
-                        <div class="text-lg font-black text-red-300 border-b border-red-800 pb-2 flex justify-between items-center">
-                            <span>🔴 <span id="stat-red-name">TIM MERAH</span></span>
-                            <span id="stat-red-badge" class="text-xs px-2 py-1 rounded bg-slate-700 text-slate-300">SO CLOSE!</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-xs md:text-sm">
-                            <div class="text-slate-400">Soal Benar:</div>
-                            <div class="font-bold text-white text-right" id="stat-red-correct">0</div>
-
-                            <div class="text-slate-400">Waktu Reaksi Tercepat:</div>
-                            <div class="font-bold text-cyan-300 text-right" id="stat-red-fastest">0.0s</div>
-
-                            <div class="text-slate-400">Combo Tertinggi:</div>
-                            <div class="font-bold text-amber-400 text-right" id="stat-red-combo">0x</div>
-
-                            <div class="text-slate-400">Sisa Nyawa:</div>
-                            <div class="font-bold text-rose-400 text-right" id="stat-red-hearts">5 ❤️</div>
-                        </div>
-                    </div>
-
+                <div class="bg-slate-900/90 p-2.5 rounded-lg border border-blue-500/30 min-h-[46px] flex items-center justify-center">
+                    <p id="blue-q-text" class="text-xs sm:text-sm font-extrabold text-white text-center">Memuat...</p>
                 </div>
 
-                <!-- Navigation Controls -->
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
-                    <button onclick="openSetupModal()" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xl shadow-lg transition btn-touch-active">
-                        🔄 MAIN LAGI
-                    </button>
-                    <button onclick="showScreen('menu')" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-bold text-xl transition btn-touch-active">
-                        🏠 MENU UTAMA
-                    </button>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <button onclick="answer('blue', 'A')" id="blue-btn-A" class="py-2 px-2 bg-slate-800 hover:bg-blue-900 border border-slate-700 rounded-lg text-xs font-bold text-left truncate btn-touch">A. <span id="blue-txt-A"></span></button>
+                    <button onclick="answer('blue', 'B')" id="blue-btn-B" class="py-2 px-2 bg-slate-800 hover:bg-blue-900 border border-slate-700 rounded-lg text-xs font-bold text-left truncate btn-touch">B. <span id="blue-txt-B"></span></button>
+                    <button onclick="answer('blue', 'C')" id="blue-btn-C" class="py-2 px-2 bg-slate-800 hover:bg-blue-900 border border-slate-700 rounded-lg text-xs font-bold text-left truncate btn-touch">C. <span id="blue-txt-C"></span></button>
+                    <button onclick="answer('blue', 'D')" id="blue-btn-D" class="py-2 px-2 bg-slate-800 hover:bg-blue-900 border border-slate-700 rounded-lg text-xs font-bold text-left truncate btn-touch">D. <span id="blue-txt-D"></span></button>
+                </div>
+            </div>
+
+            <!-- RIGHT: RED TEAM PANEL -->
+            <div class="bg-red-950/60 border border-red-500/50 rounded-xl p-2.5 flex flex-col justify-between space-y-2">
+                <div class="flex justify-between items-center border-b border-red-500/30 pb-1">
+                    <span class="font-black text-red-300 text-xs" id="lbl-red-team">TIM OMEGA</span>
+                    <span class="text-[11px] text-red-200 font-bold" id="red-q-num">Soal 1</span>
                 </div>
 
+                <div class="bg-slate-900/90 p-2.5 rounded-lg border border-red-500/30 min-h-[46px] flex items-center justify-center">
+                    <p id="red-q-text" class="text-xs sm:text-sm font-extrabold text-white text-center">Memuat...</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-1.5">
+                    <button onclick="answer('red', 'A')" id="red-btn-A" class="py-2 px-2 bg-slate-800 hover:bg-red-900 border border-slate-700 rounded-lg text-xs font-bold text-left truncate btn-touch">A. <span id="red-txt-A"></span></button>
+                    <button onclick="answer('red', 'B')" id="red-btn-B" class="py-2 px-2 bg-slate-800 hover:bg-red-900 border border-slate-700 rounded-lg text-xs font-bold text-left truncate btn-touch">B. <span id="red-txt-B"></span></button>
+                    <button onclick="answer('red', 'C')" id="red-btn-C" class="py-2 px-2 bg-slate-800 hover:bg-red-900 border border-slate-700 rounded-lg text-xs font-bold text-left truncate btn-touch">C. <span id="red-txt-C"></span></button>
+                    <button onclick="answer('red', 'D')" id="red-btn-D" class="py-2 px-2 bg-slate-800 hover:bg-red-900 border border-slate-700 rounded-lg text-xs font-bold text-left truncate btn-touch">D. <span id="red-txt-D"></span></button>
+                </div>
             </div>
         </div>
+    </div>
 
+    <!-- SCREEN 3: VICTORY SCREEN WITH ANIMATED PIXEL ART MOON LANDING VIDEO -->
+    <div id="screen-victory" class="hidden flex-1 flex flex-col justify-center items-center py-4">
+        <div class="w-full max-w-2xl glass-panel p-6 sm:p-8 rounded-3xl text-center space-y-4 shadow-2xl relative overflow-hidden border-2 border-amber-400/50">
+            
+            <!-- Animated Pixel Art Video Screen Canvas Container -->
+            <div class="relative w-full h-64 md:h-80 bg-slate-950 border-4 border-amber-400/60 rounded-2xl overflow-hidden shadow-inner flex flex-col justify-between items-center">
+                <!-- Video Status Tag -->
+                <div class="absolute top-2 left-3 z-20 flex items-center space-x-2 bg-slate-900/80 px-3 py-1 rounded-full border border-amber-400/30">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                    <span class="pixel-font text-[9px] text-amber-300 uppercase tracking-wider">LIVE MOON LANDING CUTSCENE</span>
+                </div>
+
+                <!-- HTML5 Canvas for Pixel Art Video Rendering -->
+                <canvas id="victory-canvas" class="w-full h-full block pixel-art"></canvas>
+            </div>
+
+            <div>
+                <span class="pixel-font text-amber-400 text-xs block mb-1">MISSION ACCOMPLISHED!</span>
+                <h1 id="winner-title" class="text-2xl sm:text-4xl font-black text-white uppercase drop-shadow-[0_0_12px_rgba(251,191,36,0.8)]">TIM ALPHA WIN!</h1>
+                <p class="text-slate-300 text-xs sm:text-sm mt-1">Roket telah mendarat dengan sukses di kawah permukaan Bulan!</p>
+            </div>
+
+            <div class="pt-2 flex justify-center gap-3">
+                <button onclick="replayCutscene()" class="py-3 px-5 bg-slate-800 hover:bg-slate-700 text-cyan-300 font-extrabold text-xs rounded-xl border border-slate-600 btn-touch flex items-center space-x-1">
+                    <span>🎬</span> <span>PUTAR ULANG VIDEO</span>
+                </button>
+                <button onclick="showScreen('menu')" class="py-3 px-8 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm rounded-xl border-b-4 border-emerald-700 btn-touch shadow-xl flex items-center space-x-2">
+                    <span>🔄</span> <span>MAIN LAGI</span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
-        
-        // DEFAULT BANK SOAL DATA
+        // DEFAULT QUESTION BANK
         const DEFAULT_BANK = {
-            id: 'default-sd-kelas-5',
-            title: 'Pengetahuan Umum & Sains SD Kelas 5',
-            description: 'Gabungan soal IPAS, Matematika, dan Bahasa Indonesia',
+            title: "Pengetahuan Umum SD (Default)",
             questions: [
-                { id: 1, question: "25 + 17 = ?", optionA: "32", optionB: "42", optionC: "52", optionD: "62", answer: "B" },
-                { id: 2, question: "8 × 7 = ?", optionA: "54", optionB: "56", optionC: "64", optionD: "72", answer: "B" },
-                { id: 3, question: "Planet terdekat dengan Matahari adalah?", optionA: "Venus", optionB: "Bumi", optionC: "Merkurius", optionD: "Mars", answer: "C" },
-                { id: 4, question: "Gas yang dihirup manusia saat bernapas adalah?", optionA: "Karbondioksida", optionB: "Oksigen", optionC: "Nitrogen", optionD: "Hidrogen", answer: "B" },
-                { id: 5, question: "Pancasila ke-3 dilambangkan oleh?", optionA: "Bintang", optionB: "Rantai", optionC: "Pohon Beringin", optionD: "Padi dan Kapas", answer: "C" },
-                { id: 6, question: "Hasil dari 125 ÷ 5 adalah?", optionA: "20", optionB: "25", optionC: "30", optionD: "35", answer: "B" },
-                { id: 7, question: "Alat pernapasan pada ikan adalah?", optionA: "Paru-paru", optionB: "Trakea", optionC: "Insang", optionD: "Kulit", answer: "C" },
-                { id: 8, question: "Ibu kota negara Indonesia saat ini adalah?", optionA: "Surabaya", optionB: "Bandung", optionC: "Nusantara (IKN)", optionD: "Medan", answer: "C" },
-                { id: 9, question: "Bentuk pecahan biasa dari 0,5 adalah?", optionA: "1/4", optionB: "1/2", optionC: "3/4", optionD: "2/5", answer: "B" },
-                { id: 10, question: "Proses pembuatan makanan pada tumbuhan hijau disebut?", optionA: "Respirasi", optionB: "Fotosintesis", optionC: "Adaptasi", optionD: "Transpirasi", answer: "B" },
-                { id: 11, question: "15 × 6 = ?", optionA: "80", optionB: "90", optionC: "100", optionD: "110", answer: "B" },
-                { id: 12, question: "Sudut tegak lurus memiliki besaran?", optionA: "45°", optionB: "90°", optionC: "180°", optionD: "360°", answer: "B" },
-                { id: 13, question: "Matahari terbit di sebelah?", optionA: "Barat", optionB: "Timur", optionC: "Utara", optionD: "Selatan", answer: "B" },
-                { id: 14, question: "Bahasa persatuan bangsa Indonesia adalah?", optionA: "Bahasa Jawa", optionB: "Bahasa Melayu", optionC: "Bahasa Indonesia", optionD: "Bahasa Sunda", answer: "C" },
-                { id: 15, question: "Satuan internasional untuk waktu adalah?", optionA: "Jam", optionB: "Menit", optionC: "Detik (Sekon)", optionD: "Hari", answer: "C" }
+                { question: "25 + 17 = ?", optionA: "32", optionB: "42", optionC: "52", optionD: "62", answer: "B" },
+                { question: "8 × 7 = ?", optionA: "54", optionB: "56", optionC: "64", optionD: "72", answer: "B" },
+                { question: "Planet terdekat dengan Matahari?", optionA: "Venus", optionB: "Bumi", optionC: "Merkurius", optionD: "Mars", answer: "C" },
+                { question: "Gas yang dihirup manusia saat bernapas?", optionA: "Karbondioksida", optionB: "Oksigen", optionC: "Nitrogen", optionD: "Hidrogen", answer: "B" },
+                { question: "Ibu kota Negara Indonesia?", optionA: "Surabaya", optionB: "Bandung", optionC: "Nusantara (IKN)", optionD: "Medan", answer: "C" }
             ]
         };
 
-        // GLOBAL APPLICATION STATE
-        let appState = {
-            banks: [DEFAULT_BANK],
-            selectedBankId: 'default-sd-kelas-5',
-            targetProgress: 10,
-            timerSecs: 10,
-            boostEnabled: true,
-            maxHearts: 5,
-            
-            // Team Configurations
-            blueTeam: { name: 'TIM BIRU', score: 0, progress: 0, combo: 0, maxCombo: 0, hearts: 5, questions: [], index: 0, timer: 10, interval: null, stats: { correct: 0, fastest: 99 } },
-            redTeam: { name: 'TIM MERAH', score: 0, progress: 0, combo: 0, maxCombo: 0, hearts: 5, questions: [], index: 0, timer: 10, interval: null, stats: { correct: 0, fastest: 99 } },
+        let activeBank = DEFAULT_BANK;
+        let builderQuestions = JSON.parse(JSON.stringify(DEFAULT_BANK.questions));
+        let targetProgress = 5;
 
-            gameActive: false
-        };
+        let blueState = { progress: 0, index: 0, speed: 'normal', questions: [] };
+        let redState = { progress: 0, index: 0, speed: 'normal', questions: [] };
+        let winningTeam = 'blue';
 
-        // INITIALIZATION ON WINDOW LOAD
-        window.onload = function() {
-            generateStarfield();
-            loadSavedBanks();
-            updateBankUI();
-        };
-
-        function generateStarfield() {
-            const container = document.getElementById('stars-container');
-            container.innerHTML = '';
-            for (let i = 0; i < 70; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                const size = Math.random() * 3 + 1;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                star.style.top = `${Math.random() * 100}%`;
-                star.style.left = `${Math.random() * 100}%`;
-                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
-                container.appendChild(star);
+        // Utility Fisher-Yates Array Shuffle
+        function shuffleArray(arr) {
+            const array = [...arr];
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
             }
+            return array;
         }
 
-        // NAVIGATION SCREEN MANAGER
-        function showScreen(screenId) {
-            ['menu', 'bank', 'howto', 'arena', 'victory'].forEach(s => {
-                document.getElementById(`screen-${s}`).classList.add('hidden');
+        // Acak Urutan Soal & Acak Posisi Abjad Pilihan Jawaban (A, B, C, D)
+        function prepareShuffledQuestions(questions) {
+            if (!questions || questions.length === 0) return [];
+
+            // 1. Acak Urutan Soal
+            const shuffledQList = shuffleArray(questions);
+
+            // 2. Acak Pilihan Jawaban A, B, C, D
+            return shuffledQList.map(q => {
+                const rawOptions = [
+                    { text: q.optionA, isCorrect: q.answer === 'A' },
+                    { text: q.optionB, isCorrect: q.answer === 'B' },
+                    { text: q.optionC, isCorrect: q.answer === 'C' },
+                    { text: q.optionD, isCorrect: q.answer === 'D' }
+                ];
+
+                const shuffledOpts = shuffleArray(rawOptions);
+                const keys = ['A', 'B', 'C', 'D'];
+                let correctKey = 'A';
+                const finalOptions = {};
+
+                shuffledOpts.forEach((opt, idx) => {
+                    const key = keys[idx];
+                    finalOptions[key] = opt.text;
+                    if (opt.isCorrect) {
+                        correctKey = key;
+                    }
+                });
+
+                return {
+                    question: q.question,
+                    optionA: finalOptions['A'],
+                    optionB: finalOptions['B'],
+                    optionC: finalOptions['C'],
+                    optionD: finalOptions['D'],
+                    answer: correctKey
+                };
             });
-            document.getElementById(`screen-${screenId}`).classList.remove('hidden');
-
-            if (screenId === 'bank') renderBankList();
         }
 
-        // SOUND TOGGLE
-        function toggleSound() {
-            sound.enabled = !sound.enabled;
-            document.getElementById('sound-icon').innerText = sound.enabled ? '🔊' : '🔇';
-            document.getElementById('sound-text').innerText = sound.enabled ? 'SUARA: ON' : 'SUARA: OFF';
+        // Screen Switcher Helper Function
+        function showScreen(screenId) {
+            document.getElementById('screen-menu').classList.add('hidden');
+            document.getElementById('screen-arena').classList.add('hidden');
+            document.getElementById('screen-victory').classList.add('hidden');
+
+            const targetScreen = document.getElementById(`screen-${screenId}`);
+            if (targetScreen) targetScreen.classList.remove('hidden');
         }
 
-        function loadSavedBanks() {
-            try {
-                const stored = localStorage.getItem('rocket_battle_banks');
-                if (stored) {
-                    const parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        appState.banks = parsed;
+        // Cutscene Animation Engine
+        let cutsceneAnimId = null;
+
+        function triggerVictory(winner) {
+            winningTeam = winner;
+            const winnerName = winner === 'blue' 
+                ? (document.getElementById('blue-name-input').value || 'TIM ALPHA')
+                : (document.getElementById('red-name-input').value || 'TIM OMEGA');
+
+            document.getElementById('winner-title').innerText = `${winner === 'blue' ? '🔵' : '🔴'} ${winnerName} WINS!`;
+            sound.playVictory();
+            showScreen('victory');
+            startMoonLandingCutscene(winnerName, winner === 'blue' ? '#3b82f6' : '#ef4444');
+        }
+
+        function replayCutscene() {
+            sound.playVictory();
+            const winnerName = winningTeam === 'blue' 
+                ? (document.getElementById('blue-name-input').value || 'TIM ALPHA')
+                : (document.getElementById('red-name-input').value || 'TIM OMEGA');
+            startMoonLandingCutscene(winnerName, winningTeam === 'blue' ? '#3b82f6' : '#ef4444');
+        }
+
+        function startMoonLandingCutscene(teamName, teamColor) {
+            const canvas = document.getElementById('victory-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            // Set internal pixel resolution for authentic retro video feel
+            canvas.width = 480;
+            canvas.height = 320;
+
+            if (cutsceneAnimId) cancelAnimationFrame(cutsceneAnimId);
+
+            let frame = 0;
+            const maxFrames = 300;
+
+            // Pixel Starfield Particles
+            const stars = Array.from({ length: 60 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() > 0.8 ? 2 : 1,
+                alpha: Math.random()
+            }));
+
+            // Pixel Fireworks Particles
+            const fireworks = [];
+
+            function renderCutscene() {
+                frame++;
+                ctx.fillStyle = '#030712';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 1. Draw Twinkling Stars Background
+                stars.forEach(s => {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${0.3 + 0.7 * Math.sin((frame * 0.05) + s.alpha * 10)})`;
+                    ctx.fillRect(s.x, s.y, s.size, s.size);
+                });
+
+                // 2. Draw Moon Surface Crater Terrain at bottom
+                const moonSurfaceY = canvas.height - 60;
+                ctx.fillStyle = '#1e293b';
+                ctx.beginPath();
+                ctx.ellipse(canvas.width / 2, moonSurfaceY + 120, 320, 140, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#334155';
+                ctx.beginPath();
+                ctx.ellipse(canvas.width / 2, moonSurfaceY + 120, 310, 130, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw Moon Craters
+                ctx.fillStyle = '#1e293b';
+                ctx.beginPath(); ctx.arc(140, moonSurfaceY + 25, 18, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(280, moonSurfaceY + 35, 24, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(360, moonSurfaceY + 15, 12, 0, Math.PI * 2); ctx.fill();
+
+                // 3. Rocket Descent & Landing Animation Physics
+                const landingProgress = Math.min(1, frame / 180);
+                // Ease out curve for smooth deceleration as rocket lands
+                const easeOut = 1 - Math.pow(1 - landingProgress, 3);
+                
+                const startY = -60;
+                const targetY = moonSurfaceY - 32;
+                const rocketY = startY + (targetY - startY) * easeOut;
+                const rocketX = canvas.width / 2 - 12;
+
+                // Thruster Flame effect while descending
+                if (landingProgress < 0.98) {
+                    ctx.fillStyle = (frame % 2 === 0) ? '#f59e0b' : '#ef4444';
+                    ctx.fillRect(rocketX + 8, rocketY + 32, 8, 12 + Math.random() * 8);
+                    
+                    // Thruster Smoke Particles on moon approach
+                    if (landingProgress > 0.7) {
+                        ctx.fillStyle = 'rgba(203, 213, 225, 0.4)';
+                        ctx.fillRect(rocketX - 10 + Math.random() * 44, moonSurfaceY - 4 + Math.random() * 8, 8, 4);
                     }
                 }
-            } catch (e) {
-                console.warn('Gagal memuat bank soal lokal:', e);
+
+                // 4. Draw Pixel Rocket
+                // Nose
+                ctx.fillStyle = '#f8fafc'; ctx.fillRect(rocketX + 10, rocketY, 4, 4);
+                ctx.fillRect(rocketX + 8, rocketY + 4, 8, 4);
+                // Body
+                ctx.fillStyle = teamColor; ctx.fillRect(rocketX + 6, rocketY + 8, 12, 18);
+                // Glass Window
+                ctx.fillStyle = '#0284c7'; ctx.fillRect(rocketX + 9, rocketY + 12, 6, 6);
+                ctx.fillStyle = '#bae6fd'; ctx.fillRect(rocketX + 11, rocketY + 13, 2, 2);
+                // Fins
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(rocketX + 2, rocketY + 18, 4, 8);
+                ctx.fillRect(rocketX + 18, rocketY + 18, 4, 8);
+                ctx.fillRect(rocketX + 8, rocketY + 26, 8, 4);
+
+                // 5. Flag Deployment & Celebration Phase (Once landed)
+                if (landingProgress >= 0.98) {
+                    // Draw Flag Pole
+                    const flagX = rocketX + 28;
+                    const flagY = moonSurfaceY - 24;
+                    ctx.fillStyle = '#cbd5e1'; ctx.fillRect(flagX, flagY, 3, 26);
+
+                    // Waving Flag Fabric
+                    const flagWaveOffset = Math.sin(frame * 0.15) * 3;
+                    ctx.fillStyle = teamColor;
+                    ctx.beginPath();
+                    ctx.moveTo(flagX + 3, flagY);
+                    ctx.lineTo(flagX + 26 + flagWaveOffset, flagY + 6);
+                    ctx.lineTo(flagX + 3, flagY + 14);
+                    ctx.fill();
+
+                    // Team Name Text on Flag
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '7px sans-serif';
+                    ctx.fillText(teamName.substring(0, 6), flagX + 5, flagY + 10);
+
+                    // Spawn Celebratory Fireworks Particles
+                    if (frame % 8 === 0 && fireworks.length < 50) {
+                        const fx = 80 + Math.random() * 320;
+                        const fy = 40 + Math.random() * 100;
+                        const color = ['#f59e0b', '#38bdf8', '#ec4899', '#10b981', '#a855f7'][Math.floor(Math.random() * 5)];
+                        for (let p = 0; p < 12; p++) {
+                            const angle = (Math.PI * 2 / 12) * p;
+                            fireworks.push({
+                                x: fx, y: fy,
+                                vx: Math.cos(angle) * (1 + Math.random() * 2),
+                                vy: Math.sin(angle) * (1 + Math.random() * 2),
+                                life: 30, color: color
+                            });
+                        }
+                    }
+                }
+
+                // Render & Update Fireworks
+                for (let i = fireworks.length - 1; i >= 0; i--) {
+                    const fw = fireworks[i];
+                    ctx.fillStyle = fw.color;
+                    ctx.fillRect(fw.x, fw.y, 2, 2);
+                    fw.x += fw.vx;
+                    fw.y += fw.vy;
+                    fw.life--;
+                    if (fw.life <= 0) fireworks.splice(i, 1);
+                }
+
+                if (frame < maxFrames || landingProgress < 1 || fireworks.length > 0) {
+                    cutsceneAnimId = requestAnimationFrame(renderCutscene);
+                }
             }
+
+            renderCutscene();
         }
 
-        function saveBanksToStorage() {
-            try {
-                localStorage.setItem('rocket_battle_banks', JSON.stringify(appState.banks));
-            } catch (e) {
-                console.warn('Gagal menyimpan bank soal lokal:', e);
-            }
+        function openSetupModal() { document.getElementById('modal-setup').classList.remove('hidden'); }
+        function closeSetupModal() { document.getElementById('modal-setup').classList.add('hidden'); }
+        function openLinkModal() { document.getElementById('modal-link').classList.remove('hidden'); }
+        function closeLinkModal() { document.getElementById('modal-link').classList.add('hidden'); }
+        
+        function openCreatorModal() { 
+            renderBuilderQuestions();
+            document.getElementById('modal-creator').classList.remove('hidden'); 
+        }
+        function closeCreatorModal() { document.getElementById('modal-creator').classList.add('hidden'); }
+
+        function setTarget(num) {
+            targetProgress = num;
+            document.querySelectorAll('.target-btn').forEach(b => b.className = 'target-btn py-2 rounded-xl bg-slate-800 font-bold text-xs');
+            const activeBtn = document.getElementById(`target-${num}`);
+            if (activeBtn) activeBtn.className = 'target-btn py-2 rounded-xl bg-cyan-600 font-bold text-xs';
         }
 
-        function updateBankUI() {
-            const activeBank = appState.banks.find(b => b.id === appState.selectedBankId) || appState.banks[0];
-            document.getElementById('active-bank-name').innerText = `${activeBank.title} (${activeBank.questions.length} Soal)`;
-            document.getElementById('bank-count-badge').innerText = appState.banks.length;
-        }
-
-        // DOWNLOAD TEMPLATE EXCEL
-        function downloadTemplateExcel() {
-            const templateData = [
-                ["No", "Soal", "A", "B", "C", "D", "Jawaban"],
-                [1, "25 + 17 = ?", "32", "42", "52", "62", "B"],
-                [2, "8 × 7 = ?", "54", "56", "64", "72", "B"],
-                [3, "Planet terdekat dengan Matahari?", "Venus", "Bumi", "Merkurius", "Mars", "C"],
-                [4, "Gas yang dihirup manusia saat bernapas?", "Karbondioksida", "Oksigen", "Nitrogen", "Hidrogen", "B"],
-                [5, "Ibu kota Indonesia saat ini?", "Surabaya", "Bandung", "Nusantara (IKN)", "Medan", "C"]
+        // --- 1. DOWNLOAD TEMPLATE EXCEL FUNCTIONALITY ---
+        function downloadExcelTemplate() {
+            const sampleData = [
+                { Soal: "25 + 25 = ?", A: "40", B: "50", C: "60", D: "70", Jawaban: "B" },
+                { Soal: "Ibu kota Indonesia?", A: "Jakarta", B: "Surabaya", C: "Nusantara", D: "Bandung", Jawaban: "C" },
+                { Soal: "Simbol kimia Air?", A: "O2", B: "H2O", C: "CO2", D: "NaCl", Jawaban: "B" }
             ];
 
-            const ws = XLSX.utils.aoa_to_sheet(templateData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Template_Soal");
-
-            XLSX.writeFile(wb, "Template_Rocket_Battle.xlsx");
+            const worksheet = XLSX.utils.json_to_sheet(sampleData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "TemplateSoal");
+            
+            XLSX.writeFile(workbook, "template_soal_roket.xlsx");
         }
 
-        // IMPORT EXCEL FILE
-        function importExcelSoal(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const json = XLSX.utils.sheet_to_json(worksheet);
-
-                    if (json.length === 0) {
-                        alert("⚠️ File Excel kosong atau format tidak sesuai!");
-                        return;
-                    }
-
-                    // Validate Columns
-                    const firstRow = json[0];
-                    if (!('Soal' in firstRow && 'A' in firstRow && 'B' in firstRow && 'C' in firstRow && 'D' in firstRow && 'Jawaban' in firstRow)) {
-                        alert("⚠️ FORMAT FILE TIDAK SESUAI!\n\nPastikan file menggunakan template Rocket Battle dan memiliki kolom: No, Soal, A, B, C, D, Jawaban.");
-                        return;
-                    }
-
-                    const importedQuestions = [];
-                    json.forEach((row, idx) => {
-                        if (row.Soal && row.A && row.B && row.C && row.D && row.Jawaban) {
-                            const ans = String(row.Jawaban).trim().toUpperCase();
-                            if (['A', 'B', 'C', 'D'].includes(ans)) {
-                                importedQuestions.push({
-                                    id: idx + 1,
-                                    question: String(row.Soal).trim(),
-                                    optionA: String(row.A).trim(),
-                                    optionB: String(row.B).trim(),
-                                    optionC: String(row.C).trim(),
-                                    optionD: String(row.D).trim(),
-                                    answer: ans
-                                });
-                            }
-                        }
-                    });
-
-                    if (importedQuestions.length === 0) {
-                        alert("⚠️ Tidak ada soal valid yang ditemukan dalam file Excel.");
-                        return;
-                    }
-
-                    const newBank = {
-                        id: 'bank-' + Date.now(),
-                        title: file.name.replace(/\.[^/.]+$/, ""),
-                        description: `Diimpor pada ${new Date().toLocaleDateString('id-ID')}`,
-                        questions: importedQuestions
-                    };
-
-                    appState.banks.push(newBank);
-                    appState.selectedBankId = newBank.id;
-                    saveBanksToStorage();
-                    updateBankUI();
-
-                    alert(`✅ IMPORT BERHASIL!\n\n${importedQuestions.length} soal siap dimainkan.`);
-                    showScreen('menu');
-
-                } catch (err) {
-                    alert("⚠️ Gagal membaca file Excel. Pastikan format file .xlsx valid.");
-                    console.error(err);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // RENDER SAVED BANKS LIST
-        function renderBankList() {
-            const container = document.getElementById('bank-list-container');
+        // --- 2. INTERACTIVE QUIZ BUILDER (GOOGLE FORM STYLE) ---
+        function renderBuilderQuestions() {
+            const container = document.getElementById('questions-builder-list');
             container.innerHTML = '';
 
-            appState.banks.forEach(bank => {
-                const isSelected = bank.id === appState.selectedBankId;
+            builderQuestions.forEach((q, idx) => {
                 const card = document.createElement('div');
-                card.className = `p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-3 transition ${isSelected ? 'bg-cyan-950/60 border-cyan-400' : 'bg-slate-900/60 border-slate-800'}`;
-                
+                card.className = "bg-slate-900/90 border border-slate-700 p-4 rounded-2xl space-y-3 relative";
                 card.innerHTML = `
-                    <div class="text-left flex-1">
-                        <div class="flex items-center space-x-2">
-                            <span class="text-xl">🧮</span>
-                            <span class="font-extrabold text-white text-lg">${bank.title}</span>
-                            ${isSelected ? '<span class="text-xs px-2 py-0.5 rounded bg-cyan-600 font-bold text-white">AKTIF</span>' : ''}
-                        </div>
-                        <div class="text-xs text-slate-400 mt-1">${bank.description || 'Paket Soal'} • <strong class="text-amber-300">${bank.questions.length} Soal</strong></div>
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <span class="font-extrabold text-amber-400 text-xs">PERTANYAAN #${idx + 1}</span>
+                        ${builderQuestions.length > 1 ? `<button onclick="removeQuestionItem(${idx})" class="text-rose-400 hover:text-rose-300 text-xs font-bold">🗑️ Hapus</button>` : ''}
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <button onclick="selectBank('${bank.id}')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 font-bold text-sm text-slate-200">
-                            ${isSelected ? 'Dipilih' : 'Gunakan'}
-                        </button>
-                        ${bank.id !== 'default-sd-kelas-5' ? `
-                            <button onclick="deleteBank('${bank.id}')" class="px-3 py-2 rounded-xl bg-rose-900/50 hover:bg-rose-800 text-rose-300 border border-rose-700 font-bold text-sm">
-                                🗑️
-                            </button>
-                        ` : ''}
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 mb-1">Teks Pertanyaan:</label>
+                        <input type="text" value="${escapeHtml(q.question)}" oninput="updateBuilderQuestion(${idx}, 'question', this.value)" placeholder="Tuliskan pertanyaan di sini..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-cyan-400">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 mb-1">Pilihan A:</label>
+                            <input type="text" value="${escapeHtml(q.optionA)}" oninput="updateBuilderQuestion(${idx}, 'optionA', this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 mb-1">Pilihan B:</label>
+                            <input type="text" value="${escapeHtml(q.optionB)}" oninput="updateBuilderQuestion(${idx}, 'optionB', this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 mb-1">Pilihan C:</label>
+                            <input type="text" value="${escapeHtml(q.optionC)}" oninput="updateBuilderQuestion(${idx}, 'optionC', this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 mb-1">Pilihan D:</label>
+                            <input type="text" value="${escapeHtml(q.optionD)}" oninput="updateBuilderQuestion(${idx}, 'optionD', this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+                        <span class="text-xs font-bold text-emerald-400">🔑 KUNCI JAWABAN BENAR:</span>
+                        <div class="flex space-x-3">
+                            ${['A', 'B', 'C', 'D'].map(opt => `
+                                <label class="inline-flex items-center space-x-1 cursor-pointer">
+                                    <input type="radio" name="key-${idx}" value="${opt}" ${q.answer === opt ? 'checked' : ''} onchange="updateBuilderQuestion(${idx}, 'answer', '${opt}')" class="text-emerald-500 focus:ring-0">
+                                    <span class="text-xs font-bold ${q.answer === opt ? 'text-emerald-300' : 'text-slate-400'}">${opt}</span>
+                                </label>
+                            `).join('')}
+                        </div>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        function selectBank(bankId) {
-            appState.selectedBankId = bankId;
-            saveBanksToStorage();
-            updateBankUI();
-            renderBankList();
+        function escapeHtml(text) {
+            return (text || '').replace(/"/g, '&quot;');
         }
 
-        function deleteBank(bankId) {
-            if (confirm("Hapus bank soal ini?")) {
-                appState.banks = appState.banks.filter(b => b.id !== bankId);
-                if (appState.selectedBankId === bankId) {
-                    appState.selectedBankId = appState.banks[0].id;
-                }
-                saveBanksToStorage();
-                updateBankUI();
-                renderBankList();
-            }
-        }
-
-        function openSetupModal() {
-            const select = document.getElementById('setup-bank-select');
-            select.innerHTML = '';
-            appState.banks.forEach(b => {
-                const opt = document.createElement('option');
-                opt.value = b.id;
-                opt.innerText = `${b.title} (${b.questions.length} Soal)`;
-                if (b.id === appState.selectedBankId) opt.selected = true;
-                select.appendChild(opt);
+        function addQuestionItem() {
+            builderQuestions.push({
+                question: "",
+                optionA: "", optionB: "", optionC: "", optionD: "",
+                answer: "A"
             });
-
-            document.getElementById('modal-setup').classList.remove('hidden');
+            renderBuilderQuestions();
         }
 
-        function closeSetupModal() {
-            document.getElementById('modal-setup').classList.add('hidden');
+        function removeQuestionItem(idx) {
+            builderQuestions.splice(idx, 1);
+            renderBuilderQuestions();
         }
 
-        function setTargetQuestions(count) {
-            appState.targetProgress = count;
-            document.querySelectorAll('.target-btn').forEach(btn => {
-                btn.className = 'target-btn py-3 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700';
-            });
-            document.getElementById(`btn-target-${count}`).className = 'target-btn py-3 rounded-xl bg-cyan-600 border border-cyan-400 font-bold';
+        function updateBuilderQuestion(idx, field, val) {
+            builderQuestions[idx][field] = val;
         }
 
-        function setTimerSecs(secs) {
-            appState.timerSecs = secs;
-            document.querySelectorAll('.timer-btn').forEach(btn => {
-                btn.className = 'timer-btn py-2.5 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700';
-            });
-            document.getElementById(`btn-timer-${secs}`).className = 'timer-btn py-2.5 rounded-xl bg-cyan-600 border border-cyan-400 font-bold';
-        }
+        // EXPORT QUIZ TO JSON FILE
+        function downloadQuizJSON() {
+            const title = document.getElementById('creator-quiz-title').value.trim() || 'Soal Roket';
+            const desc = document.getElementById('creator-quiz-desc').value.trim();
 
-        // ARRAY SHUFFLE HELPER FOR SEPARATE RANDOMIZATION
-        function shuffleArray(array) {
-            const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
-
-        function startBattleGame() {
-            const bankId = document.getElementById('setup-bank-select').value;
-            appState.selectedBankId = bankId;
-            const bank = appState.banks.find(b => b.id === bankId) || appState.banks[0];
-
-            const blueNameInput = document.getElementById('team-blue-name').value.trim() || 'TIM BIRU';
-            const redNameInput = document.getElementById('team-red-name').value.trim() || 'TIM MERAH';
-
-            // Prepare Independent Random Questions for both teams
-            let baseQuestions = [...bank.questions];
-            if (baseQuestions.length < appState.targetProgress) {
-                // Loop questions if target exceeds bank size
-                while (baseQuestions.length < appState.targetProgress * 2) {
-                    baseQuestions = baseQuestions.concat([...bank.questions]);
-                }
-            }
-
-            appState.blueTeam = {
-                name: blueNameInput,
-                progress: 0,
-                combo: 0,
-                maxCombo: 0,
-                hearts: appState.maxHearts,
-                questions: shuffleArray(baseQuestions),
-                index: 0,
-                timer: appState.timerSecs,
-                interval: null,
-                stats: { correct: 0, fastest: 99 }
+            const jsonObject = {
+                paket: {
+                    judul: title,
+                    deskripsi: desc,
+                    totalSoal: builderQuestions.length,
+                    dibuatPada: new Date().toISOString()
+                },
+                soal: builderQuestions.map((q, i) => ({
+                    no: i + 1,
+                    pertanyaan: q.question,
+                    pilihan: {
+                        A: q.optionA,
+                        B: q.optionB,
+                        C: q.optionC,
+                        D: q.optionD
+                    },
+                    jawaban: {
+                        kunci: q.answer
+                    }
+                }))
             };
 
-            appState.redTeam = {
-                name: redNameInput,
-                progress: 0,
-                combo: 0,
-                maxCombo: 0,
-                hearts: appState.maxHearts,
-                questions: shuffleArray(baseQuestions),
-                index: 0,
-                timer: appState.timerSecs,
-                interval: null,
-                stats: { correct: 0, fastest: 99 }
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonObject, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `${title.toLowerCase().replace(/\s+/g, '_')}_soal.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function applyCreatedQuizToGame() {
+            const title = document.getElementById('creator-quiz-title').value.trim() || 'Kuis Buatan';
+            activeBank = {
+                title: title,
+                questions: builderQuestions.map(q => ({
+                    question: q.question,
+                    optionA: q.optionA,
+                    optionB: q.optionB,
+                    optionC: q.optionC,
+                    optionD: q.optionD,
+                    answer: q.answer
+                }))
             };
 
-            appState.gameActive = true;
+            document.getElementById('active-bank-name').innerText = `${title} (${activeBank.questions.length} Soal)`;
+            document.getElementById('json-status-badge').innerText = "BUATAN SENDIRI";
+            document.getElementById('json-status-badge').className = "px-2.5 py-1 bg-amber-900 border border-amber-500 rounded-lg text-[10px] text-amber-300 font-bold";
+
+            alert("✅ Paket Soal berhasil dipasang ke Game!");
+            closeCreatorModal();
+        }
+
+        // GOOGLE DRIVE / LINK JSON PARSER
+        async function fetchJsonFromUrl() {
+            let url = document.getElementById('json-url-input').value.trim();
+            if (!url) { alert("⚠️ Masukkan URL link JSON yang valid!"); return; }
+
+            const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            if (driveMatch && driveMatch[1]) {
+                url = `https://drive.google.com/uc?export=download&id=${driveMatch[1]}`;
+            }
+
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("HTTP Status " + res.status);
+                const data = await res.json();
+
+                let questions = [];
+                if (data.paket && Array.isArray(data.soal)) {
+                    questions = data.soal.map(s => ({
+                        question: s.pertanyaan,
+                        optionA: s.pilihan?.A || "",
+                        optionB: s.pilihan?.B || "",
+                        optionC: s.pilihan?.C || "",
+                        optionD: s.pilihan?.D || "",
+                        answer: s.jawaban?.kunci || "A"
+                    }));
+                } else if (Array.isArray(data)) {
+                    questions = data;
+                }
+
+                if (questions.length === 0) {
+                    alert("⚠️ Format JSON tidak dikenali atau daftar soal kosong.");
+                    return;
+                }
+
+                activeBank = { title: "JSON Online Bank", questions: questions };
+                document.getElementById('active-bank-name').innerText = `Paket JSON Link (${questions.length} Soal)`;
+                document.getElementById('json-status-badge').innerText = "LINK JSON";
+                document.getElementById('json-status-badge').className = "px-2.5 py-1 bg-emerald-900 border border-emerald-500 rounded-lg text-[10px] text-emerald-300 font-bold";
+                
+                alert(`✅ BERHASIL LOAD ${questions.length} SOAL DARI LINK JSON!`);
+                closeLinkModal();
+
+            } catch (err) {
+                alert("⚠️ Gagal mengambil file JSON dari link tersebut. Pastikan akses Google Drive di-set 'Publik'!");
+                console.error(err);
+            }
+        }
+
+        // IMPORT EXCEL FILE
+        function importExcelSoal(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(worksheet);
+
+                const imported = json.map((r) => ({
+                    question: r.Soal,
+                    optionA: String(r.A || ''), optionB: String(r.B || ''),
+                    optionC: String(r.C || ''), optionD: String(r.D || ''),
+                    answer: String(r.Jawaban || 'A').toUpperCase().trim()
+                })).filter(q => q.question);
+
+                if (imported.length) {
+                    activeBank = { title: file.name, questions: imported };
+                    document.getElementById('active-bank-name').innerText = `${file.name} (${imported.length} Soal)`;
+                    alert(`✅ Berhasil Mengimpor ${imported.length} Soal dari Excel!`);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function startGame() {
             closeSetupModal();
 
-            // Update UI Labels
-            document.getElementById('arena-blue-title').innerText = `🔵 ${blueNameInput}`;
-            document.getElementById('arena-red-title').innerText = `🔴 ${redNameInput}`;
-            document.getElementById('blue-team-label').innerText = blueNameInput;
-            document.getElementById('red-team-label').innerText = redNameInput;
+            const bName = document.getElementById('blue-name-input').value || 'TIM ALPHA';
+            const rName = document.getElementById('red-name-input').value || 'TIM OMEGA';
 
+            document.getElementById('arena-blue-name').innerText = bName;
+            document.getElementById('arena-red-name').innerText = rName;
+            document.getElementById('lbl-blue-team').innerText = bName;
+            document.getElementById('lbl-red-team').innerText = rName;
+
+            // Setiap tim mendapatkan acakan soal & pilihan jawaban sendiri
+            blueState = { 
+                progress: 0, 
+                index: 0, 
+                speed: 'normal',
+                questions: prepareShuffledQuestions(activeBank.questions) 
+            };
+            redState = { 
+                progress: 0, 
+                index: 0, 
+                speed: 'normal',
+                questions: prepareShuffledQuestions(activeBank.questions) 
+            };
+
+            updateTeamUI('blue');
+            updateTeamUI('red');
             showScreen('arena');
-            
-            // Render Initial State & Timers
-            renderTeamUI('blue');
-            renderTeamUI('red');
-            
-            startTeamTimer('blue');
-            startTeamTimer('red');
         }
 
-        function renderTeamUI(teamKey) {
-            const team = appState[`${teamKey}Team`];
-            const q = team.questions[team.index];
+        function updateTeamUI(team) {
+            const st = team === 'blue' ? blueState : redState;
+            const qList = st.questions.length > 0 ? st.questions : activeBank.questions;
+            const q = qList[st.index % qList.length];
 
-            // Progress Bar & Counter
-            const pct = Math.min(100, Math.round((team.progress / appState.targetProgress) * 100));
-            document.getElementById(`${teamKey}-progress-bar`).style.width = `${pct}%`;
-            document.getElementById(`${teamKey}-progress-text`).innerText = `${team.progress}/${appState.targetProgress}`;
+            document.getElementById(`${team}-q-num`).innerText = `Soal ${st.index + 1}`;
+            document.getElementById(`${team}-q-text`).innerText = q.question;
+            document.getElementById(`${team}-txt-A`).innerText = q.optionA;
+            document.getElementById(`${team}-txt-B`).innerText = q.optionB;
+            document.getElementById(`${team}-txt-C`).innerText = q.optionC;
+            document.getElementById(`${team}-txt-D`).innerText = q.optionD;
 
-            // Question Text & Options
-            document.getElementById(`${teamKey}-q-counter`).innerText = `Soal ${team.index + 1} / ${appState.targetProgress}`;
-            document.getElementById(`${teamKey}-q-text`).innerText = q.question;
+            // Rocket Altitude scaling mathematically:
+            // Starts right on launch pad base (~5%) and climbs gradually to exact moon finish altitude (~76%) based on targetProgress
+            const laneEl = document.getElementById(`${team}-rocket-lane`);
+            const progressPct = Math.min(1, Math.max(0, st.progress / targetProgress));
+            const bottomPct = 5 + (progressPct * 71); 
+            laneEl.style.bottom = `${bottomPct}%`;
 
-            document.getElementById(`${teamKey}-txt-A`).innerText = q.optionA;
-            document.getElementById(`${teamKey}-txt-B`).innerText = q.optionB;
-            document.getElementById(`${teamKey}-txt-C`).innerText = q.optionC;
-            document.getElementById(`${teamKey}-txt-D`).innerText = q.optionD;
+            document.getElementById(`${team}-progress-text`).innerText = `${st.progress}/${targetProgress}`;
 
-            // Hearts Display
-            let heartsStr = '';
-            for (let i = 0; i < appState.maxHearts; i++) {
-                heartsStr += i < team.hearts ? '❤️ ' : '🖤 ';
-            }
-            document.getElementById(`${teamKey}-energy-hearts`).innerText = heartsStr;
+            // Rocket Flame Thruster & Speed Status Visuals
+            const flameEl = document.getElementById(`${team}-flame`);
+            const labelEl = document.getElementById(`${team}-speed-label`);
 
-            // Combo Display
-            document.getElementById(`${teamKey}-combo-badge`).innerText = `COMBO x${team.combo}`;
-
-            // Rocket Flame Effect based on Combo
-            const flameEl = document.getElementById(`${teamKey}-rocket-flame`);
-            if (team.combo >= 5) {
-                flameEl.className = 'text-2xl flame-super';
+            if (st.speed === 'fast') {
+                flameEl.className = 'flame-fast text-lg -mt-1 font-mono';
                 flameEl.innerText = '⚡🔥⚡';
-            } else if (team.combo >= 2) {
-                flameEl.className = 'text-xl flame-anim';
-                flameEl.innerText = '🔥🔥';
+                labelEl.innerText = 'TURBO BOOST! 🚀⚡';
+                labelEl.className = team === 'blue' ? 'absolute top-11 left-3 text-[10px] sm:text-xs font-bold text-cyan-300 animate-pulse z-30' : 'absolute top-11 right-3 text-[10px] sm:text-xs font-bold text-cyan-300 animate-pulse z-30';
+            } else if (st.speed === 'slow') {
+                flameEl.className = 'flame-slow text-xs -mt-1 font-mono';
+                flameEl.innerText = '💨';
+                labelEl.innerText = 'MELEMAH & TURUN! ⚠️';
+                labelEl.className = 'absolute top-11 text-[10px] sm:text-xs font-bold text-amber-400 z-30 ' + (team === 'blue' ? 'left-3' : 'right-3');
             } else {
-                flameEl.className = 'text-xl flame-anim';
+                flameEl.className = 'flame-normal text-sm -mt-1 font-mono';
                 flameEl.innerText = '🔥';
+                labelEl.innerText = 'KECEPATAN: NORMAL';
+                labelEl.className = team === 'blue' ? 'absolute top-11 left-3 text-[10px] sm:text-xs font-bold text-blue-200 z-30' : 'absolute top-11 right-3 text-[10px] sm:text-xs font-bold text-rose-200 z-30';
             }
         }
 
-        function startTeamTimer(teamKey) {
-            const team = appState[`${teamKey}Team`];
-            clearInterval(team.interval);
-            team.timer = appState.timerSecs;
-
-            const timerBar = document.getElementById(`${teamKey}-timer-bar`);
-            timerBar.style.width = '100%';
-
-            const startTime = Date.now();
-
-            team.interval = setInterval(() => {
-                if (!appState.gameActive) return;
-
-                const elapsed = (Date.now() - startTime) / 1000;
-                const remaining = Math.max(0, appState.timerSecs - elapsed);
-                team.timer = remaining;
-
-                const pct = (remaining / appState.timerSecs) * 100;
-                timerBar.style.width = `${pct}%`;
-
-                if (remaining <= 0) {
-                    clearInterval(team.interval);
-                    handleAnswerTimeout(teamKey);
-                }
-            }, 100);
-        }
-
-        function submitAnswer(teamKey, selectedOpt) {
-            if (!appState.gameActive) return;
-
-            const team = appState[`${teamKey}Team`];
-            clearInterval(team.interval);
-
-            const q = team.questions[team.index];
-            const timeTaken = appState.timerSecs - team.timer;
+        function answer(team, selectedOpt) {
+            const st = team === 'blue' ? blueState : redState;
+            const qList = st.questions.length > 0 ? st.questions : activeBank.questions;
+            const q = qList[st.index % qList.length];
 
             if (selectedOpt === q.answer) {
-                // CORRECT ANSWER!
+                // CORRECT ANSWER: Increase progress & Speed Up rocket!
                 sound.playCorrect();
-                team.stats.correct++;
-                if (timeTaken < team.stats.fastest) team.stats.fastest = timeTaken;
-
-                team.combo++;
-                if (team.combo > team.maxCombo) team.maxCombo = team.combo;
-
-                // Speed & Combo Progress Calculation
-                let addProgress = 1;
-                let feedbackText = '✅ CORRECT!';
-
-                if (timeTaken <= 3) {
-                    addProgress = 2;
-                    feedbackText = '⚡ SUPER FAST! +2';
-                } else {
-                    feedbackText = '🚀 FAST! +1';
-                }
-
-                // Combo Moon Boost
-                if (team.combo >= 5) {
-                    addProgress += 2;
-                    feedbackText = '🚀🚀🚀 MOON BOOST! +3';
-                    sound.playBoost();
-                } else if (team.combo >= 2) {
-                    sound.playCombo();
-                }
-
-                team.progress += addProgress;
-                showFeedback(teamKey, feedbackText, 'correct');
-
+                st.progress += 1;
+                st.speed = 'fast';
             } else {
-                // WRONG ANSWER!
+                // WRONG ANSWER: Rocket weakens and drops down (-1 progress point)!
                 sound.playWrong();
-                team.combo = 0;
-                team.hearts--;
-
-                showFeedback(teamKey, '❌ WRONG!', 'wrong');
-
-                if (team.hearts <= 0) {
-                    // Energy Reset penalty
-                    team.progress = Math.max(0, team.progress - 1);
-                    team.hearts = appState.maxHearts;
-                    showFeedback(teamKey, '⚠️ ENERGY RESET! -1 Checkpoint', 'wrong');
-                }
+                st.progress = Math.max(0, st.progress - 1);
+                st.speed = 'slow';
             }
 
-            // Check Victory Condition immediately!
-            if (team.progress >= appState.targetProgress) {
-                team.progress = appState.targetProgress;
-                renderTeamUI(teamKey);
-                triggerVictory(teamKey);
+            if (st.progress >= targetProgress) {
+                triggerVictory(team);
                 return;
             }
 
-            // Advance to Next Question
-            team.index = (team.index + 1) % team.questions.length;
-            renderTeamUI(teamKey);
-            startTeamTimer(teamKey);
-        }
-
-        function handleAnswerTimeout(teamKey) {
-            const team = appState[`${teamKey}Team`];
-            sound.playWrong();
-            team.combo = 0;
-            team.hearts--;
-
-            showFeedback(teamKey, '⏰ TIME OUT!', 'wrong');
-
-            if (team.hearts <= 0) {
-                team.progress = Math.max(0, team.progress - 1);
-                team.hearts = appState.maxHearts;
-            }
-
-            team.index = (team.index + 1) % team.questions.length;
-            renderTeamUI(teamKey);
-            startTeamTimer(teamKey);
-        }
-
-        function showFeedback(teamKey, text, type) {
-            const fb = document.getElementById(`${teamKey}-feedback`);
-            const fbText = document.getElementById(`${teamKey}-feedback-text`);
-
-            fbText.innerText = text;
-            fb.classList.remove('opacity-0', 'scale-50');
-            fb.classList.add('opacity-100', 'scale-100');
-
-            setTimeout(() => {
-                fb.classList.remove('opacity-100', 'scale-100');
-                fb.classList.add('opacity-0', 'scale-50');
-            }, 900);
-        }
-
-        function triggerVictory(winningTeamKey) {
-            appState.gameActive = false;
-            clearInterval(appState.blueTeam.interval);
-            clearInterval(appState.redTeam.interval);
-
-            sound.playVictory();
-
-            const winner = appState[`${winningTeamKey}Team`];
-            const loserKey = winningTeamKey === 'blue' ? 'red' : 'blue';
-            const loser = appState[`${loserKey}Team`];
-
-            document.getElementById('winner-title-text').innerText = `${winningTeamKey === 'blue' ? '🔵' : '🔴'} ${winner.name} WINS!`;
-            document.getElementById('winner-sub-text').innerText = `"REACHED THE MOON FIRST!"`;
-
-            // Render Blue Stats
-            document.getElementById('stat-blue-name').innerText = appState.blueTeam.name;
-            document.getElementById('stat-blue-correct').innerText = `${appState.blueTeam.stats.correct} / ${appState.targetProgress}`;
-            document.getElementById('stat-blue-fastest').innerText = appState.blueTeam.stats.fastest === 99 ? '-' : `${appState.blueTeam.stats.fastest.toFixed(1)}s`;
-            document.getElementById('stat-blue-combo').innerText = `${appState.blueTeam.maxCombo}x`;
-            document.getElementById('stat-blue-hearts').innerText = `${appState.blueTeam.hearts} ❤️`;
-            document.getElementById('stat-blue-badge').innerText = winningTeamKey === 'blue' ? 'WINNER 🏆' : 'SO CLOSE!';
-            document.getElementById('stat-blue-badge').className = winningTeamKey === 'blue' ? 'text-xs px-2 py-1 rounded bg-blue-600 text-white font-bold' : 'text-xs px-2 py-1 rounded bg-slate-700 text-slate-300 font-bold';
-
-            // Render Red Stats
-            document.getElementById('stat-red-name').innerText = appState.redTeam.name;
-            document.getElementById('stat-red-correct').innerText = `${appState.redTeam.stats.correct} / ${appState.targetProgress}`;
-            document.getElementById('stat-red-fastest').innerText = appState.redTeam.stats.fastest === 99 ? '-' : `${appState.redTeam.stats.fastest.toFixed(1)}s`;
-            document.getElementById('stat-red-combo').innerText = `${appState.redTeam.maxCombo}x`;
-            document.getElementById('stat-red-hearts').innerText = `${appState.redTeam.hearts} ❤️`;
-            document.getElementById('stat-red-badge').innerText = winningTeamKey === 'red' ? 'WINNER 🏆' : 'SO CLOSE!';
-            document.getElementById('stat-red-badge').className = winningTeamKey === 'red' ? 'text-xs px-2 py-1 rounded bg-red-600 text-white font-bold' : 'text-xs px-2 py-1 rounded bg-slate-700 text-slate-300 font-bold';
-
-            showScreen('victory');
+            st.index += 1;
+            updateTeamUI(team);
         }
     </script>
 </body>
