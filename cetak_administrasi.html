@@ -232,7 +232,7 @@
         .catatan-guru-container {
             margin-top: 15px;
             border: 1px solid #000;
-            min-height: 60mm; /* Tinggi area catatan */
+            min-height: 60mm;
             position: relative;
             background: white;
         }
@@ -245,11 +245,9 @@
             text-transform: uppercase;
             color: #1e3a8a;
         }
-        /* Garis-garis untuk menulis */
         .catatan-guru-lines {
             width: 100%;
             height: 100%;
-            /* Membuat garis horizontal setiap 8mm */
             background-image: linear-gradient(to bottom, transparent 7.9mm, #cbd5e1 8mm);
             background-size: 100% 8mm;
             background-position: 0 0;
@@ -426,7 +424,7 @@
                             <h2 class="text-sm md:text-base font-bold text-indigo-950 flex items-center gap-2" id="formTitle">
                                 <i class="fa-solid fa-pen-to-square text-indigo-600"></i> Entri Jurnal Mengajar
                             </h2>
-                            <p class="text-[11px] md:text-xs text-slate-500">Isi detail aktivitas pembelajaran harian</p>
+                            <p class="text-[11px] md:text-xs text-slate-500">Isi detail aktivitas pembelajaran harian. Satu tanggal bisa berisi beberapa mata pelajaran.</p>
                         </div>
                         <button type="button" id="btnCancelEdit" onclick="resetFormJurnal()" class="hidden text-xs text-rose-600 font-bold hover:underline flex items-center gap-1">
                             <i class="fa-solid fa-xmark"></i> Batal
@@ -461,7 +459,7 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-slate-700 text-xs font-semibold mb-1">Mata Pelajaran</label>
+                            <label class="block text-slate-700 text-xs font-semibold mb-1">Mata Pelajaran <span class="text-rose-500">*</span></label>
                             <input type="text" id="frmMapel" placeholder="Contoh: Matematika / IPAS" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                         </div>
                         <div>
@@ -530,6 +528,7 @@
 
             <!-- TAB 4: CETAK -->
             <div id="tabViewCetak" class="hidden space-y-4 max-w-5xl mx-auto">
+                <!-- Toolbar Tinggi Baris & Tombol Cetak -->
                 <div class="no-print bg-white p-3 md:p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2 flex-wrap">
                         <span class="text-xs font-bold text-slate-700">Tinggi Baris:</span>
@@ -547,6 +546,23 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Pilihan Tanggal Cetak -->
+                <div class="no-print bg-white p-3 md:p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs font-bold text-slate-700"><i class="fa-solid fa-calendar-day text-indigo-600"></i> Pilih Tanggal Jurnal:</label>
+                            <input type="date" id="cetakTanggal" onchange="renderPreview()" 
+                                   class="p-2 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+                        </div>
+                        <button type="button" onclick="document.getElementById('cetakTanggal').value=''; renderPreview();" 
+                                class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-xs">
+                            <i class="fa-solid fa-rotate-left"></i> Semua Tanggal
+                        </button>
+                        <span class="text-[11px] text-slate-500 italic">Kosongkan untuk cetak semua entri (1 tanggal = 1 halaman)</span>
+                    </div>
+                </div>
+
                 <div id="printSheetsContainer" class="w-full flex flex-col items-center"></div>
             </div>
 
@@ -564,10 +580,6 @@
                         <div>
                             <label class="block font-semibold text-slate-700 mb-1">Judul Dokumen Jurnal</label>
                             <input type="text" id="jurnalJudul" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-sm">
-                        </div>
-                        <div>
-                            <label class="block font-semibold text-slate-700 mb-1">Mata Pelajaran</label>
-                            <input type="text" id="jurnalMapel" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-sm">
                         </div>
                         <div>
                             <label class="block font-semibold text-slate-700 mb-1">Kelas / Rombel</label>
@@ -589,7 +601,7 @@
                             <label class="block font-semibold text-slate-700 mb-1">Nama Kepala Sekolah</label>
                             <input type="text" id="kepsekName" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-sm">
                         </div>
-                        <div class="md:col-span-2">
+                        <div>
                             <label class="block font-semibold text-slate-700 mb-1">NIP Kepala Sekolah</label>
                             <input type="text" id="kepsekNip" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-sm">
                         </div>
@@ -621,7 +633,7 @@
                 </div>
             </div>
 
-            <!-- MODUL ADMINISTRASI KELAS (Sama seperti sebelumnya) -->
+            <!-- MODUL ADMINISTRASI KELAS -->
             <div id="tabViewAbsen" class="hidden space-y-4 max-w-full mx-auto">
                 <div class="no-print bg-white p-3 md:p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
                     <div class="flex items-center gap-2 flex-wrap text-xs">
@@ -747,7 +759,7 @@
             10: { label: 'Maksimum', rowHeight: 45 }
         };
 
-        // DATA MODUL (KOSONG)
+        // DATA MODUL
         let absenData = [{ nama: '', tgl: {} }, { nama: '', tgl: {} }, { nama: '', tgl: {} }, { nama: '', tgl: {} }, { nama: '', tgl: {} }, { nama: '', tgl: {} }, { nama: '', tgl: {} }, { nama: '', tgl: {} }, { nama: '', tgl: {} }, { nama: '', tgl: {} }];
         let penilaianData = [{ nama: '', formatif: '', sumatif: '', ket: '' }, { nama: '', formatif: '', sumatif: '', ket: '' }, { nama: '', formatif: '', sumatif: '', ket: '' }, { nama: '', formatif: '', sumatif: '', ket: '' }, { nama: '', formatif: '', sumatif: '', ket: '' }];
         let kasData = [{ tgl: '', ket: '', masuk: '', keluar: '' }, { tgl: '', ket: '', masuk: '', keluar: '' }, { tgl: '', ket: '', masuk: '', keluar: '' }];
@@ -826,7 +838,7 @@
             return `<div style="display:flex; align-items:center; gap:4mm; border-bottom:3px double #1e3a8a; padding-bottom:2mm; margin-bottom:4mm;">${logoKiri}<div style="flex:1; text-align:center;"><div style="font-size:10px; font-weight:600; letter-spacing:1px; color:#1e3a8a;">PEMERINTAH KABUPATEN / KOTA</div><div style="font-size:14px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; color:#0f172a;">${sekolah}</div></div>${logoKanan}</div>`;
         }
 
-        // FUNGSI BARU: Kop Surat Khusus Cetak Jurnal Manual
+        // Kop Surat Khusus Cetak Jurnal Manual
         function buildKopSuratCetakJurnal() {
             const sekolah = document.getElementById('schoolName')?.value || 'SD NEGERI 3 NGANTRU';
             let logoKiriImg = logoKabupatenData ? `<img src="${logoKabupatenData}" alt="Logo Pemkab">` : '';
@@ -874,7 +886,7 @@
             `;
         }
 
-        // ================= RENDER MODUL (SAMA SEPERTI SEBELUMNYA) =================
+        // ================= RENDER MODUL =================
         function renderAllModuleSheets() {
             renderAbsenSheet(); renderPenilaianSheet(); renderKasSheet(); renderInventarisSheet(); renderBkSheet(); renderTabunganSheet();
         }
@@ -1165,6 +1177,7 @@
             const catatan = document.getElementById('frmCatatan')?.value || '';
             const paraf = document.getElementById('frmParaf')?.value || '';
             if (!tanggal) { alert('Tanggal wajib diisi!'); return; }
+            if (!mapel) { alert('Mata Pelajaran wajib diisi!'); return; }
             if (!topik) { alert('Materi / TP wajib diisi!'); return; }
             if (!kegiatan) { alert('Kegiatan wajib diisi!'); return; }
             if (editingEntryId) {
@@ -1173,7 +1186,7 @@
             } else {
                 jurnalEntries.push({ id: generateId(), jamKe, tanggal, jam, mapel, kelas, topik, kegiatan, catatan, paraf });
             }
-            jurnalEntries.sort((a,b) => (a.tanggal || '').localeCompare(b.tanggal || ''));
+            jurnalEntries.sort((a,b) => (a.tanggal || '').localeCompare(b.tanggal || '') || (a.jamKe||'').localeCompare(b.jamKe||''));
             saveJurnalToLocal(); resetFormJurnal(); switchTab('riwayat'); updateDashboardWidgets(); renderPreview();
         }
         function resetFormJurnal() {
@@ -1219,7 +1232,10 @@
             const search = document.getElementById('filterSearch')?.value?.toLowerCase() || '';
             const dari = document.getElementById('filterDari')?.value || '';
             const sampai = document.getElementById('filterSampai')?.value || '';
+            const cetakTgl = document.getElementById('cetakTanggal')?.value || '';
+            
             return jurnalEntries.filter(e => {
+                if (cetakTgl && e.tanggal !== cetakTgl) return false;
                 if (dari && e.tanggal < dari) return false;
                 if (sampai && e.tanggal > sampai) return false;
                 if (search) {
@@ -1227,7 +1243,7 @@
                     if (!combined.includes(search)) return false;
                 }
                 return true;
-            }).sort((a,b) => (a.tanggal || '').localeCompare(b.tanggal || ''));
+            }).sort((a,b) => (a.tanggal || '').localeCompare(b.tanggal || '') || (a.jamKe||'').localeCompare(b.jamKe||''));
         }
         function renderDaftarEntri() {
             const list = document.getElementById('daftarEntri');
@@ -1238,7 +1254,7 @@
             if (filtered.length === 0) { list.innerHTML = '<div class="text-center text-slate-400 text-xs py-10 italic">Belum ada entri jurnal.</div>'; return; }
             let html = '';
             filtered.forEach((e, i) => {
-                html += `<div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 transition-all text-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-3 shadow-sm"><div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap"><span class="font-bold text-indigo-950 text-xs">${i+1}. ${formatTanggalIndonesia(e.tanggal)}</span><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[10px] font-bold rounded-md">Jam Ke- ${e.jamKe || '-'}</span>${e.mapel ? `<span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-semibold rounded-md">${e.mapel}</span>` : ''}</div><div class="text-slate-900 text-xs font-bold mt-1.5">${e.topik || 'Materi'}</div><div class="text-slate-600 text-xs mt-0.5">${e.kegiatan}</div>${e.catatan ? `<div class="text-amber-700 text-[11px] italic mt-1 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60 inline-block">Refleksi: ${e.catatan}</div>` : ''}</div><div class="flex gap-2 flex-shrink-0"><button onclick="editEntri('${e.id}')" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white rounded-lg text-xs font-bold"><i class="fa-solid fa-pen"></i> Edit</button><button onclick="hapusEntri('${e.id}')" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white rounded-lg text-xs font-bold"><i class="fa-solid fa-trash"></i></button></div></div>`;
+                html += `<div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 transition-all text-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-3 shadow-sm"><div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap"><span class="font-bold text-indigo-950 text-xs">${i+1}. ${formatTanggalIndonesia(e.tanggal)}</span><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[10px] font-bold rounded-md">Jam Ke- ${e.jamKe || '-'}</span>${e.mapel ? `<span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-semibold rounded-md">${e.mapel}</span>` : ''}</div><div class="text-slate-900 text-xs font-bold mt-1.5">${e.topik || 'Materi'}</div><div class="text-slate-600 text-xs mt-0.5">${e.kegiatan}</div>${e.catatan ? `<div class="text-amber-700 text-[11px] italic mt-1 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60 inline-block">Refleksi: ${e.catatan}</div>` : ''}</div><div class="flex gap-2 flex-shrink-0"><button onclick="editEntri('${e.id}')" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white rounded-lg text-xs font-bold"><i class="fa-solid fa-pen"></i> Edit</button><button onclick="hapusEntri('${e.id}')" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white rounded-lg text-xs font-bold"><i class="fa-solid fa-trash"></i></button></div></div>`;
             });
             list.innerHTML = html;
         }
@@ -1268,7 +1284,7 @@
                 else {
                     let html = '';
                     jurnalEntries.slice(-4).reverse().forEach(e => {
-                        html += `<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs flex items-center justify-between gap-3"><div class="min-w-0 flex-1"><div class="font-bold text-indigo-950">${formatTanggalIndonesia(e.tanggal)} <span class="text-slate-500 font-normal">(Jam Ke- ${e.jamKe})</span></div><div class="text-slate-800 font-semibold mt-0.5 truncate">${e.topik || e.kegiatan}</div></div><span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-lg">${e.paraf || 'Dicatat'}</span></div>`;
+                        html += `<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs flex items-center justify-between gap-3"><div class="min-w-0 flex-1"><div class="font-bold text-indigo-950">${formatTanggalIndonesia(e.tanggal)} <span class="text-slate-500 font-normal">(Jam Ke- ${e.jamKe})</span></div><div class="text-slate-800 font-semibold mt-0.5 truncate">${e.mapel ? '['+e.mapel+'] ' : ''}${e.topik || e.kegiatan}</div></div><span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-lg">${e.paraf || 'Dicatat'}</span></div>`;
                     });
                     recentContainer.innerHTML = html;
                 }
@@ -1280,7 +1296,7 @@
         async function simpanKeJsonbin() {
             const cfg = getJsonbinConfig(); if (!cfg.binId || !cfg.masterKey) { alert('Isi Bin ID & Master Key!'); return; }
             const status = document.getElementById('jsonbinStatus'); if (status) status.innerHTML = '<span class="text-indigo-600"><i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...</span>';
-            const payload = { header: { schoolName: document.getElementById('schoolName')?.value || '', jurnalMapel: document.getElementById('jurnalMapel')?.value || '', className: document.getElementById('className')?.value || '', academicYear: document.getElementById('academicYear')?.value || '', jurnalJudul: document.getElementById('jurnalJudul')?.value || '', guruName: document.getElementById('guruName')?.value || '', guruNip: document.getElementById('guruNip')?.value || '', kepsekName: document.getElementById('kepsekName')?.value || '', kepsekNip: document.getElementById('kepsekNip')?.value || '' }, jurnalEntries, absenData, penilaianData, kasData, inventarisData, bkData, tabunganData, updatedAt: new Date().toISOString() };
+            const payload = { header: { schoolName: document.getElementById('schoolName')?.value || '', className: document.getElementById('className')?.value || '', academicYear: document.getElementById('academicYear')?.value || '', jurnalJudul: document.getElementById('jurnalJudul')?.value || '', guruName: document.getElementById('guruName')?.value || '', guruNip: document.getElementById('guruNip')?.value || '', kepsekName: document.getElementById('kepsekName')?.value || '', kepsekNip: document.getElementById('kepsekNip')?.value || '' }, jurnalEntries, absenData, penilaianData, kasData, inventarisData, bkData, tabunganData, updatedAt: new Date().toISOString() };
             try {
                 const response = await fetch(`https://api.jsonbin.io/v3/b/${cfg.binId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': cfg.masterKey }, body: JSON.stringify(payload) });
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -1297,7 +1313,7 @@
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json(); const record = data.record;
                 if (record.header) {
-                    const fields = ['schoolName','jurnalMapel','className','academicYear','jurnalJudul','guruName','guruNip','kepsekName','kepsekNip'];
+                    const fields = ['schoolName','className','academicYear','jurnalJudul','guruName','guruNip','kepsekName','kepsekNip'];
                     fields.forEach(f => { if (record.header[f] !== undefined) { const el = document.getElementById(f); if (el) { el.value = record.header[f]; saveToLocal(f, record.header[f]); } } });
                 }
                 if (Array.isArray(record.jurnalEntries)) { jurnalEntries = record.jurnalEntries; saveJurnalToLocal(); }
@@ -1325,118 +1341,214 @@
             html2pdf().set(opt).from(container).save();
         }
 
-        // ====== PERUBAHAN UTAMA: renderPreview dengan kop surat, tabel polos, dan catatan bergaris ======
+        // ================= RENDER PREVIEW JURNAL =================
+        // Setiap tanggal = 1 halaman. Baris data berisi mapel masing-masing.
+        // Jika tanggal dipilih & tidak ada entri, tampil tabel kosong 5 baris.
+        // Tinggi baris tetap (konsisten), tidak berubah-ubah.
         function renderPreview() {
             const container = document.getElementById('printSheetsContainer');
             if (!container) return;
             container.innerHTML = '';
             
-            const sekolah = document.getElementById('schoolName')?.value || 'SD NEGERI 3 NGANTRU';
             const guruName = document.getElementById('guruName')?.value || '';
             const guruNip = document.getElementById('guruNip')?.value || '';
-            const kepsekName = document.getElementById('kepsekName')?.value || '';
-            const kepsekNip = document.getElementById('kepsekNip')?.value || '';
-            const mapel = document.getElementById('jurnalMapel')?.value || '';
             const kelas = document.getElementById('className')?.value || '';
             const tahunAjaran = document.getElementById('academicYear')?.value || '';
             const judul = document.getElementById('jurnalJudul')?.value || '';
+            const cetakTgl = document.getElementById('cetakTanggal')?.value || '';
             
             const filtered = getFilteredEntries();
-            // Default 4 baris kosong jika tidak ada data
-            const entriesToRender = filtered.length > 0 ? filtered : [null, null, null, null];
-            
-            const rowsPerPage = 10; 
-            const totalPages = Math.ceil(entriesToRender.length / rowsPerPage) || 1;
             const config = getRowHeightConfig();
-            const rowHeightMm = Math.max(config.rowHeight, 25); 
-
-            for (let page = 0; page < totalPages; page++) {
-                const pageEntries = entriesToRender.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+            const rowHeightMm = Math.max(config.rowHeight, 25);
+            const minRows = 5;
+            
+            // ===== MODE 1: Tanggal spesifik dipilih =====
+            if (cetakTgl) {
+                const entriesForDate = filtered.filter(e => e.tanggal === cetakTgl);
+                const displayEntries = entriesForDate;
+                const emptyRows = Math.max(0, minRows - displayEntries.length);
                 
                 let rowsHTML = '';
-                pageEntries.forEach((entry, index) => {
-                    const rowNum = (page * rowsPerPage) + index + 1;
-                    
-                    if (entry) {
-                        // Jika ada data: Teks langsung di dalam TD dengan padding, TANPA div cell-lines
-                        rowsHTML += `
-                            <tr style="height:${rowHeightMm}mm;">
-                                <td style="text-align:center; font-weight:600; color:#1e40af;">${entry.jamKe || '-'}</td>
-                                <td style="text-align:center; font-size:9.5px; vertical-align: middle;">
-                                    ${formatTanggalIndonesia(entry.tanggal)}<br>
-                                    <span style="color:#64748b; font-size:8.5px;">${entry.jam || ''}</span>
-                                </td>
-                                <td style="padding: 5px 8px;">
-                                    <div style="font-weight:700; color:#0f172a;">${entry.topik || entry.mapel || 'Materi'}</div>
-                                    <div style="color:#334155; margin-top:2px;">${entry.kegiatan || ''}</div>
-                                </td>
-                                <td style="padding: 5px 8px;">${entry.catatan || ''}</td>
-                                <td style="text-align:center; font-size:9.5px; vertical-align: middle;">${entry.paraf || 'Selesai'}</td>
-                            </tr>
-                        `;
-                    } else {
-                        // Baris kosong: Sel TD murni tanpa div apapun di dalamnya (POLOS)
-                        rowsHTML += `
-                            <tr style="height:${rowHeightMm}mm;">
-                                <td style="text-align:center; color:#cbd5e1;">${rowNum}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        `;
-                    }
+                displayEntries.forEach((entry, index) => {
+                    rowsHTML += `
+                        <tr style="height:${rowHeightMm}mm;">
+                            <td style="text-align:center; font-weight:600; color:#1e40af;">${index + 1}</td>
+                            <td style="text-align:center; font-size:9.5px; vertical-align:middle;">
+                                Jam ke-${entry.jamKe || '-'}<br>
+                                <span style="color:#64748b; font-size:8.5px;">${entry.jam || ''}</span>
+                            </td>
+                            <td style="padding:5px 8px;">
+                                <div style="font-weight:700; color:#0f172a; font-size:10px;">${entry.mapel || 'Mata Pelajaran'}</div>
+                                <div style="color:#334155; margin-top:2px; font-size:9px;">${entry.topik || ''}</div>
+                                <div style="color:#475569; margin-top:2px; font-size:8.5px; font-style:italic;">${entry.kegiatan || ''}</div>
+                            </td>
+                            <td style="padding:5px 8px; font-size:9px;">${entry.catatan || ''}</td>
+                            <td style="text-align:center; font-size:9.5px; vertical-align:middle;">${entry.paraf || 'Selesai'}</td>
+                        </tr>
+                    `;
                 });
-
+                for (let i = 0; i < emptyRows; i++) {
+                    rowsHTML += `
+                        <tr style="height:${rowHeightMm}mm;">
+                            <td style="text-align:center; color:#cbd5e1;">${displayEntries.length + i + 1}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    `;
+                }
+                
                 const sheet = document.createElement('div');
                 sheet.className = 'a4-sheet-portrait';
                 sheet.innerHTML = `
-                    <!-- Kop Surat Khusus Cetak Jurnal -->
                     ${buildKopSuratCetakJurnal()}
-
                     <div style="text-align:center; margin-bottom:5mm;">
                         <h2 style="font-size:15px; font-weight:800; text-transform:uppercase; color:#1e3a8a; margin:0;">${judul}</h2>
-                        <div style="font-size:10px; color:#475569; margin-top:2px;">Tahun Ajaran ${tahunAjaran} ${totalPages > 1 ? `| Hal. ${page+1}/${totalPages}` : ''}</div>
+                        <div style="font-size:10px; color:#475569; margin-top:2px;">Tahun Ajaran ${tahunAjaran}</div>
                     </div>
-
                     <div style="margin-bottom:5mm; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;">
-                        <div class="jurnal-header-line"><span class="label">Mata Pelajaran / Kelas</span><span class="colon">:</span><span class="value">${mapel} (${kelas})</span></div>
+                        <div class="jurnal-header-line"><span class="label">Hari / Tanggal</span><span class="colon">:</span><span class="value">${formatTanggalIndonesia(cetakTgl)}</span></div>
+                        <div class="jurnal-header-line"><span class="label">Kelas</span><span class="colon">:</span><span class="value">${kelas}</span></div>
                         <div class="jurnal-header-line"><span class="label">Nama Guru</span><span class="colon">:</span><span class="value">${guruName}</span></div>
                         <div class="jurnal-header-line"><span class="label">NIP Guru</span><span class="colon">:</span><span class="value">${guruNip || '-'}</span></div>
                     </div>
-
-                    <!-- Tabel Jurnal Lebar Penuh (POLOS TANPA GARIS INTERNAL) -->
                     <table class="jurnal-manual-table">
                         <thead>
                             <tr>
                                 <th style="width:6%;">No</th>
-                                <th style="width:18%;">Hari / Tanggal</th>
-                                <th style="width:45%;">Materi & Kegiatan</th>
-                                <th style="width:20%;">Refleksi</th>
-                                <th style="width:11%;">Paraf</th>
+                                <th style="width:16%;">Jam / Waktu</th>
+                                <th style="width:44%;">Mata Pelajaran, Materi & Kegiatan</th>
+                                <th style="width:22%;">Refleksi</th>
+                                <th style="width:12%;">Paraf</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            ${rowsHTML}
-                        </tbody>
+                        <tbody>${rowsHTML}</tbody>
                     </table>
-
-                    <!-- CATATAN GURU DI BAWAH TABEL (DENGAN GARIS-GARIS) -->
                     <div class="catatan-guru-container">
                         <div class="catatan-guru-title">Catatan / Refleksi Tambahan Guru</div>
                         <div class="catatan-guru-lines"></div>
                     </div>
-
-                    <!-- Catatan Template Manual -->
-                    <div class="jurnal-note-manual">
-                        * ini untuk template jika guru ingin mengisi jurnal manual menggunakan tulis tangan
-                    </div>
-
-                    <!-- Tanda Tangan -->
+                    <div class="jurnal-note-manual">* Template jurnal manual — isi dengan tulisan tangan jika diperlukan</div>
                     ${buildSignatureBlock()}
                 `;
                 container.appendChild(sheet);
+                return;
             }
+            
+            // ===== MODE 2: Semua tanggal (group per tanggal) =====
+            const grouped = {};
+            filtered.forEach(e => {
+                if (!grouped[e.tanggal]) grouped[e.tanggal] = [];
+                grouped[e.tanggal].push(e);
+            });
+            const tanggalList = Object.keys(grouped).sort();
+            
+            if (tanggalList.length === 0) {
+                // Halaman kosong default
+                let rowsHTML = '';
+                for (let i = 0; i < minRows; i++) {
+                    rowsHTML += `<tr style="height:${rowHeightMm}mm;"><td style="text-align:center;color:#cbd5e1;">${i+1}</td><td></td><td></td><td></td><td></td></tr>`;
+                }
+                const sheet = document.createElement('div');
+                sheet.className = 'a4-sheet-portrait';
+                sheet.innerHTML = `
+                    ${buildKopSuratCetakJurnal()}
+                    <div style="text-align:center; margin-bottom:5mm;">
+                        <h2 style="font-size:15px; font-weight:800; text-transform:uppercase; color:#1e3a8a; margin:0;">${judul}</h2>
+                        <div style="font-size:10px; color:#475569; margin-top:2px;">Tahun Ajaran ${tahunAjaran}</div>
+                    </div>
+                    <div style="margin-bottom:5mm; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;">
+                        <div class="jurnal-header-line"><span class="label">Kelas</span><span class="colon">:</span><span class="value">${kelas}</span></div>
+                        <div class="jurnal-header-line"><span class="label">Nama Guru</span><span class="colon">:</span><span class="value">${guruName}</span></div>
+                        <div class="jurnal-header-line"><span class="label">NIP Guru</span><span class="colon">:</span><span class="value">${guruNip || '-'}</span></div>
+                    </div>
+                    <table class="jurnal-manual-table">
+                        <thead>
+                            <tr>
+                                <th style="width:6%;">No</th>
+                                <th style="width:16%;">Jam / Waktu</th>
+                                <th style="width:44%;">Mata Pelajaran, Materi & Kegiatan</th>
+                                <th style="width:22%;">Refleksi</th>
+                                <th style="width:12%;">Paraf</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rowsHTML}</tbody>
+                    </table>
+                    <div class="catatan-guru-container">
+                        <div class="catatan-guru-title">Catatan / Refleksi Tambahan Guru</div>
+                        <div class="catatan-guru-lines"></div>
+                    </div>
+                    <div class="jurnal-note-manual">* Template kosong untuk pengisian manual</div>
+                    ${buildSignatureBlock()}
+                `;
+                container.appendChild(sheet);
+                return;
+            }
+            
+            // Render 1 halaman per tanggal
+            tanggalList.forEach((tgl, pageIdx) => {
+                const entries = grouped[tgl];
+                const emptyRows = Math.max(0, minRows - entries.length);
+                
+                let rowsHTML = '';
+                entries.forEach((entry, index) => {
+                    rowsHTML += `
+                        <tr style="height:${rowHeightMm}mm;">
+                            <td style="text-align:center; font-weight:600; color:#1e40af;">${index + 1}</td>
+                            <td style="text-align:center; font-size:9.5px; vertical-align:middle;">
+                                Jam ke-${entry.jamKe || '-'}<br>
+                                <span style="color:#64748b; font-size:8.5px;">${entry.jam || ''}</span>
+                            </td>
+                            <td style="padding:5px 8px;">
+                                <div style="font-weight:700; color:#0f172a; font-size:10px;">${entry.mapel || 'Mata Pelajaran'}</div>
+                                <div style="color:#334155; margin-top:2px; font-size:9px;">${entry.topik || ''}</div>
+                                <div style="color:#475569; margin-top:2px; font-size:8.5px; font-style:italic;">${entry.kegiatan || ''}</div>
+                            </td>
+                            <td style="padding:5px 8px; font-size:9px;">${entry.catatan || ''}</td>
+                            <td style="text-align:center; font-size:9.5px; vertical-align:middle;">${entry.paraf || 'Selesai'}</td>
+                        </tr>
+                    `;
+                });
+                for (let i = 0; i < emptyRows; i++) {
+                    rowsHTML += `<tr style="height:${rowHeightMm}mm;"><td style="text-align:center;color:#cbd5e1;">${entries.length+i+1}</td><td></td><td></td><td></td><td></td></tr>`;
+                }
+                
+                const sheet = document.createElement('div');
+                sheet.className = 'a4-sheet-portrait';
+                sheet.innerHTML = `
+                    ${buildKopSuratCetakJurnal()}
+                    <div style="text-align:center; margin-bottom:5mm;">
+                        <h2 style="font-size:15px; font-weight:800; text-transform:uppercase; color:#1e3a8a; margin:0;">${judul}</h2>
+                        <div style="font-size:10px; color:#475569; margin-top:2px;">Tahun Ajaran ${tahunAjaran} ${tanggalList.length > 1 ? `| Hal. ${pageIdx+1}/${tanggalList.length}` : ''}</div>
+                    </div>
+                    <div style="margin-bottom:5mm; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;">
+                        <div class="jurnal-header-line"><span class="label">Hari / Tanggal</span><span class="colon">:</span><span class="value">${formatTanggalIndonesia(tgl)}</span></div>
+                        <div class="jurnal-header-line"><span class="label">Kelas</span><span class="colon">:</span><span class="value">${kelas}</span></div>
+                        <div class="jurnal-header-line"><span class="label">Nama Guru</span><span class="colon">:</span><span class="value">${guruName}</span></div>
+                        <div class="jurnal-header-line"><span class="label">NIP Guru</span><span class="colon">:</span><span class="value">${guruNip || '-'}</span></div>
+                    </div>
+                    <table class="jurnal-manual-table">
+                        <thead>
+                            <tr>
+                                <th style="width:6%;">No</th>
+                                <th style="width:16%;">Jam / Waktu</th>
+                                <th style="width:44%;">Mata Pelajaran, Materi & Kegiatan</th>
+                                <th style="width:22%;">Refleksi</th>
+                                <th style="width:12%;">Paraf</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rowsHTML}</tbody>
+                    </table>
+                    <div class="catatan-guru-container">
+                        <div class="catatan-guru-title">Catatan / Refleksi Tambahan Guru</div>
+                        <div class="catatan-guru-lines"></div>
+                    </div>
+                    <div class="jurnal-note-manual">* Template jurnal manual — isi dengan tulisan tangan jika diperlukan</div>
+                    ${buildSignatureBlock()}
+                `;
+                container.appendChild(sheet);
+            });
         }
 
         // ================= INIT =================
@@ -1458,7 +1570,6 @@
 
             const defaults = {
                 schoolName: 'SD NEGERI 3 NGANTRU',
-                jurnalMapel: 'Tematik / Matematika / IPAS',
                 className: 'Kelas 5',
                 academicYear: '2026 / 2027 (Ganjil)',
                 jurnalJudul: 'JURNAL MENGAJAR HARIAN GURU',
