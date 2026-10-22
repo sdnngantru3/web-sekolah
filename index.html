@@ -763,6 +763,61 @@ body.drawer-open { overflow: hidden; }
   background: #000;
 }
 /* === END PATCH === */
+
+/* === PATCH: Spotify-style Rotating Logo & Music Player === */
+.hero-card__left {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-control);
+  background: #0f172a; /* fallback */
+}
+
+.hero-card__left .rotating-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: spin 8s linear infinite;
+  animation-play-state: paused; /* Default paused */
+  transition: transform 0.3s;
+}
+
+.hero-card__left .rotating-logo.playing {
+  animation-play-state: running;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* Tombol Play/Pause overlay di tengah logo */
+.hero-card__play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.3);
+  opacity: 0;
+  transition: opacity 0.2s;
+  cursor: pointer;
+  z-index: 10;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.hero-card__left:hover .hero-card__play-overlay {
+  opacity: 1;
+}
+
+/* Sembunyikan overlay saat sedang playing, tapi munculkan saat hover */
+.hero-card__left.is-playing .hero-card__play-overlay {
+  opacity: 0;
+}
+.hero-card__left.is-playing:hover .hero-card__play-overlay {
+  opacity: 1;
+}
+/* === END PATCH === */
 </style>
 </head>
 <body>
@@ -862,7 +917,12 @@ body.drawer-open { overflow: hidden; }
         <div class="hero-right reveal-item">
           <div class="hero-card">
             <div class="hero-card__inner">
-              <div class="hero-card__left"><i class="fas fa-lightbulb"></i></div>
+              <div class="hero-card__left" id="musicCardLeft">
+                <img src="logo sekolah.png" alt="Logo Sekolah" class="rotating-logo" id="rotatingLogo">
+                <button class="hero-card__play-overlay" onclick="toggleMusic()" id="musicPlayBtn" title="Play / Pause Lagu">
+                  <i class="fas fa-play"></i>
+                </button>
+              </div>
               <div class="hero-card__right">
                 <div>
                   <div class="hero-card__caption" id="spotlightTag">Pengumuman</div>
@@ -1494,6 +1554,9 @@ body.drawer-open { overflow: hidden; }
 
 <div id="customToast" class="custom-toast"><i class="fas fa-info-circle" style="color:#34d399;"></i><span id="toastMessage">Notifikasi</span></div>
 
+<!-- AUDIO PLAYER UNTUK LAGU SEKOLAH -->
+<audio id="schoolMusic" src="artuga_jayalah.mp3" loop></audio>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   if (typeof window.supabase === 'undefined') {
@@ -1609,6 +1672,48 @@ function setupWelcomeVoiceTrigger() {
 if ('speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 }
+
+// ============================================================
+// LOGIKA MUSIK & LOGO BERPUTAR
+// ============================================================
+function toggleMusic() {
+  const audio = document.getElementById('schoolMusic');
+  const logo = document.getElementById('rotatingLogo');
+  const cardLeft = document.getElementById('musicCardLeft');
+  const playIcon = document.querySelector('#musicPlayBtn i');
+
+  if (!audio || !logo) return;
+
+  if (audio.paused) {
+    // Play
+    audio.play().then(() => {
+      logo.classList.add('playing');
+      cardLeft.classList.add('is-playing');
+      playIcon.classList.remove('fa-play');
+      playIcon.classList.add('fa-pause');
+    }).catch(err => {
+      console.error('Gagal memutar audio:', err);
+      showToast('⚠️ Gagal memutar lagu. Pastikan file artuga_jayalah.mp3 ada.');
+    });
+  } else {
+    // Pause
+    audio.pause();
+    logo.classList.remove('playing');
+    cardLeft.classList.remove('is-playing');
+    playIcon.classList.remove('fa-pause');
+    playIcon.classList.add('fa-play');
+  }
+}
+
+// Opsional: Jika lagu selesai (karena loop=true tidak akan selesai, tapi jaga-jaga)
+document.getElementById('schoolMusic')?.addEventListener('ended', () => {
+  const logo = document.getElementById('rotatingLogo');
+  const cardLeft = document.getElementById('musicCardLeft');
+  const playIcon = document.querySelector('#musicPlayBtn i');
+  logo.classList.remove('playing');
+  cardLeft.classList.remove('is-playing');
+  if(playIcon) { playIcon.classList.remove('fa-pause'); playIcon.classList.add('fa-play'); }
+});
 
 // ============================================================
 // MOBILE DRAWER
