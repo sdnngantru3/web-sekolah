@@ -768,14 +768,24 @@ body.drawer-open { overflow: hidden; }
 .hero-card__left {
   position: relative;
   overflow: hidden;
-  border-radius: var(--radius-control);
-  background: #0f172a; /* fallback */
+  border-radius: 50%; /* Mengubah kotak menjadi lingkaran sempurna */
+  background: #ffffff; /* Background putih */
+  
+  /* UKURAN DIPERKECIL */
+  width: 4.5rem; 
+  height: 4.5rem; 
+  padding: 0.4rem; /* Jarak logo ke pinggir lingkaran */
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Mencegah lingkaran mengecil/gepeng */
 }
 
 .hero-card__left .rotating-logo {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain; /* Agar logo utuh tidak terpotong */
   animation: spin 8s linear infinite;
   animation-play-state: paused; /* Default paused */
   transition: transform 0.3s;
@@ -1822,8 +1832,8 @@ window.addEventListener('DOMContentLoaded', () => {
 // ============================================================
 const spotlightData = [
   { tag: "Pendaftaran", title: "PPDB 2027 Telah Dibuka!" },
-  { tag: "E-Rapor", title: "Sistem Rapor Online Terintegrasi" },
-  { tag: "Prestasi", title: "Juara Lomba Cerdas Cermat" }
+  { tag: "E-Rapor", title: "Rapor Online Terintegrasi" },
+  { tag: "Mars SD Negeri 3 Ngantru", title: "Klik logo disamping untuk lagu Artuga Jayalah" }
 ];
 let spotlightIdx = 0;
 function updateSpotlight() {
