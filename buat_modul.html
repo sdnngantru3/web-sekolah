@@ -28,7 +28,9 @@
         /* Tampilan Visual Lembar Kertas A4 Presisi */
         .a4-page {
             width: 210mm;
-            min-height: 297mm;
+            height: 297mm;
+            max-height: 297mm;
+            overflow: hidden;
             padding: 1.5cm 1.8cm 1.8cm 1.8cm;
             background: #ffffff;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
@@ -40,6 +42,16 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+        }
+
+        /* Kelas khusus saat rendering PDF: hilangkan dekorasi web */
+        .rendering-pdf .a4-page {
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            width: 210mm !important;
+            height: 297mm !important;
         }
 
         /* Cover halaman 1 mengisi penuh A4 tanpa padding luar */
@@ -61,6 +73,8 @@
             .a4-page {
                 width: 100%;
                 min-height: auto;
+                height: auto;
+                max-height: none;
                 padding: 1rem;
                 margin-bottom: 1rem;
             }
@@ -90,6 +104,9 @@
                 padding: 1.2cm !important;
                 width: 100% !important;
                 max-width: 100% !important;
+                height: 297mm !important;
+                max-height: 297mm !important;
+                overflow: hidden !important;
                 background-color: #ffffff !important;
                 page-break-after: always;
                 break-after: page;
@@ -760,7 +777,7 @@
                         </div>
                     </div>
 
-                    <!-- HALAMAN 7: LANGKAH PEMBELAJARAN PERTEMUAN 2 (Aplikasi Proyek & Proteksi Cyber) -->
+                    <!-- HALAMAN 7: LANGKAH PEMBELAJARAN PERTEMUAN 2 (APLIKASI PROYEK & PROTEKSI CYBER) -->
                     <div class="a4-page" id="a4-page-7">
                         <div class="space-y-4">
                             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
@@ -1030,6 +1047,10 @@
         async function renderA4PagesToJPG() {
             const pageElements = document.querySelectorAll('.a4-page');
             const jpgImages = [];
+            const container = document.getElementById('modul-content');
+
+            // Aktifkan mode rendering untuk menghilangkan dekorasi web
+            if (container) container.classList.add('rendering-pdf');
 
             for (let i = 0; i < pageElements.length; i++) {
                 const el = pageElements[i];
@@ -1037,10 +1058,17 @@
                     scale: 2, 
                     useCORS: true,
                     backgroundColor: "#ffffff",
-                    logging: false
+                    logging: false,
+                    windowWidth: 1280,
+                    width: el.offsetWidth,
+                    height: el.offsetHeight
                 });
                 jpgImages.push(canvas.toDataURL("image/jpeg", 0.95));
             }
+
+            // Kembalikan tampilan normal
+            if (container) container.classList.remove('rendering-pdf');
+
             return jpgImages;
         }
 
@@ -1133,13 +1161,16 @@
                             const pageImages = ${JSON.stringify(jpgImages)};
                             function downloadAsPDF() {
                                 const { jsPDF } = window.jspdf;
-                                const doc = new jsPDF('p', 'mm', 'a4');
-                                const pageWidth = 210;
-                                const pageHeight = 297;
+                                const doc = new jsPDF({
+                                    orientation: 'portrait',
+                                    unit: 'mm',
+                                    format: 'a4',
+                                    compress: true
+                                });
 
                                 pageImages.forEach((imgData, index) => {
                                     if (index > 0) doc.addPage();
-                                    doc.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+                                    doc.addImage(imgData, 'JPEG', 0, 0, 210, 297);
                                 });
 
                                 doc.save("${topicName.replace(/\s+/g, '_')}_Halaman_A4.pdf");
