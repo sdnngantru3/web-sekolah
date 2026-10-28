@@ -3470,31 +3470,53 @@ window.addEventListener('load', async () => {
 });
 
 // ============================================================
-// RUNNING TEXT / NEWS TICKER — Cuaca & Hari Libur Otomatis
+// RUNNING TEXT / NEWS TICKER — Versi Super Lengkap & Offline Friendly
 // ============================================================
 const WEATHER_ICONS = {
-  0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
-  45: '🌫️', 48: '🌫️',
-  51: '🌦️', 53: '🌦️', 55: '🌧️',
-  61: '🌧️', 63: '🌧️', 65: '🌧️',
-  71: '🌨️', 73: '🌨️', 75: '❄️',
-  80: '🌦️', 81: '🌧️', 82: '⛈️',
+  0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 45: '🌫️', 48: '🌫️',
+  51: '🌦️', 53: '🌦️', 55: '🌧️', 61: '🌧️', 63: '🌧️', 65: '🌧️',
+  71: '🌨️', 73: '🌨️', 75: '❄️', 80: '🌦️', 81: '🌧️', 82: '⛈️',
   95: '⛈️', 96: '⛈️', 99: '⛈️'
 };
 const WEATHER_LABELS = {
   0: 'Cerah', 1: 'Cerah Berawan', 2: 'Berawan', 3: 'Mendung',
-  45: 'Berkabut', 48: 'Berkabut',
-  51: 'Gerimis Ringan', 53: 'Gerimis', 55: 'Gerimis Lebat',
-  61: 'Hujan Ringan', 63: 'Hujan', 65: 'Hujan Lebat',
-  71: 'Salju Ringan', 73: 'Salju', 75: 'Salju Lebat',
-  80: 'Hujan Lokal', 81: 'Hujan Lebat', 82: 'Hujan Sangat Lebat',
-  95: 'Badai Petir', 96: 'Badai Petir', 99: 'Badai Petir Hebat'
+  45: 'Berkabut', 48: 'Berkabut', 51: 'Gerimis Ringan', 53: 'Gerimis', 55: 'Gerimis Lebat',
+  61: 'Hujan Ringan', 63: 'Hujan', 65: 'Hujan Lebat', 71: 'Salju Ringan', 73: 'Salju', 75: 'Salju Lebat',
+  80: 'Hujan Lokal', 81: 'Hujan Lebat', 82: 'Hujan Sangat Lebat', 95: 'Badai Petir', 96: 'Badai Petir', 99: 'Badai Petir Hebat'
 };
 
 function buildTickerItems(items) {
   return items.map(it => `<span class="news-ticker__item"><i class="fas ${it.icon}"></i>${escapeHtml(it.text)}</span>`).join('');
 }
 
+// 1. INFO LOKAL (PASTI MUNCUL, BAHKAN OFFLINE)
+function fetchInfoLokalTicker() {
+  const now = new Date();
+  const hari = now.toLocaleDateString('id-ID', { weekday: 'long' });
+  const tanggal = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':') + ' WIB';
+  return {
+    icon: 'fa-clock',
+    text: `${hari}, ${tanggal} — Pukul ${jam}`
+  };
+}
+
+// 2. PESAN SEKOLAH (PASTI MUNCUL)
+function fetchPesanSekolahTicker() {
+  const pesan = [
+    "Mari jaga kebersihan lingkungan sekolah kita!",
+    "Budayakan 5S: Senyum, Salam, Sapa, Sopan, Santun.",
+    "Jangan lupa belajar dan kerjakan PR di rumah.",
+    "Go Digital Sekolahku — Generasi Artuga Berkarakter!",
+    "Cek informasi PPDB terbaru di menu Layanan."
+  ];
+  return {
+    icon: 'fa-bullhorn',
+    text: pesan[Math.floor(Math.random() * pesan.length)]
+  };
+}
+
+// 3. INFO CUACA ONLINE
 async function fetchCuacaTicker() {
   const url = 'https://api.open-meteo.com/v1/forecast?latitude=-7.85&longitude=112.36&current_weather=true';
   const res = await fetch(url, { cache: 'no-store' });
@@ -3512,62 +3534,9 @@ async function fetchCuacaTicker() {
   };
 }
 
-async function fetchHariLiburTicker() {
-  const res = await fetch('https://dayoffapi.vercel.app/api', { cache: 'no-store' });
-  if (!res.ok) throw new Error('Hari libur gagal dimuat');
-  const json = await res.json();
-  if (!Array.isArray(json) || json.length === 0) throw new Error('Data hari libur kosong');
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const upcoming = json
-    .map(item => {
-      const tgl = new Date(item.tanggal);
-      if (isNaN(tgl.getTime())) return null;
-      tgl.setHours(0, 0, 0, 0);
-      return { ...item, _date: tgl };
-    })
-    .filter(item => item && item._date >= today)
-    .sort((a, b) => a._date - b._date);
-
-  const list = upcoming.length > 0 ? upcoming : json.slice(0, 1);
-
-  return list.slice(0, 2).map(item => {
-    const tgl = item._date || new Date(item.tanggal);
-    const tglStr = tgl.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-    return {
-      icon: 'fa-calendar-check',
-      text: `Hari Libur: ${item.keterangan || 'Libur Nasional'} — ${tglStr}`
-    };
-  });
-}
-
-// ============================================================
-// TICKER — INFO TAMBAHAN (Kutipan, Waktu Salat, Libur)
-// ============================================================
-
-// 1) Kutipan motivasi harian (gratis, tanpa API key)
-async function fetchKutipanTicker() {
-  try {
-    const res = await fetch('https://api.quotable.io/random?tags=inspirational|education&maxLength=100', { cache: 'no-store' });
-    if (!res.ok) throw new Error('Quotable gagal');
-    const json = await res.json();
-    if (!json.content || !json.author) throw new Error('Data kosong');
-    return {
-      icon: 'fa-quote-left',
-      text: `"${json.content}" — ${json.author}`
-    };
-  } catch (err) {
-    console.warn('Kutipan gagal:', err);
-    return null; // null = tidak ditampilkan, tidak error
-  }
-}
-
-// 2) Jadwal salat hari ini untuk Ngantang/Malang (Aladhan API)
+// 4. JADWAL SALAT ONLINE
 async function fetchSalatTicker() {
   try {
-    // Koordinat Ngantang: -7.85, 112.36 (sama dengan cuaca)
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
     const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -3580,7 +3549,6 @@ async function fetchSalatTicker() {
     const t = json?.data?.timings;
     if (!t) throw new Error('Data salat kosong');
 
-    // Ambil 1 waktu salat berikutnya (subuh/zhuhur/ashar/maghrib/isya)
     const now = new Date();
     const nowMenit = now.getHours() * 60 + now.getMinutes();
     const jadwal = [
@@ -3594,20 +3562,18 @@ async function fetchSalatTicker() {
       return { ...item, menit: h * 60 + m };
     });
 
-    // Cari waktu salat berikutnya
     let next = jadwal.find(item => item.menit > nowMenit);
-    if (!next) next = jadwal[0]; // besok subuh
+    if (!next) next = jadwal[0];
     return {
       icon: 'fa-mosque',
-      text: `🕌 Salat ${next.nama} ${next.jam} WIB (Ngantang)`
+      text: `Salat ${next.nama} ${next.jam} WIB (Ngantang)`
     };
   } catch (err) {
-    console.warn('Jadwal salat gagal:', err);
     return null;
   }
 }
 
-// 3) Libur nasional terdekat (rapikan dari API yang sudah ada)
+// 5. HARI LIBUR ONLINE
 async function fetchLiburTicker() {
   try {
     const res = await fetch('https://dayoffapi.vercel.app/api', { cache: 'no-store' });
@@ -3637,67 +3603,49 @@ async function fetchLiburTicker() {
 
     return {
       icon: 'fa-calendar-check',
-      text: `📅 Libur: ${next.keterangan || 'Libur Nasional'} — ${tglStr} (${labelHari})`
+      text: `Libur: ${next.keterangan || 'Libur Nasional'} — ${tglStr} (${labelHari})`
     };
   } catch (err) {
-    console.warn('Libur gagal:', err);
     return null;
   }
 }
+
+// FUNGSI UTAMA RENDER TICKER
 async function loadTicker() {
   const track = document.getElementById('newsTickerTrack');
   if (!track) return;
 
+  // Info Lokal & Pesan wajib dimasukkan duluan
   const items = [
+    fetchInfoLokalTicker(), 
+    fetchPesanSekolahTicker(),
     { icon: 'fa-bullhorn', text: 'Selamat Datang di Portal Resmi SD Negeri 3 Ngantru' }
   ];
 
-  // Ambil SEMUA data secara paralel — kalau ada yang gagal, yang lain tetap tampil
+  // Tarik data online secara paralel
   const results = await Promise.allSettled([
-    fetchCuacaTicker(),      // cuaca (sudah ada)
-    fetchSalatTicker(),      // BARU: jadwal salat
-    fetchKutipanTicker(),    // BARU: kutipan motivasi
-    fetchLiburTicker()       // BARU: libur nasional (versi ringkas)
+    fetchCuacaTicker(),      
+    fetchSalatTicker(),      
+    fetchLiburTicker()       
   ]);
 
-  // Tambahkan hasil yang berhasil & tidak null
+  // Jika berhasil ditarik, tambahkan ke list
   results.forEach(result => {
     if (result.status === 'fulfilled' && result.value) {
       items.push(result.value);
     }
   });
 
-  // Duplikasi agar animasi marquee seamless
+  // Render HTML (duplikasi untuk animasi seamless)
   const html = buildTickerItems(items);
   track.innerHTML = html + html;
 }
 
-// Jalankan setelah DOM siap & Supabase init selesai
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => setTimeout(loadTicker, 800));
-} else {
-  setTimeout(loadTicker, 800);
-}
-// ============================================================
-// JAM & TANGGAL REALTIME (HEADER)
-// ============================================================
-function updateLiveClock() {
-  const clockEl = document.querySelector('#liveClock span');
-  const dateEl = document.getElementById('liveDate');
-  if (!clockEl || !dateEl) return;
+// Jalankan saat halaman selesai dimuat
+window.addEventListener('load', () => {
+  setTimeout(loadTicker, 500);
+});
 
-  const now = new Date();
-
-  // 1. Format Jam (HH:MM:SS)
-  const jam = String(now.getHours()).padStart(2, '0');
-  const menit = String(now.getMinutes()).padStart(2, '0');
-  const detik = String(now.getSeconds()).padStart(2, '0');
-  clockEl.innerText = `${jam}:${menit}:${detik}`;
-
-  // 2. Format Tanggal (Contoh: Rabu, 28 Okt 2026)
-  const opsiTanggal = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
-  dateEl.innerText = now.toLocaleDateString('id-ID', opsiTanggal);
-}
 
 // Jalankan fungsinya
 setInterval(updateLiveClock, 1000);
