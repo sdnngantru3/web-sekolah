@@ -2858,48 +2858,53 @@ async function editYoutubeBlock(blockId) {
     return; 
   }
 
-  // Cari data blok video berdasarkan ID
-  const block = allBlocks.find(b => b.id === blockId);
-  if (!block) { 
-    showToast('❌ Data blok video tidak ditemukan'); 
-    return; 
-  }
-
-  // Siapkan form edit
+  // Tampilkan modal dan loading sementara
   document.getElementById('ytModalTitle').innerHTML = '<i class="fab fa-youtube" style="color: #dc2626;"></i> Edit Blok Video';
   document.getElementById('ytBlockId').value = blockId;
-  document.getElementById('ytBlockTitle').value = block.title || '';
-  document.getElementById('ytBlockDesc').value = block.description || '';
-
-  // Tampilkan modal (loading sementara)
   openModal('manageYoutubeModal');
   
   const listContainer = document.getElementById('ytVideoList');
-  listContainer.innerHTML = '<p style="text-align:center; padding:1rem;">⏳ Memuat daftar video...</p>';
+  if (listContainer) listContainer.innerHTML = '<p style="text-align:center; padding:1rem;">⏳ Memuat data video...</p>';
 
   try {
-    // Ambil daftar video dari database
-    const { data, error } = await supabaseClient
+    // 1. Ambil data judul blok langsung dari database
+    const { data: blockData, error: blockError } = await supabaseClient
+      .from('page_blocks')
+      .select('*')
+      .eq('id', blockId)
+      .single();
+
+    if (blockError) throw new Error('Gagal mengambil data blok: ' + blockError.message);
+
+    // Isi form input dengan data dari database
+    document.getElementById('ytBlockTitle').value = blockData.title || '';
+    document.getElementById('ytBlockDesc').value = blockData.description || '';
+
+    // 2. Ambil daftar video dari database
+    const { data: videoData, error: videoError } = await supabaseClient
       .from('youtube_videos')
       .select('*')
       .eq('block_id', blockId)
       .order('display_order');
 
-    if (error) throw error;
+    if (videoError) throw new Error('Gagal mengambil daftar video: ' + videoError.message);
 
-    // Masukkan data ke dalam variabel draft untuk diedit
-    ytDraftVideos = (data || []).map(v => ({ 
+    // 3. Masukkan ke dalam variabel draft
+    ytDraftVideos = (videoData || []).map(v => ({ 
       id: v.id, 
       url: v.video_url, 
       title: v.video_title || '' 
     }));
     
-    // Render daftar video ke dalam form
+    // 4. Tampilkan daftar video di form
     renderYtDraftList();
     
   } catch (err) {
-    console.error('Gagal load edit video:', err);
-    listContainer.innerHTML = `<p style="text-align:center; color:#dc2626; padding:1rem;">❌ Gagal memuat data: ${err.message}</p>`;
+    console.error('Error Edit Youtube:', err);
+    if (listContainer) {
+      listContainer.innerHTML = `<p style="text-align:center; color:#dc2626; padding:1rem;">❌ ${err.message}</p>`;
+    }
+    showToast('❌ ' + err.message);
   }
 }
 
@@ -3681,9 +3686,27 @@ window.addEventListener('load', () => {
 });
 
 
-// Jalankan fungsinya
-setInterval(updateLiveClock, 1000);
-updateLiveClock(); // Panggil sekali di awal agar tidak menunggu 1 detik
+// ============================================================
+// FUNGSI JAM & TANGGAL REALTIME (HEADER)
+// ============================================================
+function updateLiveClock() {
+  const clockEl = document.querySelector('#liveClock span');
+  const dateEl = document.getElementById('liveDate');
+  if (!clockEl || !dateEl) return;
+
+  const now = new Date();
+
+  // 1. Format Jam (HH:MM:SS)
+  const jam = String(now.getHours()).padStart(2, '0');
+  const menit = String(now.getMinutes()).padStart(2, '0');
+  const detik = String(now.getSeconds()).padStart(2, '0');
+  clockEl.innerText = `${jam}:${menit}:${detik}`;
+
+  // 2. Format Tanggal (Contoh: Rabu, 28 Okt 2026)
+  const opsiTanggal = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
+  dateEl.innerText = now.toLocaleDateString('id-ID', opsiTanggal);
+}
+
 // === END PATCH ===
 </script>
 </body>
