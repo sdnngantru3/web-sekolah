@@ -2853,20 +2853,54 @@ function openYoutubeModal() {
 }
 
 async function editYoutubeBlock(blockId) {
-  if (!isAdmin()) return;
-  const block = allBlocks.find(b => b.id === blockId);
-  if (!block) return;
+  if (!isAdmin()) { 
+    showToast('⚠️ Anda harus login sebagai Admin'); 
+    return; 
+  }
 
+  // Cari data blok video berdasarkan ID
+  const block = allBlocks.find(b => b.id === blockId);
+  if (!block) { 
+    showToast('❌ Data blok video tidak ditemukan'); 
+    return; 
+  }
+
+  // Siapkan form edit
   document.getElementById('ytModalTitle').innerHTML = '<i class="fab fa-youtube" style="color: #dc2626;"></i> Edit Blok Video';
   document.getElementById('ytBlockId').value = blockId;
   document.getElementById('ytBlockTitle').value = block.title || '';
   document.getElementById('ytBlockDesc').value = block.description || '';
 
-  const { data, error } = await supabaseClient.from('youtube_videos').select('*').eq('block_id', blockId).order('display_order');
-
-  ytDraftVideos = (data || []).map(v => ({ id: v.id, url: v.video_url, title: v.video_title || '' }));
-  renderYtDraftList();
+  // Tampilkan modal (loading sementara)
   openModal('manageYoutubeModal');
+  
+  const listContainer = document.getElementById('ytVideoList');
+  listContainer.innerHTML = '<p style="text-align:center; padding:1rem;">⏳ Memuat daftar video...</p>';
+
+  try {
+    // Ambil daftar video dari database
+    const { data, error } = await supabaseClient
+      .from('youtube_videos')
+      .select('*')
+      .eq('block_id', blockId)
+      .order('display_order');
+
+    if (error) throw error;
+
+    // Masukkan data ke dalam variabel draft untuk diedit
+    ytDraftVideos = (data || []).map(v => ({ 
+      id: v.id, 
+      url: v.video_url, 
+      title: v.video_title || '' 
+    }));
+    
+    // Render daftar video ke dalam form
+    renderYtDraftList();
+    
+  } catch (err) {
+    console.error('Gagal load edit video:', err);
+    listContainer.innerHTML = `<p style="text-align:center; color:#dc2626; padding:1rem;">❌ Gagal memuat data: ${err.message}</p>`;
+  }
 }
 
 function addYoutubeVideoLocal() {
