@@ -3692,6 +3692,8 @@ window.addEventListener('load', () => {
 function updateLiveClock() {
   const clockEl = document.querySelector('#liveClock span');
   const dateEl = document.getElementById('liveDate');
+  
+  // Cek jika elemen tidak ditemukan, hentikan fungsi
   if (!clockEl || !dateEl) return;
 
   const now = new Date();
@@ -3706,6 +3708,11 @@ function updateLiveClock() {
   const opsiTanggal = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
   dateEl.innerText = now.toLocaleDateString('id-ID', opsiTanggal);
 }
+
+// Panggil langsung saat halaman dimuat
+updateLiveClock();
+// Perbarui setiap 1 detik agar detiknya berjalan
+setInterval(updateLiveClock, 1000);
 
 // === END PATCH ===
 </script>
