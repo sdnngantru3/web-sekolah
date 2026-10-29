@@ -3953,23 +3953,64 @@ async function deleteMusic(id) {
   }
 }
 
+let currentPlayingSongUrl = null;
+
 function playThisSong(fileUrl, title, element) {
   const audio = document.getElementById('schoolMusic');
   const logo = document.getElementById('rotatingLogo');
   const cardLeft = document.getElementById('musicCardLeft');
   const playIcon = document.querySelector('#musicPlayBtn i');
 
-  document.querySelectorAll('.music-item').forEach(el => el.classList.remove('active'));
+  // 1. Cek jika lagu yang diklik SAMA dengan lagu yang sedang diputar
+  if (currentPlayingSongUrl === fileUrl && !audio.paused) {
+    // Hentikan lagu (Pause)
+    audio.pause();
+    logo.classList.remove('playing');
+    cardLeft.classList.remove('is-playing');
+    playIcon.classList.remove('fa-pause');
+    playIcon.classList.add('fa-play');
+    
+    // Ubah ikon di playlist kembali menjadi Play
+    if (element) {
+      element.querySelector('i').classList.remove('fa-pause');
+      element.querySelector('i').classList.add('fa-play');
+      element.classList.remove('active');
+    }
+    
+    document.getElementById('spotlightTag').innerText = 'Dijeda';
+    return; // Hentikan eksekusi di sini
+  }
+
+  // 2. Jika lagu berbeda, atau lagu sebelumnya sedang berhenti, putar lagu baru
+  // Reset semua ikon di playlist menjadi Play
+  document.querySelectorAll('.music-item').forEach(el => {
+    el.classList.remove('active');
+    const icon = el.querySelector('i');
+    if (icon) {
+      icon.classList.remove('fa-pause');
+      icon.classList.add('fa-play');
+    }
+  });
   
+  // Set lagu baru
   audio.src = fileUrl;
   audio.play().then(() => {
+    currentPlayingSongUrl = fileUrl; // Simpan URL lagu yang sedang diputar
+    
+    // Putar logo Spotify-like
     logo.classList.add('playing');
     cardLeft.classList.add('is-playing');
     playIcon.classList.remove('fa-play');
     playIcon.classList.add('fa-pause');
     
-    if (element) element.classList.add('active');
+    // Tandai lagu yang aktif dan ubah ikon menjadi Pause
+    if (element) {
+      element.classList.add('active');
+      element.querySelector('i').classList.remove('fa-play');
+      element.querySelector('i').classList.add('fa-pause');
+    }
     
+    // Update tampilan teks di kartu hero
     document.getElementById('spotlightTitle').innerText = title;
     document.getElementById('spotlightTag').innerText = 'Sedang Diputar';
     
@@ -3979,6 +4020,27 @@ function playThisSong(fileUrl, title, element) {
     console.error(err);
   });
 }
+
+// Tambahkan event listener agar jika lagu selesai secara alami, tombol kembali ke Play
+document.getElementById('schoolMusic')?.addEventListener('ended', () => {
+  currentPlayingSongUrl = null;
+  const logo = document.getElementById('rotatingLogo');
+  const cardLeft = document.getElementById('musicCardLeft');
+  const playIcon = document.querySelector('#musicPlayBtn i');
+  
+  logo.classList.remove('playing');
+  cardLeft.classList.remove('is-playing');
+  if(playIcon) { playIcon.classList.remove('fa-pause'); playIcon.classList.add('fa-play'); }
+  
+  document.querySelectorAll('.music-item').forEach(el => {
+    el.classList.remove('active');
+    const icon = el.querySelector('i');
+    if (icon) {
+      icon.classList.remove('fa-pause');
+      icon.classList.add('fa-play');
+    }
+  });
+});
 
 // Tutup playlist jika klik di luar area
 document.addEventListener('click', (e) => {
