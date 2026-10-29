@@ -2368,7 +2368,7 @@ async function updateSiteSetting(key, value) {
 async function loadPublicFiles() {
   const grid = document.getElementById('publicFilesGrid');
   try {
-    const { data, error } = await supabaseClient.from('public_files').select('*').limit(12);
+    const { data, error } = await supabaseClient.from('public_files').select('*').neq('purpose', 'music').limit(12);
     if (error) { grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);">⚠️ ${error.message}</div>`; return; }
     if (!data || data.length === 0) { grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-style:italic;">Belum ada foto.</div>`; return; }
 
