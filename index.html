@@ -377,7 +377,7 @@ body.drawer-open { overflow: hidden; }
 .stats-shell { padding: 3rem 1.25rem; }
 .stats-panel {
   border-radius: var(--radius-card);
-  background: url('background.jpg') center/cover no-repeat;
+  background: #071e17; /* Warna dasar gelap jika foto belum dimuat */
   padding: 3.5rem 1.5rem;
   color: #fff;
   position: relative;
@@ -387,18 +387,40 @@ body.drawer-open { overflow: hidden; }
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(7,30,23,0.85) 0%, rgba(15,107,82,0.75) 100%);
-  z-index: 0;
+  background: linear-gradient(135deg, rgba(7,30,23,0.9) 0%, rgba(15,107,82,0.7) 100%);
+  z-index: 1;
   pointer-events: none;
   border-radius: var(--radius-card);
 }
-.stats-panel > * { position: relative; z-index: 1; }
-.stats-panel::before { content: ''; position: absolute; top: -50%; right: -20%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(15,107,82,0.35), transparent 70%); }
+.stats-panel > *:not(.stats-bg-slider) { position: relative; z-index: 2; }
+.stats-bg-slider {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 1.5s ease-in-out;
+}
+
+/* "Stabilo" untuk Kotak Angka (Glassmorphism) */
+.stats-grid { margin-top: 3.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+@media (min-width: 1024px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+.stats-grid > div {
+  background: rgba(0, 0, 0, 0.4); /* Latar hitam transparan */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-control);
+  padding: 1.5rem 1rem;
+  transition: transform 0.3s;
+}
+.stats-grid > div:hover {
+  transform: translateY(-5px);
+  background: rgba(0, 0, 0, 0.5);
+}
 .stats-header-row { display: flex; flex-direction: column; gap: 1.5rem; justify-content: space-between; }
 @media (min-width: 1024px) { .stats-header-row { flex-direction: row; align-items: flex-end; } }
 .stats-title { max-width: 22ch; font-size: 1.85rem; font-weight: 700; }
-.stats-grid { margin-top: 3.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5rem; }
-@media (min-width: 1024px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
 .stat-num { font-size: 3.25rem; font-weight: 800; color: #34d399; line-height: 1; }
 .stat-label { margin-top: 0.75rem; font-size: 0.9rem; font-weight: 600; color: rgba(255,255,255,0.7); }
 
@@ -463,8 +485,8 @@ body.drawer-open { overflow: hidden; }
 .file-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
 .file-card__preview { 
   width: 100%; 
-  height: 240px; /* Sedikit ditinggikan agar lebih proporsional */
-  background: #f1f5f9; /* Warna abu-abu terang untuk latar belakang foto */
+  height: 240px; 
+  background: #f1f5f9; 
   display: flex; 
   align-items: center; 
   justify-content: center; 
@@ -473,8 +495,8 @@ body.drawer-open { overflow: hidden; }
 .file-card__preview img { 
   width: 100%; 
   height: 100%; 
-  object-fit: contain; /* ✨ INI KUNCI UTAMANYA: Foto tidak akan terpotong */
-  padding: 8px; /* Memberi jarak tepi agar foto tidak menempel ke garis kotak */
+  object-fit: contain; 
+  padding: 8px; 
 }
 .file-card__body { padding: 1rem; }
 .file-card__title { font-weight: 700; font-size: 0.95rem; color: var(--ink); margin-bottom: 4px; word-break: break-word; }
@@ -1024,6 +1046,35 @@ body.drawer-open { overflow: hidden; }
 .music-item.active { background: var(--accent); color: #fff; }
 .music-item.active i { color: #fff; }
 /* === END PATCH === */
+
+/* === PATCH: STATS BACKGROUND SLIDER === */
+.stats-panel {
+  position: relative;
+  overflow: hidden;
+  background: #071e17; /* Warna dasar gelap jika foto belum dimuat */
+}
+.stats-bg-slider {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 1.5s ease-in-out;
+}
+.stats-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(7,30,23,0.9) 0%, rgba(15,107,82,0.7) 100%);
+  z-index: 1;
+  pointer-events: none;
+  border-radius: var(--radius-card);
+}
+.stats-panel > *:not(.stats-bg-slider) {
+  position: relative;
+  z-index: 2;
+}
+/* === END PATCH === */
 </style>
 </head>
 <body>
@@ -1203,6 +1254,9 @@ body.drawer-open { overflow: hidden; }
   <section class="stats-shell">
     <div class="shell">
       <div class="stats-panel">
+  <!-- WADAH BACKGROUND SLIDER -->
+  <div id="statsBgSlider" class="stats-bg-slider"></div>
+  
   <!-- === PATCH: Running Text === -->
   <div class="news-ticker" aria-label="Info sekolah berjalan">
     <span class="news-ticker__badge"><i class="fas fa-bullhorn"></i> Info Sekolah</span>
@@ -1215,7 +1269,13 @@ body.drawer-open { overflow: hidden; }
   <!-- === END PATCH === -->
   <div class="stats-header-row">
           <div class="eyebrow eyebrow--light">Data & Statistik</div>
-          <h2 class="stats-title">Komitmen kami dalam memajukan pendidikan.</h2>
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%; flex-wrap: wrap; gap: 1rem;">
+            <h2 class="stats-title" style="margin: 0;">Komitmen kami dalam memajukan pendidikan.</h2>
+            <!-- Tombol Khusus Admin -->
+            <button class="btn-submit" id="btnUploadStatsBg" onclick="openUploadStatsModal()" style="width: auto; padding: 8px 16px; font-size: 0.8rem; display: none; background: #fbbf24; color: var(--ink);">
+              <i class="fas fa-camera"></i> Ganti Background
+            </button>
+          </div>
         </div>
         <div class="stats-grid">
           <div><div class="stat-num" id="statGuru">8</div><div class="stat-label"><i class="fas fa-chalkboard-teacher" style="color:#fbbf24;"></i> Tenaga Pendidik</div></div>
@@ -1787,6 +1847,22 @@ body.drawer-open { overflow: hidden; }
   </div>
 </div>
 
+<!-- MODAL UPLOAD BACKGROUND STATISTIK -->
+<div id="uploadStatsModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-image"></i> Upload Background Statistik</h3>
+    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 16px;">Foto akan otomatis digilir (slider) di bagian data.</p>
+    <div class="form-group">
+      <label>Pilih Foto (Max 5 MB)</label>
+      <input type="file" id="statsBgFileInput" accept="image/*">
+    </div>
+    <div class="progress-bar" id="statsBgProgressBar"><div class="progress-fill" id="statsBgProgressFill"></div></div>
+    <div id="statsBgResult" style="margin-top:12px; font-size:0.85rem; text-align:left;"></div>
+    <button class="btn-submit" id="statsBgSubmitBtn" onclick="handleStatsBgUpload()" style="margin-top:12px;">Upload Background</button>
+    <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('uploadStatsModal')">Batal</button>
+  </div>
+</div>
+
 <div id="previewOverlay" class="preview-overlay">
   <div class="preview-box">
     <div class="preview-header">
@@ -2146,6 +2222,7 @@ async function handleLogin() {
     await loadBlocks();
     await loadYoutubeSections();
     await loadMusicPlaylist(); // Reload playlist to show admin buttons if admin
+    await loadStatsBackgrounds(); // Reload bg
   } catch (err) {
     showToast('❌ ' + err.message);
   } finally {
@@ -2162,6 +2239,7 @@ async function logoutAdmin() {
   await loadBlocks();
   await loadYoutubeSections();
   await loadMusicPlaylist(); // Reload playlist to hide admin buttons
+  await loadStatsBackgrounds();
 }
 
 async function checkSession() {
@@ -2188,6 +2266,7 @@ function setLoggedInUI(on) {
   const loginUserState = document.getElementById('loginUserState');
   const btnUploadTop = document.getElementById('btnUploadTop');
   const btnAddMusic = document.getElementById('btnAddMusic');
+  const btnStatsBg = document.getElementById('btnUploadStatsBg');
   const adminUser = currentProfile && currentProfile.role === 'admin';
 
   if (on) {
@@ -2203,12 +2282,16 @@ function setLoggedInUI(on) {
     
     // Tampilkan tombol tambah lagu HANYA untuk admin
     if (btnAddMusic) btnAddMusic.style.display = adminUser ? 'block' : 'none';
+    // Tampilkan tombol ganti background HANYA untuk admin
+    if (btnStatsBg) btnStatsBg.style.display = adminUser ? 'inline-block' : 'none';
+
   } else {
     adminBar.classList.remove('admin-bar-active');
     loginBtnState.classList.remove('hidden');
     loginUserState.classList.add('hidden');
     if (btnUploadTop) btnUploadTop.classList.add('hidden');
     if (btnAddMusic) btnAddMusic.style.display = 'none';
+    if (btnStatsBg) btnStatsBg.style.display = 'none';
   }
 }
 
@@ -2395,7 +2478,7 @@ async function updateSiteSetting(key, value) {
 async function loadPublicFiles() {
   const grid = document.getElementById('publicFilesGrid');
   try {
-    const { data, error } = await supabaseClient.from('public_files').select('*').neq('purpose', 'music').limit(12);
+    const { data, error } = await supabaseClient.from('public_files').select('*').neq('purpose', 'music').neq('purpose', 'stats_bg').limit(12);
     if (error) { grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);">⚠️ ${error.message}</div>`; return; }
     if (!data || data.length === 0) { grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-style:italic;">Belum ada foto.</div>`; return; }
 
@@ -3633,6 +3716,7 @@ window.addEventListener('load', async () => {
   loadBlocks();
   loadYoutubeSections();
   loadMusicPlaylist();
+  loadStatsBackgrounds();
 
   setupWelcomeVoiceTrigger();
   loadTicker();   // ✅ TAMBAHKAN BARIS INI
@@ -4079,6 +4163,111 @@ document.addEventListener('click', (e) => {
     }
   }
 });
+// === END PATCH ===
+
+// === PATCH: LOGIKA SLIDER BACKGROUND STATISTIK ===
+let statsBgInterval = null;
+
+// 1. Fungsi untuk memuat foto dari Supabase (Khusus purpose: 'stats_bg')
+async function loadStatsBackgrounds() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('cloudinary_files')
+      .select('*')
+      .eq('purpose', 'stats_bg')
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+
+    const slider = document.getElementById('statsBgSlider');
+    if (!slider) return;
+
+    // Jika tidak ada foto di database, pakai gambar default (background.jpg)
+    if (!data || data.length === 0) {
+      slider.style.backgroundImage = "url('background.jpg')";
+      return;
+    }
+
+    // Kumpulkan semua URL foto
+    const images = data.map(f => `url('${f.secure_url}')`);
+    let currentIndex = 0;
+
+    // Set foto pertama
+    slider.style.backgroundImage = images[0];
+
+    // Jika ada lebih dari 1 foto, jalankan slider otomatis
+    if (images.length > 1) {
+      clearInterval(statsBgInterval);
+      statsBgInterval = setInterval(() => {
+        currentIndex = (currentIndex + 1) % images.length;
+        slider.style.backgroundImage = images[currentIndex];
+      }, 5000); // Berganti setiap 5 detik
+    }
+
+  } catch (err) {
+    console.error('Gagal memuat background statistik:', err);
+  }
+}
+
+// 2. Fungsi Buka Modal
+function openUploadStatsModal() {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin'); return; }
+  document.getElementById('statsBgFileInput').value = '';
+  document.getElementById('statsBgResult').innerHTML = '';
+  openModal('uploadStatsModal');
+}
+
+// 3. Fungsi Proses Upload
+async function handleStatsBgUpload() {
+  if (!isAdmin()) return;
+  const file = document.getElementById('statsBgFileInput').files[0];
+  if (!file) { showToast('⚠️ Pilih foto dulu!'); return; }
+  if (file.size > 5 * 1024 * 1024) { showToast('⚠️ Max 5 MB!'); return; }
+
+  const btn = document.getElementById('statsBgSubmitBtn');
+  const pb = document.getElementById('statsBgProgressBar');
+  const pf = document.getElementById('statsBgProgressFill');
+  const rb = document.getElementById('statsBgResult');
+
+  btn.disabled = true; pb.classList.add('show'); pf.style.width = '0%';
+  rb.innerHTML = '⏳ Mengupload...';
+
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  fd.append('folder', 'sdn3ngantru/stats-bg');
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`);
+  xhr.upload.onprogress = (e) => { pf.style.width = Math.round((e.loaded / e.total) * 100) + '%'; };
+
+  xhr.onload = async () => {
+    if (xhr.status !== 200) { 
+      btn.disabled = false; pb.classList.remove('show'); 
+      rb.innerHTML = '❌ Gagal upload.'; return; 
+    }
+    const result = JSON.parse(xhr.responseText);
+    
+    // Simpan ke database dengan penanda 'stats_bg'
+    const { error } = await supabaseClient.from('cloudinary_files').insert([{
+      public_id: result.public_id, secure_url: result.secure_url,
+      resource_type: 'image', format: result.format, bytes: result.bytes,
+      folder: result.folder, original_filename: result.original_filename,
+      caption: 'Background Statistik', purpose: 'stats_bg',
+      uploaded_by: currentUser.id, is_public: true
+    }]);
+
+    btn.disabled = false; pb.classList.remove('show');
+    if (error) { rb.innerHTML = '⚠️ Gagal simpan ke DB: ' + error.message; return; }
+
+    rb.innerHTML = '✅ Background berhasil ditambahkan!';
+    showToast('✅ Background diperbarui');
+    await loadStatsBackgrounds(); // Muat ulang slider
+    
+    setTimeout(() => { closeModal('uploadStatsModal'); rb.innerHTML = ''; }, 1500);
+  };
+  xhr.send(fd);
+}
 // === END PATCH ===
 
 function updateLiveClock() {
