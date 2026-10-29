@@ -93,6 +93,11 @@ img { display: block; max-width: 100%; }
 .btn-admin-danger { background: #ef4444; }
 .btn-admin-danger:hover { background: #dc2626; }
 body:has(.admin-bar-active) { padding-left: 80px; }
+header#header {
+  position: relative;
+  z-index: 9999;
+}
+
 #header.is-ready { opacity: 1; transform: translateY(0); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.25rem; flex-wrap: nowrap; }
 .header-logo { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
@@ -106,7 +111,7 @@ body:has(.admin-bar-active) { padding-left: 80px; }
   .header-nav a { display: inline-flex; align-items: center; gap: 0.3rem; opacity: 0.85; padding: 0.35rem 0.6rem; border-radius: var(--radius-pill); white-space: nowrap; }
   .header-nav a:hover { opacity: 1; background: rgba(15,107,82,0.08); color: var(--accent); }
 }
-.header-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.header-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; position: relative; }
 .search-wrapper { position: relative; }
 .search-box { display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.85); border: 1px solid var(--line); border-radius: var(--radius-pill); padding: 0.35rem 0.5rem 0.35rem 1rem; }
 .search-box input { border: none; background: transparent; outline: none; font-size: 0.85rem; width: 120px; }
@@ -956,7 +961,68 @@ body.drawer-open { overflow: hidden; }
 @media (max-width: 768px) {
   .header-clock { display: none; } /* Sembunyikan di HP agar header tidak sesak */
 }
+/* === PATCH: Music Player Playlist === */
+.header-clock { cursor: pointer; transition: all 0.2s; }
+.header-clock:hover { background: rgba(15, 107, 82, 0.15); transform: translateY(-1px); }
 
+.music-playlist {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 1.25rem;
+  width: 280px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  z-index: 1000;
+  display: none;
+  overflow: hidden;
+  animation: fadeSlideDown 0.3s ease;
+}
+.music-playlist.show { display: block; }
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.music-playlist__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.music-playlist__close {
+  color: #fff;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.music-playlist__close:hover { opacity: 1; }
+
+.music-playlist__body { padding: 0.5rem; max-height: 250px; overflow-y: auto; }
+
+.music-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-control);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.music-item:hover { background: var(--surface-2); color: var(--accent); }
+.music-item i { color: var(--accent); font-size: 0.75rem; width: 16px; text-align: center; }
+.music-item.active { background: var(--accent); color: #fff; }
+.music-item.active i { color: #fff; }
 /* === END PATCH === */
 </style>
 </head>
@@ -1004,14 +1070,29 @@ body.drawer-open { overflow: hidden; }
         </ul>
       </nav>
       <div class="header-right">
-                <!-- === PATCH: Jam & Tanggal Realtime === -->
-        <div class="header-clock">
+        <!-- Jam & Tanggal -->
+        <div class="header-clock" onclick="togglePlaylist()" title="Buka Daftar Lagu">
           <div class="header-clock__time" id="liveClock">
             <i class="fas fa-clock"></i> <span>--:--:--</span>
           </div>
           <div class="header-clock__date" id="liveDate">Memuat tanggal...</div>
         </div>
-        <!-- === END PATCH === -->
+
+        <!-- KOTAK PLAYLIST -->
+        <div id="musicPlaylist" class="music-playlist">
+          <div class="music-playlist__header">
+            <span><i class="fas fa-music"></i> Playlist</span>
+            <!-- Tombol tambah lagu disembunyikan secara default, akan muncul jika login -->
+            <button id="btnAddMusic" onclick="openUploadMusicModal()" title="Tambah Lagu" style="display: none; background: #fbbf24; color: var(--ink); padding: 4px 10px; border-radius: 99px; font-size: 0.7rem; font-weight: 800; border: none; cursor: pointer; margin-left: auto; margin-right: 10px;">
+              <i class="fas fa-plus"></i> Lagu
+            </button>
+            <button onclick="document.getElementById('musicPlaylist').classList.remove('show')" class="music-playlist__close"><i class="fas fa-times"></i></button>
+          </div>
+          <div class="music-playlist__body" id="musicPlaylistBody">
+            <div style="text-align: center; padding: 1rem; font-size: 0.8rem; color: var(--muted);">Memuat lagu...</div>
+          </div>
+        </div>
+
         <button class="hamburger-btn" onclick="openMobileDrawer()" aria-label="Buka menu">
           <i class="fas fa-bars"></i>
         </button>
@@ -1692,6 +1773,20 @@ body.drawer-open { overflow: hidden; }
   </div>
 </div>
 
+<!-- MODAL UPLOAD LAGU -->
+<div id="uploadMusicModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-music"></i> Upload Lagu Baru</h3>
+    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 16px;">Hanya file audio (MP3, WAV, M4A)</p>
+    <div class="form-group"><label>Judul Lagu</label><input type="text" id="musicTitleInput" placeholder="Contoh: Mars SD"></div>
+    <div class="form-group"><label>Pilih File Lagu</label><input type="file" id="musicFileInput" accept="audio/*"></div>
+    <div class="progress-bar" id="musicProgressBar"><div class="progress-fill" id="musicProgressFill"></div></div>
+    <div id="musicUploadResult" style="margin-top:12px; font-size:0.85rem; text-align:left;"></div>
+    <button class="btn-submit" id="musicSubmitBtn" onclick="handleMusicUpload()" style="margin-top:12px;">Upload & Tambah ke Playlist</button>
+    <button class="close-modal" style="background:#94a3b8;" onclick="closeModal('uploadMusicModal')">Batal</button>
+  </div>
+</div>
+
 <div id="previewOverlay" class="preview-overlay">
   <div class="preview-box">
     <div class="preview-header">
@@ -2023,6 +2118,7 @@ async function handleLogin() {
     await loadMenus();
     await loadBlocks();
     await loadYoutubeSections();
+    await loadMusicPlaylist(); // Reload playlist to show admin buttons if admin
   } catch (err) {
     showToast('❌ ' + err.message);
   } finally {
@@ -2038,6 +2134,7 @@ async function logoutAdmin() {
   await loadMenus();
   await loadBlocks();
   await loadYoutubeSections();
+  await loadMusicPlaylist(); // Reload playlist to hide admin buttons
 }
 
 async function checkSession() {
@@ -2063,6 +2160,7 @@ function setLoggedInUI(on) {
   const loginBtnState = document.getElementById('loginBtnState');
   const loginUserState = document.getElementById('loginUserState');
   const btnUploadTop = document.getElementById('btnUploadTop');
+  const btnAddMusic = document.getElementById('btnAddMusic');
   const adminUser = currentProfile && currentProfile.role === 'admin';
 
   if (on) {
@@ -2075,11 +2173,15 @@ function setLoggedInUI(on) {
     document.getElementById('userRole').innerText = currentProfile?.role || 'guru';
     document.getElementById('userAvatar').innerText = (currentProfile?.full_name || currentProfile?.email || 'A').charAt(0).toUpperCase();
     if (btnUploadTop) btnUploadTop.classList.remove('hidden');
+    
+    // Tampilkan tombol tambah lagu HANYA untuk admin
+    if (btnAddMusic) btnAddMusic.style.display = adminUser ? 'block' : 'none';
   } else {
     adminBar.classList.remove('admin-bar-active');
     loginBtnState.classList.remove('hidden');
     loginUserState.classList.add('hidden');
     if (btnUploadTop) btnUploadTop.classList.add('hidden');
+    if (btnAddMusic) btnAddMusic.style.display = 'none';
   }
 }
 
@@ -3503,6 +3605,7 @@ window.addEventListener('load', async () => {
   loadMenus();
   loadBlocks();
   loadYoutubeSections();
+  loadMusicPlaylist();
 
   setupWelcomeVoiceTrigger();
   loadTicker();   // ✅ TAMBAHKAN BARIS INI
@@ -3689,6 +3792,206 @@ window.addEventListener('load', () => {
 // ============================================================
 // FUNGSI JAM & TANGGAL REALTIME (HEADER)
 // ============================================================
+// === PATCH: SISTEM PLAYLIST & UPLOAD LAGU CLOUDINARY ===
+function togglePlaylist() {
+  const playlist = document.getElementById('musicPlaylist');
+  if (playlist) playlist.classList.toggle('show');
+}
+
+function openUploadMusicModal() {
+  if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
+    showToast('🔒 Login dulu untuk menambah lagu!');
+    openLoginModal();
+    return;
+  }
+  document.getElementById('musicTitleInput').value = '';
+  document.getElementById('musicFileInput').value = '';
+  document.getElementById('musicUploadResult').innerHTML = '';
+  openModal('uploadMusicModal');
+}
+
+async function handleMusicUpload() {
+  if (typeof isLoggedIn === 'function' && !isLoggedIn()) return;
+  
+  const title = document.getElementById('musicTitleInput').value.trim();
+  const file = document.getElementById('musicFileInput').files[0];
+
+  if (!title) { showToast('⚠️ Isi judul lagu!'); return; }
+  if (!file) { showToast('⚠️ Pilih file MP3!'); return; }
+  if (!file.type.startsWith('audio/')) { showToast('⚠️ File harus berupa audio (MP3)!'); return; }
+  if (file.size > 15 * 1024 * 1024) { showToast('⚠️ Maksimal ukuran lagu 15 MB!'); return; }
+
+  const btn = document.getElementById('musicSubmitBtn');
+  const pb = document.getElementById('musicProgressBar');
+  const pf = document.getElementById('musicProgressFill');
+  const rb = document.getElementById('musicUploadResult');
+
+  btn.disabled = true; pb.classList.add('show'); pf.style.width = '0%';
+  rb.innerHTML = '⏳ Mengupload ke Cloudinary...';
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', typeof CLOUDINARY_UPLOAD_PRESET !== 'undefined' ? CLOUDINARY_UPLOAD_PRESET : 'sdnngantru3@gmail.com');
+  formData.append('folder', 'sdn3ngantru/musik');
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', `https://api.cloudinary.com/v1_1/${typeof CLOUDINARY_CLOUD_NAME !== 'undefined' ? CLOUDINARY_CLOUD_NAME : 'j6sfv399'}/auto/upload`);
+  xhr.upload.onprogress = (e) => { pf.style.width = Math.round((e.loaded / e.total) * 100) + '%'; };
+
+  xhr.onload = async () => {
+    if (xhr.status !== 200) {
+      btn.disabled = false; pb.classList.remove('show');
+      rb.innerHTML = '❌ Gagal upload ke Cloudinary. Cek pengaturan preset.';
+      return;
+    }
+    
+    const result = JSON.parse(xhr.responseText);
+    rb.innerHTML = '⏳ Menyimpan ke database...';
+
+    const { error } = await supabaseClient.from('cloudinary_files').insert([{
+      public_id: result.public_id,
+      secure_url: result.secure_url,
+      resource_type: 'video', // Cloudinary membaca audio sebagai tipe 'video'
+      format: result.format,
+      bytes: result.bytes,
+      folder: result.folder,
+      original_filename: result.original_filename,
+      caption: title, // Judul lagu
+      purpose: 'music', // Penanda khusus musik
+      uploaded_by: currentUser.id,
+      is_public: true
+    }]);
+
+    btn.disabled = false; pb.classList.remove('show');
+
+    if (error) {
+      rb.innerHTML = '⚠️ Gagal simpan ke database: ' + error.message;
+      return;
+    }
+
+    rb.innerHTML = '✅ Lagu berhasil ditambahkan!';
+    showToast('🎵 Lagu berhasil diupload!');
+    
+    // Segarkan daftar putar
+    await loadMusicPlaylist();
+    
+    setTimeout(() => {
+      closeModal('uploadMusicModal');
+      rb.innerHTML = '';
+    }, 1500);
+  };
+
+  xhr.onerror = () => { 
+    btn.disabled = false; pb.classList.remove('show'); 
+    rb.innerHTML = '❌ Kesalahan jaringan saat upload.'; 
+  };
+  
+  xhr.send(formData);
+}
+
+async function loadMusicPlaylist() {
+  const container = document.getElementById('musicPlaylistBody');
+  const btnAddMusic = document.getElementById('btnAddMusic');
+  
+  if (btnAddMusic && currentProfile) {
+    btnAddMusic.style.display = currentProfile.role === 'admin' ? 'block' : 'none';
+  } else if (btnAddMusic) {
+    btnAddMusic.style.display = 'none';
+  }
+
+  if (!container) return;
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('cloudinary_files')
+      .select('*')
+      .eq('purpose', 'music')
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div style="text-align: center; padding: 1rem; font-size: 0.8rem; color: var(--muted);">Belum ada lagu. Klik tombol + di atas untuk menambah.</div>';
+      return;
+    }
+
+    // Render daftar lagu. HANYA ADMIN yang bisa melihat tombol hapus.
+    container.innerHTML = data.map(song => {
+      const deleteBtn = isAdmin() ? `
+        <button onclick="event.stopPropagation(); deleteMusic('${song.id}')" style="background: #fee2e2; color: #991b1b; border: none; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; cursor: pointer; margin-left: auto; font-weight: bold;" title="Hapus Lagu">
+          <i class="fas fa-trash"></i>
+        </button>
+      ` : '';
+
+      return `
+        <div class="music-item" style="display: flex; justify-content: space-between; align-items: center; padding-right: 8px;" onclick="playThisSong('${song.secure_url}', '${escapeHtml(song.caption)}', this)">
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0;">
+            <i class="fas fa-play"></i> <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(song.caption)}</span>
+          </div>
+          ${deleteBtn}
+        </div>
+      `;
+    }).join('');
+
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = '<div style="text-align: center; padding: 1rem; color: #dc2626; font-size: 0.8rem;">Gagal memuat lagu.</div>';
+  }
+}
+
+async function deleteMusic(id) {
+  if (!isAdmin()) { showToast('⚠️ Hanya admin yang bisa menghapus!'); return; }
+  if (!confirm('Yakin ingin menghapus lagu ini dari daftar putar?')) return;
+
+  try {
+    const { error } = await supabaseClient.from('cloudinary_files').delete().eq('id', id);
+    if (error) throw error;
+    showToast('✅ Lagu berhasil dihapus');
+    await loadMusicPlaylist(); // Refresh daftar
+  } catch (err) {
+    showToast('❌ Gagal menghapus lagu: ' + err.message);
+  }
+}
+
+function playThisSong(fileUrl, title, element) {
+  const audio = document.getElementById('schoolMusic');
+  const logo = document.getElementById('rotatingLogo');
+  const cardLeft = document.getElementById('musicCardLeft');
+  const playIcon = document.querySelector('#musicPlayBtn i');
+
+  document.querySelectorAll('.music-item').forEach(el => el.classList.remove('active'));
+  
+  audio.src = fileUrl;
+  audio.play().then(() => {
+    logo.classList.add('playing');
+    cardLeft.classList.add('is-playing');
+    playIcon.classList.remove('fa-play');
+    playIcon.classList.add('fa-pause');
+    
+    if (element) element.classList.add('active');
+    
+    document.getElementById('spotlightTitle').innerText = title;
+    document.getElementById('spotlightTag').innerText = 'Sedang Diputar';
+    
+    showToast(`🎵 Memutar: ${title}`);
+  }).catch(err => {
+    showToast('⚠️ Gagal memutar lagu. Pastikan format file benar.');
+    console.error(err);
+  });
+}
+
+// Tutup playlist jika klik di luar area
+document.addEventListener('click', (e) => {
+  const playlist = document.getElementById('musicPlaylist');
+  const clock = document.querySelector('.header-clock');
+  if (playlist && playlist.classList.contains('show')) {
+    if (!playlist.contains(e.target) && !clock.contains(e.target)) {
+      playlist.classList.remove('show');
+    }
+  }
+});
+// === END PATCH ===
+
 function updateLiveClock() {
   const clockEl = document.querySelector('#liveClock span');
   const dateEl = document.getElementById('liveDate');
