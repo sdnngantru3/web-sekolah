@@ -1927,11 +1927,45 @@ function toggleMusic() {
   const logo = document.getElementById('rotatingLogo');
   const cardLeft = document.getElementById('musicCardLeft');
   const playIcon = document.querySelector('#musicPlayBtn i');
+  const marsSongUrl = 'artuga_jayalah.mp3'; // File ada di GitHub
 
   if (!audio || !logo) return;
 
-  if (audio.paused) {
-    // Play
+  // Cek apakah URL lagu saat ini berakhiran 'artuga_jayalah.mp3'
+  // (Menggunakan endsWith untuk mengantisipasi perbedaan URL GitHub)
+  const isPlayingMars = audio.src.endsWith(marsSongUrl);
+  const isPlaying = !audio.paused;
+
+  // SKENARIO 1: Jika yang diputar BUKAN Mars (misal devinner)
+  if (!isPlayingMars) {
+    // Paksa ganti source ke Mars
+    audio.src = marsSongUrl;
+    
+    // Hapus status "aktif" dari playlist (misal jika devinner sedang menyala hijau)
+    document.querySelectorAll('.music-item').forEach(el => {
+      el.classList.remove('active');
+      const icon = el.querySelector('i');
+      if (icon) {
+        icon.classList.remove('fa-pause');
+        icon.classList.add('fa-play');
+      }
+    });
+    
+    // Update teks di kartu hero
+    document.getElementById('spotlightTitle').innerText = 'Mars SD Negeri 3 Ngantru';
+    document.getElementById('spotlightTag').innerText = 'Sedang Diputar';
+  }
+
+  // SKENARIO 2: Jika saat ini sedang memutar Mars dan lagu berjalan -> PAUSE
+  if (isPlayingMars && isPlaying) {
+    audio.pause();
+    logo.classList.remove('playing');
+    cardLeft.classList.remove('is-playing');
+    playIcon.classList.remove('fa-pause');
+    playIcon.classList.add('fa-play');
+  } 
+  // SKENARIO 3: Jika saat ini Mars sedang berhenti (atau baru dipaksa ganti) -> PLAY
+  else {
     audio.play().then(() => {
       logo.classList.add('playing');
       cardLeft.classList.add('is-playing');
@@ -1941,13 +1975,6 @@ function toggleMusic() {
       console.error('Gagal memutar audio:', err);
       showToast('⚠️ Gagal memutar lagu. Pastikan file artuga_jayalah.mp3 ada.');
     });
-  } else {
-    // Pause
-    audio.pause();
-    logo.classList.remove('playing');
-    cardLeft.classList.remove('is-playing');
-    playIcon.classList.remove('fa-pause');
-    playIcon.classList.add('fa-play');
   }
 }
 
