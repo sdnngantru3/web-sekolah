@@ -152,6 +152,14 @@ p{margin:.3rem 0;line-height:1.45}
 .auto small{color:var(--soft);font-size:.95rem}
 /*ln*/.ln{border-bottom:.12rem solid #78909c;height:2.1rem}
 .blank{display:inline-block;min-width:12rem;border-bottom:.12rem solid #78909c;height:1.3rem;vertical-align:bottom}
+/*pre*/.fill{display:inline-block;min-width:7rem;border-bottom:.12rem solid #78909c;height:1.2rem;vertical-align:bottom}
+.prev h1{font-size:1.5rem;text-align:center;margin:0;color:var(--blued)}.prev .ph{text-align:center;color:var(--soft);margin-bottom:.4rem}
+.prev table{width:100%;border-collapse:collapse;margin:.4rem 0}.prev th,.prev td{border:.1rem solid #607d8b;padding:.25rem .5rem;font-size:1rem;text-align:left;height:2rem}.prev th{background:#e3f2fd}
+.prev h4{margin:.8rem 0 .2rem;background:#fff3e0;padding:.2rem .6rem;border-radius:.5rem;font-size:1.1rem}.prev .pq{margin:.5rem 0;font-size:1.05rem}.prev .box{border:.1rem solid #607d8b;padding:.4rem .7rem;margin-top:.6rem;border-radius:.5rem}
+/*pl*/.prev .pg2{margin-top:1.2rem;border-top:.2rem dashed #90a4ae;padding-top:.6rem}
+.prev .plist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
+.prev table.pl{margin:0}.prev table.pl th{font-size:.95rem}.prev table.pl td{font-size:.8rem;height:auto;padding:.1rem .35rem}
+.prev table.pl td.pc{width:34%}.prev table.pl td.py{width:22%}
 textarea.ta{width:100%;min-height:5rem;font-size:1.2rem;padding:.6rem .8rem;border:.15rem solid #90caf9;border-radius:.9rem;resize:vertical;outline:none;margin-top:.25rem}
 textarea.ta:focus{border-color:var(--orange)}
 /* awards */
@@ -201,6 +209,17 @@ table.tb th{background:#e3f2fd}
  #printArea th{background:#ddd;width:17%}
  #printArea .pq{margin:1.6mm 0;break-inside:avoid}
  #printArea .pq b{font-weight:700}
+ #printArea h4{margin:2.5mm 0 1mm;font-size:11pt;background:#ddd;padding:.8mm 2mm}
+ #printArea .pg2{break-before:page}
+ #printArea .plist{column-count:2;column-gap:5mm}
+ #printArea table.pl{width:100%;margin:0 0 1.3mm;break-inside:avoid}
+ #printArea table.pl th{width:auto;font-size:8.5pt;padding:.6mm 1.5mm}
+ #printArea table.pl td{font-size:7pt;padding:.2mm 1mm;height:auto;line-height:1.15}
+ #printArea table.pl td.pc{width:34%}
+ #printArea table.pl td.py{width:22%}
+ #printArea table.plan th{width:auto}
+ #printArea table.plan td{height:7mm}
+ #printArea .fill{display:inline-block;min-width:30mm;border-bottom:.3mm solid #555;height:4.5mm;vertical-align:bottom}
  #printArea .ln{border-bottom:.3mm solid #555;height:6.6mm}
  #printArea td{height:8mm}
  #printArea .box{border:.4mm solid #000;padding:2mm 3mm;margin:3mm 0}
@@ -416,6 +435,7 @@ SCREENS.home={
   <button class="btn b-blue" onclick="showHow()">🎮 CARA BERMAIN</button>
   <button class="btn b-green" onclick="showGoals()">🎯 TUJUAN PEMBELAJARAN</button>
   <button class="btn b-purple" onclick="showAbout()">ℹ️ TENTANG APLIKASI</button>
+  <button class="btn b-yellow" onclick="showPre()">📝 WORKSHEET PRA-SIMULASI</button>
  </div>
  <div class="chips"><span class="chip">💰 Modal awal ${rp(S.capital)}</span><span class="chip">🧒 ${S.buyers} pembeli virtual</span><span class="chip">📶 Bisa offline</span><span class="chip">👆 Layar sentuh</span></div>
  </div><div>${heroSvg()}</div></div>`;},
@@ -451,7 +471,8 @@ SCREENS.register={
  html(){return `<div class="center card"><h2>👋 Halo, Calon Pengusaha!</h2><p class="sub">Isi data dulu sebelum membuka tokomu.</p>
  <label for="inpName">🧑‍🍳 Nama pengusaha</label><input class="inp" id="inpName" maxlength="24" placeholder="Tulis namamu" value="${esc(G.name)}" autocomplete="off">
  <label for="inpGroup">👥 Nama kelompok (boleh dikosongkan)</label><input class="inp" id="inpGroup" maxlength="24" placeholder="Contoh: Kelompok Mangga" value="${esc(G.group)}" autocomplete="off">
- <div class="capital">💰 Modal awalmu: <b>${rp(S.capital)}</b></div></div>`;},
+ <div class="capital">💰 Modal awalmu: <b>${rp(S.capital)}</b></div>
+ <div class="row" style="justify-content:center;margin-top:1rem"><button class="btn b-yellow sm" onclick="showPre()">📝 WORKSHEET PRA-SIMULASI</button></div></div>`;},
  nav(){return {back:{label:'KEMBALI',fn:"go('home')"},next:{label:'LANJUT PILIH PRODUK',fn:'regNext()'}};},
  after(){const i=$('#inpName');if(i){i.addEventListener('keydown',e=>{if(e.key==='Enter')regNext();});}}
 };
@@ -772,6 +793,37 @@ function printWs(){
   '<div class="box">Nilai worksheet (diisi guru): ________ / 20 &nbsp;&nbsp;&nbsp; Paraf guru: ____________</div>';
   setTimeout(()=>window.print(),150);
 }
+
+
+/* ---- WORKSHEET PRA-SIMULASI (lembar kosong, dibagikan sebelum bermain) ---- */
+function preHtml(){
+  const L=n=>'<div class="ln"></div>'.repeat(n);
+  const F=()=>'<span class="fill"></span>';
+  const Q=(n,t,b)=>'<div class="pq"><b>'+n+'. '+t+'</b>'+b+'</div>';
+  let rows='';for(let i=1;i<=6;i++)rows+='<tr><td style="width:7%">'+i+'</td><td></td><td></td><td></td><td></td></tr>';
+  return '<h1>LEMBAR KERJA PRA-SIMULASI – KIDPRENEUR</h1><div class="ph">Rencana Usahaku • Isilah dengan pensil sebelum bermain</div>'+
+  '<table><tr><th>Nama</th><td></td><th>Kelompok</th><td></td></tr><tr><th>Produk usaha</th><td></td><th>Tanggal</th><td></td></tr></table>'+
+  '<h4>A. Yang Sudah Kuketahui</h4>'+
+  Q(1,'Menurutmu, apa yang dimaksud dengan modal?',L(2))+
+  Q(2,'Apa yang dimaksud dengan bahan baku? Sebutkan satu contohnya!',L(1))+
+  Q(3,'Apa yang terjadi pada usaha jika harga jual lebih kecil daripada modal?',L(1))+
+  Q(4,'Menurutmu, kapan seorang pengusaha dikatakan untung?',L(1))+
+  '<h4>B. Rencana Usahaku</h4>'+
+  Q(5,'Produk apa yang akan kamu jual? Mengapa kamu memilih produk itu?',L(2))+
+  Q(6,'Rencanakan belanja bahan bakumu!','<table class="plan"><tr><th>No</th><th>Nama bahan</th><th>Harga</th><th>Jumlah beli</th><th>Total harga</th></tr>'+rows+'</table><div>Perkiraan total belanjaku: Rp '+F()+' (tidak boleh melebihi modal awal)</div>')+
+  Q(7,'Hitunglah perkiraanmu!','<div>Jumlah produk yang akan jadi: '+F()+'</div><div>Modal per produk = total belanja ÷ jumlah produk = Rp '+F()+'</div>')+
+  Q(8,'Berapa harga jual yang akan kamu pilih? Mengapa?','<div>Harga jual: Rp '+F()+' per porsi</div>'+L(1))+
+  Q(9,'Menurutmu, usahamu nanti akan: &nbsp; ☐ Untung &nbsp; ☐ Rugi &nbsp; ☐ Impas. Mengapa?',L(1))+
+  Q(10,'Apa strategi yang akan kamu lakukan agar pembeli tertarik?',L(2))+
+  '<div class="box">Catatan: simpan lembar ini, lalu bandingkan dengan hasil usahamu setelah bermain!</div>'+priceList();
+}
+function priceList(){
+  const cn={};CATS.forEach(c=>cn[c.id]=c.name);
+  const tabs=P.map(p=>'<table class="pl"><tr><th colspan="3">'+p.e+' '+esc(p.name)+' <small>('+esc(cn[p.cat])+' • dijual per '+esc(p.unit)+')</small></th></tr>'+p.ings.map(i=>'<tr><td>'+i.e+' '+esc(i.name)+(i.opt&&i.name.indexOf('(')<0?' <i>(opsional)</i>':'')+'</td><td class="pc">'+rp(i.price)+'/'+esc(i.unit)+'</td><td class="py">±'+i.yld+' '+esc(p.unit)+'</td></tr>').join('')+'</table>').join('');
+  return '<div class="pg2"><h4>LEMBAR 2 – DAFTAR PRODUK DAN HARGA BAHAN BAKU</h4><div class="pq">Pilih <b>satu</b> produk yang ingin kamu jual. Pindahkan bahan yang akan kamu beli ke tabel rencana belanja di Lembar 1. Modal awalmu <b>'+rp(S.capital)+'</b>. Bahan <i>(opsional / topping / istimewa)</i> boleh tidak dibeli. Kolom terakhir = jumlah produk dari satu kemasan bahan. Belilah secukupnya agar bahan tidak terbuang!</div><div class="plist">'+tabs+'</div></div>';
+}
+function showPre(){openModal('<h2>📝 Worksheet Pra-Simulasi</h2><p class="sub">Lembar kosong untuk dicetak dan dibagikan <b>sebelum</b> siswa bermain. Siswa mengisi identitas dan jawaban dengan pensil.</p><div class="row" style="margin:.6rem 0"><button class="btn b-blue" onclick="printPre()">🖨️ CETAK (A4)</button></div><div class="paper prev">'+preHtml()+'</div>',true);}
+function printPre(){$('#printArea').innerHTML=preHtml();setTimeout(()=>window.print(),150);}
 
 /* ---- SCORING & AWARDS ---- */
 function computeScores(){
