@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Generator RPM / RPP Deep Learning Minimal 15 Halaman A4 & TPACK AI</title>
+    <title>Generator RPM / RPP Deep Learning & TPACK AI - EduPrint AI</title>
     <!-- Tailwind CSS untuk tata letak modern -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons untuk ikon visual -->
@@ -28,10 +28,8 @@
         /* Tampilan Visual Lembar Kertas A4 Presisi */
         .a4-page {
             width: 210mm;
-            height: 297mm;
-            max-height: 297mm;
-            overflow: hidden;
-            padding: 1.5cm 1.8cm 1.8cm 1.8cm;
+            min-height: 297mm;
+            height: auto;
             background: #ffffff;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
             margin: 0 auto 2rem auto;
@@ -39,6 +37,37 @@
             box-sizing: border-box;
             border: 1px solid #e2e8f0;
             border-radius: 4px;
+            padding: 12mm 15mm 15mm 15mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Mode Padat (Compact Mode) */
+        .compact-mode .a4-page {
+            padding: 10mm 12mm 10mm 12mm !important;
+            margin-bottom: 1.2rem auto;
+        }
+
+        .compact-mode .rpp-table {
+            font-size: 9.5px !important;
+            line-height: 1.25 !important;
+        }
+
+        .compact-mode .rpp-table th, .compact-mode .rpp-table td {
+            padding: 3px 5px !important;
+        }
+
+        /* Cover halaman 1 mengisi penuh A4 pada mode terurai */
+        .full-cover #a4-page-1 {
+            padding: 0 !important;
+            overflow: hidden;
+        }
+
+        .full-cover #a4-page-1 > #default-cover-wrapper {
+            padding: 1.5cm 1.8cm 1.2cm 1.8cm;
+            min-height: 297mm;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -50,23 +79,6 @@
             border: none !important;
             border-radius: 0 !important;
             margin: 0 !important;
-            width: 210mm !important;
-            height: 297mm !important;
-        }
-
-        /* Cover halaman 1 mengisi penuh A4 tanpa padding luar */
-        #a4-page-1 {
-            padding: 0 !important;
-            overflow: hidden;
-        }
-
-        #a4-page-1 > #default-cover-wrapper {
-            padding: 1.5cm 1.8cm 1.2cm 1.8cm;
-            min-height: 297mm;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
         }
 
         @media (max-width: 1024px) {
@@ -75,7 +87,7 @@
                 min-height: auto;
                 height: auto;
                 max-height: none;
-                padding: 1rem;
+                padding: 1rem !important;
                 margin-bottom: 1rem;
             }
             #a4-page-1 > #default-cover-wrapper {
@@ -101,24 +113,14 @@
                 box-shadow: none !important;
                 border: none !important;
                 margin: 0 !important;
-                padding: 1.2cm !important;
+                padding: 12mm 15mm !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                height: 297mm !important;
-                max-height: 297mm !important;
-                overflow: hidden !important;
+                min-height: 297mm !important;
+                height: auto !important;
                 background-color: #ffffff !important;
                 page-break-after: always;
                 break-after: page;
-            }
-
-            #a4-page-1 {
-                padding: 0 !important;
-            }
-
-            #a4-page-1 > #default-cover-wrapper {
-                min-height: 100vh;
-                padding: 1.5cm 1.8cm 1.2cm 1.8cm;
             }
 
             #panel-preview {
@@ -146,13 +148,13 @@
         .rpp-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 11px;
-            margin-top: 6px;
-            margin-bottom: 8px;
+            font-size: 10.5px;
+            margin-top: 4px;
+            margin-bottom: 6px;
         }
         .rpp-table th, .rpp-table td {
             border: 1px solid #334155;
-            padding: 5px 7px;
+            padding: 4px 6px;
             vertical-align: top;
         }
         .rpp-table th {
@@ -160,6 +162,28 @@
             font-weight: 700;
             text-align: center;
             color: #0f172a;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #0f172a;
+            border-bottom: 2px solid #0f172a;
+            padding-bottom: 2px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .sub-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 6px;
+            margin-bottom: 3px;
         }
     </style>
 </head>
@@ -174,16 +198,16 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <h1 class="text-lg sm:text-xl font-extrabold heading-font text-slate-900 leading-tight">EduPrint AI</h1>
-                        <span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">RPM Minimal 15 Hal A4</span>
+                        <span class="text-[10px] bg-indigo-100 text-indigo-700 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">RPM Presisi & Deep Learning v7.0</span>
                     </div>
-                    <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Generator RPM / RPP Deep Learning & TPACK Interaktif</p>
+                    <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Generator Modul Ajar / RPP Deep Learning & TPACK Bebas Simbol Bintang (**)</p>
                 </div>
             </div>
             
             <div class="flex items-center gap-3">
                 <div class="hidden sm:flex items-center gap-2 text-xs bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full font-medium border border-emerald-100">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Gemini AI Ready
+                    Gemini AI Auto-Fallback Active
                 </div>
             </div>
         </div>
@@ -203,6 +227,7 @@
 
     <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 flex flex-col lg:flex-row gap-4 lg:gap-8">
         
+        <!-- PANEL PENGATURAN PARAMETER -->
         <section id="panel-settings" class="w-full lg:w-[420px] shrink-0 space-y-4 sm:space-y-6 no-print block">
             
             <!-- Notifikasi Status -->
@@ -220,7 +245,7 @@
                         <i data-lucide="sliders" class="w-5 h-5 text-indigo-600"></i>
                         Parameter RPM A4
                     </h2>
-                    <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-mono font-bold">v5.0</span>
+                    <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-mono font-bold">v7.0 Unified</span>
                 </div>
 
                 <div class="space-y-4">
@@ -274,6 +299,33 @@
                         </div>
                     </div>
 
+                    <!-- MODE DOKUMEN & JUMLAH HALAMAN TARGET -->
+                    <div class="bg-indigo-50/70 p-3 rounded-xl border border-indigo-100 space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-indigo-950 mb-1 flex items-center gap-1.5">
+                                <i data-lucide="layout" class="w-4 h-4 text-indigo-600"></i>
+                                Format & Layout Dokumen
+                            </label>
+                            <select id="input-layout-mode" class="w-full px-2.5 py-2 border border-indigo-200 rounded-xl text-xs bg-white font-semibold text-indigo-900" onchange="toggleLayoutMode()">
+                                <option value="full" selected>Mode Terurai / Lengkap (Cover Full A4, 15+ Halaman)</option>
+                                <option value="compact">Mode Padat / Ringkas (Cover Mini, 6+ Halaman)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-indigo-950 mb-1 flex items-center gap-1.5">
+                                <i data-lucide="files" class="w-4 h-4 text-indigo-600"></i>
+                                Target Minimal Halaman A4
+                            </label>
+                            <div class="flex items-center gap-3">
+                                <input type="number" id="input-page-count" min="6" max="30" value="15" step="1"
+                                    class="w-20 px-2 py-1.5 border border-indigo-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 text-center font-bold"
+                                    oninput="document.getElementById('page-count-label').innerText = 'Minimal ' + this.value + ' Halaman'">
+                                <span id="page-count-label" class="text-xs font-bold text-indigo-700 bg-white px-2.5 py-1 rounded-lg border border-indigo-200 flex-1 text-center">Minimal 15 Halaman</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- DATA SEKOLAH & MAPEL -->
                     <div class="grid grid-cols-1 gap-3">
                         <div>
@@ -286,7 +338,7 @@
                         </div>
                     </div>
 
-                    <!-- IDENTITAS GURU DEFAULT: Aburrizal Hamdani Lubis, S.Pd -->
+                    <!-- IDENTITAS GURU -->
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-700 mb-1">Nama Guru (Penyusun)</label>
@@ -298,7 +350,7 @@
                         </div>
                     </div>
 
-                    <!-- IDENTITAS KEPALA SEKOLAH DEFAULT: Lilik Supriati, S.Pd -->
+                    <!-- IDENTITAS KEPALA SEKOLAH -->
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-700 mb-1">Nama Kepsek</label>
@@ -356,22 +408,13 @@
                         </div>
                     </div>
 
-                    <!-- OPSIONAL INTEGRASI DEEP LEARNING & TPACK -->
+                    <!-- INTEGRASI DEEP LEARNING & TPACK -->
                     <div class="bg-indigo-50/70 rounded-xl p-3 border border-indigo-100 space-y-2">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" id="check-tpack" checked class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
                             <span class="text-xs font-bold text-indigo-950">Integrasikan Deep Learning & TPACK Lengkap</span>
                         </label>
                         <p class="text-[10px] text-slate-600 leading-tight pl-6">Mengintegrasikan Technological Pedagogical Content Knowledge (TPACK) serta prinsip Mindful, Meaningful, & Joyful Learning.</p>
-                    </div>
-
-                    <!-- BENTUK SOAL LKPD -->
-                    <div class="bg-emerald-50/70 rounded-xl p-3 border border-emerald-100 space-y-2">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="check-include-lkpd" checked class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
-                            <span class="text-xs font-bold text-emerald-950">Sertakan LKPD & Bahan Ajar Komplit</span>
-                        </label>
-                        <p class="text-[10px] text-emerald-800 italic pl-6">*Mencakup RPP, Bahan Ajar, LKPD 5 Tipe Soal, Rubrik, dan Kunci Jawaban Lengkap.</p>
                     </div>
 
                     <!-- JUMLAH SOAL LKPD PER JENIS -->
@@ -407,22 +450,6 @@
                                     class="w-full px-2 py-1.5 border border-emerald-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500">
                             </div>
                         </div>
-                        <p class="text-[10px] text-emerald-700 italic">*Semakin banyak soal, semakin banyak halaman LKPD yang dihasilkan.</p>
-                    </div>
-
-                    <!-- TARGET MINIMAL JUMLAH HALAMAN -->
-                    <div class="bg-indigo-50/70 rounded-xl p-3 border border-indigo-100 space-y-2">
-                        <label class="block text-xs font-bold text-indigo-950 flex items-center gap-1.5">
-                            <i data-lucide="files" class="w-4 h-4 text-indigo-600"></i>
-                            Target Minimal Jumlah Halaman A4
-                        </label>
-                        <div class="flex items-center gap-3">
-                            <input type="number" id="input-page-count" min="15" max="30" value="15" step="1"
-                                class="w-20 px-2 py-1.5 border border-indigo-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 text-center font-bold"
-                                oninput="document.getElementById('page-count-label').innerText = 'Minimal ' + this.value + ' Halaman'">
-                            <span id="page-count-label" class="text-xs font-bold text-indigo-700 bg-white px-2.5 py-1 rounded-lg border border-indigo-200 flex-1 text-center">Minimal 15 Halaman</span>
-                        </div>
-                        <p class="text-[10px] text-slate-600 leading-tight">AI akan menghasilkan minimal sejumlah ini. Jika konten lebih banyak, halaman otomatis bertambah.</p>
                     </div>
                 </div>
 
@@ -430,11 +457,12 @@
                 <button type="button" id="btn-generate" onclick="generateModul()" 
                     class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-2 text-sm">
                     <i data-lucide="sparkles" class="w-4 h-4"></i>
-                    Buat RPM Minimal 15 Halaman A4 (AI)
+                    Buat Modul Ajar / RPM AI
                 </button>
             </div>
         </section>
 
+        <!-- PANEL PRATINJAU HALAMAN -->
         <section id="panel-preview" class="flex-1 flex-col gap-4 hidden lg:flex">
             
             <!-- Bilah Kontrol Dokumen -->
@@ -475,7 +503,7 @@
                         <i data-lucide="file-spreadsheet" class="w-7 h-7"></i>
                     </div>
                     <h3 class="text-base font-bold text-slate-800 heading-font">Dokumen RPP / RPM Belum Disusun</h3>
-                    <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">Masukkan API Key Anda, sesuaikan detail mata pelajaran & materi pokok, lalu klik <span class="font-semibold text-indigo-600">"Buat RPM Minimal 15 Halaman A4 (AI)"</span> untuk menghasilkan lembar kertas A4 presisi.</p>
+                    <p class="text-xs text-slate-500 max-w-md mx-auto mt-1">Masukkan API Key Anda, sesuaikan detail mata pelajaran & materi pokok, lalu klik <span class="font-semibold text-indigo-600">"Buat Modul Ajar / RPM AI"</span> untuk menghasilkan lembar kertas A4 presisi.</p>
                 </div>
 
                 <!-- Tampilan Efek Loading -->
@@ -486,7 +514,7 @@
                         <i data-lucide="cpu" class="w-6 h-6 text-indigo-600 animate-pulse"></i>
                     </div>
                     <h3 class="text-base font-bold text-slate-900 heading-font" id="loading-title">Menyusun RPM Halaman A4 Presisi...</h3>
-                    <p class="text-xs text-slate-500 max-w-md mx-auto mt-1 animate-pulse" id="loading-subtitle">Memproses matriks TPACK, sintaks 2 pertemuan, bahan ajar, LKPD 5 tipe soal, serta kunci jawaban...</p>
+                    <p class="text-xs text-slate-500 max-w-md mx-auto mt-1 animate-pulse" id="loading-subtitle">Memproses matriks TPACK, sintaks 2 pertemuan, bahan ajar, LKPD 5 tipe soal, serta kunci jawaban tanpa tanda bintang (**)...</p>
                 </div>
 
                 <!-- Konten Utama Dokumen A4 Presisi -->
@@ -497,7 +525,6 @@
                         <div id="default-cover-wrapper" class="w-full h-full flex flex-col justify-between relative z-10">
                             <div class="absolute -top-12 -right-12 w-48 h-48 bg-gradient-to-br from-indigo-500/15 to-purple-500/20 rounded-full blur-2xl pointer-events-none"></div>
                             <div class="absolute top-1/3 -left-16 w-52 h-52 bg-gradient-to-tr from-blue-500/15 to-emerald-500/15 rounded-full blur-2xl pointer-events-none"></div>
-                            <div class="absolute bottom-20 -right-10 w-44 h-44 bg-gradient-to-tl from-amber-500/15 to-indigo-500/15 rounded-full blur-2xl pointer-events-none"></div>
 
                             <div>
                                 <div class="w-full h-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-500 rounded-full mb-6 shadow-sm"></div>
@@ -515,7 +542,6 @@
 
                                 <div class="flex flex-col items-center justify-center my-6">
                                     <div id="cover-logo-display" class="p-5 border-2 border-indigo-200/90 rounded-3xl opacity-95 max-w-[160px] max-h-[160px] flex items-center justify-center bg-white shadow-md relative group">
-                                        <div class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500 opacity-20 blur-sm"></div>
                                         <i data-lucide="award" class="w-20 h-20 text-indigo-600 relative z-10" id="cover-default-icon"></i>
                                         <img id="cover-uploaded-logo" class="hidden max-w-full max-h-[120px] object-contain relative z-10" alt="Logo Sekolah">
                                     </div>
@@ -777,7 +803,7 @@
                         </div>
                     </div>
 
-                    <!-- HALAMAN 7: LANGKAH PEMBELAJARAN PERTEMUAN 2 (APLIKASI PROYEK & PROTEKSI CYBER) -->
+                    <!-- HALAMAN 7: LANGKAH PEMBELAJARAN PERTEMUAN 2 -->
                     <div class="a4-page" id="a4-page-7">
                         <div class="space-y-4">
                             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
@@ -872,7 +898,7 @@
                                 <span class="text-[10px] text-slate-500 font-normal">Panduan Literasi Digital</span>
                             </h2>
 
-                            <div id="container-bahan-ajar-1" class="space-y-3 text-xs leading-relaxed">
+                            <div id="container-bahan-ajar-1" class="space-y-3 text-xs leading-relaxed text-justify">
                                 <!-- Dimuat Dinamis -->
                             </div>
                         </div>
@@ -891,7 +917,7 @@
                                 <span class="text-[10px] text-indigo-700 font-bold">Algoritma & Proteksi Data</span>
                             </h2>
 
-                            <div id="container-bahan-ajar-2" class="space-y-3 text-xs leading-relaxed">
+                            <div id="container-bahan-ajar-2" class="space-y-3 text-xs leading-relaxed text-justify">
                                 <!-- Dimuat Dinamis -->
                             </div>
                         </div>
@@ -902,7 +928,7 @@
                         </div>
                     </div>
 
-                    <!-- HALAMAN 12: LKPD SISWA - BAGIAN A (PG) & BAGIAN B (PGK) -->
+                    <!-- HALAMAN 12: LKPD SISWA - BAGIAN A & B -->
                     <div class="a4-page" id="a4-page-12">
                         <div class="space-y-4">
                             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
@@ -928,7 +954,7 @@
                         </div>
                     </div>
 
-                    <!-- HALAMAN 13: LKPD SISWA - BAGIAN C (MENJODOHKAN) & BAGIAN D (ISIAN) -->
+                    <!-- HALAMAN 13: LKPD SISWA - BAGIAN C & D -->
                     <div class="a4-page" id="a4-page-13">
                         <div class="space-y-4">
                             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
@@ -947,7 +973,7 @@
                         </div>
                     </div>
 
-                    <!-- HALAMAN 14: LKPD SISWA - BAGIAN E (URAIAN/PROYEK) & LEMBAR REFLEKSI SISWA -->
+                    <!-- HALAMAN 14: LKPD SISWA - BAGIAN E & REFLEKSI -->
                     <div class="a4-page" id="a4-page-14">
                         <div class="space-y-4">
                             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
@@ -966,7 +992,7 @@
                         </div>
                     </div>
 
-                    <!-- HALAMAN 15: KUNCI JAWABAN, SKORING, REMEDIAL, & PENGESAHAN DOKUMEN -->
+                    <!-- HALAMAN 15: KUNCI JAWABAN, REMEDIAL, & PENGESAHAN DOKUMEN -->
                     <div class="a4-page" id="a4-page-15">
                         <div class="space-y-4">
                             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 pb-1 flex items-center justify-between">
@@ -1019,16 +1045,38 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-4 px-6 text-center text-xs text-slate-500 no-print">
-        <p>&copy; 2026 EduPrint AI - Rencana Pelaksanaan Pembelajaran Mendalam (RPM) A4 Presisi</p>
+        <p>&copy; 2026 EduPrint AI - Rencana Pelaksanaan Pembelajaran Mendalam (RPM) A4 Presisi Unified</p>
     </footer>
 
     <script>
-        const modelName = "gemini-2.5-flash"; 
         let isEditMode = false;
+
+        // Daftar Model Gemini dengan mekanisme Fallback Otomatis
+        const GEMINI_MODELS = [
+    "gemini-3.8-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash",
+    "gemini-3.0-flash",
+    "gemini-flash-latest"
+];
+
+        // Pembersih Teks Universal (Pembersih Simbol Bintang & Artefak Markdown)
+        function cleanText(text) {
+            if (text === null || text === undefined) return '';
+            if (typeof text !== 'string') text = String(text);
+            return text
+                .replace(/\*\*/g, '')                         // Hapus **
+                .replace(/\*/g, '')                          // Hapus *
+                .replace(/^#{1,6}\s?/gm, '')                  // Hapus header markdown (#)
+                .replace(/^Judul:\s*/gi, '')                  // Hapus label Judul:
+                .replace(/^Bahan Ajar Pertemuan \d+:\s*/gi, '') // Hapus label header
+                .replace(/^Pendahuluan:\s*/gi, '')            // Hapus label Pendahuluan:
+                .trim();
+        }
 
         function setSafeText(id, value) {
             const el = document.getElementById(id);
-            if (el) el.innerText = value || "";
+            if (el) el.innerText = cleanText(value);
         }
 
         function setSafeHTML(id, html) {
@@ -1042,18 +1090,40 @@
                 const keyInput = document.getElementById('input-api-key');
                 if (keyInput) keyInput.value = savedKey;
             }
+            if (window.lucide) lucide.createIcons();
         });
+
+        function toggleLayoutMode() {
+            const mode = document.getElementById('input-layout-mode')?.value;
+            const pageInput = document.getElementById('input-page-count');
+            const pageLabel = document.getElementById('page-count-label');
+            const body = document.body;
+
+            if (mode === 'compact') {
+                body.classList.add('compact-mode');
+                body.classList.remove('full-cover');
+                if (pageInput) pageInput.value = 6;
+                if (pageLabel) pageLabel.innerText = "Minimal 6 Halaman";
+            } else {
+                body.classList.remove('compact-mode');
+                body.classList.add('full-cover');
+                if (pageInput) pageInput.value = 15;
+                if (pageLabel) pageLabel.innerText = "Minimal 15 Halaman";
+            }
+        }
 
         async function renderA4PagesToJPG() {
             const pageElements = document.querySelectorAll('.a4-page');
             const jpgImages = [];
             const container = document.getElementById('modul-content');
 
-            // Aktifkan mode rendering untuk menghilangkan dekorasi web
             if (container) container.classList.add('rendering-pdf');
 
             for (let i = 0; i < pageElements.length; i++) {
                 const el = pageElements[i];
+                const originalOverflow = el.style.overflow;
+                el.style.overflow = 'visible';
+
                 const canvas = await html2canvas(el, {
                     scale: 2, 
                     useCORS: true,
@@ -1063,12 +1133,12 @@
                     width: el.offsetWidth,
                     height: el.offsetHeight
                 });
+
+                el.style.overflow = originalOverflow;
                 jpgImages.push(canvas.toDataURL("image/jpeg", 0.95));
             }
 
-            // Kembalikan tampilan normal
             if (container) container.classList.remove('rendering-pdf');
-
             return jpgImages;
         }
 
@@ -1094,9 +1164,25 @@
             }
         }
 
+        // Fungsi simpan PDF via JPG (Solusi Anti Popup Blocker & Tata Letak Presisi 100%)
         async function generatePDFViaJPG() {
             const btn = document.querySelector('button[onclick="generatePDFViaJPG()"]');
             const originalText = btn ? btn.innerHTML : '';
+
+            // Buka tab baru SEGERA di awal aksi klik agar tidak diblokir Popup Blocker peramban
+            const newWin = window.open('', '_blank');
+            if (!newWin) {
+                showStatus("Popup diblokir peramban! Harap izinkan Popup (Allow Popups) di browser Anda.", "error");
+                return;
+            }
+
+            newWin.document.write(`
+                <div style="font-family: sans-serif; padding: 40px; text-align: center; color: #334155;">
+                    <h2>Sedang Merender Halaman A4 Presisi...</h2>
+                    <p>Mohon tunggu beberapa saat, dokumen sedang dikonversi ke gambar high-res.</p>
+                </div>
+            `);
+
             if (btn) {
                 btn.disabled = true;
                 btn.innerHTML = `<span class="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent mr-1"></span> Merender Halaman A4...`;
@@ -1105,9 +1191,7 @@
             try {
                 showStatus("Membuat lembar gambar .JPG presisi tinggi A4...", "info");
                 const jpgImages = await renderA4PagesToJPG();
-
                 const topicName = document.getElementById('input-topic')?.value || "RPM_Modul_Ajar";
-                const newWin = window.open('', '_blank');
 
                 let imgTagsHtml = '';
                 jpgImages.forEach((imgSrc, idx) => {
@@ -1119,6 +1203,7 @@
                     `;
                 });
 
+                newWin.document.open();
                 newWin.document.write(`
                     <!DOCTYPE html>
                     <html lang="id">
@@ -1131,7 +1216,7 @@
                             body { background-color: #334155; margin: 0; padding: 20px; font-family: sans-serif; }
                             .jpg-page-container { margin: 0 auto 30px auto; max-width: 210mm; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-radius: 4px; overflow: hidden; }
                             .jpg-page-img { width: 100%; height: auto; display: block; }
-                            .page-header-info { background: #f8fafc; color: #64748b; font-size: 11px; padding: 6px 12px; border-b: 1px solid #e2e8f0; font-weight: 600; text-align: right; }
+                            .page-header-info { background: #f8fafc; color: #64748b; font-size: 11px; padding: 6px 12px; border-bottom: 1px solid #e2e8f0; font-weight: 600; text-align: right; }
                             @media print {
                                 body { background: white; padding: 0; }
                                 .jpg-page-container { box-shadow: none; margin: 0; max-width: 100%; border-radius: 0; page-break-after: always; }
@@ -1185,6 +1270,7 @@
 
             } catch (error) {
                 console.error(error);
+                if (newWin) newWin.close();
                 showStatus("Gagal memproses PDF via JPG: " + error.message, "error");
             } finally {
                 if (btn) {
@@ -1254,7 +1340,7 @@
             const level = document.getElementById('input-level')?.value || '';
             const faseInput = document.getElementById('input-fase');
             if (!faseInput) return;
-            
+
             if (level.includes('1') || level.includes('2')) {
                 faseInput.value = 'Fase A / Ganjil';
             } else if (level.includes('3') || level.includes('4')) {
@@ -1371,9 +1457,13 @@
             if (window.lucide) lucide.createIcons();
         }
 
-        async function fetchGeminiWithBackoff(apiKey, prompt, systemPrompt, maxRetries = 5) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-            
+        // Fetch Gemini dengan fallback model otomatis
+        async function fetchGeminiWithBackoff(apiKey, prompt, systemPrompt, maxRetries = 3) {
+            if (!apiKey) throw new Error("API Key kosong. Silakan masukkan Gemini API Key Anda.");
+
+            let lastError = null;
+            let triedModels = [];
+
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 systemInstruction: { parts: [{ text: systemPrompt }] },
@@ -1543,7 +1633,8 @@
                                             required: ["no", "pertanyaan", "kunci", "rubrik"]
                                         }
                                     }
-                                }
+                                },
+                                required: ["soalPG", "soalPGK", "soalJodoh", "soalIsian", "soalUraian"]
                             }
                         },
                         required: ["capaianPembelajaran", "deepLearning", "tujuanPembelajaran", "kktp", "dimensiProfilLulusan", "tpack", "p1Pendahuluan", "p1Inti1", "p1Inti2", "p1Penutup", "p2Pendahuluan", "p2Inti", "asesmenDiagnostik", "rubrikFormatif", "bahanAjar1", "bahanAjar2", "lkpd"]
@@ -1551,30 +1642,52 @@
                 }
             };
 
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+            for (const modelName of GEMINI_MODELS) {
+                triedModels.push(modelName);
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
-                    if (response.ok) return await response.json();
+                let delay = 1000;
+                for (let attempt = 0; attempt < maxRetries; attempt++) {
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
 
-                    if (response.status === 429 || response.status >= 500) {
-                        const delay = Math.pow(2, i) * 1000;
+                        if (response.ok) {
+                            console.log(`✅ Berhasil menggunakan model: ${modelName}`);
+                            return await response.json();
+                        }
+
+                        if (response.status === 404) {
+                            console.warn(`⚠️ Model ${modelName} 404, mencoba model berikutnya...`);
+                            lastError = new Error(`Model ${modelName} 404.`);
+                            break;
+                        }
+
+                        if (response.status === 401 || response.status === 403) {
+                            throw new Error("API Key tidak valid atau diblokir. Periksa API Key di Google AI Studio.");
+                        }
+
+                        if (response.status === 429 || response.status >= 500) {
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            delay *= 2;
+                            continue;
+                        }
+
+                        const errorText = await response.text();
+                        throw new Error(`HTTP ${response.status}: ${errorText}`);
+                    } catch (error) {
+                        lastError = error;
+                        if (attempt === maxRetries - 1) break;
                         await new Promise(resolve => setTimeout(resolve, delay));
-                        continue;
+                        delay *= 2;
                     }
-
-                    const errorText = await response.text();
-                    throw new Error(`API Error: ${response.status} - ${errorText}`);
-                } catch (error) {
-                    if (i === maxRetries - 1) throw error;
-                    const delay = Math.pow(2, i) * 1000;
-                    await new Promise(resolve => setTimeout(resolve, delay));
                 }
             }
+
+            throw lastError || new Error(`Gagal menghubungi API setelah mencoba seluruh model cadangan (${triedModels.join(", ")}).`);
         }
 
         async function generateModul() {
@@ -1591,7 +1704,6 @@
             const duration = document.getElementById('input-duration')?.value;
             const model = document.getElementById('input-model')?.value;
 
-            // Ambil jumlah soal LKPD
             const jmlPG     = parseInt(document.getElementById('input-jml-pg')?.value) || 5;
             const jmlPGK    = parseInt(document.getElementById('input-jml-pgk')?.value) || 3;
             const jmlJodoh  = parseInt(document.getElementById('input-jml-jodoh')?.value) || 5;
@@ -1620,17 +1732,18 @@
             }
 
             const systemPrompt = `Anda adalah pakar kurikulum SD terbaik di Indonesia.
-PENTING:
+PENTING & WAJIB DIPERHATIKAN:
 1. Nama Guru/Penyusun HARUS SAMA PERSIS: "${guruName}".
 2. Nama Kepala Sekolah HARUS SAMA PERSIS: "${kepsekName}".
-3. Susun materi secara mendalam (Deep Learning & TPACK).
-4. Jumlah soal LKPD WAJIB mengikuti ketentuan:
+3. DILARANG MENGGUNAKAN SIMBOL BINTANG (**) atau MARKDOWN HEADING (###, ##) DI DALAM NILA NAMA / TEKS MANAPUN.
+4. Tulis materi dan bahan ajar dalam teks murni (plain text) yang rapi dan profesional tanpa artefak markdown.
+5. Jumlah soal LKPD WAJIB mengikuti ketentuan:
    - Pilihan Ganda: TEPAT ${jmlPG} soal
    - PG Kompleks: TEPAT ${jmlPGK} soal
    - Menjodohkan: TEPAT ${jmlJodoh} pasangan
    - Isian Singkat: TEPAT ${jmlIsian} soal
    - Uraian: TEPAT ${jmlUraian} soal
-5. Target dokumen minimal ${targetPages} halaman A4. Jika konten lebih banyak, tidak masalah — yang penting minimal terpenuhi.`;
+6. Target dokumen minimal ${targetPages} halaman A4.`;
 
             const prompt = `Buatkan Rencana Pelaksanaan Pembelajaran Mendalam (RPM) lengkap:
 - Sekolah: ${school}
@@ -1651,7 +1764,7 @@ JUMLAH SOAL LKPD YANG HARUS DIBUAT:
 
 Target total halaman minimal: ${targetPages} halaman A4.
 
-Hasilkan JSON lengkap sesuai skema.`;
+Hasilkan JSON lengkap sesuai skema tanpa menggunakan tanda ** atau bintang apapun.`;
 
             try {
                 const responseData = await fetchGeminiWithBackoff(apiKey, prompt, systemPrompt);
@@ -1676,16 +1789,16 @@ Hasilkan JSON lengkap sesuai skema.`;
                 setSafeText('display-info-subject', subject);
                 setSafeText('display-info-topic', topic);
                 setSafeText('display-info-duration', duration);
-                setSafeText('display-cp', data.capaianPembelajaran);
+                setSafeText('display-cp', cleanText(data.capaianPembelajaran));
 
                 if (data.deepLearning) {
-                    setSafeText('display-dl-mindful', data.deepLearning.mindful);
-                    setSafeText('display-dl-meaningful', data.deepLearning.meaningful);
-                    setSafeText('display-dl-joyful', data.deepLearning.joyful);
+                    setSafeText('display-dl-mindful', cleanText(data.deepLearning.mindful));
+                    setSafeText('display-dl-meaningful', cleanText(data.deepLearning.meaningful));
+                    setSafeText('display-dl-joyful', cleanText(data.deepLearning.joyful));
                 }
 
                 // Page 3 - TP & KKTP
-                setSafeHTML('display-tp', data.tujuanPembelajaran.map(tp => `<li contenteditable="true" class="mb-1">${tp}</li>`).join(''));
+                setSafeHTML('display-tp', (data.tujuanPembelajaran || []).map(tp => `<li contenteditable="true" class="mb-1">${cleanText(tp)}</li>`).join(''));
                 setSafeHTML('container-kktp', `
                     <table class="rpp-table">
                         <thead>
@@ -1699,14 +1812,14 @@ Hasilkan JSON lengkap sesuai skema.`;
                             </tr>
                         </thead>
                         <tbody>
-                            ${data.kktp.map(k => `
+                            ${(data.kktp || []).map(k => `
                                 <tr>
                                     <td class="text-center font-bold">${k.no}</td>
-                                    <td contenteditable="true">${k.tujuanRingkas}</td>
-                                    <td contenteditable="true">${k.audience}</td>
-                                    <td contenteditable="true">${k.behavior}</td>
-                                    <td contenteditable="true">${k.condition}</td>
-                                    <td contenteditable="true">${k.degree}</td>
+                                    <td contenteditable="true">${cleanText(k.tujuanRingkas)}</td>
+                                    <td contenteditable="true">${cleanText(k.audience)}</td>
+                                    <td contenteditable="true">${cleanText(k.behavior)}</td>
+                                    <td contenteditable="true">${cleanText(k.condition)}</td>
+                                    <td contenteditable="true">${cleanText(k.degree)}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -1724,33 +1837,35 @@ Hasilkan JSON lengkap sesuai skema.`;
                             </tr>
                         </thead>
                         <tbody>
-                            ${data.dimensiProfilLulusan.map(d => `
+                            ${(data.dimensiProfilLulusan || []).map(d => `
                                 <tr>
-                                    <td class="font-bold" contenteditable="true">${d.dimensi}</td>
-                                    <td contenteditable="true">${d.deskripsi}</td>
-                                    <td contenteditable="true">${d.keterkaitan}</td>
+                                    <td class="font-bold" contenteditable="true">${cleanText(d.dimensi)}</td>
+                                    <td contenteditable="true">${cleanText(d.deskripsi)}</td>
+                                    <td contenteditable="true">${cleanText(d.keterkaitan)}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
                 `);
 
-                setSafeHTML('container-tpack', `
-                    <table class="rpp-table">
-                        <tr><td class="font-bold bg-slate-50 w-1/4">Praktik Pedagogis</td><td contenteditable="true">${data.tpack.praktikPedagogis}</td></tr>
-                        <tr><td class="font-bold bg-slate-50">Kemitraan Pembelajaran</td><td contenteditable="true">${data.tpack.kemitraanPembelajaran}</td></tr>
-                        <tr><td class="font-bold bg-slate-50">Lingkungan Belajar</td><td contenteditable="true">${data.tpack.lingkunganPembelajaran}</td></tr>
-                        <tr><td class="font-bold bg-slate-50">Pemanfaatan Digital (TPACK)</td><td contenteditable="true">${data.tpack.pemanfaatanDigital}</td></tr>
-                    </table>
-                `);
+                if (data.tpack) {
+                    setSafeHTML('container-tpack', `
+                        <table class="rpp-table">
+                            <tr><td class="font-bold bg-slate-50 w-1/4">Praktik Pedagogis</td><td contenteditable="true">${cleanText(data.tpack.praktikPedagogis)}</td></tr>
+                            <tr><td class="font-bold bg-slate-50">Kemitraan Pembelajaran</td><td contenteditable="true">${cleanText(data.tpack.kemitraanPembelajaran)}</td></tr>
+                            <tr><td class="font-bold bg-slate-50">Lingkungan Belajar</td><td contenteditable="true">${cleanText(data.tpack.lingkunganPembelajaran)}</td></tr>
+                            <tr><td class="font-bold bg-slate-50">Pemanfaatan Digital (TPACK)</td><td contenteditable="true">${cleanText(data.tpack.pemanfaatanDigital)}</td></tr>
+                        </table>
+                    `);
+                }
 
                 // Page 5 & 6 - Pertemuan 1 Syntax
                 const renderTbody = (items) => (items || []).map(item => `
                     <tr>
-                        <td class="font-semibold text-slate-900 bg-slate-50/50" contenteditable="true">${item.sintaks}</td>
-                        <td contenteditable="true">${item.aktivitasGuru}</td>
-                        <td contenteditable="true">${item.aktivitasMurid}</td>
-                        <td class="text-center font-bold" contenteditable="true">${item.waktu}</td>
+                        <td class="font-semibold text-slate-900 bg-slate-50/50" contenteditable="true">${cleanText(item.sintaks)}</td>
+                        <td contenteditable="true">${cleanText(item.aktivitasGuru)}</td>
+                        <td contenteditable="true">${cleanText(item.aktivitasMurid)}</td>
+                        <td class="text-center font-bold" contenteditable="true">${cleanText(item.waktu)}</td>
                     </tr>
                 `).join('');
 
@@ -1777,8 +1892,8 @@ Hasilkan JSON lengkap sesuai skema.`;
                             <tbody>
                                 ${(data.asesmenDiagnostik || []).map(a => `
                                     <tr>
-                                        <td contenteditable="true">${a.pertanyaan}</td>
-                                        <td contenteditable="true">${a.tujuan}</td>
+                                        <td contenteditable="true">${cleanText(a.pertanyaan)}</td>
+                                        <td contenteditable="true">${cleanText(a.tujuan)}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -1802,11 +1917,11 @@ Hasilkan JSON lengkap sesuai skema.`;
                             <tbody>
                                 ${(data.rubrikFormatif || []).map(r => `
                                     <tr>
-                                        <td class="font-bold bg-slate-50" contenteditable="true">${r.kriteria}</td>
-                                        <td contenteditable="true">${r.skor4}</td>
-                                        <td contenteditable="true">${r.skor3}</td>
-                                        <td contenteditable="true">${r.skor2}</td>
-                                        <td contenteditable="true">${r.skor1}</td>
+                                        <td class="font-bold bg-slate-50" contenteditable="true">${cleanText(r.kriteria)}</td>
+                                        <td contenteditable="true">${cleanText(r.skor4)}</td>
+                                        <td contenteditable="true">${cleanText(r.skor3)}</td>
+                                        <td contenteditable="true">${cleanText(r.skor2)}</td>
+                                        <td contenteditable="true">${cleanText(r.skor1)}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -1814,22 +1929,22 @@ Hasilkan JSON lengkap sesuai skema.`;
                     </div>
                 `);
 
-                // Page 10 & 11 - Bahan Ajar
+                // Page 10 & 11 - Bahan Ajar (Tanpa Simbol Bintang)
                 setSafeHTML('container-bahan-ajar-1', `
                     <div class="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 space-y-2">
                         <h3 class="font-bold text-indigo-950 text-sm">A. Konsep Dasar & Pentingnya Keamanan Data Digital</h3>
-                        <p contenteditable="true">${data.bahanAjar1 || 'Dalam dunia koding dan teknologi modern, data pribadi adalah aset berharga yang harus dilindungi.'}</p>
+                        <p contenteditable="true">${cleanText(data.bahanAjar1) || 'Dalam dunia koding dan teknologi modern, data pribadi adalah aset berharga yang harus dilindungi.'}</p>
                     </div>
                 `);
 
                 setSafeHTML('container-bahan-ajar-2', `
                     <div class="p-4 bg-purple-50/50 rounded-xl border border-purple-100 space-y-2">
                         <h3 class="font-bold text-purple-950 text-sm">B. Algoritma Proteksi Data & Etika Koding</h3>
-                        <p contenteditable="true">${data.bahanAjar2 || 'Algoritma proteksi data menggunakan langkah logis untuk menyandikan informasi.'}</p>
+                        <p contenteditable="true">${cleanText(data.bahanAjar2) || 'Algoritma proteksi data menggunakan langkah logis untuk menyandikan informasi.'}</p>
                     </div>
                 `);
 
-                // Page 12, 13, 14 - LKPD Parts (dengan jumlah soal)
+                // Page 12, 13, 14 - LKPD Parts
                 if (data.lkpd) {
                     let pgHtml = `<div class="space-y-2 mb-3">
                         <h3 class="font-bold text-slate-900 text-xs bg-slate-100 p-1.5 rounded border border-slate-200">
@@ -1838,9 +1953,9 @@ Hasilkan JSON lengkap sesuai skema.`;
                     (data.lkpd.soalPG || []).forEach(pg => {
                         pgHtml += `
                             <div class="text-xs space-y-1 pl-2 mb-2">
-                                <p class="font-semibold text-slate-900" contenteditable="true">${pg.no}. ${pg.pertanyaan}</p>
+                                <p class="font-semibold text-slate-900" contenteditable="true">${pg.no}. ${cleanText(pg.pertanyaan)}</p>
                                 <div class="grid grid-cols-2 gap-1 pl-4 text-slate-700">
-                                    ${(pg.opsi || []).map((o, idx) => `<span contenteditable="true">${String.fromCharCode(65 + idx)}. ${o}</span>`).join('')}
+                                    ${(pg.opsi || []).map((o, idx) => `<span contenteditable="true">${String.fromCharCode(65 + idx)}. ${cleanText(o)}</span>`).join('')}
                                 </div>
                             </div>
                         `;
@@ -1854,9 +1969,9 @@ Hasilkan JSON lengkap sesuai skema.`;
                     (data.lkpd.soalPGK || []).forEach(pgk => {
                         pgkHtml += `
                             <div class="text-xs space-y-1 pl-2 mb-2">
-                                <p class="font-semibold text-slate-900" contenteditable="true">${pgk.no}. ${pgk.pertanyaan}</p>
+                                <p class="font-semibold text-slate-900" contenteditable="true">${pgk.no}. ${cleanText(pgk.pertanyaan)}</p>
                                 <div class="grid grid-cols-2 gap-1 pl-4 text-slate-700">
-                                    ${(pgk.opsi || []).map((o, idx) => `<span contenteditable="true">[ &nbsp; ] ${String.fromCharCode(65 + idx)}. ${o}</span>`).join('')}
+                                    ${(pgk.opsi || []).map((o, idx) => `<span contenteditable="true">[ &nbsp; ] ${String.fromCharCode(65 + idx)}. ${cleanText(o)}</span>`).join('')}
                                 </div>
                             </div>
                         `;
@@ -1872,7 +1987,7 @@ Hasilkan JSON lengkap sesuai skema.`;
                         <table class="rpp-table">
                             <thead><tr><th class="w-10">No</th><th>Pernyataan A</th><th>Pasangan B</th></tr></thead>
                             <tbody>
-                                ${(data.lkpd.soalJodoh || []).map(j => `<tr><td class="text-center font-bold">${j.no}</td><td contenteditable="true">${j.pernyataanA}</td><td contenteditable="true">${j.pasanganB}</td></tr>`).join('')}
+                                ${(data.lkpd.soalJodoh || []).map(j => `<tr><td class="text-center font-bold">${j.no}</td><td contenteditable="true">${cleanText(j.pernyataanA)}</td><td contenteditable="true">${cleanText(j.pasanganB)}</td></tr>`).join('')}
                             </tbody>
                         </table></div>`;
 
@@ -1881,7 +1996,7 @@ Hasilkan JSON lengkap sesuai skema.`;
                             Bagian D: Isian Singkat (${(data.lkpd.soalIsian || []).length} Soal)
                         </h3>`;
                     (data.lkpd.soalIsian || []).forEach(is => {
-                        isianHtml += `<div class="text-xs pl-2 mb-2"><p class="font-semibold" contenteditable="true">${is.no}. ${is.pertanyaan}</p><div class="border-b border-dashed border-slate-400 h-5 w-3/4 my-1"></div></div>`;
+                        isianHtml += `<div class="text-xs pl-2 mb-2"><p class="font-semibold" contenteditable="true">${is.no}. ${cleanText(is.pertanyaan)}</p><div class="border-b border-dashed border-slate-400 h-5 w-3/4 my-1"></div></div>`;
                     });
                     isianHtml += `</div>`;
 
@@ -1892,7 +2007,7 @@ Hasilkan JSON lengkap sesuai skema.`;
                             Bagian E: Uraian & Studi Kasus (${(data.lkpd.soalUraian || []).length} Soal)
                         </h3>`;
                     (data.lkpd.soalUraian || []).forEach(ur => {
-                        uraianHtml += `<div class="text-xs pl-2 mb-2"><p class="font-semibold" contenteditable="true">${ur.no}. ${ur.pertanyaan}</p><div class="border border-slate-300 rounded p-2 bg-slate-50/50 h-16 my-1"></div></div>`;
+                        uraianHtml += `<div class="text-xs pl-2 mb-2"><p class="font-semibold" contenteditable="true">${ur.no}. ${cleanText(ur.pertanyaan)}</p><div class="border border-slate-300 rounded p-2 bg-slate-50/50 h-16 my-1"></div></div>`;
                     });
                     uraianHtml += `</div>`;
 
@@ -1910,16 +2025,16 @@ Hasilkan JSON lengkap sesuai skema.`;
 
                     // Page 15 - Kunci Jawaban
                     let kunciHtml = `<div class="p-3 bg-amber-50 rounded-xl border border-amber-200 mb-2"><p class="font-bold text-amber-950">KUNCI JAWABAN & PEDOMAN PENSKORAN LKPD</p></div>`;
-                    if (data.lkpd.soalPG) kunciHtml += `<p><b>Kunci PG (${data.lkpd.soalPG.length} soal):</b> ${data.lkpd.soalPG.map(p => `${p.no}.${p.kunci}`).join(', ')}</p>`;
-                    if (data.lkpd.soalPGK) kunciHtml += `<p class="mt-1"><b>Kunci PGK (${data.lkpd.soalPGK.length} soal):</b> ${data.lkpd.soalPGK.map(p => `${p.no}.${p.kunci}`).join(' | ')}</p>`;
-                    if (data.lkpd.soalJodoh) kunciHtml += `<p class="mt-1"><b>Kunci Menjodohkan (${data.lkpd.soalJodoh.length} pasangan):</b> ${data.lkpd.soalJodoh.map(p => `${p.no}.${p.kunci}`).join(' | ')}</p>`;
-                    if (data.lkpd.soalIsian) kunciHtml += `<p class="mt-1"><b>Kunci Isian (${data.lkpd.soalIsian.length} soal):</b> ${data.lkpd.soalIsian.map(p => `${p.no}.${p.kunci}`).join(' | ')}</p>`;
-                    if (data.lkpd.soalUraian) kunciHtml += `<div class="mt-1"><p><b>Rubrik Uraian (${data.lkpd.soalUraian.length} soal):</b></p>${data.lkpd.soalUraian.map(p => `<p>${p.no}. ${p.kunci} (${p.rubrik || 'Max 10 Point'})</p>`).join('')}</div>`;
+                    if (data.lkpd.soalPG) kunciHtml += `<p><b>Kunci PG (${data.lkpd.soalPG.length} soal):</b> ${data.lkpd.soalPG.map(p => `${p.no}.${cleanText(p.kunci)}`).join(', ')}</p>`;
+                    if (data.lkpd.soalPGK) kunciHtml += `<p class="mt-1"><b>Kunci PGK (${data.lkpd.soalPGK.length} soal):</b> ${data.lkpd.soalPGK.map(p => `${p.no}.${cleanText(p.kunci)}`).join(' | ')}</p>`;
+                    if (data.lkpd.soalJodoh) kunciHtml += `<p class="mt-1"><b>Kunci Menjodohkan (${data.lkpd.soalJodoh.length} pasangan):</b> ${data.lkpd.soalJodoh.map(p => `${p.no}.${cleanText(p.kunci)}`).join(' | ')}</p>`;
+                    if (data.lkpd.soalIsian) kunciHtml += `<p class="mt-1"><b>Kunci Isian (${data.lkpd.soalIsian.length} soal):</b> ${data.lkpd.soalIsian.map(p => `${p.no}.${cleanText(p.kunci)}`).join(' | ')}</p>`;
+                    if (data.lkpd.soalUraian) kunciHtml += `<div class="mt-1"><p><b>Rubrik Uraian (${data.lkpd.soalUraian.length} soal):</b></p>${data.lkpd.soalUraian.map(p => `<p>${p.no}. ${cleanText(p.kunci)} (${cleanText(p.rubrik) || 'Max 10 Point'})</p>`).join('')}</div>`;
 
                     setSafeHTML('container-kunci-jawaban', kunciHtml);
                 }
 
-                // Page 15 - Signatures
+                // Signatures
                 setSafeText('display-ttd-date', `Ngantru, ${new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}`);
                 setSafeText('display-kepsek-name', kepsekName);
                 setSafeText('display-kepsek-nip', kepsekNip);
@@ -1943,7 +2058,7 @@ Hasilkan JSON lengkap sesuai skema.`;
                     }
                 });
 
-                showStatus(`RPM ${totalPages} Halaman A4 Presisi Berhasil Disusun Lengkap!`, "success");
+                showStatus(`RPM ${totalPages} Halaman A4 Presisi Berhasil Disusun Lengkap tanpa Simbol Bintang!`, "success");
 
             } catch (error) {
                 console.error(error);
@@ -1954,7 +2069,7 @@ Hasilkan JSON lengkap sesuai skema.`;
                 document.getElementById('loading-state')?.classList.add('hidden');
                 if (btn) {
                     btn.disabled = false;
-                    btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4"></i> Buat RPM Minimal 15 Halaman A4 (AI)`;
+                    btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4"></i> Buat Modul Ajar / RPM AI`;
                 }
                 if (window.lucide) lucide.createIcons();
             }
