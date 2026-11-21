@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Belajar & Kuis Perkalian Pembagian 1–10 (Kelas 5 SD)</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #fef9c3 50%, #dcfce7 100%);
+      --surface: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+
+      /* Tema Perkalian (Biru Ceria) */
+      --mult-primary: #2563eb;
+      --mult-dark: #1d4ed8;
+      --mult-light: #dbeafe;
+      --mult-accent: #38bdf8;
+
+      /* Tema Pembagian (Hijau Tosca Ceria) */
+      --div-primary: #059669;
+      --div-dark: #047857;
+      --div-light: #d1fae5;
+      --div-accent: #34d399;
+
+      --star-color: #f59e0b;
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Nunito", "Quicksand", "Comic Sans MS", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Header Ceria */
+    header {
+      background: linear-gradient(135deg, #1e40af 0%, #0284c7 55%, #0d9488 100%);
+      color: #ffffff;
+      padding: 26px 20px 30px;
+      text-align: center;
+      border-bottom-left-radius: 32px;
+      border-bottom-right-radius: 32px;
+      box-shadow: 0 8px 24px rgba(2, 132, 199, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .badge-kelas {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.22);
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    header h1 {
+      font-size: 1.9rem;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    header p {
+      font-size: 0.98rem;
+      opacity: 0.95;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Menu Utama: Perkalian vs Pembagian */
+    .main-nav {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      max-width: 720px;
+      margin: -20px auto 14px;
+      padding: 0 16px;
+      position: relative;
+      z-index: 10;
+      flex-wrap: wrap;
+    }
+
+    .menu-btn {
+      flex: 1 1 240px;
+      padding: 15px 22px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border: 3px solid #ffffff;
+      border-radius: 18px;
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, color 0.2s;
+    }
+
+    .menu-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+    }
+
+    .menu-btn .icon-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      background: #f1f5f9;
+    }
+
+    .menu-btn.active-mult {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: #ffffff;
+      border-color: #93c5fd;
+    }
+
+    .menu-btn.active-mult .icon-circle {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .menu-btn.active-div {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #ffffff;
+      border-color: #6ee7b7;
+    }
+
+    .menu-btn.active-div .icon-circle {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 10px 18px 48px;
+    }
+
+    /* Toolbar Pengaturan & Mode */
+    .toolbar {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border: 2px solid #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-bottom: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .filter-label {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-right: 4px;
+    }
+
+    .num-pill {
+      padding: 7px 13px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: #f8fafc;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .num-pill:hover {
+      transform: translateY(-1px);
+      background: #e2e8f0;
+    }
+
+    .mode-mult .num-pill.active {
+      background: var(--mult-primary);
+      color: #ffffff;
+      border-color: var(--mult-primary);
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.3);
+    }
+
+    .mode-div .num-pill.active {
+      background: var(--div-primary);
+      color: #ffffff;
+      border-color: var(--div-primary);
+      box-shadow: 0 3px 10px rgba(5, 150, 105, 0.3);
+    }
+
+    .action-group {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .sub-btn {
+      padding: 9px 16px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.16s ease;
+    }
+
+    .sub-btn:hover {
+      transform: translateY(-1px);
+      background: #f8fafc;
+    }
+
+    .mode-mult .sub-btn.active-sub {
+      background: var(--mult-light);
+      border-color: var(--mult-primary);
+      color: var(--mult-dark);
+    }
+
+    .mode-div .sub-btn.active-sub {
+      background: var(--div-light);
+      border-color: var(--div-primary);
+      color: var(--div-dark);
+    }
+
+    /* Grid Kartu Tabel 1-10 */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      border: 2px solid #ffffff;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card-header {
+      padding: 12px 14px;
+      font-weight: 900;
+      font-size: 1.08rem;
+      text-align: center;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+    }
+
+    .mode-mult .card-header {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+    }
+
+    .mode-div .card-header {
+      background: linear-gradient(135deg, #059669, #10b981);
+    }
+
+    .card-body {
+      padding: 10px 12px;
+    }
+
+    .eq-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.14s ease;
+      margin-bottom: 2px;
+    }
+
+    .eq-row:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .mode-mult .eq-row:hover,
+    .mode-mult .eq-row.highlighted {
+      background: var(--mult-light);
+      color: var(--mult-dark);
+      font-weight: 800;
+      transform: scale(1.02);
+    }
+
+    .mode-div .eq-row:hover,
+    .mode-div .eq-row.highlighted {
+      background: var(--div-light);
+      color: var(--div-dark);
+      font-weight: 800;
+      transform: scale(1.02);
+    }
+
+    .eq-result {
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.05);
+    }
+
+    /* Tampilan Kuis Pilihan Ganda (4 Jawaban) */
+    .quiz-wrapper {
+      max-width: 620px;
+      margin: 10px auto 0;
+    }
+
+    .quiz-card {
+      background: var(--surface);
+      border-radius: 28px;
+      padding: 26px 24px 30px;
+      box-shadow: 0 14px 35px rgba(15, 23, 42, 0.1);
+      border: 3px solid #ffffff;
+      text-align: center;
+      position: relative;
+    }
+
+    .quiz-scoreboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .score-pill {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 10px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .score-pill span.label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .score-pill span.val {
+      font-size: 1.35rem;
+      font-weight: 900;
+      margin-top: 2px;
+    }
+
+    .val-star { color: #d97706; }
+    .val-ok { color: #16a34a; }
+    .val-streak { color: #ea580c; }
+
+    .quiz-topic-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .mode-mult .quiz-topic-badge {
+      background: var(--mult-light);
+      color: var(--mult-dark);
+    }
+
+    .mode-div .quiz-topic-badge {
+      background: var(--div-light);
+      color: var(--div-dark);
+    }
+
+    .question-board {
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 2.5px dashed #cbd5e1;
+      border-radius: 22px;
+      padding: 24px 16px;
+      margin-bottom: 22px;
+    }
+
+    .question-prompt {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .question-text {
+      font-size: 2.7rem;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+
+    /* Grid 4 Tombol Pilihan Ganda */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 18px;
+      border-radius: 18px;
+      border: 3px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      font-size: 1.45rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #cbd5e1;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    .option-btn:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #cbd5e1;
+    }
+
+    .mode-mult .option-btn:hover:not(:disabled) {
+      border-color: var(--mult-primary);
+      background: #eff6ff;
+    }
+
+    .mode-div .option-btn:hover:not(:disabled) {
+      border-color: var(--div-primary);
+      background: #ecfdf5;
+    }
+
+    .option-letter {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .mode-mult .option-letter {
+      background: var(--mult-light);
+      color: var(--mult-dark);
+    }
+
+    .mode-div .option-letter {
+      background: var(--div-light);
+      color: var(--div-dark);
+    }
+
+    .option-value {
+      flex: 1;
+      text-align: center;
+      padding-right: 24px;
+    }
+
+    /* Status Jawaban Benar / Salah */
+    .option-btn.correct-choice {
+      background: #22c55e !important;
+      border-color: #16a34a !important;
+      color: #ffffff !important;
+      box-shadow: 0 5px 0 #15803d !important;
+      animation: popWin 0.35s ease;
+    }
+
+    .option-btn.correct-choice .option-letter {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .option-btn.wrong-choice {
+      background: #ef4444 !important;
+      border-color: #dc2626 !important;
+      color: #ffffff !important;
+      box-shadow: 0 5px 0 #b91c1c !important;
+      animation: shakeWrong 0.35s ease;
+    }
+
+    .option-btn.wrong-choice .option-letter {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+      opacity: 0.92;
+    }
+
+    .feedback-banner {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 8px 14px;
+    }
+
+    .feedback-banner.ok {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .feedback-banner.err {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 18px;
+    }
+
+    @keyframes popWin {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shakeWrong {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    @media (max-width: 520px) {
+      header h1 { font-size: 1.5rem; }
+      .options-grid { grid-template-columns: 1fr; }
+      .question-text { font-size: 2.25rem; }
+    }
+
+    @media print {
+      .main-nav, .toolbar, footer { display: none !important; }
+      body { background: #ffffff; }
+      header { border-radius: 0; box-shadow: none; color: #000; background: #fff; border-bottom: 2px solid #000; }
+      .cards-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+      .card { box-shadow: none; border: 1px solid #94a3b8; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="badge-kelas">🎒 Matematika Kelas 5 SD</div>
+    <h1>Tabel &amp; Kuis Perkalian Pembagian 1–10</h1>
+    <p>Pilih menu Perkalian atau Pembagian, pelajari tabelnya, lalu uji kemampuanmu lewat kuis pilihan ganda!</p>
+  </header>
+
+  <!-- Menu Utama: Perkalian & Pembagian -->
+  <nav class="main-nav" aria-label="Menu Utama">
+    <button id="btnMenuPerkalian" class="menu-btn active-mult" onclick="pilihMenu('perkalian')">
+      <span class="icon-circle">✖️</span> Menu Perkalian
+    </button>
+    <button id="btnMenuPembagian" class="menu-btn" onclick="pilihMenu('pembagian')">
+      <span class="icon-circle">➗</span> Menu Pembagian
+    </button>
+  </nav>
+
+  <main id="appContainer" class="container mode-mult">
+    <!-- Toolbar Filter & Pilihan Mode -->
+    <div class="toolbar">
+      <div class="filter-group" id="filterPills">
+        <span class="filter-label">🎯 Pilih Angka:</span>
+      </div>
+      <div class="action-group">
+        <button id="btnModeTabel" class="sub-btn active-sub" onclick="pilihMode('tabel')">📖 Tabel Hafalan</button>
+        <button id="btnModeLatihan" class="sub-btn" onclick="pilihMode('latihan')">🎮 Kuis 4 Pilihan</button>
+        <button id="btnSuara" class="sub-btn" onclick="toggleSuara()" title="Aktifkan/Matikan Efek Suara">🔊 Suara: Aktif</button>
+        <button class="sub-btn" onclick="window.print()">🖨️ Cetak</button>
+      </div>
+    </div>
+
+    <!-- Bagian 1: Tabel Perkalian / Pembagian 1-10 -->
+    <section id="sectionTabel" class="cards-grid" aria-live="polite"></section>
+
+    <!-- Bagian 2: Kuis Pilihan Ganda (4 Jawaban) -->
+    <section id="sectionLatihan" class="quiz-wrapper hidden" aria-live="polite">
+      <div class="quiz-card">
+        <div class="quiz-scoreboard">
+          <div class="score-pill">
+            <span class="label">⭐ Poin Bintang</span>
+            <span id="statBintang" class="val val-star">0</span>
+          </div>
+          <div class="score-pill">
+            <span class="label">✅ Jawaban Benar</span>
+            <span id="statBenar" class="val val-ok">0 / 0</span>
+          </div>
+          <div class="score-pill">
+            <span class="label">🔥 Beruntun</span>
+            <span id="statStreak" class="val val-streak">0</span>
+          </div>
+        </div>
+
+        <div id="quizTopicBadge" class="quiz-topic-badge">Kuis Perkalian • Acak 1–10</div>
+
+        <div class="question-board">
+          <div class="question-prompt">Pilih satu jawaban yang paling tepat!</div>
+          <div id="quizQuestion" class="question-text">1 × 1 = ?</div>
+        </div>
+
+        <!-- 4 Tombol Pilihan Jawaban -->
+        <div id="optionsContainer" class="options-grid"></div>
+
+        <div id="quizFeedback" class="feedback-banner"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    💡 Tips: Klik baris angka pada mode Tabel untuk menandai perkalian atau pembagian yang sudah kamu hafal!
+  </footer>
+
+  <script>
+    let menuAktif = 'perkalian'; // 'perkalian' | 'pembagian'
+    let angkaFilter = 'semua';   // 'semua' | 1..10
+    let modeAktif = 'tabel';     // 'tabel' | 'latihan'
+    let suaraAktif = true;
+
+    let soalSekarang = { teks: '', jawaban: 1, pilihan: [] };
+    let sedangMenjawab = false;
+    let totalBintang = 0;
+    let totalBenar = 0;
+    let totalSoal = 0;
+    let streakBenar = 0;
+
+    // Efek suara sederhana menggunakan Web Audio API (tanpa file eksternal)
+    function mainkanSuara(jenis) {
+      if (!suaraAktif) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (jenis === 'benar') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+          osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+          osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G5
+          gain.gain.setValueAtTime(0.18, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.42);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.42);
+        } else {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, ctx.currentTime);
+          osc.frequency.linearRampToValueAtTime(165, ctx.currentTime + 0.25);
+          gain.gain.setValueAtTime(0.12, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.28);
+        }
+      } catch (e) {}
+    }
+
+    function toggleSuara() {
+      suaraAktif = !suaraAktif;
+      document.getElementById('btnSuara').textContent = suaraAktif ? '🔊 Suara: Aktif' : '🔇 Suara: Mati';
+    }
+
+    function buatFilterPills() {
+      const container = document.getElementById('filterPills');
+      container.innerHTML = '<span class="filter-label">🎯 Pilih Angka:</span>';
+
+      const btnSemua = document.createElement('button');
+      btnSemua.className = 'num-pill' + (angkaFilter === 'semua' ? ' active' : '');
+      btnSemua.textContent = 'Semua (1–10)';
+      btnSemua.onclick = () => {
+        angkaFilter = 'semua';
+        renderSemua();
+      };
+      container.appendChild(btnSemua);
+
+      for (let i = 1; i <= 10; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'num-pill' + (angkaFilter === i ? ' active' : '');
+        btn.textContent = menuAktif === 'perkalian' ? `× ${i}` : `÷ ${i}`;
+        btn.onclick = () => {
+          angkaFilter = i;
+          renderSemua();
+        };
+        container.appendChild(btn);
+      }
+    }
+
+    function renderTabel() {
+      const grid = document.getElementById('sectionTabel');
+      grid.innerHTML = '';
+
+      const daftarAngka = angkaFilter === 'semua'
+        ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        : [angkaFilter];
+
+      daftarAngka.forEach((angka) => {
+        const card = document.createElement('article');
+        card.className = 'card';
+
+        const header = document.createElement('div');
+        header.className = 'card-header';
+        header.textContent = menuAktif === 'perkalian'
+          ? `✖️ Perkalian ${angka}`
+          : `➗ Pembagian ${angka}`;
+
+        const body = document.createElement('div');
+        body.className = 'card-body';
+
+        for (let i = 1; i <= 10; i++) {
+          const row = document.createElement('div');
+          row.className = 'eq-row';
+          row.title = 'Klik untuk menandai sudah hafal';
+          row.onclick = () => row.classList.toggle('highlighted');
+
+          let kiri = '';
+          let hasil = '';
+
+          if (menuAktif === 'perkalian') {
+            kiri = `${angka} × ${i}`;
+            hasil = `${angka * i}`;
+          } else {
+            const dibagi = angka * i;
+            kiri = `${dibagi} ÷ ${angka}`;
+            hasil = `${i}`;
+          }
+
+          row.innerHTML = `<span>${kiri} =</span><span class="eq-result">${hasil}</span>`;
+          body.appendChild(row);
+        }
+
+        card.appendChild(header);
+        card.appendChild(body);
+        grid.appendChild(card);
+      });
+    }
+
+    // Menghasilkan 4 pilihan jawaban unik (1 benar + 3 pengecoh realistis)
+    function buatEmpatPilihan(jawabanBenar, faktorA, faktorB) {
+      const kandidat = [
+        faktorA * (faktorB + 1),
+        faktorA * (faktorB - 1),
+        (faktorA + 1) * faktorB,
+        (faktorA - 1) * faktorB,
+        jawabanBenar + 1,
+        jawabanBenar - 1,
+        jawabanBenar + 2,
+        jawabanBenar - 2,
+        jawabanBenar + faktorA,
+        jawabanBenar - faktorA,
+        jawabanBenar + 5,
+        jawabanBenar + 10
+      ];
+
+      const pengecohUnik = new Set();
+      for (const val of kandidat) {
+        if (Number.isInteger(val) && val >= 1 && val !== jawabanBenar) {
+          pengecohUnik.add(val);
+        }
+      }
+
+      const daftarPengecoh = Array.from(pengecohUnik);
+      // Acak daftar kandidat pengecoh
+      for (let i = daftarPengecoh.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [daftarPengecoh[i], daftarPengecoh[j]] = [daftarPengecoh[j], daftarPengecoh[i]];
+      }
+
+      const empatJawaban = [jawabanBenar, ...daftarPengecoh.slice(0, 3)];
+
+      // Pastikan selalu tepat 4 pilihan jika jawabanBenar sangat kecil
+      let cadangan = 1;
+      while (empatJawaban.length < 4) {
+        if (!empatJawaban.includes(cadangan)) {
+          empatJawaban.push(cadangan);
+        }
+        cadangan++;
+      }
+
+      // Acak urutan A, B, C, D
+      for (let i = empatJawaban.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [empatJawaban[i], empatJawaban[j]] = [empatJawaban[j], empatJawaban[i]];
+      }
+
+      return empatJawaban;
+    }
+
+    function buatSoalBaru() {
+      sedangMenjawab = false;
+      const b = angkaFilter === 'semua'
+        ? Math.floor(Math.random() * 10) + 1
+        : angkaFilter;
+      const pengali = Math.floor(Math.random() * 10) + 1;
+
+      if (menuAktif === 'perkalian') {
+        const jawaban = b * pengali;
+        soalSekarang = {
+          teks: `${b} × ${pengali} = ?`,
+          jawaban: jawaban,
+          pilihan: buatEmpatPilihan(jawaban, b, pengali)
+        };
+      } else {
+        const dibagi = b * pengali;
+        soalSekarang = {
+          teks: `${dibagi} ÷ ${b} = ?`,
+          jawaban: pengali,
+          pilihan: buatEmpatPilihan(pengali, b, pengali)
+        };
+      }
+
+      document.getElementById('quizTopicBadge').textContent =
+        (menuAktif === 'perkalian' ? '✖️ Kuis Perkalian' : '➗ Kuis Pembagian') +
+        (angkaFilter === 'semua' ? ' • Acak 1–10' : ` • Angka ${angkaFilter}`);
+
+      document.getElementById('quizQuestion').textContent = soalSekarang.teks;
+
+      const feedback = document.getElementById('quizFeedback');
+      feedback.className = 'feedback-banner';
+      feedback.textContent = '';
+
+      const container = document.getElementById('optionsContainer');
+      container.innerHTML = '';
+      const huruf = ['A', 'B', 'C', 'D'];
+
+      soalSekarang.pilihan.forEach((nilaiPilihan, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `
+          <span class="option-letter">${huruf[idx]}</span>
+          <span class="option-value">${nilaiPilihan}</span>
+        `;
+        btn.onclick = () => pilihJawaban(btn, nilaiPilihan);
+        container.appendChild(btn);
+      });
+    }
+
+    function pilihJawaban(tombolDipilih, nilaiDipilih) {
+      if (sedangMenjawab) return;
+      sedangMenjawab = true;
+      totalSoal++;
+
+      const semuaTombol = document.querySelectorAll('.option-btn');
+      semuaTombol.forEach((btn) => (btn.disabled = true));
+
+      const feedback = document.getElementById('quizFeedback');
+
+      if (nilaiDipilih === soalSekarang.jawaban) {
+        tombolDipilih.classList.add('correct-choice');
+        totalBenar++;
+        streakBenar++;
+        const bonus = streakBenar >= 3 ? 15 : 10;
+        totalBintang += bonus;
+
+        mainkanSuara('benar');
+        feedback.className = 'feedback-banner ok';
+        feedback.textContent = streakBenar >= 3
+          ? `🌟 Luar Biasa! Jawaban Benar! (+${bonus} Bintang • ${streakBenar}x Beruntun!)`
+          : `🎉 Hebat! Jawabanmu Benar! (+${bonus} Bintang)`;
+      } else {
+        tombolDipilih.classList.add('wrong-choice');
+        streakBenar = 0;
+
+        // Tandai jawaban yang benar dengan warna hijau
+        semuaTombol.forEach((btn, idx) => {
+          if (soalSekarang.pilihan[idx] === soalSekarang.jawaban) {
+            btn.classList.add('correct-choice');
+          }
+        });
+
+        mainkanSuara('salah');
+        feedback.className = 'feedback-banner err';
+        feedback.textContent = `💡 Kurang tepat! Jawaban yang benar adalah ${soalSekarang.jawaban}.`;
+      }
+
+      document.getElementById('statBintang').textContent = totalBintang;
+      document.getElementById('statBenar').textContent = `${totalBenar} / ${totalSoal}`;
+      document.getElementById('statStreak').textContent = streakBenar;
+
+      setTimeout(() => {
+        buatSoalBaru();
+      }, 1350);
+    }
+
+    function pilihMenu(menu) {
+      menuAktif = menu;
+      const app = document.getElementById('appContainer');
+      const btnMult = document.getElementById('btnMenuPerkalian');
+      const btnDiv = document.getElementById('btnMenuPembagian');
+
+      if (menu === 'perkalian') {
+        app.classList.remove('mode-div');
+        app.classList.add('mode-mult');
+        btnMult.classList.add('active-mult');
+        btnDiv.classList.remove('active-div');
+      } else {
+        app.classList.remove('mode-mult');
+        app.classList.add('mode-div');
+        btnDiv.classList.add('active-div');
+        btnMult.classList.remove('active-mult');
+      }
+
+      renderSemua();
+    }
+
+    function pilihMode(mode) {
+      modeAktif = mode;
+      const btnTabel = document.getElementById('btnModeTabel');
+      const btnLatihan = document.getElementById('btnModeLatihan');
+      const secTabel = document.getElementById('sectionTabel');
+      const secLatihan = document.getElementById('sectionLatihan');
+
+      if (mode === 'tabel') {
+        btnTabel.classList.add('active-sub');
+        btnLatihan.classList.remove('active-sub');
+        secTabel.classList.remove('hidden');
+        secLatihan.classList.add('hidden');
+      } else {
+        btnLatihan.classList.add('active-sub');
+        btnTabel.classList.remove('active-sub');
+        secTabel.classList.add('hidden');
+        secLatihan.classList.remove('hidden');
+        buatSoalBaru();
+      }
+    }
+
+    function renderSemua() {
+      buatFilterPills();
+      if (modeAktif === 'tabel') {
+        renderTabel();
+      } else {
+        buatSoalBaru();
+      }
+    }
+
+    // Inisialisasi awal
+    renderSemua();
+  </script>
+</body>
+</html>
