@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Konverter Soal Word/PDF/Equation ke Google Form Apps Script (v14)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    code, pre, textarea.code-area { font-family: 'Fira Code', monospace; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- Toast Notifikasi -->
+  <div id="pasteToast" class="fixed bottom-5 right-5 z-50 hidden bg-purple-700 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 transition">
+    <span>📋</span>
+    <span id="pasteToastText">Berhasil!</span>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-indigo-700 text-white shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <h1 class="text-xl md:text-2xl font-bold tracking-tight">Docx / PDF (Equation + Auto-Render Tabel) → Google Form</h1>
+        <p class="text-indigo-200 text-sm mt-0.5">Mendukung .docx, .pdf, .txt, PG, PG Kompleks, Menjodohkan, Tabel Gambar, &amp; Benar/Salah (v14)</p>
+      </div>
+      <div class="flex items-center gap-2 bg-indigo-800/70 p-1.5 rounded-lg border border-indigo-500/40">
+        <button type="button" id="btnModeOffline" onclick="setMode('offline')" class="px-3.5 py-1.5 rounded-md text-sm font-medium transition bg-white text-indigo-800 shadow-sm cursor-pointer">
+          ⚡ Mode Offline (Pola)
+        </button>
+        <button type="button" id="btnModeAI" onclick="setMode('ai')" class="px-3.5 py-1.5 rounded-md text-sm font-medium transition text-indigo-100 hover:text-white cursor-pointer">
+          ✨ Mode Cerdas (Gemini AI)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 w-full">
+
+    <!-- Kolom Kiri: Pengaturan & Input -->
+    <div class="lg:col-span-5 space-y-5">
+
+      <!-- Pengaturan Umum Form -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="font-semibold text-slate-800 flex items-center gap-2 border-b pb-2.5">
+          <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold">1</span>
+          Pengaturan Kuis Google Form
+        </h2>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-600 mb-1">Judul Formulir / Ujian</label>
+          <input type="text" id="formTitle" value="PENILAIAN AKHIR SEMESTER GANJIL" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-600 mb-1">Deskripsi / Petunjuk Umum</label>
+          <textarea id="formDesc" rows="2" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">Kerjakan soal berikut dengan jujur dan teliti. Pilihlah jawaban yang paling tepat.</textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">Poin per Soal (Default)</label>
+            <input type="number" id="defaultPoints" value="2" min="1" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">Daftar Kelas (Pisah Koma)</label>
+            <input type="text" id="classList" value="VIII A, VIII B, VIII C, VIII D, VIII E, VIII F" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-4 pt-1">
+          <label class="inline-flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+            <input type="checkbox" id="includeIdentity" checked class="rounded text-indigo-600 focus:ring-indigo-500" />
+            Sertakan Identitas (Nama, Kelas, No. Peserta)
+          </label>
+          <label class="inline-flex items-center gap-2 text-xs font-medium text-indigo-700 cursor-pointer">
+            <input type="checkbox" id="autoRenderTables" checked class="rounded text-indigo-600 focus:ring-indigo-500" />
+            Render Tabel Soal Menjadi Gambar Otomatis (.docx)
+          </label>
+        </div>
+      </div>
+
+      <!-- Panel Panduan Mode Offline -->
+      <div id="panelOffline" class="bg-amber-50/80 p-4 rounded-xl border border-amber-200 space-y-2">
+        <div class="flex items-center justify-between">
+          <h3 class="font-semibold text-amber-900 text-xs uppercase tracking-wider">Mode Offline Presisi</h3>
+          <button type="button" onclick="loadSampleText()" class="text-xs bg-amber-200/80 hover:bg-amber-300 text-amber-900 px-2.5 py-1 rounded font-medium transition cursor-pointer">
+            Isi Contoh Soal
+          </button>
+        </div>
+        <p class="text-xs text-amber-900/90 leading-relaxed">
+          Gambar ilustrasi dan tabel yang dirender menjadi gambar disisipkan <strong>tepat di atas soal nomor yang bersangkutan</strong> menggunakan <code>sisipkanGambarSoal('NOMOR')</code>.
+        </p>
+      </div>
+
+      <!-- Panel Khusus Mode AI -->
+      <div id="panelAI" class="hidden bg-gradient-to-br from-indigo-50 to-purple-50 p-5 rounded-xl shadow-sm border border-indigo-200 space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="font-semibold text-indigo-900 text-sm flex items-center gap-1.5">
+            ✨ Pengaturan Gemini AI (Otomatis Kunci Jawaban)
+          </h3>
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-xs text-indigo-600 hover:underline font-medium">API Key Gratis →</a>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Mode AI menghitungkan kunci jawaban matematika secara otomatis dan bebas dari error <code>GridItem</code> (Benar/Salah).
+        </p>
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">Gemini API Key</label>
+          <div class="flex gap-2">
+            <input type="password" id="geminiApiKey" placeholder="Tempel AIzaSy... di sini" class="flex-1 px-3 py-2 text-sm bg-white border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+            <button type="button" onclick="saveApiKey()" class="px-3 py-2 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition cursor-pointer">Simpan</button>
+          </div>
+          <p id="apiKeyStatus" class="text-[11px] text-emerald-700 mt-1 hidden">✓ API Key tersimpan di browser Anda.</p>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">Model Gemini</label>
+          <select id="geminiModel" class="w-full px-3 py-2 text-xs bg-white border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+            <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash (Cepat &amp; Akurat)</option>
+            <option value="gemini-2.5-pro">Gemini 2.5 Pro (Penalaran Kompleks)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Unggah File Soal -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="font-semibold text-slate-800 flex items-center gap-2 border-b pb-2.5">
+          <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold">2</span>
+          Unggah File Soal (.docx / .pdf / .txt)
+        </h2>
+
+        <label id="dropZone" class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-indigo-300 rounded-xl cursor-pointer bg-indigo-50/40 hover:bg-indigo-50 transition">
+          <div class="flex flex-col items-center justify-center pt-3 pb-4 text-center px-4">
+            <p class="text-sm font-medium text-slate-700" id="fileNameLabel">📂 Klik untuk pilih file soal (.docx / .pdf / .txt)</p>
+            <p class="text-[11px] text-slate-500 mt-0.5">Mendukung ekstrak teks PDF otomatis, rumus Equation .docx, &amp; gambar!</p>
+          </div>
+          <input id="fileInput" type="file" accept=".docx,.pdf,.txt" class="hidden" onchange="handleFileUpload(event)" />
+        </label>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-medium text-slate-600">Hasil Ekstraksi Terstruktur (Bisa Diedit)</label>
+            <button type="button" onclick="document.getElementById('rawText').value=''" class="text-[11px] text-rose-600 hover:underline cursor-pointer">Bersihkan</button>
+          </div>
+          <textarea id="rawText" rows="7" placeholder="Hasil ekstraksi teks, rumus matematika, dan tag [PG]/[PGK]/[JODOH]/[BS] akan muncul di sini..." class="w-full p-3 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none leading-relaxed"></textarea>
+        </div>
+      </div>
+
+      <!-- MENU GAMBAR: Upload & Direct Ctrl + V Snipping Tool -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-3">
+        <div class="flex items-center justify-between border-b pb-2.5">
+          <h2 class="font-semibold text-slate-800 flex items-center gap-2 text-sm">
+            <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-bold">3</span>
+            Gambar Soal &amp; Hasil Render Tabel
+          </h2>
+          <label class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-lg cursor-pointer transition">
+            + Upload Gambar
+            <input type="file" id="imageFilesInput" accept="image/*" multiple class="hidden" onchange="handleManualImages(event)" />
+          </label>
+        </div>
+
+        <div id="pasteZone" tabindex="0"
+          class="border-2 border-dashed border-purple-300 bg-purple-50/60 hover:bg-purple-50 focus:bg-purple-100/80 focus:border-purple-600 rounded-xl p-3 text-center cursor-pointer transition outline-none">
+          <p class="text-xs font-semibold text-purple-900">✂️ Klik kotak ini lalu tekan <kbd class="px-1.5 py-0.5 bg-white border border-purple-300 rounded shadow-xs font-mono">Ctrl + V</kbd></p>
+          <p class="text-[11px] text-purple-700 mt-0.5">Langsung tempel potongan <strong>Snipping Tool</strong> (Win + Shift + S) untuk gambar/tabel dari PDF!</p>
+        </div>
+
+        <div id="imageListContainer" class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+          <p id="emptyImageMsg" class="text-xs text-slate-400 italic text-center py-3 border border-dashed border-slate-200 rounded-lg">
+            Belum ada gambar yang dimuat.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tombol Generate Utama -->
+      <button type="button" id="btnGenerate" onclick="generateScript()" class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+        <span id="btnIcon">⚙️</span>
+        <span id="btnText">Generate Script (Mode Offline)</span>
+      </button>
+
+    </div>
+
+    <!-- Kolom Kanan: Output Script & Panduan -->
+    <div class="lg:col-span-7 space-y-5">
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col h-full">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3 mb-3">
+          <div>
+            <h2 class="font-semibold text-slate-800 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">4</span>
+              Hasil Kode Google Apps Script
+            </h2>
+            <p id="statsInfo" class="text-xs text-slate-500 mt-0.5 ml-8">Belum ada skrip yang dibuat.</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <a href="https://script.google.com" target="_blank" rel="noopener noreferrer"
+              class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition inline-flex items-center gap-1.5">
+              🚀 Buka script.google.com ↗
+            </a>
+            <button type="button" onclick="downloadScript()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg border border-slate-300 transition cursor-pointer">
+              ⬇ Unduh .gs
+            </button>
+            <button type="button" id="btnCopy" onclick="copyScript()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-sm transition cursor-pointer">
+              📋 Salin Kode
+            </button>
+          </div>
+        </div>
+
+        <!-- Area Kode -->
+        <div class="relative flex-1 min-h-[580px]">
+          <textarea id="outputCode" readonly placeholder="// Kode Google Apps Script akan muncul otomatis di sini setelah Anda mengunggah file dan menekan tombol Generate..." class="code-area w-full h-full min-h-[580px] p-4 text-xs bg-slate-900 text-emerald-300 rounded-xl border border-slate-700 focus:outline-none leading-relaxed resize-y"></textarea>
+        </div>
+
+        <!-- Instruksi Singkat Pemakaian -->
+        <div class="mt-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1.5">
+          <p class="font-semibold text-slate-800">Langkah Cepat Membuat Google Form:</p>
+          <p>1. Klik <strong>📋 Salin Kode</strong> → 2. Klik tombol <strong>🚀 Buka script.google.com</strong> di atas → 3. Buat <em>Project baru</em>, tempel kode, lalu klik <strong>Jalankan (Run)</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer Copyright -->
+  <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <p>&copy; 2026 <strong class="text-slate-700 font-semibold">Aburrizal Hamdani Lubis</strong>. All rights reserved.</p>
+      <p class="text-slate-400">Docx / PDF (OMML Equation &amp; Auto-Render Tabel) to Google Form Generator v14</p>
+    </div>
+  </footer>
+
+  <script>
+    let currentMode = 'offline';
+    let attachedImages = [];
+    let pasteCounter = 0;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedKey = localStorage.getItem('gemini_api_key');
+      if (savedKey) {
+        document.getElementById('geminiApiKey').value = savedKey;
+        document.getElementById('apiKeyStatus').classList.remove('hidden');
+      }
+      setMode('offline');
+    });
+
+    window.addEventListener('paste', async (event) => {
+      const clipboardItems = event.clipboardData && event.clipboardData.items;
+      if (!clipboardItems) return;
+
+      let imageFound = false;
+      for (let i = 0; i < clipboardItems.length; i++) {
+        const item = clipboardItems[i];
+        if (item.type.indexOf('image') !== -1) {
+          event.preventDefault();
+          const blob = item.getAsFile();
+          if (blob) {
+            pasteCounter++;
+            const labelName = `Snipping_Clipboard_${pasteCounter}.jpg`;
+            await addImageItem(labelName, blob, '');
+            imageFound = true;
+          }
+        }
+      }
+
+      if (imageFound) {
+        showPasteToast('✓ Gambar hasil Ctrl+V berhasil ditambahkan! Isi nomor soalnya.');
+        document.getElementById('pasteZone').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+
+    function showPasteToast(msg) {
+      const toast = document.getElementById('pasteToast');
+      document.getElementById('pasteToastText').textContent = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => { toast.classList.add('hidden'); }, 3000);
+    }
+
+    function saveApiKey() {
+      const key = document.getElementById('geminiApiKey').value.trim();
+      if (key) {
+        localStorage.setItem('gemini_api_key', key);
+        document.getElementById('apiKeyStatus').classList.remove('hidden');
+      } else {
+        localStorage.removeItem('gemini_api_key');
+        document.getElementById('apiKeyStatus').classList.add('hidden');
+      }
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      const btnOff = document.getElementById('btnModeOffline');
+      const btnAI = document.getElementById('btnModeAI');
+      const panelOff = document.getElementById('panelOffline');
+      const panelAI = document.getElementById('panelAI');
+      const btnText = document.getElementById('btnText');
+      const btnIcon = document.getElementById('btnIcon');
+
+      if (mode === 'offline') {
+        btnOff.className = 'px-3.5 py-1.5 rounded-md text-sm font-medium transition bg-white text-indigo-800 shadow-sm cursor-pointer';
+        btnAI.className = 'px-3.5 py-1.5 rounded-md text-sm font-medium transition text-indigo-100 hover:text-white cursor-pointer';
+        panelOff.classList.remove('hidden');
+        panelAI.classList.add('hidden');
+        btnIcon.textContent = '⚙️';
+        btnText.textContent = 'Generate Script (Mode Offline)';
+      } else {
+        btnAI.className = 'px-3.5 py-1.5 rounded-md text-sm font-medium transition bg-white text-indigo-800 shadow-sm cursor-pointer';
+        btnOff.className = 'px-3.5 py-1.5 rounded-md text-sm font-medium transition text-indigo-100 hover:text-white cursor-pointer';
+        panelAI.classList.remove('hidden');
+        panelOff.classList.add('hidden');
+        btnIcon.textContent = '✨';
+        btnText.textContent = 'Generate Script dengan Gemini AI';
+      }
+    }
+
+    // =========================================================================
+    // EKSTRAKTOR FILE PDF (PDF.JS)
+    // =========================================================================
+    async function parsePdfText(arrayBuffer) {
+      if (!window.pdfjsLib) {
+        throw new Error('Library PDF.js belum termuat. Periksa koneksi internet Anda.');
+      }
+
+      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+      const pdf = await loadingTask.promise;
+      let rawLines = [];
+
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const textContent = await page.getTextContent();
+
+        const linesMap = [];
+        textContent.items.forEach(item => {
+          const str = item.str;
+          if (!str || !str.trim()) return;
+          const y = Math.round(item.transform[5] / 4) * 4;
+          const x = item.transform[4];
+          let existingLine = linesMap.find(l => Math.abs(l.y - y) <= 4);
+          if (!existingLine) {
+            existingLine = { y, items: [] };
+            linesMap.push(existingLine);
+          }
+          existingLine.items.push({ x, str });
+        });
+
+        linesMap.sort((a, b) => b.y - a.y);
+        linesMap.forEach(lineObj => {
+          lineObj.items.sort((a, b) => a.x - b.x);
+          const lineStr = lineObj.items.map(i => i.str).join(' ').replace(/\s+/g, ' ').trim();
+          if (lineStr) rawLines.push(lineStr);
+        });
+      }
+
+      let formatted = [];
+      let started = false;
+      const hasBagian = rawLines.some(l => /^Bagian\s+(?:I|1)\b/i.test(l));
+      if (!hasBagian) started = true;
+
+      for (let line of rawLines) {
+        if (/^DOKUMEN RAHASIA$/i.test(line)) continue;
+
+        const bagianMatch = line.match(/^Bagian\s+(I{1,3}|IV|V|\d+)\s*[:\-–]?\s*(.*)$/i);
+        if (bagianMatch) {
+          started = true;
+          const rom = bagianMatch[1].toUpperCase();
+          const desc = bagianMatch[2].toLowerCase();
+          if (desc.includes('kompleks') || desc.includes('lebih dari satu') || rom === 'II') {
+            formatted.push('\n[PGK]');
+          } else if (desc.includes('jodoh') || rom === 'III') {
+            formatted.push('\n[JODOH]');
+          } else if (desc.includes('benar') || desc.includes('salah') || rom === 'IV') {
+            formatted.push('\n[BS]');
+          } else {
+            formatted.push('\n[PG]');
+          }
+          formatted.push('# ' + line);
+          continue;
+        }
+
+        if (!started) continue;
+        if (/^Petunjuk\s*:/i.test(line)) {
+          formatted.push('# ' + line);
+          continue;
+        }
+
+        const splitParts = splitHorizontalOptionsLine(line);
+        splitParts.forEach(p => formatted.push(p));
+      }
+
+      return formatted.join('\n').trim();
+    }
+
+    // =========================================================================
+    // RENDER TABEL HTML5 CANVAS → GAMBAR JPG TAJAM (UNTUK STIMULUS & MENJODOHKAN)
+    // =========================================================================
+    function wrapCanvasText(ctx, text, maxWidth) {
+      const words = String(text || '').split(/\s+/);
+      const lines = [];
+      let currentLine = '';
+
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const testLine = currentLine ? currentLine + ' ' + word : word;
+        if (ctx.measureText(testLine).width <= maxWidth) {
+          currentLine = testLine;
+        } else {
+          if (currentLine) lines.push(currentLine);
+          currentLine = word;
+        }
+      }
+      if (currentLine) lines.push(currentLine);
+      return lines.length > 0 ? lines : [''];
+    }
+
+    function renderTableToImageObject(rowsMatrix, isMatchingTable = false) {
+      const matrix = rowsMatrix.map(r => [...r]);
+      if (isMatchingTable && matrix.length > 1 && matrix[0].length === 2) {
+        let leftIdx = 1;
+        let rightIdx = 0;
+        for (let r = 1; r < matrix.length; r++) {
+          if (matrix[r][0] && matrix[r][0].trim()) {
+            matrix[r][0] = `${leftIdx}. ${matrix[r][0].trim()}`;
+            leftIdx++;
+          }
+          if (matrix[r][1] && matrix[r][1].trim()) {
+            const letter = String.fromCharCode(65 + rightIdx);
+            matrix[r][1] = `${letter}. ${matrix[r][1].trim()}`;
+            rightIdx++;
+          }
+        }
+      }
+
+      const numCols = Math.max(...matrix.map(r => r.length));
+      const dpr = 2;
+      const paddingX = 14;
+      const paddingY = 10;
+      const lineHeight = 20;
+      const fontRegular = '14px "Inter", "Segoe UI", Arial, sans-serif';
+      const fontBold = 'bold 14px "Inter", "Segoe UI", Arial, sans-serif';
+
+      const measureCanvas = document.createElement('canvas');
+      const mCtx = measureCanvas.getContext('2d');
+
+      const maxTotalWidth = 660;
+      const minColWidth = numCols <= 2 ? 240 : 75;
+      const colWidths = new Array(numCols).fill(minColWidth);
+
+      for (let c = 0; c < numCols; c++) {
+        let maxW = minColWidth;
+        for (let r = 0; r < matrix.length; r++) {
+          mCtx.font = r === 0 ? fontBold : fontRegular;
+          const cellText = matrix[r][c] || '';
+          const textW = mCtx.measureText(cellText).width + paddingX * 2 + 12;
+          if (textW > maxW) maxW = textW;
+        }
+        colWidths[c] = Math.min(maxW, numCols === 2 ? 330 : 220);
+      }
+
+      let totalWidth = colWidths.reduce((a, b) => a + b, 0);
+      if (totalWidth > maxTotalWidth) {
+        const ratio = maxTotalWidth / totalWidth;
+        for (let c = 0; c < numCols; c++) {
+          colWidths[c] = Math.floor(colWidths[c] * ratio);
+        }
+        totalWidth = colWidths.reduce((a, b) => a + b, 0);
+      }
+
+      const rowWrappedCells = [];
+      const rowHeights = [];
+
+      for (let r = 0; r < matrix.length; r++) {
+        mCtx.font = r === 0 ? fontBold : fontRegular;
+        let maxLines = 1;
+        const wrappedRow = [];
+        for (let c = 0; c < numCols; c++) {
+          const cellText = matrix[r][c] || '';
+          const lines = wrapCanvasText(mCtx, cellText, colWidths[c] - paddingX * 2);
+          wrappedRow.push(lines);
+          if (lines.length > maxLines) maxLines = lines.length;
+        }
+        rowWrappedCells.push(wrappedRow);
+        rowHeights.push(maxLines * lineHeight + paddingY * 2);
+      }
+
+      const margin = 10;
+      const totalHeight = rowHeights.reduce((a, b) => a + b, 0);
+      const canvasW = totalWidth + margin * 2;
+      const canvasH = totalHeight + margin * 2;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = canvasW * dpr;
+      canvas.height = canvasH * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvasW, canvasH);
+
+      let curY = margin;
+      for (let r = 0; r < matrix.length; r++) {
+        let curX = margin;
+        const rowH = rowHeights[r];
+
+        if (r === 0) {
+          ctx.fillStyle = '#E0E7FF';
+          ctx.fillRect(curX, curY, totalWidth, rowH);
+        } else if (r % 2 === 0) {
+          ctx.fillStyle = '#F8FAFC';
+          ctx.fillRect(curX, curY, totalWidth, rowH);
+        }
+
+        for (let c = 0; c < numCols; c++) {
+          const colW = colWidths[c];
+
+          ctx.strokeStyle = '#64748B';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(curX, curY, colW, rowH);
+
+          ctx.fillStyle = r === 0 ? '#1E1B4B' : '#0F172A';
+          ctx.font = r === 0 ? fontBold : fontRegular;
+          ctx.textBaseline = 'middle';
+
+          const lines = rowWrappedCells[r][c];
+          const textBlockH = lines.length * lineHeight;
+          let textY = curY + (rowH - textBlockH) / 2 + lineHeight / 2;
+
+          const isCenter = (r === 0) || (numCols > 2 && c > 0);
+          ctx.textAlign = isCenter ? 'center' : 'left';
+          const textX = isCenter ? curX + colW / 2 : curX + paddingX;
+
+          lines.forEach(lineStr => {
+            ctx.fillText(lineStr, textX, textY);
+            textY += lineHeight;
+          });
+
+          curX += colW;
+        }
+        curY += rowH;
+      }
+
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      const base64 = dataUrl.split(',')[1];
+      return { dataUrl, base64, mimeType: 'image/jpeg' };
+    }
+
+    // =========================================================================
+    // XML PARSER KHUSUS WORD (.DOCX)
+    // =========================================================================
+    function toSuperscript(str) {
+      const map = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻','+':'⁺','n':'ⁿ','x':'ˣ','y':'ʸ','a':'ᵃ','b':'ᵇ' };
+      const cleaned = str.trim();
+      if (/^[0-9\-+nxyab]+$/.test(cleaned)) {
+        return cleaned.split('').map(c => map[c] || c).join('');
+      }
+      return '^(' + cleaned + ')';
+    }
+
+    function toSubscript(str) {
+      const map = { '0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉','-':'₋','+':'₊','n':'ₙ','x':'ₓ' };
+      const cleaned = str.trim();
+      if (/^[0-9\-+nx]+$/.test(cleaned)) {
+        return cleaned.split('').map(c => map[c] || c).join('');
+      }
+      return '_' + cleaned;
+    }
+
+    function extractWordXmlNode(node) {
+      if (!node) return '';
+      if (node.nodeType === 3) return node.nodeValue || '';
+
+      const local = node.localName || node.nodeName.split(':').pop();
+
+      if (local === 'f') {
+        const num = node.getElementsByTagNameNS('*', 'num')[0];
+        const den = node.getElementsByTagNameNS('*', 'den')[0];
+        return '(' + extractWordXmlNode(num).trim() + '/' + extractWordXmlNode(den).trim() + ')';
+      }
+      if (local === 'sSup') {
+        const e = node.getElementsByTagNameNS('*', 'e')[0];
+        const sup = node.getElementsByTagNameNS('*', 'sup')[0];
+        const supClean = extractWordXmlNode(sup).trim();
+        if (supClean === '°' || supClean === 'o' || supClean === 'O' || supClean === '*') {
+          return extractWordXmlNode(e) + '°';
+        }
+        return extractWordXmlNode(e) + toSuperscript(supClean);
+      }
+      if (local === 'sSub') {
+        const e = node.getElementsByTagNameNS('*', 'e')[0];
+        const sub = node.getElementsByTagNameNS('*', 'sub')[0];
+        return extractWordXmlNode(e) + toSubscript(extractWordXmlNode(sub));
+      }
+      if (local === 'rad') {
+        const deg = node.getElementsByTagNameNS('*', 'deg')[0];
+        const e = node.getElementsByTagNameNS('*', 'e')[0];
+        const degText = deg ? extractWordXmlNode(deg).trim() : '';
+        const baseText = extractWordXmlNode(e).trim();
+        return (degText && degText !== '2' ? degText + '√' : '√') + (baseText.length > 1 ? '(' + baseText + ')' : baseText);
+      }
+      if (local === 't') {
+        return node.textContent || '';
+      }
+      if (local === 'tab') return '   ';
+      if (local === 'br') return '\n';
+
+      let result = '';
+      for (let i = 0; i < node.childNodes.length; i++) {
+        result += extractWordXmlNode(node.childNodes[i]);
+      }
+      return result;
+    }
+
+    function splitHorizontalOptionsLine(text) {
+      return text
+        .replace(/\s+([B-Eb-e][\.\)]\s+)/g, '\n$1')
+        .split('\n')
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+
+    async function parseDocxRichText(arrayBuffer) {
+      const zip = await JSZip.loadAsync(arrayBuffer);
+      const docXmlFile = zip.file('word/document.xml');
+      if (!docXmlFile) throw new Error('File word/document.xml tidak ditemukan.');
+
+      const xmlStr = await docXmlFile.async('string');
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlStr, 'application/xml');
+
+      const numLevelFmt = {};
+      const numXmlFile = zip.file('word/numbering.xml');
+      if (numXmlFile) {
+        const numXmlStr = await numXmlFile.async('string');
+        const numDoc = parser.parseFromString(numXmlStr, 'application/xml');
+        const abstractLevels = {};
+        Array.from(numDoc.getElementsByTagNameNS('*', 'abstractNum')).forEach(abs => {
+          const absId = abs.getAttribute('w:abstractNumId') || abs.getAttribute('abstractNumId');
+          if (!absId) return;
+          abstractLevels[absId] = {};
+          Array.from(abs.getElementsByTagNameNS('*', 'lvl')).forEach(lvl => {
+            const ilvl = lvl.getAttribute('w:ilvl') || lvl.getAttribute('ilvl') || '0';
+            const numFmt = lvl.getElementsByTagNameNS('*', 'numFmt')[0];
+            abstractLevels[absId][ilvl] = numFmt ? (numFmt.getAttribute('w:val') || numFmt.getAttribute('val') || 'decimal') : 'decimal';
+          });
+        });
+        Array.from(numDoc.getElementsByTagNameNS('*', 'num')).forEach(num => {
+          const nId = num.getAttribute('w:numId') || num.getAttribute('numId');
+          const absRef = num.getElementsByTagNameNS('*', 'abstractNumId')[0];
+          const absId = absRef ? (absRef.getAttribute('w:val') || absRef.getAttribute('val')) : '';
+          if (nId && abstractLevels[absId]) {
+            Object.keys(abstractLevels[absId]).forEach(ilvl => {
+              numLevelFmt[`${nId}_${ilvl}`] = abstractLevels[absId][ilvl];
+            });
+          }
+        });
+      }
+
+      const body = xmlDoc.getElementsByTagNameNS('*', 'body')[0];
+      if (!body) return { text: '', renderedTables: [] };
+
+      let outputLines = [];
+      let renderedTables = [];
+      let startedExam = false;
+      let currentSection = 'PG';
+      let globalQuestionCounter = 0;
+      let questionNumIds = new Set();
+      let optionCounters = {};
+      const shouldRenderTables = document.getElementById('autoRenderTables').checked;
+
+      const fullPlain = body.textContent || '';
+      const hasBagianHeader = /Bagian\s+(?:I|1)\b/i.test(fullPlain);
+      if (!hasBagianHeader) startedExam = true;
+
+      for (let i = 0; i < body.childNodes.length; i++) {
+        const el = body.childNodes[i];
+        const local = el.localName || el.nodeName.split(':').pop();
+
+        if (local === 'p') {
+          let rawP = extractWordXmlNode(el).replace(/[ \t]+/g, ' ').trim();
+          rawP = rawP.replace(/\*\(°\)/g, '°').replace(/\^\(°\)/g, '°').replace(/\*°/g, '°');
+          if (!rawP) continue;
+
+          const bagianMatch = rawP.match(/^Bagian\s+(I{1,3}|IV|V|\d+)\s*[:\-–]?\s*(.*)$/i);
+          if (bagianMatch) {
+            startedExam = true;
+            const rom = bagianMatch[1].toUpperCase();
+            const descPart = bagianMatch[2].toLowerCase();
+            optionCounters = {};
+
+            if (descPart.includes('kompleks') || descPart.includes('lebih dari satu') || rom === 'II') {
+              currentSection = 'PGK';
+              outputLines.push('\n[PGK]');
+            } else if (descPart.includes('jodoh') || rom === 'III') {
+              currentSection = 'JODOH';
+              outputLines.push('\n[JODOH]');
+            } else if (descPart.includes('benar') || descPart.includes('salah') || rom === 'IV') {
+              currentSection = 'BS';
+              outputLines.push('\n[BS]');
+            } else {
+              currentSection = 'PG';
+              outputLines.push('\n[PG]');
+            }
+            outputLines.push('# ' + rawP);
+            continue;
+          }
+
+          if (!startedExam) continue;
+
+          if (/^Petunjuk\s*:/i.test(rawP)) {
+            outputLines.push('# ' + rawP);
+            continue;
+          }
+
+          const numPr = el.getElementsByTagNameNS('*', 'numPr')[0];
+          if (numPr) {
+            const ilvlEl = numPr.getElementsByTagNameNS('*', 'ilvl')[0];
+            const numIdEl = numPr.getElementsByTagNameNS('*', 'numId')[0];
+            const ilvl = ilvlEl ? (ilvlEl.getAttribute('w:val') || ilvlEl.getAttribute('val') || '0') : '0';
+            const numId = numIdEl ? (numIdEl.getAttribute('w:val') || numIdEl.getAttribute('val') || '0') : '0';
+
+            if (numId !== '0') {
+              const key = `${numId}_${ilvl}`;
+              const fmt = numLevelFmt[key] || 'decimal';
+              const isLetterFmt = (fmt === 'upperLetter' || fmt === 'lowerLetter');
+              const isSubLevel = (ilvl !== '0');
+              const isKnownQuestionNumId = questionNumIds.has(numId) && ilvl === '0';
+
+              if (questionNumIds.size === 0 && fmt === 'decimal' && ilvl === '0') {
+                questionNumIds.add(numId);
+              }
+
+              const prevLine = outputLines.length > 0 ? outputLines[outputLines.length - 1] : '';
+              const prevLooksLikeStemEnd = /(?:\.\.\.|…|\?|:)\s*$/.test(prevLine) && !/^\[/.test(prevLine) && !/^#/.test(prevLine);
+
+              const looksLikeNewQuestion = (fmt === 'decimal' && ilvl === '0') &&
+                (isKnownQuestionNumId || currentSection === 'BS' || !prevLooksLikeStemEnd);
+
+              if (!isLetterFmt && !isSubLevel && looksLikeNewQuestion && fmt !== 'bullet') {
+                questionNumIds.add(numId);
+                globalQuestionCounter++;
+                optionCounters = {};
+                const cleanStem = rawP.replace(/^\d+[\.\)]\s*/, '');
+                outputLines.push(`${globalQuestionCounter}. ${cleanStem}`);
+                continue;
+              } else if (fmt === 'bullet') {
+                outputLines.push(`• ${rawP}`);
+                continue;
+              } else {
+                const splitParts = splitHorizontalOptionsLine(rawP);
+                splitParts.forEach((part, pIdx) => {
+                  if (pIdx === 0) {
+                    optionCounters[key] = (optionCounters[key] || 0) + 1;
+                    const count = optionCounters[key];
+                    const letter = String.fromCharCode(64 + ((count - 1) % 26) + 1);
+                    const cleanOpt = part.replace(/^(?:[A-Ea-e]|\d+)[\.\)]\s*/, '');
+                    outputLines.push(`${letter}. ${cleanOpt}`);
+                  } else {
+                    const m = part.match(/^([A-Ea-e])[\.\)]\s*(.+)$/);
+                    if (m) {
+                      outputLines.push(`${m[1].toUpperCase()}. ${m[2].trim()}`);
+                    } else {
+                      outputLines.push(part);
+                    }
+                  }
+                });
+                continue;
+              }
+            }
+          }
+
+          const manualQ = rawP.match(/^(\d+)[\.\)]\s+(.+)$/);
+          if (manualQ && parseInt(manualQ[1]) > globalQuestionCounter) {
+            globalQuestionCounter = parseInt(manualQ[1]);
+            optionCounters = {};
+            outputLines.push(`${globalQuestionCounter}. ${manualQ[2]}`);
+          } else {
+            const splitParts = splitHorizontalOptionsLine(rawP);
+            if (splitParts.length > 1) {
+              splitParts.forEach(sp => outputLines.push(sp));
+            } else {
+              outputLines.push(rawP);
+            }
+          }
+
+        } else if (local === 'tbl') {
+          if (!startedExam) continue;
+
+          const rows = Array.from(el.getElementsByTagNameNS('*', 'tr'));
+          const parsedRows = rows.map(tr => {
+            const cells = Array.from(tr.getElementsByTagNameNS('*', 'tc'));
+            return cells.map(tc => {
+              const paras = Array.from(tc.getElementsByTagNameNS('*', 'p'));
+              return paras.map(p => extractWordXmlNode(p).replace(/\s+/g, ' ').trim()).filter(Boolean).join(' ');
+            });
+          });
+
+          if (parsedRows.length === 0) continue;
+
+          const headerText = parsedRows[0].join(' ').toLowerCase();
+          const isBS = currentSection === 'BS' || (headerText.includes('pernyataan') && headerText.includes('benar'));
+
+          if (isBS) {
+            parsedRows.forEach((r, rIdx) => {
+              if (rIdx === 0 && r[0].toLowerCase().includes('pernyataan')) return;
+              const stmt = (r[0] || '').trim();
+              if (stmt) {
+                outputLines.push(`BS_ROW: ${stmt}`);
+              }
+            });
+          } else if (shouldRenderTables && globalQuestionCounter > 0) {
+            const isMatching = (currentSection === 'JODOH');
+            const imgObj = renderTableToImageObject(parsedRows, isMatching);
+            renderedTables.push({
+              name: `Tabel_Soal_No_${globalQuestionCounter}.jpg`,
+              questionNumber: String(globalQuestionCounter),
+              ...imgObj
+            });
+          } else {
+            if (currentSection === 'JODOH' && parsedRows[0].length === 2) {
+              const hLeft = parsedRows[0][0] || 'Kolom Kiri';
+              const hRight = parsedRows[0][1] || 'Kolom Kanan';
+              let leftItems = [];
+              let rightItems = [];
+              for (let rIdx = 1; rIdx < parsedRows.length; rIdx++) {
+                const cLeft = (parsedRows[rIdx][0] || '').trim();
+                const cRight = (parsedRows[rIdx][1] || '').trim();
+                if (cLeft) leftItems.push(`${leftItems.length + 1}. ${cLeft}`);
+                if (cRight) {
+                  const letter = String.fromCharCode(65 + rightItems.length);
+                  rightItems.push(`${letter}. ${cRight}`);
+                }
+              }
+              outputLines.push(`TBL: ${hLeft}: ${leftItems.join(' | ')}`);
+              outputLines.push(`TBL: ${hRight}: ${rightItems.join(' | ')}`);
+            } else {
+              parsedRows.forEach(r => {
+                const nonEmpty = r.filter(Boolean);
+                if (nonEmpty.length > 0) {
+                  outputLines.push('TBL: ' + nonEmpty.join(' | '));
+                }
+              });
+            }
+          }
+        }
+      }
+
+      return { text: outputLines.join('\n').trim(), renderedTables };
+    }
+
+    // =========================================================================
+    // MANAJEMEN GAMBAR
+    // =========================================================================
+    function compressImageToDataUrl(blobOrFile, maxWidth = 600, quality = 0.65) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            let w = img.width;
+            let h = img.height;
+            if (w > maxWidth) {
+              h = Math.round((h * maxWidth) / w);
+              w = maxWidth;
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            const base64 = dataUrl.split(',')[1];
+            resolve({ dataUrl, base64, mimeType: 'image/jpeg' });
+          };
+          img.onerror = function() {
+            const dataUrl = e.target.result;
+            const base64 = dataUrl.split(',')[1];
+            resolve({ dataUrl, base64, mimeType: blobOrFile.type || 'image/png' });
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(blobOrFile);
+      });
+    }
+
+    async function addImageItem(name, blobOrFile, defaultQNum = '') {
+      const compressed = await compressImageToDataUrl(blobOrFile);
+      const newId = 'img_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+      attachedImages.push({
+        id: newId,
+        name: name,
+        questionNumber: defaultQNum,
+        mimeType: compressed.mimeType,
+        base64: compressed.base64,
+        dataUrl: compressed.dataUrl
+      });
+      renderImageList();
+      setTimeout(() => {
+        const inputEl = document.getElementById('qnum_' + newId);
+        if (inputEl && !defaultQNum) inputEl.focus();
+      }, 50);
+    }
+
+    function addPreRenderedImage(imgObj) {
+      const newId = 'tbl_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+      attachedImages.push({
+        id: newId,
+        name: imgObj.name,
+        questionNumber: imgObj.questionNumber,
+        mimeType: imgObj.mimeType,
+        base64: imgObj.base64,
+        dataUrl: imgObj.dataUrl
+      });
+      renderImageList();
+    }
+
+    function handleManualImages(event) {
+      const files = Array.from(event.target.files || []);
+      files.forEach(async (file) => {
+        const match = file.name.match(/(\d+)/);
+        const guessedNum = match ? match[1] : '';
+        await addImageItem(file.name, file, guessedNum);
+      });
+      event.target.value = '';
+    }
+
+    function updateImageQNum(id, val) {
+      const item = attachedImages.find(x => x.id === id);
+      if (item) item.questionNumber = val.trim();
+    }
+
+    function removeImageItem(id) {
+      attachedImages = attachedImages.filter(x => x.id !== id);
+      renderImageList();
+    }
+
+    function renderImageList() {
+      const container = document.getElementById('imageListContainer');
+      if (attachedImages.length === 0) {
+        container.innerHTML = `<p id="emptyImageMsg" class="text-xs text-slate-400 italic text-center py-3 border border-dashed border-slate-200 rounded-lg">Belum ada gambar yang dimuat.</p>`;
+        return;
+      }
+
+      container.innerHTML = attachedImages.map((img) => `
+        <div class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg">
+          <img src="${img.dataUrl}" alt="${img.name}" class="w-14 h-12 object-contain rounded border border-slate-300 bg-white shrink-0" />
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-medium text-slate-700 truncate" title="${img.name}">${img.name}</p>
+            <div class="flex items-center gap-1.5 mt-1">
+              <label class="text-[11px] text-slate-500">Untuk Soal No:</label>
+              <input id="qnum_${img.id}" type="text" value="${img.questionNumber}" placeholder="cth: 6"
+                oninput="updateImageQNum('${img.id}', this.value)"
+                class="w-16 px-2 py-0.5 text-xs border border-purple-300 rounded bg-white focus:ring-1 focus:ring-purple-500 outline-none font-semibold text-purple-800" />
+            </div>
+          </div>
+          <button type="button" onclick="removeImageItem('${img.id}')" title="Hapus gambar"
+            class="text-rose-500 hover:text-rose-700 text-xs font-bold px-2 py-1 rounded hover:bg-rose-50 cursor-pointer">✕</button>
+        </div>
+      `).join('');
+    }
+
+    async function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      document.getElementById('fileNameLabel').textContent = '📄 ' + file.name;
+      const ext = file.name.split('.').pop().toLowerCase();
+
+      if (ext === 'txt') {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('rawText').value = e.target.result;
+        };
+        reader.readAsText(file);
+      } else if (ext === 'pdf') {
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+          try {
+            document.getElementById('rawText').value = 'Sedang mengekstrak teks dari file PDF...';
+            const pdfText = await parsePdfText(e.target.result);
+            document.getElementById('rawText').value = pdfText;
+          } catch (err) {
+            alert('Gagal membaca file .pdf: ' + err.message);
+            document.getElementById('rawText').value = '';
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      } else if (ext === 'docx') {
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+          const arrayBuffer = e.target.result;
+          try {
+            const parsed = await parseDocxRichText(arrayBuffer);
+            document.getElementById('rawText').value = parsed.text;
+
+            parsed.renderedTables.forEach(tblImg => addPreRenderedImage(tblImg));
+
+            const zip = await JSZip.loadAsync(arrayBuffer);
+            const mediaFiles = Object.keys(zip.files).filter(path =>
+              path.startsWith('word/media/') && /\.(png|jpe?g|gif|webp)$/i.test(path)
+            );
+            mediaFiles.sort();
+            for (const mPath of mediaFiles) {
+              const blob = await zip.files[mPath].async('blob');
+              const shortName = mPath.split('/').pop();
+              await addImageItem('Docx: ' + shortName, blob, '');
+            }
+          } catch (err) {
+            alert('Gagal membaca file .docx: ' + err.message);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
+        alert('Format file tidak didukung. Gunakan .docx, .pdf, atau .txt');
+      }
+    }
+
+    function loadSampleText() {
+      document.getElementById('rawText').value = `[PG]
+1. Hasil dari 2³ × 2⁴ adalah ...
+A. 2⁷
+B. 2¹²
+C. 4⁷
+D. 4¹²
+Kunci: A
+
+[JODOH]
+2. Pasangkan bentuk pangkat pada tabel gambar di atas!
+Berdasarkan informasi di atas, pasangan yang tepat untuk kolom kiri dan kanan adalah ...
+A. 1A, 2B, 3C
+B. 1B, 2D, 3A
+C. 1C, 2A, 3B
+D. 1D, 2C, 3B`;
+    }
+
+    function escapeJS(str) {
+      return String(str)
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/\r?\n/g, '\\n');
+    }
+
+    // =========================================================================
+    // HELPER GAMBAR: MENEMPATKAN GAMBAR TEPAT DI ATAS NOMOR SOAL
+    // =========================================================================
+    function buildImageHelperCode() {
+      const mappedImages = attachedImages.filter(img => img.questionNumber !== '');
+      if (mappedImages.length === 0) return '';
+
+      let helper = `\n  // === DATA GAMBAR TERTANAM (DITEMPATKAN DI ATAS SOAL) ===\n`;
+      helper += `  var gambarMap = {\n`;
+      mappedImages.forEach((img, idx) => {
+        const comma = idx < mappedImages.length - 1 ? ',' : '';
+        helper += `    '${escapeJS(img.questionNumber)}': { mime: '${img.mimeType}', b64: '${img.base64}' }${comma}\n`;
+      });
+      helper += `  };\n\n`;
+      helper += `  function sisipkanGambarSoal(nomorSoal) {\n`;
+      helper += `    var data = gambarMap[String(nomorSoal)];\n`;
+      helper += `    if (data && data.b64) {\n`;
+      helper += `      var bytes = Utilities.base64Decode(data.b64);\n`;
+      helper += `      var blob = Utilities.newBlob(bytes, data.mime, 'soal_' + nomorSoal + '.jpg');\n`;
+      helper += `      form.addImageItem()\n`;
+      helper += `          .setTitle('Perhatikan gambar/tabel untuk soal nomor ' + nomorSoal + ' berikut:')\n`;
+      helper += `          .setImage(blob)\n`;
+      helper += `          .setAlignment(FormApp.Alignment.CENTER);\n`;
+      helper += `    }\n`;
+      helper += `  }\n\n`;
+      return helper;
+    }
+
+    // Pembersih otomatis API Google Apps Script yang tidak didukung oleh GridItem / TextItem
+    function sanitizeAppsScript(code) {
+      const nonQuizFeedbackRegex = /\b(?:var|let|const)\s+([a-zA-Z0-9_$]+)\s*=\s*form\.(?:addParagraphTextItem|addTextItem|addGridItem|addCheckboxGridItem|addScaleItem|addDateItem|addTimeItem)\s*\(\)/g;
+      const restrictedVars = new Set();
+      let match;
+      while ((match = nonQuizFeedbackRegex.exec(code)) !== null) {
+        restrictedVars.add(match[1]);
+      }
+
+      if (restrictedVars.size > 0) {
+        restrictedVars.forEach(varName => {
+          // Hapus .setPoints(...) pada variabel non-MC/Checkbox
+          const chainedPoints = new RegExp(`(\\b${varName}\\b[\\s\\S]*?)\\.setPoints\\s*\\([^)]*\\)`, 'g');
+          code = code.replace(chainedPoints, '$1');
+          const linePoints = new RegExp(`^\\s*${varName}\\.setPoints\\s*\\([^)]*\\)\\s*;?\\s*$`, 'gm');
+          code = code.replace(linePoints, '');
+
+          // Hapus .setFeedbackForCorrect(...) dan .setFeedbackForIncorrect(...) pada GridItem/TextItem
+          const lineFeedback = new RegExp(`^\\s*${varName}\\.setFeedbackFor(?:Correct|Incorrect)\\s*\\([\\s\\S]*?\\)\\s*;?\\s*$`, 'gm');
+          code = code.replace(lineFeedback, '');
+          const chainedFeedback = new RegExp(`\\.setFeedbackFor(?:Correct|Incorrect)\\s*\\([^;]*?\\)`, 'g');
+          // Hanya hapus jika baris mengandung varName
+          code = code.split('\n').map(line => {
+            if (line.includes(varName + '.') && /setFeedbackFor(?:Correct|Incorrect)/.test(line)) {
+              return '';
+            }
+            return line;
+          }).join('\n');
+        });
+      }
+      return code;
+    }
+
+    function getUniqueCleanOptions(options) {
+      const seenTexts = new Set();
+      const unique = [];
+      for (const opt of options) {
+        const cleanText = String(opt.text || '').trim();
+        if (!cleanText) continue;
+        const normKey = cleanText.toLowerCase();
+        if (!seenTexts.has(normKey)) {
+          seenTexts.add(normKey);
+          unique.push({ ...opt, text: cleanText });
+        }
+      }
+      return unique;
+    }
+
+    // =========================================================================
+    // ENGINE 1: PARSER MODE OFFLINE (TIDAK DIUBAH SAMA SEKALI)
+    // =========================================================================
+    function parseOfflineToScript(rawText) {
+      const title = document.getElementById('formTitle').value.trim() || 'KUIS UJIAN';
+      const desc = document.getElementById('formDesc').value.trim();
+      const defPoints = parseInt(document.getElementById('defaultPoints').value) || 2;
+      const includeId = document.getElementById('includeIdentity').checked;
+      const classes = document.getElementById('classList').value.split(',').map(c => c.trim()).filter(Boolean);
+
+      const normalizedText = rawText
+        .replace(/\s+([B-Eb-e][\.\)]\s+)/g, '\n$1');
+
+      const lines = normalizedText.split(/\r?\n/);
+
+      let sectionType = 'PG';
+      let questions = [];
+      let currentQ = null;
+
+      function pushCurrent() {
+        if (currentQ && currentQ.title.trim()) {
+          if (currentQ.keyString) {
+            const keys = currentQ.keyString.toUpperCase().split(/[\s,]+/).filter(Boolean);
+            currentQ.options.forEach(opt => {
+              if (keys.includes(opt.letter)) opt.isCorrect = true;
+            });
+          }
+          currentQ.options.sort((a, b) => a.letter.localeCompare(b.letter));
+          currentQ.options = getUniqueCleanOptions(currentQ.options);
+          questions.push(currentQ);
+        }
+      }
+
+      for (let rawLine of lines) {
+        let line = rawLine.trim();
+        if (!line) continue;
+
+        if (/^\[PG\]$/i.test(line)) { pushCurrent(); currentQ = null; sectionType = 'PG'; continue; }
+        if (/^\[PGK\]$/i.test(line)) { pushCurrent(); currentQ = null; sectionType = 'PGK'; continue; }
+        if (/^\[JODOH\]$/i.test(line)) { pushCurrent(); currentQ = null; sectionType = 'JODOH'; continue; }
+        if (/^\[BS\]$/i.test(line)) { pushCurrent(); currentQ = null; sectionType = 'BS'; continue; }
+
+        if (line.startsWith('#')) {
+          const headerText = line.replace(/^#+\s*/, '').trim();
+          if (/^Bagian\s+/i.test(headerText)) {
+            pushCurrent();
+            currentQ = null;
+            questions.push({ isSectionBreak: true, title: headerText });
+          }
+          continue;
+        }
+
+        let qMatch = line.match(/^(\d+)[\.\)]\s*(.+)$/);
+        if (qMatch) {
+          pushCurrent();
+          currentQ = {
+            number: qMatch[1],
+            type: sectionType,
+            title: qMatch[1] + '. ' + qMatch[2],
+            options: [],
+            rows: [],
+            keyString: ''
+          };
+          continue;
+        }
+
+        if (!currentQ) continue;
+
+        let keyMatch = line.match(/^(?:kunci|jawaban)\s*[:=]\s*(.+)$/i);
+        if (keyMatch) {
+          currentQ.keyString = keyMatch[1];
+          continue;
+        }
+
+        if (line.startsWith('BS_ROW:')) {
+          const stmt = line.replace(/^BS_ROW:\s*/, '').trim();
+          if (stmt) currentQ.rows.push(stmt);
+          continue;
+        }
+
+        if (line.startsWith('TBL:')) {
+          const tblRow = line.replace(/^TBL:\s*/, '').trim();
+          if (tblRow) currentQ.title += '\n' + tblRow;
+          continue;
+        }
+
+        let optMatch = line.match(/^(\*?)\s*([A-Ea-e])[\.\)]\s*(.+)$/);
+        if (optMatch) {
+          let starBefore = optMatch[1] === '*';
+          let letter = optMatch[2].toUpperCase();
+          let optText = optMatch[3].trim().replace(/^\d+[\.\)]\s*/, '');
+          let starAfter = false;
+          if (optText.endsWith('*')) {
+            starAfter = true;
+            optText = optText.slice(0, -1).trim();
+          }
+          currentQ.options.push({
+            letter: letter,
+            text: optText,
+            isCorrect: starBefore || starAfter
+          });
+          continue;
+        }
+
+        if (currentQ.type === 'JODOH' && /^1[A-D]\s*,\s*2[A-D]\s*,\s*3[A-D]$/i.test(line)) {
+          const usedLetters = new Set(currentQ.options.map(o => o.letter));
+          const nextLetter = ['A', 'B', 'C', 'D'].find(l => !usedLetters.has(l)) || 'A';
+          currentQ.options.push({
+            letter: nextLetter,
+            text: line.trim(),
+            isCorrect: false
+          });
+          continue;
+        }
+
+        if (currentQ.options.length === 0 && currentQ.rows.length === 0) {
+          currentQ.title += '\n' + line;
+        }
+      }
+      pushCurrent();
+
+      const actualQuestions = questions.filter(x => !x.isSectionBreak);
+      if (actualQuestions.length === 0) {
+        throw new Error('Tidak ditemukan soal yang valid. Pastikan file memiliki nomor soal (1., 2., ...).');
+      }
+
+      const hasImages = attachedImages.some(img => img.questionNumber !== '');
+
+      let code = `// Dibuat oleh: Aburrizal Hamdani Lubis\n`;
+      code += `function buatGoogleFormOtomatis() {\n`;
+      code += `  var form = FormApp.create('${escapeJS(title)}');\n`;
+      if (desc) code += `  form.setDescription('${escapeJS(desc)}');\n`;
+      code += `  form.setIsQuiz(true);\n`;
+      code += hasImages ? buildImageHelperCode() : `\n`;
+
+      if (includeId) {
+        code += `  // === IDENTITAS PESERTA ===\n`;
+        code += `  form.addSectionHeaderItem().setTitle('IDENTITAS PESERTA');\n`;
+        code += `  form.addTextItem().setTitle('Nama Lengkap').setRequired(true);\n`;
+        if (classes.length > 0) {
+          const classArr = classes.map(c => `'${escapeJS(c)}'`).join(', ');
+          code += `  form.addListItem().setTitle('Kelas').setChoiceValues([${classArr}]).setRequired(true);\n`;
+        }
+        code += `  form.addTextItem().setTitle('Nomor Peserta').setRequired(true);\n\n`;
+      }
+
+      let qCounter = 0;
+      questions.forEach((item) => {
+        if (item.isSectionBreak) {
+          code += `  // === ${item.title} ===\n`;
+          code += `  form.addPageBreakItem().setTitle('${escapeJS(item.title)}');\n\n`;
+          return;
+        }
+
+        qCounter++;
+        const varName = `q${qCounter}`;
+        code += `  // --- Soal No. ${item.number} (${item.type}) ---\n`;
+        if (hasImages) code += `  sisipkanGambarSoal('${escapeJS(item.number)}');\n`;
+
+        const uniqueRows = [...new Set(item.rows.map(r => r.trim()).filter(Boolean))];
+
+        if (item.type === 'BS' || uniqueRows.length > 0) {
+          code += `  var ${varName} = form.addGridItem();\n`;
+          code += `  ${varName}.setTitle('${escapeJS(item.title)}')\n`;
+          code += `      .setColumns(['Benar', 'Salah'])\n`;
+          const rowsArr = (uniqueRows.length > 0 ? uniqueRows : ['Pernyataan 1']).map(r => `'${escapeJS(r)}'`).join(', ');
+          code += `      .setRows([${rowsArr}])\n`;
+          code += `      .setRequired(true);\n\n`;
+        } else if (item.type === 'PGK' && item.options.length >= 2) {
+          code += `  var ${varName} = form.addCheckboxItem();\n`;
+          code += `  ${varName}.setTitle('${escapeJS(item.title)}')\n`;
+          code += `      .setPoints(${defPoints * 2})\n`;
+          code += `      .setRequired(true);\n`;
+          code += `  ${varName}.setChoices([\n`;
+          item.options.forEach((opt, oIdx) => {
+            const comma = oIdx < item.options.length - 1 ? ',' : '';
+            code += `    ${varName}.createChoice('${escapeJS(opt.text)}', ${opt.isCorrect})${comma}\n`;
+          });
+          code += `  ]);\n\n`;
+        } else if (item.options.length < 2) {
+          code += `  var ${varName} = form.addParagraphTextItem();\n`;
+          code += `  ${varName}.setTitle('${escapeJS(item.title)}')\n`;
+          code += `      .setRequired(true);\n\n`;
+        } else {
+          code += `  var ${varName} = form.addMultipleChoiceItem();\n`;
+          code += `  ${varName}.setTitle('${escapeJS(item.title)}')\n`;
+          code += `      .setPoints(${defPoints})\n`;
+          code += `      .setRequired(true);\n`;
+          code += `  ${varName}.setChoices([\n`;
+          item.options.forEach((opt, oIdx) => {
+            const comma = oIdx < item.options.length - 1 ? ',' : '';
+            code += `    ${varName}.createChoice('${escapeJS(opt.text)}', ${opt.isCorrect})${comma}\n`;
+          });
+          code += `  ]);\n\n`;
+        }
+      });
+
+      code += `  Logger.log('BERHASIL! Total ${actualQuestions.length} soal telah dibuat.');\n`;
+      code += `  Logger.log('Link Edit Form : ' + form.getEditUrl());\n`;
+      code += `  Logger.log('Link Siswa     : ' + form.getPublishedUrl());\n`;
+      code += `}\n`;
+
+      return { code: sanitizeAppsScript(code), count: actualQuestions.length };
+    }
+
+    // =========================================================================
+    // ENGINE 2: GENERATOR CERDAS GEMINI AI (BEBAS ERROR setFeedbackForCorrect)
+    // =========================================================================
+    async function parseAIToScript(rawText) {
+      const apiKey = document.getElementById('geminiApiKey').value.trim();
+      if (!apiKey) {
+        throw new Error('Silakan masukkan Gemini API Key terlebih dahulu pada panel Pengaturan Gemini AI.');
+      }
+
+      const model = document.getElementById('geminiModel').value;
+      const title = document.getElementById('formTitle').value.trim() || 'KUIS UJIAN';
+      const desc = document.getElementById('formDesc').value.trim();
+      const defPoints = parseInt(document.getElementById('defaultPoints').value) || 2;
+      const includeId = document.getElementById('includeIdentity').checked;
+      const classes = document.getElementById('classList').value.trim();
+      const mappedImages = attachedImages.filter(img => img.questionNumber !== '');
+      const hasImages = mappedImages.length > 0;
+      const mappedNums = mappedImages.map(img => img.questionNumber).join(', ');
+
+      const cleanPromptText = rawText
+        .split(/\r?\n/)
+        .filter(l => !l.trim().startsWith('# Petunjuk'))
+        .join('\n');
+
+      const systemPrompt = `Anda adalah pakar otomasi Google Apps Script untuk ujian sekolah. Ubah naskah soal berikut menjadi kode Google Apps Script (GAS) yang RAPI, LENGKAP, dan BEBAS ERROR.
+
+ATURAN WAJIB (JANGAN DILANGGAR):
+1. Keluarkan HANYA kode JavaScript Google Apps Script valid tanpa markdown (\`\`\`javascript) dan tanpa teks penjelasan.
+2. Awali dengan komentar: // Dibuat oleh: Aburrizal Hamdani Lubis
+3. Buat fungsi utama bernama: function buatGoogleFormOtomatis() { ... }
+4. Awalan form:
+   var form = FormApp.create('${escapeJS(title)}');
+   form.setDescription('${escapeJS(desc)}');
+   form.setIsQuiz(true);
+5. ${includeId ? `Tambahkan Identitas Peserta:
+   form.addSectionHeaderItem().setTitle('IDENTITAS PESERTA');
+   form.addTextItem().setTitle('Nama Lengkap').setRequired(true);
+   form.addListItem().setTitle('Kelas').setChoiceValues([${classes.split(',').map(c => `'${escapeJS(c.trim())}'`).join(', ')}]).setRequired(true);
+   form.addTextItem().setTitle('Nomor Peserta').setRequired(true);` : 'Langsung masuk ke soal.'}
+6. DILARANG MEMBUAT ITEM KOSONG! Jangan pernah memanggil form.addMultipleChoiceItem() tanpa .setTitle() dan .setChoices(). Abaikan baris komentar "# Petunjuk...".
+7. ATURAN API GOOGLE APPS SCRIPT (SANGAT PENTING):
+   - Metode .setPoints() HANYA BOLEH dipanggil pada form.addMultipleChoiceItem() dan form.addCheckboxItem().
+   - DILARANG memanggil .setPoints() pada form.addGridItem(), form.addCheckboxGridItem(), form.addParagraphTextItem(), atau form.addTextItem().
+   - DILARANG KERAS memanggil .setFeedbackForCorrect() atau .setFeedbackForIncorrect() pada objek manapun (terutama GridItem/Benar-Salah), karena GridItem tidak memiliki metode tersebut dan menyebabkan TypeError!
+   - DILARANG membuat pilihan jawaban duplikat/kembar di dalam satu .setChoices([...]).
+8. KONVERSI TIPE SOAL (1 NOMOR SOAL = 1 ITEM FORM, JANGAN DIPECAH MENJADI 21.1, 21.2):
+   - [PG] (Soal 1-15) -> var qX = form.addMultipleChoiceItem(); dengan .setPoints(${defPoints}) dan 4 pilihan .setChoices([...]) (hitung kunci jawaban benar/salah).
+   - [PGK] (Soal 16-20) -> var qX = form.addCheckboxItem(); dengan .setPoints(${defPoints * 2}) dan 4 pilihan .setChoices([...]) (hitung semua opsi yang benar).
+   - [JODOH] (Soal 21-25) -> Buat 1 var qX = form.addMultipleChoiceItem(); per nomor soal (21, 22, 23, 24, 25), masukkan 4 pilihan kombinasi pasangan (1A, 2B, 3C, dst.) ke dalam .setChoices([...]) dan .setPoints(${defPoints}).
+   - [BS] (Soal 26-30) -> var qX = form.addGridItem(); dengan .setColumns(['Benar', 'Salah']) dan .setRows([...]) dari baris-baris BS_ROW (TANPA .setPoints dan TANPA .setFeedbackForCorrect!).
+   - Gunakan form.addPageBreakItem().setTitle('...') setiap kali berpindah Bagian (Bagian I, II, III, IV).
+9. BERSIHKAN awalan A./B./C./D. pada teks di dalam .createChoice(). Gunakan simbol Unicode matematika rapi (², ³, ⁴, ⁻¹, √, ×, ÷, ≤, ≥, °).
+10. ${hasImages ? `PENTING UNTUK GAMBAR DI ATAS SOAL: Pengguna melampirkan gambar/tabel untuk nomor soal: [${mappedNums}]. TEPAT SEBELUM membuat item soal untuk nomor-nomor tersebut, panggil: sisipkanGambarSoal('6'); (sesuai nomor soalnya) agar gambar berada tepat di atas nomor soal tersebut. Jangan tulis ulang definisi fungsi sisipkanGambarSoal.` : ''}
+11. Akhiri fungsi dengan Logger.log(form.getEditUrl()), Logger.log(form.getPublishedUrl()), dan kurung kurawal tutup }.`;
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: systemPrompt + "\n\n=== NASKAH SOAL TERSTRUKTUR ===\n" + cleanPromptText
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 65536
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `HTTP Error ${response.status}`);
+      }
+
+      const data = await response.json();
+      let generated = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      generated = generated.replace(/^```(?:javascript|js)?\s*/i, '').replace(/```\s*$/i, '').trim();
+
+      if (hasImages) {
+        const imgHelper = buildImageHelperCode();
+        if (generated.includes('form.setIsQuiz(true);')) {
+          generated = generated.replace('form.setIsQuiz(true);', 'form.setIsQuiz(true);' + imgHelper);
+        } else {
+          generated = generated.replace('{', '{\n' + imgHelper);
+        }
+      }
+
+      generated = sanitizeAppsScript(generated);
+
+      return { code: generated, count: 'AI Auto-Detect' };
+    }
+
+    // =========================================================================
+    // TOMBOL UTAMA GENERATE
+    // =========================================================================
+    async function generateScript() {
+      const rawText = document.getElementById('rawText').value.trim();
+      if (!rawText) {
+        alert('Silakan unggah file (.docx / .pdf / .txt) atau tempelkan teks soal terlebih dahulu!');
+        return;
+      }
+
+      const unmapped = attachedImages.filter(img => img.questionNumber === '');
+      if (unmapped.length > 0) {
+        const lanjut = confirm(`Ada ${unmapped.length} gambar yang belum diisi "Untuk Soal No" (seperti logo sampul). Gambar tanpa nomor soal tidak akan dimasukkan ke Google Form.\n\nLanjutkan membuat skrip?`);
+        if (!lanjut) return;
+      }
+
+      const btn = document.getElementById('btnGenerate');
+      const btnText = document.getElementById('btnText');
+      const outputArea = document.getElementById('outputCode');
+      const statsInfo = document.getElementById('statsInfo');
+
+      btn.disabled = true;
+      btn.classList.add('opacity-70', 'cursor-not-allowed');
+
+      try {
+        if (currentMode === 'offline') {
+          btnText.textContent = 'Memproses Soal & Tabel Gambar...';
+          const result = parseOfflineToScript(rawText);
+          outputArea.value = result.code;
+          statsInfo.textContent = `✓ Berhasil mengonversi ${result.count} soal (gambar & tabel tepat di atas soal) dalam Mode Offline.`;
+          statsInfo.className = 'text-xs text-emerald-600 font-medium mt-0.5 ml-8';
+        } else {
+          btnText.textContent = 'Gemini AI sedang merakit soal & kunci...';
+          outputArea.value = '// Sedang merakit kode Google Apps Script dengan Gemini AI...\n// Mohon tunggu sekitar 10-20 detik...';
+          const result = await parseAIToScript(rawText);
+          outputArea.value = result.code;
+          statsInfo.textContent = `✓ Berhasil dirakit oleh Gemini AI (bebas error GridItem).`;
+          statsInfo.className = 'text-xs text-indigo-600 font-medium mt-0.5 ml-8';
+        }
+      } catch (err) {
+        alert('Terjadi kesalahan: ' + err.message);
+        statsInfo.textContent = '✕ Gagal memproses: ' + err.message;
+        statsInfo.className = 'text-xs text-rose-600 font-medium mt-0.5 ml-8';
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('opacity-70', 'cursor-not-allowed');
+        setMode(currentMode);
+      }
+    }
+
+    function copyScript() {
+      const code = document.getElementById('outputCode').value;
+      if (!code) return;
+      if (!code.trim().endsWith('}')) {
+        alert('Peringatan: Kode tampak belum selesai atau terpotong di bagian akhir. Silakan klik Generate ulang.');
+        return;
+      }
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('btnCopy');
+        const orig = btn.textContent;
+        btn.textContent = '✓ Tersalin Utuh!';
+        setTimeout(() => { btn.textContent = orig; }, 2000);
+      });
+    }
+
+    function downloadScript() {
+      const code = document.getElementById('outputCode').value;
+      if (!code) return;
+      const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'buatGoogleForm.gs';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
